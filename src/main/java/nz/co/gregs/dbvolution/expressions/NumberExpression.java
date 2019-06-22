@@ -381,10 +381,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * This method is useful to test values will fit within a specific field
 	 * size</p>
 	 *
-	 * @param maxIntegerLength
-	 * @param maxDecimals
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param maxIntegerLength the largest number of digits allowed before the decimal point
+	 * @param maxDecimals the largest numbers of digits allowed after the decimal point
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(Number maxIntegerLength, Number maxDecimals) {
@@ -398,10 +396,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * This method is useful to test values will fit within a specific field
 	 * size</p>
 	 *
-	 * @param maxIntegerLength
-	 * @param maxDecimals
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param maxIntegerLength the largest number of digits allowed before the decimal point
+	 * @param maxDecimals the largest numbers of digits allowed after the decimal point
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(IntegerResult maxIntegerLength, IntegerResult maxDecimals) {
@@ -415,10 +411,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * This method is useful to test values will fit within a specific field
 	 * size</p>
 	 *
-	 * @param maxIntegerLength
-	 * @param maxDecimals
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param maxIntegerLength the largest number of digits allowed before the decimal point
+	 * @param maxDecimals the largest numbers of digits allowed after the decimal point
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(NumberResult maxIntegerLength, NumberResult maxDecimals) {

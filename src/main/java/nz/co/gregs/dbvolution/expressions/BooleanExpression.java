@@ -1122,10 +1122,11 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <B>
-	 * @param <R>
-	 * @param <C>
-	 * @param <S>
+	 * @param <B> the base Java type of the first expression, e.g. Integer
+	 * @param <R> the Results type of the first expression, e.g. IntegerExpression
+	 * @param <C> the base Java type of the second expression, e.g. Integer
+	 * @param <S> the Results type of the second expression, e.g.
+	 * IntegerExpression
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
 	 * @param columnB the left side of the internal comparison
@@ -1165,10 +1166,11 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <B>
-	 * @param <R>
-	 * @param <C>
-	 * @param <S>
+	 * @param <B> the base Java type of the first expression, e.g. Integer
+	 * @param <R> the Results type of the first expression, e.g. IntegerExpression
+	 * @param <C> the base Java type of the second expression, e.g. Integer
+	 * @param <S> the Results type of the second expression, e.g.
+	 * IntegerExpression
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
 	 * @param columnB the left side of the internal comparison
@@ -1207,12 +1209,13 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <B>
-	 * @param <R>
-	 * @param <C>
-	 * @param <S>
-	 * @param <D>
-	 * @param <T>
+	 * @param <B> the base Java type of the first expression, e.g. Integer
+	 * @param <R> the Results type of the first expression, e.g. IntegerExpression
+	 * @param <C> the base Java type of the second expression, e.g. Integer
+	 * @param <S> the Results type of the second expression, e.g.
+	 * IntegerExpression
+	 * @param <D> the base Java type of the third expression, e.g. Integer
+	 * @param <T> the Results type of the third expression, e.g. IntegerExpression
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
 	 * @param columnB the left side of the internal comparison
@@ -1253,14 +1256,15 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <B>
-	 * @param <R>
-	 * @param <C>
-	 * @param <S>
-	 * @param <D>
-	 * @param <T>
-	 * @param <E>
-	 * @param <U>
+	 * @param <B> the base Java type of the first expression, e.g. Integer
+	 * @param <R> the Results type of the first expression, e.g. IntegerExpression
+	 * @param <C> the base Java type of the second expression, e.g. Integer
+	 * @param <S> the Results type of the second expression, e.g.
+	 * IntegerExpression
+	 * @param <D> the base Java type of the third expression, e.g. Integer
+	 * @param <T> the Results type of the third expression, e.g. IntegerExpression
+	 * @param <E> the base Java type of the third expression, e.g. Integer
+	 * @param <U> the Results type of the third expression, e.g. IntegerExpression
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
 	 * @param columnB the left side of the internal comparison
@@ -1303,12 +1307,13 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <B>
-	 * @param <R>
-	 * @param <C>
-	 * @param <S>
-	 * @param <D>
-	 * @param <T>
+	 * @param <B> the base Java type of the first expression, e.g. Integer
+	 * @param <R> the Results type of the first expression, e.g. IntegerExpression
+	 * @param <C> the base Java type of the second expression, e.g. Integer
+	 * @param <S> the Results type of the second expression, e.g.
+	 * IntegerExpression
+	 * @param <D> the base Java type of the third expression, e.g. Integer
+	 * @param <T> the Results type of the third expression, e.g. IntegerExpression
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
 	 * @param columnB the left side of the internal comparison
@@ -1349,14 +1354,15 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <B>
-	 * @param <R>
-	 * @param <C>
-	 * @param <S>
-	 * @param <D>
-	 * @param <T>
-	 * @param <E>
-	 * @param <U>
+	 * @param <B> the base Java type of the first expression, e.g. Integer
+	 * @param <R> the Results type of the first expression, e.g. IntegerExpression
+	 * @param <C> the base Java type of the second expression, e.g. Integer
+	 * @param <S> the Results type of the second expression, e.g.
+	 * IntegerExpression
+	 * @param <D> the base Java type of the third expression, e.g. Integer
+	 * @param <T> the Results type of the third expression, e.g. IntegerExpression
+	 * @param <E> the base Java type of the third expression, e.g. Integer
+	 * @param <U> the Results type of the third expression, e.g. IntegerExpression
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
 	 * @param columnB the left side of the internal comparison

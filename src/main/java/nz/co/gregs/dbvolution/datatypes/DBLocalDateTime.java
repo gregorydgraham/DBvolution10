@@ -853,7 +853,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

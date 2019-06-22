@@ -215,15 +215,15 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * set up as a bean, using the default constructor and a collection of
 	 * settings.</p>
 	 *
-	 * @param settings
-	 * @throws SQLException
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws ClassNotFoundException
+	 * @param settings an array of DatabaseConnectionSettings that can be used to add databases to the cluster
+	 * @throws SQLException database errors
+	 * @throws InvocationTargetException  all database need an accessible default constructor
+	 * @throws IllegalArgumentException all database need an accessible default constructor
+	 * @throws IllegalAccessException all database need an accessible default constructor
+	 * @throws InstantiationException all database need an accessible default constructor
+	 * @throws SecurityException all database need an accessible default constructor
+	 * @throws NoSuchMethodException all database need an accessible default constructor
+	 * @throws ClassNotFoundException all database need an accessible default constructor
 	 */
 	public void setConnectionSettings(DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
 		removeDatabases(getDatabases());
@@ -258,7 +258,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param database element to be appended to this list
 	 * @return <tt>true</tt> if the database has been added to the cluster.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public final synchronized boolean addDatabase(DBDatabase database) throws SQLException {
 		return addDatabaseWithWaiting(database, false);
@@ -307,8 +307,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	/**
 	 * Adds the database to the cluster, synchronizes it, and then removes it.
 	 *
-	 * @param backupDatabase
-	 * @throws SQLException
+	 * @param backupDatabase the database to use as a backup
+	 * @throws SQLException database errors
 	 * @throws UnableToRemoveLastDatabaseFromClusterException
 	 */
 	@Override

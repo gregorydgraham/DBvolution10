@@ -39,9 +39,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
-
 public class AbstractQueryColumn extends AbstractColumn {
-	
+
 	private static final long serialVersionUID = 1l;
 
 	private final DBQuery query;
@@ -49,14 +48,13 @@ public class AbstractQueryColumn extends AbstractColumn {
 	private boolean useTableAlias = true;
 
 	/**
-	 * Creates an AbstractColumn representing a table and column.
+	 * Creates an AbstractColumn representing a column within a query.
 	 *
 	 * <p>
-	 * Stores the RowDefinition (generally a DBRow subclass) and a field of the
-	 * RowDefinition so that the original association can be rebuilt where the
-	 * expression is converted into SQL.
+	 * Stores the query and a field of the field so that the original association
+	 * can be rebuilt where the expression is converted into SQL.
 	 *
-	 * @param query
+	 * @param query the query that contains the field
 	 * @param field the field of the row that represents the database column
 	 * @throws IncorrectRowProviderInstanceSuppliedException Please note the the
 	 * field must be a field of the row

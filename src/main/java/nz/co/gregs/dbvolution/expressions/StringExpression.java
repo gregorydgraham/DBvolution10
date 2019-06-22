@@ -672,7 +672,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param string
+	 * @param string the literal value to search for
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression contains(StringResult string) {

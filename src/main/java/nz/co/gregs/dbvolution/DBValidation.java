@@ -77,7 +77,7 @@ public class DBValidation<R extends DBRow> {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the results of the validation
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public Results validate(DBDatabase database) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 

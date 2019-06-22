@@ -268,9 +268,9 @@ public class DatabaseConnectionSettings {
 	 *
 	 *
 	 * @author Gregory Graham
-	 * @param url
-	 * @param username
-	 * @param password
+	 * @param url the JDBC URL to connect to the database
+	 * @param username the username for logging in to the database
+	 * @param password the password for the database user
 	 */
 	public DatabaseConnectionSettings(String url, String username, String password) {
 		super();
@@ -347,10 +347,10 @@ public class DatabaseConnectionSettings {
 	 *
 	 *
 	 * @author Gregory Graham
-	 * @param label
-	 * @param url
-	 * @param username
-	 * @param password
+	 * @param label an arbitrary label to identify the database
+	 * @param url the JDBC URL to connect to the database
+	 * @param username the username for logging in to the database
+	 * @param password the password for the database user
 	 */
 	public DatabaseConnectionSettings(String url, String username, String password, String label) {
 		super();
@@ -428,15 +428,15 @@ public class DatabaseConnectionSettings {
 	 *
 	 *
 	 * @author Gregory Graham
-	 * @param label
-	 * @param host
-	 * @param port
-	 * @param instance
-	 * @param database
-	 * @param schema
-	 * @param username
-	 * @param password
-	 * @param extras
+	 * @param label and arbitrary name for the database
+	 * @param host the hostname of the database server
+	 * @param port the port used to connect to the database
+	 * @param instance the database instance to use
+	 * @param database the name of the database in the instance
+	 * @param schema the schema to use in the database
+	 * @param username the username for logging in to the database
+	 * @param password the password for the database user
+	 * @param extras any other database specific settings
 	 */
 	public DatabaseConnectionSettings(String host, String port, String instance, String database, String schema, String username, String password, Map<String, String> extras, String label) {
 		super();
@@ -519,14 +519,14 @@ public class DatabaseConnectionSettings {
 	 *
 	 *
 	 * @author Gregory Graham
-	 * @param host
-	 * @param port
-	 * @param instance
-	 * @param database
-	 * @param schema
-	 * @param username
-	 * @param password
-	 * @param extras
+	 * @param host the hostname of the database server
+	 * @param port the port used to connect to the database
+	 * @param instance the database instance to use
+	 * @param database the name of the database in the instance
+	 * @param schema the schema to use in the database
+	 * @param username the username for logging in to the database
+	 * @param password the password for the database user
+	 * @param extras any other database specific settings
 	 */
 	public DatabaseConnectionSettings(String host, String port, String instance, String database, String schema, String username, String password, Map<String, String> extras) {
 		super();
@@ -575,13 +575,13 @@ public class DatabaseConnectionSettings {
 	 * Create the DBDatabase described by these settings
 	 *
 	 * @return the DBDatabase
-	 * @throws ClassNotFoundException
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
+	 * @throws ClassNotFoundException all database need an accessible default constructor
+	 * @throws NoSuchMethodException all database need an accessible default constructor
+	 * @throws SecurityException all database need an accessible default constructor
+	 * @throws InstantiationException all database need an accessible default constructor
+	 * @throws IllegalAccessException all database need an accessible default constructor
+	 * @throws IllegalArgumentException all database need an accessible default constructor
+	 * @throws InvocationTargetException all database need an accessible default constructor
 	 */
 	public final DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> dbDatabaseClass = Class.forName(this.getDbdatabaseClass());
@@ -726,7 +726,7 @@ public class DatabaseConnectionSettings {
 	}
 
 	/**
-	 * @param newExtras
+	 * @param newExtras extra settings for the database
 	 * @return the extras
 	 */
 	public DatabaseConnectionSettings setExtras(Map<String, String> newExtras) {
@@ -781,7 +781,7 @@ public class DatabaseConnectionSettings {
 	 * <p>
 	 * This label has no effect on the actual database connection.
 	 *
-	 * @param label
+	 * @param label an arbitrary name for the database
 	 */
 	public void setLabel(String label) {
 		this.label = label;
@@ -794,7 +794,7 @@ public class DatabaseConnectionSettings {
 	 * This label has no effect on the actual database connection.
 	 *
 	 *
-	 * @return
+	 * @return the label set for the database
 	 */
 	public String getLabel() {
 		return this.label;

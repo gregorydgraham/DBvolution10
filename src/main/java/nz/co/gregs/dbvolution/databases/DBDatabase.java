@@ -232,9 +232,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
-	 * @param driverName
+	 * @param driverName the class name of the database driver
 	 * @param ds - a DataSource for the required database.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MSSQLServerDB
@@ -271,9 +271,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
-	 * @param driverName
+	 * @param driverName the class name of the database driver
 	 * @param dcs - a DatabaseConnectionSettings for the required database.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MSSQLServerDB
@@ -312,7 +312,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MySQLDB

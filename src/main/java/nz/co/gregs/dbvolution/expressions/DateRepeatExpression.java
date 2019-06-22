@@ -224,7 +224,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the value to compare with
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -254,7 +254,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the value to compare with
 	 * @return a BooleanExpression
 	 */
 	@Override

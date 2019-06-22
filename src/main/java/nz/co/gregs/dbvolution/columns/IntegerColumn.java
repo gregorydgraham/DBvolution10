@@ -95,7 +95,7 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
 	 *
-	 * @param <E>
+	 * @param <E> a type of DBEnumValue
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
