@@ -257,7 +257,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * }.</p>
 	 *
 	 * @param database element to be appended to this list
-	 * @return <tt>true</tt> if the database has been added to the cluster.
+	 * @return TRUE if the database has been added to the cluster.
 	 * @throws java.sql.SQLException database errors
 	 */
 	public final synchronized boolean addDatabase(DBDatabase database) throws SQLException {
@@ -275,7 +275,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * }</p>
 	 *
 	 * @param database element to be appended to this list
-	 * @return <tt>true</tt> if the database has been added to the cluster.
+	 * @return true if the database has been added to the cluster.
 	 * @throws java.sql.SQLException database errors
 	 */
 	public synchronized boolean addDatabaseAndWait(DBDatabase database) throws SQLException {
@@ -321,14 +321,14 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation). If this list does not contain the element,
 	 * it is unchanged. More formally, removes the element with the lowest index
-	 * <tt>i</tt> such that
-	 * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
-	 * (if such an element exists). Returns <tt>true</tt> if this list contained
+	 * <code>i</code> such that
+	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * (if such an element exists). Returns true if this list contained
 	 * the specified element (or equivalently, if this list changed as a result of
 	 * the call).
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
-	 * @return <tt>true</tt> if this list contained the specified element
+	 * @return true if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
@@ -336,7 +336,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <tt>quarantineDatabase</tt>
+	 * @throws UnsupportedOperationException if the quarantineDatabase
 	 * operation is not supported by this list
 	 */
 	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException {
@@ -347,14 +347,14 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation). If this list does not contain the element,
 	 * it is unchanged. More formally, removes the element with the lowest index
-	 * <tt>i</tt> such that
-	 * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
-	 * (if such an element exists). Returns <tt>true</tt> if this list contained
+	 * i such that
+	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * (if such an element exists). Returns <code>true</code> if this list contained
 	 * the specified element (or equivalently, if this list changed as a result of
 	 * the call).
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
-	 * @return <tt>true</tt> if this list contained the specified element
+	 * @return true if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
@@ -362,7 +362,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <tt>quarantineDatabase</tt>
+	 * @throws UnsupportedOperationException if the quarantineDatabase
 	 * operation is not supported by this list
 	 */
 	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException {
@@ -376,14 +376,14 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation). If this list does not contain the element,
 	 * it is unchanged. More formally, removes the element with the lowest index
-	 * <tt>i</tt> such that
-	 * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
-	 * (if such an element exists). Returns <tt>true</tt> if this list contained
+	 * i such that
+	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * (if such an element exists). Returns <code>true</code> if this list contained
 	 * the specified element (or equivalently, if this list changed as a result of
 	 * the call).
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
-	 * @return <tt>true</tt> if this list contained the specified element
+	 * @return <code>true</code> if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
@@ -391,7 +391,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <tt>quarantineDatabase</tt>
+	 * @throws UnsupportedOperationException if the <code>quarantineDatabase</code>
 	 * operation is not supported by this list
 	 */
 	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
@@ -413,7 +413,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <tt>quarantineDatabase</tt>
+	 * @throws UnsupportedOperationException if the <code>quarantineDatabase</code>
 	 * operation is not supported by this list
 	 */
 	protected void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {

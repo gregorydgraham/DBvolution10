@@ -45,7 +45,7 @@ public class DBInsertTest extends AbstractTest {
 	/**
 	 * Test of save method, of class DBInsert.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 	@Test
 	public void testSave() throws Exception {

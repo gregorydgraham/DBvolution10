@@ -94,7 +94,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
 	 * @param dcs	dcs
-	 * @param defn
+	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle11XEDB(Oracle11XEDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
@@ -108,7 +108,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param jdbcURL jdbcURL
 	 * @param driverName driverName
 	 * @param password password
-	 * @param username
+	 * @param username the database account's username
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle11XEDB(OracleDBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {

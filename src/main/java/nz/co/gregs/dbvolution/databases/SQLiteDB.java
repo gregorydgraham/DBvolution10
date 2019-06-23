@@ -72,7 +72,7 @@ public class SQLiteDB extends DBDatabase {
 	 * provided.
 	 *
 	 * @param ds	ds
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(DataSource ds) throws SQLException {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
@@ -83,7 +83,7 @@ public class SQLiteDB extends DBDatabase {
 	 * provided.
 	 *
 	 * @param ds	ds
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(DatabaseConnectionSettings ds) throws SQLException {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
@@ -96,11 +96,10 @@ public class SQLiteDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
-//		setDatabasenameFromURL();
 	}
 
 	/**
@@ -110,8 +109,8 @@ public class SQLiteDB extends DBDatabase {
 	 * @param databaseFile
 	 * @param username username
 	 * @param password password
-	 * @throws java.io.IOException
-	 * @throws java.sql.SQLException
+	 * @throws java.io.IOException file system errors
+	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(File databaseFile, String username, String password) throws IOException, SQLException {
 		super(new SQLiteDefinition(),
@@ -130,8 +129,8 @@ public class SQLiteDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 * @param dummy just use TRUE
-	 * @throws java.io.IOException
-	 * @throws java.sql.SQLException
+	 * @throws java.io.IOException file system errors
+	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException, SQLException {
 		super(new SQLiteDefinition(),

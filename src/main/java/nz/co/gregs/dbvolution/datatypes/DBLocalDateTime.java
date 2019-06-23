@@ -202,7 +202,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * so please confirms to the requirements of that method.
 	 *
 	 * @param dateStr	dateStr
-	 * @param format
+	 * @param format the format to parse the string with
 	 */
 	@SuppressWarnings("deprecation")
 	public void setValue(String dateStr, DateTimeFormatter format) {

@@ -154,6 +154,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param portNumber the port number that the database is available on .
 	 * @param username the account to connect via.
 	 * @param password the password to identify username.
+	 * @throws java.sql.SQLException database errors
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */

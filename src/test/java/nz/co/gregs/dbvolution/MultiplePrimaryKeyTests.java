@@ -409,7 +409,7 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 		}
 
 		/**
-		 * @return
+		 * @return a blurb
 		 */
 		public DBStringTrimmed queryBlurb() {
 			return blurb;

@@ -90,7 +90,7 @@ abstract public class DBOperator implements Serializable {
 	 * <p>
 	 * Basically switches the operator from, for instance, "==" to "!=".
 	 *
-	 * @param invertOperator
+	 * @param invertOperator set this to true to not the operator
 	 */
 	public void invertOperator(Boolean invertOperator) {
 		this.invertOperator = invertOperator;
@@ -152,8 +152,8 @@ abstract public class DBOperator implements Serializable {
 	/**
 	 * Create the expression to be used in the query generation.
 	 *
-	 * @param db
-	 * @param column
+	 * @param db the database definition
+	 * @param column the expression to be turn into an SQL WHERE expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression

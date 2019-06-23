@@ -56,7 +56,7 @@ public class DBScriptTest extends AbstractTest {
 	/**
 	 * Test of implement method, of class DBScript.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 	@Test
 	public void testImplement() throws Exception {
@@ -72,7 +72,7 @@ public class DBScriptTest extends AbstractTest {
 	/**
 	 * Test of implement method, of class DBScript.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 	@Test
 	public void testImplementOfDBDatabase() throws Exception {
@@ -88,7 +88,7 @@ public class DBScriptTest extends AbstractTest {
 	/**
 	 * Test of test method, of class DBScript.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 	@Test
 	public void testTest() throws Exception {
@@ -104,7 +104,7 @@ public class DBScriptTest extends AbstractTest {
 	/**
 	 * Test of test method, of class DBScript.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 	@Test
 	public void testTestOfDBDatabase() throws Exception {
@@ -133,7 +133,7 @@ public class DBScriptTest extends AbstractTest {
 	/**
 	 * Test of test method, of class DBScript.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 	@Test
 	public void testTestTransactionsAreIsolated() throws Exception {

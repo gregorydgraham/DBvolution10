@@ -211,8 +211,8 @@ public class QueryableDatatypeSyncer implements Serializable {
 
 	/**
 	 *
-	 * @param internalQDT
-	 * @param internalValue
+	 * @param internalQDT the internal QDT
+	 * @param internalValue the internal value
 	 */
 	protected static final void setQDTValueUsingDangerousReflection(QueryableDatatype<?> internalQDT, Object internalValue) {
 		try {

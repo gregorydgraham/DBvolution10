@@ -41,7 +41,7 @@ public class DBUpdateTest extends AbstractTest {
 	/**
 	 * Test of getUpdates method, of class DBUpdate.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 	@Test(expected = AccidentalUpdateOfUndefinedRowException.class)
 	public void testGetUpdates() throws Exception {

@@ -43,7 +43,7 @@ public class DBLocalDateTest extends AbstractTest {
 	/**
 	 * Test of getSQLDatatype method, of class DBLocalDate.
 	 *
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	@Test
 	public void testGetSQLDatatype() throws SQLException {

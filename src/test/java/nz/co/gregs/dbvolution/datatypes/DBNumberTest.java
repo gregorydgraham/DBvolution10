@@ -57,7 +57,7 @@ public class DBNumberTest extends AbstractTest {
 	/**
 	 * Test of getSQLDatatype method, of class DBDateOnly.
 	 *
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	@Test
 	public void testGetSQLDatatype() throws SQLException {

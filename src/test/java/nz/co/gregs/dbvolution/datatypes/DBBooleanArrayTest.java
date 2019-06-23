@@ -204,7 +204,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 	/**
 	 * Test of getFromResultSet method, of class DBBooleanArray.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception anything could happen
 	 */
 //	@Ignore
 	@Test

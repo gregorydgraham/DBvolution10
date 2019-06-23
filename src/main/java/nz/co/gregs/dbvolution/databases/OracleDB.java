@@ -183,7 +183,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 *
 	 * @param <TR> the class of the object defining the table to have it's spatial
 	 * meta-data removed.
-	 * @param statement
+	 * @param statement the statement to use
 	 * @param tableRow the object defining the table to have it's spatial
 	 * meta-data removed.
 	 * @throws SQLException database exceptions may be thrown.

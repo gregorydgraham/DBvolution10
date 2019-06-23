@@ -80,7 +80,7 @@ public class DBPasswordHash extends DBString {
 	 * Use {@link #checkPasswordAndUpdateHash(java.lang.String) } to generate a
 	 * hash closer to the optimum for your system.</p>
 	 *
-	 * @param logRounds
+	 * @param logRounds the number of encryption loops to do
 	 */
 	public DBPasswordHash(int logRounds) {
 		super();
@@ -98,8 +98,8 @@ public class DBPasswordHash extends DBString {
 	 * Use {@link #checkPasswordAndUpdateHash(java.lang.String) } to generate a
 	 * hash closer to the optimum for your system.</p>
 	 *
-	 * @param password
-	 * @param logRounds
+	 * @param password the password to encrypt
+	 * @param logRounds the number of hashing loops
 	 */
 	public DBPasswordHash(String password, int logRounds) {
 		super();
@@ -139,9 +139,9 @@ public class DBPasswordHash extends DBString {
 	 * update the row on the database using {@link DBDatabase#update(nz.co.gregs.dbvolution.DBRow...)
 	 * } or similar.</p>
 	 *
-	 * @param password
-	 * @return
-	 * @throws IncorrectPasswordException
+	 * @param password the secure text
+	 * @return TRUE when the password is correct
+	 * @throws IncorrectPasswordException thrown if the password does not match the field value
 	 */
 	public boolean checkPasswordAndUpdateHash(String password) throws IncorrectPasswordException {
 		String newHash = crypt.checkPasswordAndCreateSecureHash(password, getValue());

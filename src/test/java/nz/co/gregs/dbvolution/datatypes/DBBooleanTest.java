@@ -42,7 +42,7 @@ public class DBBooleanTest extends AbstractTest {
 	/**
 	 * Test of getSQLDatatype method, of class DBDateOnly.
 	 *
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException anything could happen
 	 */
 	@Test
 	public void testGetValue() throws SQLException {

@@ -49,7 +49,7 @@ public class DBUntypedValue extends QueryableDatatype<Object> implements StringR
 	/**
 	 * Sets the value of this DBString to the value provided.
 	 *
-	 * @param obj
+	 * @param obj the value
 	 */
 	@Override
 	public void setValue(Object obj) {

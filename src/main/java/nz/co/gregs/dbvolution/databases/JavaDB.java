@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 
@@ -51,6 +49,7 @@ public class JavaDB extends DBDatabase {
 	 * Creates a new JavaDB instance that will connect to the DataSource.
 	 *
 	 * @param dataSource	dataSource
+	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(DataSource dataSource) throws SQLException {
 		super(new JavaDBDefinition(), DRIVER_NAME, dataSource);
@@ -63,6 +62,7 @@ public class JavaDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new JavaDBDefinition(), DRIVER_NAME, jdbcURL, username, password);

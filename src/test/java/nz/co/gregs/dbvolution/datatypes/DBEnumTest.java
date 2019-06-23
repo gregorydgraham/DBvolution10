@@ -736,7 +736,7 @@ public class DBEnumTest extends AbstractTest {
 	}
 
 	/**
-	 * Valid values for {@link #recordType}.
+	 * Valid values for IntegerEnumTable.recordType.
 	 *
 	 * <p>
 	 * Nested class to make it obvious which table the enum is for
@@ -940,7 +940,7 @@ public class DBEnumTest extends AbstractTest {
 	}
 
 	/**
-	 * Valid values for {@link #recordType}
+	 * Valid values for GenericEnumType.recordType
 	 */
 	public static enum GenericEnumType implements DBEnumValue<String> {
 

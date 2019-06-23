@@ -182,7 +182,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param enumValues
+	 * @param enumValues the values to transform into Longs
 	 * @return a Long[] of the enums values.
 	 */
 	@SafeVarargs

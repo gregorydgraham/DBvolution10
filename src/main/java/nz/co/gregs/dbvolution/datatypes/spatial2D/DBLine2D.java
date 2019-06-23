@@ -82,7 +82,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * This is a convenient way to assign a constant value in an value or DBRow
 	 * subclass.
 	 *
-	 * @param lineString
+	 * @param lineString set the value of this DBLine2D to this value
 	 */
 	public DBLine2D(LineString lineString) {
 		super(lineString);
@@ -95,7 +95,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * This is a convenient way to assign a constant value in an value or DBRow
 	 * subclass.
 	 *
-	 * @param lineString
+	 * @param lineString set the value of this DBLine2D to the linestring form by these values
 	 */
 	public DBLine2D(Point... lineString) {
 		super(lineStringFromPoints(lineString));
@@ -133,7 +133,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Useful for defining value columns in DBRow subclass that acquire their
 	 * value from a transformation of data at query time.
 	 *
-	 * @param columnExpression
+	 * @param columnExpression set the value of this DBLine2D to this expression
 	 */
 	public DBLine2D(Line2DExpression columnExpression) {
 		super(columnExpression);
@@ -156,8 +156,9 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
 	 *
-	 * @param line
+	 * @param line set the value of this DBLine2D to this value
 	 */
+	@Override
 	public void setValue(LineString line) {
 		setLiteralValue(line);
 	}
@@ -172,7 +173,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
 	 *
-	 * @param points
+	 * @param points set the value of this DBLine2D to the linestring form from these values
 	 */
 	public void setValue(Point... points) {
 		GeometryFactory geometryFactory = new GeometryFactory();
@@ -194,7 +195,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
 	 *
-	 * @param coords
+	 * @param coords set the value of this DBLine2D to the linestring form from these values
 	 */
 	public void setValue(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();

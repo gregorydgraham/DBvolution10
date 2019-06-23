@@ -60,6 +60,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDBMemoryDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, jdbcURL, username, password);

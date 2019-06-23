@@ -32,8 +32,8 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
  */
 public class Oracle12DB extends OracleDB {
 
-//	private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
-//	public static final long serialVersionUID = 1l;
+	private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
