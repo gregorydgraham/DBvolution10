@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
@@ -59,6 +57,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
 	 * @param ds	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException database errors
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
@@ -75,6 +74,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
@@ -93,6 +93,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
@@ -113,6 +114,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param portNumber the port number that the database is available on
 	 * @param username the account to connect via
 	 * @param password the password to identify username.
+	 * @throws java.sql.SQLException database errors
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */

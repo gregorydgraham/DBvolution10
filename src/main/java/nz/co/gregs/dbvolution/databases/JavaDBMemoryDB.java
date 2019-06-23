@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
@@ -49,6 +47,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * Creates a new JavaDB instance that will connect to the DataSource.
 	 *
 	 * @param dataSource	dataSource
+	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDBMemoryDB(DataSource dataSource) throws SQLException {
 		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, dataSource);

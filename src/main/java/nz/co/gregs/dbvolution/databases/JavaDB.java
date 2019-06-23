@@ -77,6 +77,7 @@ public class JavaDB extends DBDatabase {
 	 * @param database database
 	 * @param password password
 	 * @param username username
+	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(String host, int port, String database, String username, String password) throws SQLException {
 		super(new JavaDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);

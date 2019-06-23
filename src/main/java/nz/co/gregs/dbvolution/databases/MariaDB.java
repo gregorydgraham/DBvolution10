@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
@@ -40,6 +38,7 @@ public class MariaDB extends DBDatabase {
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(DataSource ds) throws SQLException {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
@@ -52,6 +51,7 @@ public class MariaDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
@@ -66,6 +66,7 @@ public class MariaDB extends DBDatabase {
 	 * @param port port
 	 * @param databaseName databaseName
 	 * @param username username
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(String server, long port, String databaseName, String username, String password) throws SQLException {
 		super(new MariaDBDefinition(),

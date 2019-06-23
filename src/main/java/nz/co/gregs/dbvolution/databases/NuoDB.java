@@ -18,9 +18,7 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 
@@ -38,7 +36,6 @@ public class NuoDB extends DBDatabase {
 	private static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
 	private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
 	public static final long serialVersionUID = 1l;
-	private String derivedURL;
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
@@ -49,6 +46,7 @@ public class NuoDB extends DBDatabase {
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
 	 */
 	public NuoDB(DataSource ds) throws SQLException {
 		super(new NuoDBDefinition(), NUODB_DRIVER, ds);

@@ -1194,7 +1194,7 @@ public class DBStatement implements Statement {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the internalStatement
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	protected synchronized Statement getInternalStatement() throws SQLException {
 		if (this.internalStatement == null) {

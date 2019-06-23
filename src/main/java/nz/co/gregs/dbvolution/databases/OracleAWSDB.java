@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
  */
 public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDatatype {
 
-	public static final long serialVersionUID = 1l;
+//	public static final long serialVersionUID = 1l;
 
 	/**
 	 *
@@ -75,7 +75,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
 	 * @param dcs	dcs
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWSDB(DatabaseConnectionSettings dcs) throws SQLException {
 		this(new OracleAWSDBDefinition(), dcs);
@@ -85,8 +85,8 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
 	 * @param dcs	dcs
-	 * @param defn
-	 * @throws java.sql.SQLException
+	 * @param defn the oracle database definition
+	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWSDB(OracleAWSDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
 		super(defn, dcs);
@@ -105,6 +105,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param jdbcURL jdbcURL
 	 * @param driverName driverName
 	 * @param username username
+	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWSDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
@@ -115,6 +116,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 *
 	 * @param dbDefinition an oracle database definition instance
 	 * @param dataSource a data source to an Oracle database
+	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWSDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
 		super(dbDefinition, dataSource);

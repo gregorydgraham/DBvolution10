@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
@@ -46,6 +44,7 @@ public class InformixDB extends DBDatabase {
 	 * Usually this will be a {@link InformixDBDefinition} but other definitions
 	 * can be supplied.
 	 * @param ds the data source that defines the connection to the database.
+	 * @throws java.sql.SQLException database errors
 	 */
 	protected InformixDB(DBDefinition definition, DataSource ds) throws SQLException {
 		super(definition, INFORMIXDRIVERNAME, ds);
@@ -64,6 +63,7 @@ public class InformixDB extends DBDatabase {
 	 * @param jdbcURL the JDBC URL to the database
 	 * @param username the username to use when connecting to the database
 	 * @param password the password to use when connecting
+	 * @throws java.sql.SQLException database errors
 	 */
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
@@ -88,6 +88,7 @@ public class InformixDB extends DBDatabase {
 	 * @param username username the username used for the connection
 	 * @param password password the password required to connect the user to the
 	 * database
+	 * @throws java.sql.SQLException database errors
 	 */
 	public InformixDB(String jdbcURL, String username, String password) throws SQLException {
 		this(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
@@ -104,6 +105,7 @@ public class InformixDB extends DBDatabase {
 	 * 1 Database exceptions may be thrown
 	 *
 	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException database errors
 	 */
 	public InformixDB(DataSource dataSource) throws SQLException {
 		this(new InformixDBDefinition(), dataSource);

@@ -142,11 +142,11 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	 * cluster via this method.</p>
 	 *
 	 * @author gregorygraham
-	 * @param clusterName
-	 * @param config
-	 * @param yamlConfigFilename
-	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound
-	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster
+	 * @param clusterName a label for the cluster
+	 * @param config configuration settings for this cluster
+	 * @param yamlConfigFilename a YAML configuration file of database to add to the cluster
+	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound Unable to find the YAML configuration file
+	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster thrown if there are errors during cluster creation
 	 */
 	public DBDatabaseClusterWithConfigFile(String clusterName, Configuration config, String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
 		super(clusterName, config);
@@ -192,10 +192,11 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	 * cluster via this method.</p>
 	 *
 	 * @author gregorygraham
-	 * @param clusterName
-	 * @param yamlConfigFile
-	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound
-	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster
+	 * @param clusterName a label for the custer
+	 * @param config the cluster configuration
+	 * @param yamlConfigFile the YAML configuration file
+	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound Unable to find the YAML file
+	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster unable to create the databases
 	 */
 	public DBDatabaseClusterWithConfigFile(String clusterName, Configuration config, File yamlConfigFile) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
 		super(clusterName, config);

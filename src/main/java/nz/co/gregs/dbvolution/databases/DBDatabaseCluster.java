@@ -276,7 +276,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param database element to be appended to this list
 	 * @return <tt>true</tt> if the database has been added to the cluster.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public synchronized boolean addDatabaseAndWait(DBDatabase database) throws SQLException {
 		return addDatabaseWithWaiting(database, true);
@@ -309,7 +309,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param backupDatabase the database to use as a backup
 	 * @throws SQLException database errors
-	 * @throws UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 */
 	@Override
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
@@ -329,7 +329,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
-	 * @throws UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -355,7 +355,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
-	 * @throws UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -384,7 +384,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
-	 * @throws UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -406,7 +406,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
 	 * @param except the exception that caused the database to be quarantined
-	 * @throws UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -424,7 +424,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Returns a single random database that is ready for queries
 	 *
 	 * @return a ready database
-	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException the cluster is current unable to service requests
 	 */
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
 		return details.getReadyDatabase();

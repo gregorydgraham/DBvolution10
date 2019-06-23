@@ -1237,7 +1237,7 @@ public abstract class DBDefinition implements Serializable {
 	 * If the database does not limit rows after the where clause this method
 	 * should return ""
 	 *
-	 * @param state
+	 * @param state the current query state
 	 * @param options	options
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1598,6 +1598,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @param secondString secondString
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param rest the other strings to concatenate
 	 * @return SQL snippet
 	 * @see StringExpression#append(java.lang.String)
 	 * @see StringExpression#append(java.lang.Number)

@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 
 /**
  * Implements support for version 12 of the Oracle database.
@@ -33,8 +32,8 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
  */
 public class Oracle12DB extends OracleDB {
 
-	private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
-	public static final long serialVersionUID = 1l;
+//	private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
+//	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
@@ -53,6 +52,7 @@ public class Oracle12DB extends OracleDB {
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
 	 * @param dataSource a datasource to an Oracle database
+	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(DataSource dataSource) throws SQLException {
 		super(new Oracle12DBDefinition(), dataSource);
@@ -62,7 +62,7 @@ public class Oracle12DB extends OracleDB {
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
 	 * @param dcs	dcs
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(DatabaseConnectionSettings dcs) throws SQLException {
 		this(new Oracle12DBDefinition(), dcs);
@@ -72,8 +72,8 @@ public class Oracle12DB extends OracleDB {
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
 	 * @param dcs	dcs
-	 * @param defn
-	 * @throws java.sql.SQLException
+	 * @param defn the oracle database definition
+	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(Oracle12DBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
 		super(defn, dcs);
@@ -86,6 +86,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param jdbcURL jdbcURL
 	 * @param password password
 	 * @param username username
+	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle12DBDefinition(), driverName, jdbcURL, username, password);
@@ -97,6 +98,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, jdbcURL, username, password);
@@ -110,6 +112,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param serviceName serviceName
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);

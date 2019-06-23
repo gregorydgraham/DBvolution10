@@ -40,7 +40,7 @@ public class H2MemoryDB extends H2DB {
 	 *
 	 * <p>- Database exceptions may be thrown</p>
 	 *
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public H2MemoryDB() throws SQLException {
 		this(new DatabaseConnectionSettings());
@@ -99,7 +99,7 @@ public class H2MemoryDB extends H2DB {
 	 * @param username username
 	 * @param password password
 	 * @param dummy dummy
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
 		super("jdbc:h2:mem:" + databaseName, username, password);
@@ -119,7 +119,7 @@ public class H2MemoryDB extends H2DB {
 	 * Database exceptions may be thrown
 	 *
 	 * @param dataSource dataSource
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public H2MemoryDB(DatabaseConnectionSettings dataSource) throws SQLException {
 		super(dataSource);

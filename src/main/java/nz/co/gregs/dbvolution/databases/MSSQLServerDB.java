@@ -61,7 +61,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
 	 * @param settings	a DataSource to an MS SQLServer database
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(DatabaseConnectionSettings settings) throws SQLException {
 		super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, settings);
@@ -69,9 +69,9 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
-	 * @param defn
+	 * @param defn the definition to use with this database connection
 	 * @param settings	a DataSource to an MS SQLServer database
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, DatabaseConnectionSettings settings) throws SQLException {
 		super(defn, SQLSERVERDRIVERNAME, settings);
@@ -81,7 +81,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
 	 * @param ds	a DataSource to an MS SQLServer database
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(DataSource ds) throws SQLException {
 		this(new MSSQLServerDBDefinition(), ds);
@@ -99,7 +99,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
@@ -119,7 +119,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
@@ -141,7 +141,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param portNumber the port number that the database is available on
 	 * @param username the account to connect via
 	 * @param password the password to identify username.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		this(
@@ -184,7 +184,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param portNumber the port number that the database is available on .
 	 * @param username the account to connect via.
 	 * @param password the password to identify username.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		this(

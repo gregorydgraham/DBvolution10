@@ -81,7 +81,7 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
 	 *
-	 * @param <E> an DBEnumValue<String> type
+	 * @param <E> an DBEnumValue&lt;String&gt; type
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */

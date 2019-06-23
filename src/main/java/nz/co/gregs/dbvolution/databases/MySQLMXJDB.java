@@ -34,6 +34,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(DataSource ds) throws SQLException {
 		super(ds);
@@ -45,6 +46,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(String jdbcURL, String username, String password) throws SQLException {
 		super(jdbcURL, username, password);
@@ -59,6 +61,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @param databaseDir where to set the data files on the server.
 	 * @param username the user to login as.
 	 * @param password the password required to login successfully.
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(String server, long port, String databaseName, String databaseDir, String username, String password) throws SQLException {
 		super("jdbc:mysql:mxj://" + server + ":" + port + "/" + databaseName
