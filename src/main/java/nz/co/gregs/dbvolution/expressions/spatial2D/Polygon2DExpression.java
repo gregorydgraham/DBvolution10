@@ -77,7 +77,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
-	 * @param value
+	 * @param value the expression to use within this expression
 	 */
 	public Polygon2DExpression(Polygon2DResult value) {
 		super(value);
@@ -89,7 +89,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
-	 * @param geometry
+	 * @param geometry the value to use within this expression
 	 */
 	public Polygon2DExpression(Polygon geometry) {
 		super(new DBPolygon2D(geometry));

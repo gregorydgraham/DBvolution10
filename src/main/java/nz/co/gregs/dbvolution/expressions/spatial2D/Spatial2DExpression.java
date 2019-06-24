@@ -38,7 +38,7 @@ public abstract class Spatial2DExpression< B, R extends Spatial2DResult<B>, D ex
 
 	/**
 	 *
-	 * @param only
+	 * @param only the expression to use within this expression
 	 */
 	protected Spatial2DExpression(R only) {
 		super(only);
@@ -48,7 +48,7 @@ public abstract class Spatial2DExpression< B, R extends Spatial2DResult<B>, D ex
 	}
 	/**
 	 *
-	 * @param only
+	 * @param only the expression to use within this expression
 	 */
 	protected Spatial2DExpression(AnyResult<?> only) {
 		super(only);

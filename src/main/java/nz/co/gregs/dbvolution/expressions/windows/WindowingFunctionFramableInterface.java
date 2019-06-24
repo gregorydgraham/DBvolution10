@@ -62,7 +62,7 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 		/**
 		 * A synonym for {@link #unsorted() }
 		 *
-		 * @return
+		 * @return an expression
 		 */
 		A unordered();
 
@@ -74,8 +74,8 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 		 * Orders by the provided sort providers and adds the required primary keys
 		 * as well.
 		 *
-		 * @param sorts
-		 * @return
+		 * @param sorts the columns to sort by
+		 * @return an expression
 		 */
 		Sorted<A> orderByWithPrimaryKeys(SortProvider... sorts);
 
@@ -83,15 +83,15 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 		 * Orders by the provided sort providers and adds the required primary keys
 		 * as well.
 		 *
-		 * @param sorts
-		 * @return
+		 * @param sorts the columns to sort by
+		 * @return an expression
 		 */
 		Sorted<A> orderByWithPrimaryKeys(ColumnProvider... sorts);
 
 		/**
 		 * A synonym for {@link #unsortedWithFrame() }
 		 *
-		 * @return
+		 * @return an expression
 		 */
 		Sorted<A> unorderedWithFrame();
 	}

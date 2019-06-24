@@ -158,7 +158,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 
 	/**
 	 *
-	 * @param only
+	 * @param only an expression of any type
 	 */
 	public AnyExpression(AnyResult<?> only) {
 		innerResult = only;

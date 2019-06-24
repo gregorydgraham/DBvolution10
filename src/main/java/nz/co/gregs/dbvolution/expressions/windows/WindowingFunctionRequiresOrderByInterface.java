@@ -62,8 +62,8 @@ public interface WindowingFunctionRequiresOrderByInterface<A extends EqualExpres
 		 * Orders by the provided sort providers and adds the required primary keys
 		 * as well.
 		 *
-		 * @param sorts
-		 * @return
+		 * @param sorts the columns to order the window by
+		 * @return an expression
 		 */
 		A orderByWithPrimaryKeys(SortProvider... sorts);
 
@@ -71,8 +71,8 @@ public interface WindowingFunctionRequiresOrderByInterface<A extends EqualExpres
 		 * Orders by the provided sort providers and adds the required primary keys
 		 * as well.
 		 *
-		 * @param sorts
-		 * @return
+		 * @param sorts the columns to order the window by
+		 * @return an expression
 		 */
 		A orderByWithPrimaryKeys(ColumnProvider... sorts);
 

@@ -151,8 +151,8 @@ public interface EncodingInterpreter {
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
 	 * to set boolean values used in the query.
 	 *
-	 * @param value
-	 * @param field
+	 * @param value a boolean value in a string
+	 * @param field the field to set
 	 */
 	void decodeValue(String value, DBBoolean field);
 
@@ -164,8 +164,8 @@ public interface EncodingInterpreter {
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
 	 * to set boolean values used in the query.
 	 *
-	 * @param value
-	 * @param field
+	 * @param value a date in string form
+	 * @param field the field to set
 	 */
 	void decodeValue(String value, DBDate field);
 
@@ -177,8 +177,8 @@ public interface EncodingInterpreter {
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
 	 * to set boolean values used in the query.
 	 *
-	 * @param value
-	 * @param field
+	 * @param value a integer in string form
+	 * @param field the field to set
 	 */
 	void decodeValue(String value, DBIntegerEnum<?> field) throws NumberFormatException;
 
@@ -190,8 +190,8 @@ public interface EncodingInterpreter {
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
 	 * to set boolean values used in the query.
 	 *
-	 * @param value
-	 * @param field
+	 * @param value a integer in string form
+	 * @param field the field to set
 	 */
 	void decodeValue(String value, DBInteger field) throws NumberFormatException;
 
@@ -203,8 +203,8 @@ public interface EncodingInterpreter {
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
 	 * to set boolean values used in the query.
 	 *
-	 * @param value
-	 * @param field
+	 * @param value a number in string form
+	 * @param field the field to set
 	 */
 	void decodeValue(String value, DBNumber field) throws NumberFormatException;
 
@@ -216,8 +216,8 @@ public interface EncodingInterpreter {
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
 	 * to set boolean values used in the query.
 	 *
-	 * @param value
-	 * @param field
+	 * @param value a string enum in string form
+	 * @param field the field to set
 	 */
 	void decodeValue(String value, DBStringEnum<?> field);
 
@@ -229,8 +229,8 @@ public interface EncodingInterpreter {
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
 	 * to set boolean values used in the query.
 	 *
-	 * @param value
-	 * @param field
+	 * @param value a string in string form
+	 * @param field the field to set
 	 */
 	void decodeValue(String value, DBString field);
 

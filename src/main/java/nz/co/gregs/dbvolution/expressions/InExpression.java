@@ -53,7 +53,7 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 	private static final long serialVersionUID = 1L;
 	/**
 	 *
-	 * @param only
+	 * @param only the value to use in this expression
 	 */
 	protected InExpression(R only) {
 		super(only);
@@ -64,7 +64,7 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 	}
 	/**
 	 *
-	 * @param only
+	 * @param only the value to use in this expression
 	 */
 	protected InExpression(AnyResult<?> only) {
 		super(only);

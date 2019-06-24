@@ -63,7 +63,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * Create a {@link MultiPoint2DExpression} representing from provided
 	 * {@link MultiPoint2DResult}/{@link MultiPoint2DExpression}
 	 *
-	 * @param value
+	 * @param value the expression to use within this expression
 	 */
 	public MultiPoint2DExpression(MultiPoint2DResult value) {
 		super(value);
@@ -74,14 +74,12 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * Create a {@link MultiPoint2DExpression} representing from provided
 	 * {@link Point JTS points}.
 	 *
-	 * @param points
+	 * @param points the points to use within this expression
 	 */
 	public MultiPoint2DExpression(Point... points) {
 		super(new DBMultiPoint2D(points));
 		boolean nulls = false;
-//		for (Point point : points) {
-//			nulls = point == null ? true : nulls;
-//		}
+
 		moreNullProtectionRequired
 				= points == null
 				|| points.length == 0
@@ -93,7 +91,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * Create a {@link MultiPoint2DExpression} representing from provided
 	 * {@link MultiPoint JTS multipoint}.
 	 *
-	 * @param points
+	 * @param points the multi-point value to use in this expression
 	 */
 	public MultiPoint2DExpression(MultiPoint points) {
 		super(new DBMultiPoint2D(points));
@@ -110,8 +108,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * {@link Point JTS points}.
 	 *
 	 * @param points the points to include in this value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression.
 	 */
 	public MultiPoint2DExpression expression(Point... points) {
@@ -127,8 +123,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * {@link Coordinate JTS coordinates}.
 	 *
 	 * @param coords the points to include in this value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression.
 	 */
 	public MultiPoint2DExpression expression(Coordinate... coords) {
@@ -146,8 +140,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * {@link MultiPoint JTS multipoint}.
 	 *
 	 * @param points the points to include in this value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression representing the points
 	 */
 	@Override
@@ -160,8 +152,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * {@link MultiPoint2DResult}.
 	 *
 	 * @param points the points to include in this value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression representing the points
 	 */
 	@Override

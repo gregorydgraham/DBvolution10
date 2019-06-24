@@ -77,7 +77,7 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 * This is a convenient way to assign a constant value in an expression or
 	 * DBRow subclass.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the value to apply
 	 */
 	public DBLineSegment2D(LineSegment lineSegment) {
 		super(lineSegment);
@@ -90,7 +90,7 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 * Useful for defining expression columns in DBRow subclass that acquire their
 	 * value from a transformation of data at query time.
 	 *
-	 * @param columnExpression
+	 * @param columnExpression the column expression to use to fill this field
 	 */
 	public DBLineSegment2D(nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpression columnExpression) {
 		super(columnExpression);
@@ -116,8 +116,9 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
 	 *
-	 * @param line
+	 * @param line the value to apply
 	 */
+	@Override
 	public void setValue(LineSegment line) {
 		setLiteralValue(line);
 	}
@@ -132,8 +133,8 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
 	 *
-	 * @param point1
-	 * @param point2
+	 * @param point1 the starting point of the line segment
+	 * @param point2 the end point of the line segment
 	 */
 	public void setValue(Point point1, Point point2) {
 		LineSegment line = new LineSegment(point1.getCoordinate(), point2.getCoordinate());
@@ -150,8 +151,8 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
 	 *
-	 * @param coord1
-	 * @param coord2
+	 * @param coord1 the starting point of the line segment
+	 * @param coord2 the end point of the line segment
 	 */
 	public void setValue(Coordinate coord1, Coordinate coord2) {
 		LineSegment line = new LineSegment(coord1, coord2);
@@ -170,9 +171,6 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	/**
 	 * Transform the value of the DBLine2D into a
 	 * {@link LineString JTS LineString}
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the value of this object if defined and not NULL, NULL otherwise.
 	 */

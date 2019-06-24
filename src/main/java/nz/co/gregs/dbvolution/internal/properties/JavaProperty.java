@@ -119,19 +119,13 @@ public interface JavaProperty {
 	 * sub-type of the getter's type. In those other cases there is no one
 	 * reference type that can be used when calling both the getter and setter.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the type if a single consistent type can be resolved
 	 */
 	public Class<?> type();
 
 	/**
-	 * Gets a <tt>Type</tt> object that represents the formal type of the
+	 * Gets a <code>Type</code> object that represents the formal type of the
 	 * property, including generic parameters, if any.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the generic type of the property.
 	 */
@@ -143,8 +137,6 @@ public interface JavaProperty {
 	 * calling this method.
 	 *
 	 * @param target the object to get the property from
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the property's value
 	 * @throws DBThrownByEndUserCodeException if the getter on the target object
 	 * throws any runtime or checked exceptions

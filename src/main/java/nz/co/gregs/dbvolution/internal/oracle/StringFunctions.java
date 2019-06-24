@@ -78,7 +78,7 @@ public enum StringFunctions {
 	/**
 	 *
 	 * @param stmt
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public void add(Statement stmt) throws SQLException {
 		try {

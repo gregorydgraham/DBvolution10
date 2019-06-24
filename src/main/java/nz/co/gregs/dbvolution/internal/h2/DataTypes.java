@@ -73,7 +73,7 @@ public enum DataTypes implements DBVFeature {
 	/**
 	 *
 	 * @param stmt
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
@@ -83,7 +83,7 @@ public enum DataTypes implements DBVFeature {
 	/**
 	 *
 	 * @param stmt
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public static void addAll(Statement stmt) throws SQLException {
 	}

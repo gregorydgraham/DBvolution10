@@ -65,7 +65,7 @@ public class Line2DExpression extends Spatial2DExpression<com.vividsolutions.jts
 	 * {@link Line2DResult} classes include {@link DBLine2D} and
 	 * {@link Line2DExpression}.
 	 *
-	 * @param value
+	 * @param value the expression to use in this expression
 	 */
 	public Line2DExpression(Line2DResult value) {
 		super(value);
@@ -79,7 +79,7 @@ public class Line2DExpression extends Spatial2DExpression<com.vividsolutions.jts
 	 * {@link Line2DResult} classes include {@link DBLine2D} and
 	 * {@link Line2DExpression}.
 	 *
-	 * @param value
+	 * @param value the expression to use in this expression
 	 */
 	protected Line2DExpression(AnyResult<?> value) {
 		super(value);
@@ -89,7 +89,7 @@ public class Line2DExpression extends Spatial2DExpression<com.vividsolutions.jts
 	/**
 	 * Create a Line2DExpression representing the line supplied.
 	 *
-	 * @param line
+	 * @param line the value to use in this expression
 	 */
 	public Line2DExpression(LineString line) {
 		super(new DBLine2D(line));
@@ -99,14 +99,12 @@ public class Line2DExpression extends Spatial2DExpression<com.vividsolutions.jts
 	/**
 	 * Create a Line2DExpression representing the set of points as a line.
 	 *
-	 * @param points
+	 * @param points the points to create a line from and use in this expression
 	 */
 	public Line2DExpression(Point... points) {
 		super(new DBLine2D(points));
 		boolean nulls = false;
-//		for (Point point : points) {
-//			nulls = point == null ? true : nulls;
-//		}
+
 		moreNullProtectionRequired
 				= points == null
 				|| points.length == 0
@@ -117,14 +115,12 @@ public class Line2DExpression extends Spatial2DExpression<com.vividsolutions.jts
 	/**
 	 * Create a Line2DExpression representing the set of coordinates as a line.
 	 *
-	 * @param coords
+	 * @param coords the points to create a line from and use in this expression
 	 */
 	public Line2DExpression(Coordinate... coords) {
 		super(new DBLine2D(coords));
 		boolean nulls = false;
-//		for (Coordinate point : coords) {
-//			nulls = point == null ? true : nulls;
-//		}
+
 		moreNullProtectionRequired
 				= coords == null
 				|| coords.length == 0

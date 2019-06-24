@@ -87,7 +87,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	/**
 	 * Creates a new DateRepeatExression that represents the value supplied.
 	 *
-	 * @param interval
+	 * @param interval the value to use in the expression
 	 */
 	public DateRepeatExpression(Period interval) {
 		super(new DBDateRepeat(interval));

@@ -75,7 +75,7 @@ public enum Point2DFunctions {
 	/**
 	 *
 	 * @param stmt
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public void add(Statement stmt) throws SQLException {
 		try {

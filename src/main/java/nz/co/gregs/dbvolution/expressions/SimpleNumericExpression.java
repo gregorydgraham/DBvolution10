@@ -51,7 +51,7 @@ public abstract class SimpleNumericExpression<B, R extends SimpleNumericResult<B
 	
 	/**
 	 *
-	 * @param only
+	 * @param only the value to use in this expression
 	 */
 	protected SimpleNumericExpression(R only) {
 		super(only);
@@ -62,7 +62,7 @@ public abstract class SimpleNumericExpression<B, R extends SimpleNumericResult<B
 	}
 	/**
 	 *
-	 * @param only
+	 * @param only the expression to use in this expression
 	 */
 	protected SimpleNumericExpression(AnyResult<?> only) {
 		super(only);

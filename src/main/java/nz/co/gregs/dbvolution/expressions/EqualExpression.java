@@ -60,7 +60,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	/**
 	 *
-	 * @param only
+	 * @param only the value to use in this expression
 	 */
 	protected EqualExpression(R only) {
 		super(only);
@@ -68,7 +68,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	/**
 	 *
-	 * @param only
+	 * @param only the value to use in this expression
 	 */
 	protected EqualExpression(AnyResult<?> only) {
 		super(only);

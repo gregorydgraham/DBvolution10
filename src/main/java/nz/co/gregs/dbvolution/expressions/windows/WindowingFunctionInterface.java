@@ -61,20 +61,18 @@ public interface WindowingFunctionInterface<A extends EqualExpression<?,?,?>> ex
 		/**
 		 * A synonym for {@link #unsorted() }
 		 *
-		 * @return
+		 * @return an expression
 		 */
 		A unordered();
 
 		A orderBy(SortProvider sort, SortProvider... sorts);
 
-//		Sorted<A> unsortedWithFrame();
-
 		/**
 		 * Orders by the provided sort providers and adds the required primary keys
 		 * as well.
 		 *
-		 * @param sorts
-		 * @return
+		 * @param sorts the columns to sort the window by
+		 * @return an expression
 		 */
 		A orderByWithPrimaryKeys(SortProvider... sorts);
 
@@ -82,17 +80,10 @@ public interface WindowingFunctionInterface<A extends EqualExpression<?,?,?>> ex
 		 * Orders by the provided sort providers and adds the required primary keys
 		 * as well.
 		 *
-		 * @param sorts
-		 * @return
+		 * @param sorts the columns to sort the window by
+		 * @return an expression
 		 */
 		A orderByWithPrimaryKeys(ColumnProvider... sorts);
-
-		/**
-		 * A synonym for {@link #unsortedWithFrame() }
-		 *
-		 * @return
-		 */
-//		Sorted<A> unorderedWithFrame();
 	}
 
 	public interface Sorted<A extends EqualExpression<?,?,?>> extends WindowPart<A>, WindowEnd<A> {

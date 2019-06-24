@@ -30,9 +30,9 @@ public class UnableToAccessDBMigrationFieldException extends RuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @param target
-	 * @param field field
-	 * @param ex ex
+	 * @param target the class that has inaccessible fields
+	 * @param field the field that is inaccessible
+	 * @param ex the exception that was through
 	 */
 	public UnableToAccessDBMigrationFieldException(Object target, Field field, Exception ex) {
 		super("Unable To Access DBMigration Field: please ensure that all fields on " + target.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);

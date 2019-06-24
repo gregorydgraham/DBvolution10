@@ -57,7 +57,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	/**
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
-	 * @param value
+	 * @param value the expression to use within this expression
 	 */
 	protected Point2DExpression(AnyResult<?> value) {
 		super(value);
@@ -66,7 +66,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	/**
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
-	 * @param value
+	 * @param value the expression to use within this expression
 	 */
 	public Point2DExpression(Point2DResult value) {
 		super(value);
@@ -75,12 +75,18 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	/**
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
-	 * @param point
+	 * @param point the point to use within this expression
 	 */
 	public Point2DExpression(Point point) {
 		super(point == null ? null : new DBPoint2D(point));
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the point value provided.
+	 *
+	 * @param xValue the X value of the point to use in this expression
+	 * @param yValue the Y value of the point to use in this expression
+	 */
 	public Point2DExpression(double xValue, double yValue) {
 		super(new DBPoint2D(xValue, yValue));
 	}
@@ -89,8 +95,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
 	 * @param point the value of this value.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the point.
 	 */
 	@Override

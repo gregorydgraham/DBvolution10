@@ -35,7 +35,7 @@ public class MissingStandardFunctions {
 	 *
 	 * @param db
 	 * @param connection
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(SQLiteDB db, Connection connection) throws SQLException {
 		Function.create(connection, "TRUNC", new Trunc());

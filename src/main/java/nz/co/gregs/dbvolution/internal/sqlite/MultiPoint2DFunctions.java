@@ -24,9 +24,6 @@ import org.sqlite.Function;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregory.graham
  */
 public class MultiPoint2DFunctions {
@@ -90,15 +87,14 @@ public class MultiPoint2DFunctions {
 	 *
 	 */
 	public final static String ASLINE2D = "DBV_MPOINT2D_ASLINE2D";
-//	public static String ASPOLYGON2D = "DBV_MPOINT2D_ASPOLYGON2D";
 
 	private MultiPoint2DFunctions() {
 	}
 
 	/**
 	 *
-	 * @param connection
-	 * @throws SQLException
+	 * @param connection the connection that needs functions added
+	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(Connection connection) throws SQLException {
 		Function.create(connection, CREATE_FROM_COORDS_FUNCTION, new CreateFromCoords());

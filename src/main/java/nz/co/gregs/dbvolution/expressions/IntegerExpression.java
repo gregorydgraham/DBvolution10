@@ -181,7 +181,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	/**
 	 *
-	 * @param only
+	 * @param only the expression to include within this expression
 	 */
 	protected IntegerExpression(AnyResult<?> only) {
 		super(only);

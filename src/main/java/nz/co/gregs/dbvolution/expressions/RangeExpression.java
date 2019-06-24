@@ -54,7 +54,7 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 	private static final long serialVersionUID = 1L;
 	/**
 	 *
-	 * @param only
+	 * @param only the value to use in this expression
 	 */
 	protected RangeExpression(R only) {
 		super(only);
@@ -66,7 +66,7 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 
 	/**
 	 *
-	 * @param only
+	 * @param only the expression to use in this expression
 	 */
 	protected RangeExpression(AnyResult<?> only) {
 		super(only);

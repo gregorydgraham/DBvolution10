@@ -111,7 +111,7 @@ public class DateRepeatFunctions {
 	/**
 	 *
 	 * @param connection
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
 		Function.create(connection, DATEREPEAT_CREATION_FUNCTION, new DateRepeatFunctions.Create());

@@ -241,7 +241,7 @@ public enum Line2DFunctions {
 	/**
 	 *
 	 * @param stmt
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
 			justification = "The strings are actually constant but made dynamically")

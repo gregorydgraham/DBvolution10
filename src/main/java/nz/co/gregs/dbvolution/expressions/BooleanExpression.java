@@ -123,7 +123,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * value for use in a BooleanExpression.
 	 *
 	 *
-	 * @param bool
+	 * @param bool the boolean to be to be used in the expression
 	 */
 	public BooleanExpression(Boolean bool) {
 		super(new DBBoolean(bool));

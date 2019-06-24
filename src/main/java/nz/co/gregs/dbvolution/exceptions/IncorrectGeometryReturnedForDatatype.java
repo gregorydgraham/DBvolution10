@@ -34,8 +34,8 @@ public class IncorrectGeometryReturnedForDatatype extends DBRuntimeException {
 	 * Thrown when the database has returned a geometry that cannot be interpreted
 	 * as the geometry expected.
 	 *
-	 * @param databaseReturned
-	 * @param wasExpecting
+	 * @param databaseReturned the geometry sent back from the database
+	 * @param wasExpecting the geometry that was expected but was not returned
 	 */
 	public IncorrectGeometryReturnedForDatatype(Geometry databaseReturned, Geometry wasExpecting) {
 		super("Geometry Type Returned By Database Clashes With Declared Geometry: Was expecting " + (wasExpecting == null ? "NULL" : wasExpecting.getGeometryType()) + " but the database has provided a " + (databaseReturned == null ? "NULL" : databaseReturned.getGeometryType()) + ".  Please check that the field is declared correctly and that the expression returns the correct type.");

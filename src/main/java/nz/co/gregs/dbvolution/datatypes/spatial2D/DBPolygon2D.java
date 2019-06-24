@@ -83,7 +83,7 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 	 * When retrieving this object from the database the expression will be
 	 * evaluated to provide the value.
 	 *
-	 * @param columnExpression
+	 * @param columnExpression the expression to use to fill this field
 	 */
 	public DBPolygon2D(Polygon2DResult columnExpression) {
 		super(columnExpression);
@@ -96,7 +96,7 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 	 * Equivalent to {code polygon2D = new DBPolygon2D();
 	 * polygon2D.setValue(aPolygon);}
 	 *
-	 * @param polygon
+	 * @param polygon the value to set this field to
 	 */
 	public DBPolygon2D(Polygon polygon) {
 		super(polygon);

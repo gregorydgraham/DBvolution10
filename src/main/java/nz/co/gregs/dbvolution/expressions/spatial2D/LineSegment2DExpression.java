@@ -57,7 +57,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	/**
 	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
-	 * @param value
+	 * @param value the expression to use within this expression
 	 */
 	public LineSegment2DExpression(LineSegment2DResult value) {
 		super(value);
@@ -67,7 +67,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	/**
 	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
-	 * @param line
+	 * @param line the line segment to use within this expression
 	 */
 	public LineSegment2DExpression(LineSegment line) {
 		super(new DBLineSegment2D(line));
@@ -77,10 +77,10 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	/**
 	 * Create a LineSegment2D value encapsulating the values supplied.
 	 *
-	 * @param point1x
-	 * @param point1y
-	 * @param point2x
-	 * @param point2y
+	 * @param point1x first X coordinate of the line segment
+	 * @param point1y first Y coordinate of the line segment
+	 * @param point2x second X coordinate of the line segment
+	 * @param point2y second Y coordinate of the line segment
 	 */
 	public LineSegment2DExpression(double point1x, double point1y, double point2x, double point2y) {
 		super(new DBLineSegment2D(point1x, point1y, point2x, point2y));
@@ -90,8 +90,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	/**
 	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
-	 * @param point1
-	 * @param point2
+	 * @param point1 first point of the line segment
+	 * @param point2 second point of the line segment
 	 *
 	 */
 	public LineSegment2DExpression(Point point1, Point point2) {
@@ -102,8 +102,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	/**
 	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
-	 * @param coord1
-	 * @param coord2
+	 * @param coord1 first point of the line segment
+	 * @param coord2 second point of the line segment
 	 */
 	public LineSegment2DExpression(Coordinate coord1, Coordinate coord2) {
 		super(new DBLineSegment2D(coord1, coord2));

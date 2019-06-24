@@ -325,7 +325,7 @@ public enum Line2DFunctions implements DBVFeature {
 	/**
 	 *
 	 * @param stmt
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {

@@ -38,7 +38,6 @@ import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
-import nz.co.gregs.dbvolution.utility.StringLeftPadded;
 import org.joda.time.Period;
 
 /**
@@ -1011,14 +1010,12 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	@Override
 	public LocalDate parseLocalDateFromGetString(String inputFromResultSet) throws ParseException {
 		String getStringDate = inputFromResultSet.replaceAll(" ", "T");
-		System.out.println("PARSE DATE STRING: " + getStringDate);
 		return LocalDate.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE_TIME);
 	}
 
 	@Override
 	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
 		String getStringDate = inputFromResultSet.replaceAll(" ", "T");
-		System.out.println("PARSE DATE STRING: " + getStringDate);
 		return LocalDateTime.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE_TIME);
 	}
 

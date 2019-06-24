@@ -32,7 +32,7 @@ public class ForeignKeyDoesNotReferenceATableInTheQuery extends DBRuntimeExcepti
 	 * Creates an exception indicating that the column provided is not a foreign
 	 * key referenced in the query.
 	 *
-	 * @param keyToFollow
+	 * @param keyToFollow the column that is not a foreign key to a table in the query
 	 */
 	public ForeignKeyDoesNotReferenceATableInTheQuery(ColumnProvider keyToFollow) {
 	}

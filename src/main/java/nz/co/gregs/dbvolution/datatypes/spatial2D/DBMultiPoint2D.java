@@ -159,7 +159,7 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	 * When retrieving this object from the database the value will be evaluated
 	 * to provide the value.
 	 *
-	 * @param columnExpression
+	 * @param columnExpression the expression to use to fill this field during a query
 	 */
 	public DBMultiPoint2D(MultiPoint2DExpression columnExpression) {
 		super(columnExpression);
@@ -171,7 +171,7 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	 * <p>
 	 * Equivalent to {code point2D = new DBPoint2D(); point2D.setValue(aPoint);}
 	 *
-	 * @param points
+	 * @param points the points to be included in this field
 	 */
 	public DBMultiPoint2D(Point... points) {
 		super(new MultiPoint(points, new GeometryFactory()));

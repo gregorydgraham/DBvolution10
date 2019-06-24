@@ -29,9 +29,9 @@ public class ParsingSpatialValueException extends DBRuntimeException {
 	/**
 	 * Thrown when the geometry returned cannot be parsed.
 	 *
-	 * @param fullColumnName
-	 * @param string
-	 * @param exp
+	 * @param fullColumnName the column that couldn't be parsed
+	 * @param string the value that couldn't be parsed
+	 * @param exp the exception thorwn during parsing
 	 */
 	public ParsingSpatialValueException(String fullColumnName, String string, Exception exp) {
 		super("Failed To Parse Spatial Data: unable to create a correct value for column <" + fullColumnName + "> from '" + string + "'", exp);

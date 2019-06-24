@@ -106,7 +106,7 @@ public class SQLiteDB extends DBDatabase {
 	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
 	 * provided.
 	 *
-	 * @param databaseFile
+	 * @param databaseFile the SQLite file to be used with this database
 	 * @param username username
 	 * @param password password
 	 * @throws java.io.IOException file system errors
@@ -125,7 +125,7 @@ public class SQLiteDB extends DBDatabase {
 	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
 	 * provided.
 	 *
-	 * @param filename
+	 * @param filename the SQLite file to connect to.
 	 * @param username username
 	 * @param password password
 	 * @param dummy just use TRUE

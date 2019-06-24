@@ -300,7 +300,7 @@ public class SortProvider implements DBExpression {
 	 * <p>
 	 * defaults to ASCENDING</p>
 	 *
-	 * @param defn
+	 * @param defn the database definition
 	 * @return SQL for the sort direction.
 	 */
 	public String getSortDirectionSQL(DBDefinition defn) {

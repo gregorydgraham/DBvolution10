@@ -112,7 +112,7 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	 * When retrieving this object from the database the value will be evaluated
 	 * to provide the value.
 	 *
-	 * @param columnExpression
+	 * @param columnExpression the expression to use to fill this field during a query
 	 */
 	public DBPoint2D(nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression columnExpression) {
 		super(columnExpression);
@@ -124,7 +124,7 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	 * <p>
 	 * Equivalent to {code point2D = new DBPoint2D(); point2D.setValue(aPoint);}
 	 *
-	 * @param point
+	 * @param point the value to set this field to
 	 */
 	public DBPoint2D(Point point) {
 		super(point);

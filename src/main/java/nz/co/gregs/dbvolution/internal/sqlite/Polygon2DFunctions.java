@@ -134,7 +134,7 @@ public class Polygon2DFunctions {
 	/**
 	 *
 	 * @param connection
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
 		add(connection, DIMENSION, new SpatialDimension());

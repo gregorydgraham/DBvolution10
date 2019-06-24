@@ -69,7 +69,7 @@ public class Point2DFunctions {
 	/**
 	 *
 	 * @param connection
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(Connection connection) throws SQLException {
 		Function.create(connection, CREATE_FROM_POINT2DS_FUNCTION, new CreateFromCoords());
