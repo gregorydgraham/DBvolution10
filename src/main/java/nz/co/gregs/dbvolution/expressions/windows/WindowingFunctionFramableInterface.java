@@ -12,7 +12,7 @@
  *     Adapt - remix, transform, and build upon the material
  * 
  *     The licensor cannot revoke these freedoms as long as you follow the license terms.               
- *     Under the following terms:
+ *     Under the forFollowing terms:
  *                 
  *         Attribution - 
  *             You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
@@ -117,9 +117,9 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 
 		FrameStartCurrentRow<A> currentRow();
 
-		FrameStartFollowing<A> following(int offset);
+		FrameStartFollowing<A> forFollowing(int offset);
 
-		FrameStartFollowing<A> following(IntegerExpression offset);
+		FrameStartFollowing<A> forFollowing(IntegerExpression offset);
 	}
 
 	public interface EmptyFrameStart<A extends EqualExpression<?,?,?>> extends WindowPart<A> {
@@ -128,9 +128,9 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 
 	public interface FrameStart<A extends EqualExpression<?,?,?>> extends EmptyFrameStart<A> {
 
-		A following(int offset);
+		A forFollowing(int offset);
 
-		A following(IntegerExpression offset);
+		A forFollowing(IntegerExpression offset);
 
 		A unboundedFollowing();
 	}
@@ -157,7 +157,7 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 
 	public interface FrameStartCurrentRow<A extends EqualExpression<?,?,?>> extends FrameStart<A> {
 
-		A currentRow();
+		A toCurrentRow();
 
 	}
 
@@ -167,6 +167,6 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 
 	public interface WindowEnd<A extends EqualExpression<?,?,?>> extends DBExpression {
 
-		A getRequiredExpression();
+		A build();
 	}
 }

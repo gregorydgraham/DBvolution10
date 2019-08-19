@@ -48,7 +48,6 @@ public class DBLocalDateTimeTest extends AbstractTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void testGetSQLDatatype() throws SQLException {
-database.setPrintSQLBeforeExecuting(true);
 
 		DBLocalDateTimeTable dateOnlyTest = new DBLocalDateTimeTable();
 		final LocalDateTime then = LocalDateTime.now();
@@ -60,7 +59,6 @@ database.setPrintSQLBeforeExecuting(true);
 		database.insert(dateOnlyTest);
 		List<DBLocalDateTimeTable> allRows = database.getDBTable(new DBLocalDateTimeTable()).setBlankQueryAllowed(true).getAllRows();
 		
-database.setPrintSQLBeforeExecuting(false);
 		Assert.assertThat(allRows.size(), is(1));
 
 		Assert.assertThat(then.plusMonths(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));

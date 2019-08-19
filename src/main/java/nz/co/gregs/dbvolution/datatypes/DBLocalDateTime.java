@@ -687,7 +687,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Dates Do Not Have An Accepted Standard String"); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBLocalDateTime Does Not Have An Accepted Standard String"); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

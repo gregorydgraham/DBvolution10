@@ -17,9 +17,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MariaClusterDB;
 import nz.co.gregs.dbvolution.databases.MariaDB;
@@ -127,6 +124,11 @@ public class MariaDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		return " DAYOFWEEK(" + dateSQL + ")";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		return " DAYOFWEEK(" + dateSQL + ")";
 	}
 

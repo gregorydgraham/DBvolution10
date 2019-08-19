@@ -280,7 +280,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBLine2D does not support setValueFromStandardStringEncoding(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

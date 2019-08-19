@@ -104,12 +104,12 @@ public class DBUntypedValue extends QueryableDatatype<Object> implements StringR
 
 	@Override
 	public boolean getIncludesNull() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBUntypedValue does not support getIncludesNull() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public StringExpression stringResult() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBUntypedValue does not support stringResult() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	
 }

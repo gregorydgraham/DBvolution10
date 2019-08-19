@@ -317,4 +317,9 @@ public class DBStatementCluster extends DBStatement {
 		return getRandomStatement().executeQuery(string);
 	}
 
+	@Override
+	public ResultSet executeQuery(String string, String label) throws SQLException {
+		return getRandomStatement().executeQuery(string, label);
+	}
+
 }

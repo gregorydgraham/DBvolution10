@@ -196,7 +196,7 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBPolygon2D does not support setValueFromStandardStringEncoding(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

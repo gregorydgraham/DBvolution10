@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.InExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
@@ -72,6 +73,9 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
 			op = stringExpression.bracket().isInIgnoreCase(getListOfPossibleStrings().toArray(new StringResult[]{}));
+		} else if (genericExpression instanceof InExpression) {
+			InExpression expr = (InExpression) genericExpression;
+			op = expr.isIn(getFirstValue());
 		}
 		return this.invertOperator ? op.not() : op;
 	}

@@ -1297,4 +1297,9 @@ public class DBTable<E extends DBRow> {
 		query.setTimeoutToForever();
 		return this;
 	}
+
+	public DBTable<E> setQueryLabel(String queryLabel) {
+		this.query.setQueryLabel(queryLabel);
+		return this;
+	}
 }

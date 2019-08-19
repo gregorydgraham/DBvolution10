@@ -111,7 +111,7 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetweenExclusive((DateResult) getFirstValue(), (DateResult) getSecondValue());
 		} else {
-			throw new DBRuntimeException("whoops");
+			throw new DBRuntimeException("Failed to find an appropriate expression type for "+column.getClass().getCanonicalName());
 		}
 		return this.invertOperator ? betweenOp.not() : betweenOp;
 	}

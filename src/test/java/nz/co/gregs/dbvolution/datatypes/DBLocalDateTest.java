@@ -46,9 +46,7 @@ public class DBLocalDateTest extends AbstractTest {
 	 * @throws java.sql.SQLException database errors
 	 */
 	@Test
-	public void testGetSQLDatatype() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
-		
+	public void testGetSQLDatatype() throws SQLException {		
 		DBLocalDateTable dateOnlyTest = new DBLocalDateTable();
 		dateOnlyTest.dateOnly.setValue(LocalDate.now());
 		database.preventDroppingOfTables(false);
@@ -60,8 +58,6 @@ public class DBLocalDateTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).dateOnly.getValue().compareTo(LocalDate.now()), isOneOf(-1, 0));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);
-		
-		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	public static class DBLocalDateTable extends DBRow {

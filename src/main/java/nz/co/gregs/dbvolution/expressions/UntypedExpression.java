@@ -47,32 +47,32 @@ public class UntypedExpression extends AnyExpression<Object, UntypedResult, DBUn
 
 	@Override
 	public UntypedResult expression(Object value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("UntypedExpression does not support expression(Object) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public UntypedResult expression(UntypedResult value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("UntypedExpression does not support expression(UntypedResultValue) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public UntypedResult expression(DBUntypedValue value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("UntypedExpression does not support expression(DBUntypedValue) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public DBUntypedValue asExpressionColumn() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("UntypedExpression does not support asExpressionColumn() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("UntypedExpression does not support getQueryableDatatypeForExpressionValue() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public String toSQLString(DBDefinition defn) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("UntypedExpression does not support toSQLString() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

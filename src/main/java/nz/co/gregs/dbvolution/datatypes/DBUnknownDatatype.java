@@ -52,17 +52,17 @@ public class DBUnknownDatatype extends QueryableDatatype<Object> {
 
 	@Override
 	public String getSQLDatatype() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBUnknownDatatype does not support getSQLDatatype() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public String formatValueForSQLStatement(DBDefinition db) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBUnknownDatatype does not support formatValueForSQLStatement(DBDefinition) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public void setValue(Object newLiteralValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBUnknownDatatype does not support setValue(Object) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class DBUnknownDatatype extends QueryableDatatype<Object> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBUnknownDatatype does not support setValueFromStandardStringEncoding(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

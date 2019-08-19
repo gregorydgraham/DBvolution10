@@ -235,7 +235,7 @@ public class DBInsert extends DBAction {
 						if (primaryKeyWrappers.size() > 0) {
 							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
-								try (ResultSet rs = statement.executeQuery(retrieveSQL)) {
+								try (ResultSet rs = statement.executeQuery(retrieveSQL, "RETRIEVE LAST INSERT")) {
 									for (PropertyWrapper primaryKeyWrapper : primaryKeyWrappers) {
 										PropertyWrapperDefinition definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);

@@ -371,7 +371,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		DBLocalDateTime test4 = new DBLocalDateTime(this.column(this.creationDate).toLocalDateTime().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().currentRow().currentRow());
+				.rows().currentRow().toCurrentRow());
 		@DBColumn
 		DBLocalDateTime test5 = new DBLocalDateTime(this.column(this.creationDate).toLocalDateTime().min()
 				.over().partition(this.column(this.carCompany))
@@ -386,7 +386,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		DBLocalDateTime test7 = new DBLocalDateTime(this.column(this.creationDate).toLocalDateTime().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().currentRow().following(3));
+				.rows().currentRow().forFollowing(3));
 		@DBColumn
 		DBLocalDateTime test8 = new DBLocalDateTime(this.column(this.creationDate).toLocalDateTime().min()
 				.over().partition(this.column(this.carCompany))
@@ -396,7 +396,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		DBLocalDateTime test9 = new DBLocalDateTime(this.column(this.creationDate).toLocalDateTime().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().unboundedPreceding().following(1));
+				.rows().unboundedPreceding().forFollowing(1));
 	}
 
 	@Test
@@ -1649,9 +1649,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	}
 
 	@Test
-//	@Ignore
 	public void testSecondsDifferenceFunction() throws SQLException, ParseException {
-		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1669,9 +1667,9 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
 //		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
-Date secondDate = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.getDefault()).parse(secondDateStr);
+		Date secondDate = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.getDefault()).parse(secondDateStr);
 		marq = new Marque();
-		query = database.getDBQuery(marq);
+		query = database.getDBQuery(marq).setQueryLabel("FIND CREATION DATE WITHIN 1 SECOND OF SECOND DATE");
 		query.addCondition(
 				marq.column(marq.creationDate).toLocalDateTime()
 						.secondsFrom(secondLocalDateTime)
@@ -1681,9 +1679,10 @@ Date secondDate = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.getDefault
 
 		Marque secondDateMarques = new Marque();
 		secondDateMarques.creationDate.permittedValues(secondDate);
-		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques)
+				.setQueryLabel("CHECK SECOND DATE CAN BE COUNTED")
+				.setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
-		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	public static class MarqueWithSecondsFromDate extends Marque {
@@ -1706,9 +1705,9 @@ Date secondDate = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.getDefault
 
 	@Test
 	public void testEndOfMonthCalculation() throws SQLException {
-		MarqueWithEndOfMonthColumn marq = new MarqueWithEndOfMonthColumn();
-		DBTable<MarqueWithEndOfMonthColumn> table = database.getDBTable(marq);
-		List<MarqueWithEndOfMonthColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
+		MarqueWithEndOfMonthOfLocalDateTimeColumn marq = new MarqueWithEndOfMonthOfLocalDateTimeColumn();
+		DBTable<MarqueWithEndOfMonthOfLocalDateTimeColumn> table = database.getDBTable(marq);
+		List<MarqueWithEndOfMonthOfLocalDateTimeColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
 		final LocalDate march31st2013 = LocalDate.of(2013, Month.MARCH, 31);
@@ -1716,7 +1715,7 @@ Date secondDate = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.getDefault
 		final LocalDateTime march1st2013 = LocalDateTime.of(2013, Month.MARCH, 1, 12, 34, 56);
 		final LocalDateTime april1st2011 = LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3);
 		final LocalDateTime nullDate = null;
-		for (MarqueWithEndOfMonthColumn allRow : allRows) {
+		for (MarqueWithEndOfMonthOfLocalDateTimeColumn allRow : allRows) {
 			Assert.assertThat(allRow.endOfMonth.localDateValue(),
 					anyOf(
 							is(nullDate),
@@ -1745,7 +1744,7 @@ Date secondDate = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.getDefault
 		}
 	}
 
-	public static class MarqueWithEndOfMonthColumn extends Marque {
+	public static class MarqueWithEndOfMonthOfLocalDateTimeColumn extends Marque {
 
 		private static final long serialVersionUID = 1L;
 

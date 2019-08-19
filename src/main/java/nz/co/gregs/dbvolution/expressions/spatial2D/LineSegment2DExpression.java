@@ -111,7 +111,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	}
 
 	protected LineSegment2DExpression(AnyResult<?> innerResult) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("LineSegment2DExpression does not support LineSegment2DExpression(AnyResult<?>) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**

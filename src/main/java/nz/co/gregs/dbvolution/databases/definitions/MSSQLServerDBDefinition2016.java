@@ -71,7 +71,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
 				break;
 			default:
-				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
+				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"", new ParseException(tz, 0));
 		}
 		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
 		return result;
@@ -321,37 +321,72 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 //		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
 //	}
 	@Override
-	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfMinutes) {
 		return "DATEADD( MINUTE, " + numberOfMinutes + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateValue, String numberOfDays) {
 		return "DATEADD( DAY, " + numberOfDays + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "DATEADD( HOUR, " + numberOfHours + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddWeeksTransform(String dateValue, String numberOfWeeks) {
 		return "DATEADD( WEEK, " + numberOfWeeks + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+	public String doDateAddMonthsTransform(String dateValue, String numberOfMonths) {
 		return "DATEADD( MONTH, " + numberOfMonths + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+	public String doDateAddYearsTransform(String dateValue, String numberOfYears) {
+		return "DATEADD( YEAR, " + numberOfYears + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "DATEADD( MINUTE, " + numberOfMinutes + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddDaysTransform(String dateValue, String numberOfDays) {
+		return "DATEADD( DAY, " + numberOfDays + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddHoursTransform(String dateValue, String numberOfHours) {
+		return "DATEADD( HOUR, " + numberOfHours + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "DATEADD( WEEK, " + numberOfWeeks + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "DATEADD( MONTH, " + numberOfMonths + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddYearsTransform(String dateValue, String numberOfYears) {
 		return "DATEADD( YEAR, " + numberOfYears + "," + dateValue + ")";
 	}
 
@@ -522,6 +557,11 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		return " datepart(dw,(" + dateSQL + "))";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		return " datepart(dw,(" + dateSQL + "))";
 	}
 

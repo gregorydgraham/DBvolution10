@@ -49,7 +49,7 @@ public class DBBulkInsertTest extends AbstractTest {
 		CarCompany example = new CarCompany();
 		example.uidCarCompany.permittedValues(124, 125);
 		final List<CarCompany> allRows = database.getDBTable(example).getAllRows();
-		database.print(allRows);
+//		database.print(allRows);
 		Assert.assertThat(result.size(), is(2));
 	}
 	

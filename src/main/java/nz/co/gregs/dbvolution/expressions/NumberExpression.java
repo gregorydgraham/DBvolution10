@@ -4070,7 +4070,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 		@Override
 		String getFunctionName(DBDefinition db) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("StringResultFunction does not support getFunctionName(DBDefinition) yet.");
 		}
 
 		@Override

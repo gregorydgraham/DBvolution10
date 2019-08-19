@@ -263,7 +263,7 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBLineSegment2D does not support setValueFromStandardStringEncoding(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

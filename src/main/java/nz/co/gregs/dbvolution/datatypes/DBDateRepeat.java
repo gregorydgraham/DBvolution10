@@ -176,7 +176,7 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDateRepeat does not support setValueFromStandardStringEncoding(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

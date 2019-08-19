@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -80,6 +81,9 @@ public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			op = dateExpression.isLessThanOrEqual((DateResult) getFirstValue());
+		} else if (genericExpression instanceof RangeExpression) {
+			RangeExpression expr = (RangeExpression) genericExpression;
+			op = expr.isLessThanOrEqual(getFirstValue());
 		}
 		return this.invertOperator ? op.not() : op;
 	}

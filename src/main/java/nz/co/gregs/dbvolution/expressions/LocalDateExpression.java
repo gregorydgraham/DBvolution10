@@ -3715,10 +3715,6 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 		}
 		private final static long serialVersionUID = 1l;
 
-		private DateAddSecondsExpression(LocalDateExpression dateExpression) {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
 		@Override
 		public boolean getIncludesNull() {
 			return false;
@@ -3726,12 +3722,12 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
 		public DateAddSecondsExpression copy() {
-			return new DateAddSecondsExpression((LocalDateExpression) getInnerResult().copy());
+			return new DateAddSecondsExpression(first.copy(), second.copy());
 		}
 	}
 
@@ -3749,7 +3745,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3772,7 +3768,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3795,7 +3791,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3818,7 +3814,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3841,7 +3837,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3864,7 +3860,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3887,7 +3883,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3910,7 +3906,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -3933,7 +3929,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override

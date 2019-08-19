@@ -110,17 +110,17 @@ public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<
 
 	@Override
 	public R expression(B value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("R QueryColumn.expression(B)"); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public R expression(R value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("R QueryColumn.expression(R)"); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
 	public R expression(D value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("R QueryColumn.expression(D)"); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

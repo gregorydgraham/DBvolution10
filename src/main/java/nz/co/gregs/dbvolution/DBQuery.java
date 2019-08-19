@@ -96,6 +96,7 @@ public class DBQuery implements Serializable {
 	private final QueryDetails details = new QueryDetails();
 	private transient QueryGraph queryGraph;
 	private transient JFrame queryGraphFrame = null;
+	private String label;
 
 	public QueryDetails getQueryDetails() {
 		return details;
@@ -124,17 +125,32 @@ public class DBQuery implements Serializable {
 	/**
 	 * Don't use this, it's for DBDatabase
 	 * 
-	 * <p>Use {@link DBDatabase#getDBQuery(java.util.Collection) } instead</p>
+	 * <p>Use {@link DBDatabase#getDBQuery() }  instead</p>
 	 *
 	 * @param database the database to query
+	 * @return a DBQuery object
+	 */
+	public static DBQuery getInstance(DBDatabase database) {
+		DBQuery dbQuery = new DBQuery(database);
+		return dbQuery;
+	}
+
+	/**
+	 * Don't use this, it's for DBDatabase
+	 * 
+	 * <p>Use {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.DBRow...) }  instead</p>
+	 *
+	 * @param database the database to query
+	 * @param example the first example to base the query on
 	 * @param examples examples to base the query on
 	 * @return a DBQuery object
 	 */
-	public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
+	public static DBQuery getInstance(DBDatabase database, DBRow example, DBRow... examples) {
 		DBQuery dbQuery = new DBQuery(database);
-		for (DBRow example : examples) {
-			dbQuery.add(example);
-		}
+		dbQuery.add(example);
+		for (DBRow exampl : examples) {
+			dbQuery.add(exampl);
+		} 
 		return dbQuery;
 	}
 
@@ -302,7 +318,7 @@ public class DBQuery implements Serializable {
 	 *
 	 */
 	public void printSQLForQuery() {
-		System.out.println(getSQLForQuery());
+		System.out.println(details.getLabel()+": "+getSQLForQuery());
 	}
 
 	/**
@@ -2530,5 +2546,10 @@ public class DBQuery implements Serializable {
 
 	public void setSortOrder(HasRankingExpression rankableExpression) {
 		this.setSortOrder(rankableExpression.getRankingExpression().ascending());
+	}
+
+	public DBQuery setQueryLabel(String newLabel) {
+		this.details.setLabel(newLabel);
+		return this;
 	}
 }

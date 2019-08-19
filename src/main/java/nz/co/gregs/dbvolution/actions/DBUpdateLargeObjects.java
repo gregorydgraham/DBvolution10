@@ -176,7 +176,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				try {
 					prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
 				} catch (Exception exp2) {
-					throw new DBRuntimeException(exp);
+					throw new DBRuntimeException("Failed to set binary stream", exp);
 				}
 			}
 			prep.execute();

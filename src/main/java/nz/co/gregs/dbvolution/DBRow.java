@@ -840,6 +840,32 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Ignores the foreign key of the property (field or method) given the
+	 * property's object reference.
+	 *
+	 * <p>
+	 * For example the following code snippet will ignore the foreign key on the
+	 * fkAddress field:
+	 * <pre>
+	 * Customer customer = ...;
+	 * customer.ignoreForeignKey(customer.fkAddress);
+	 * </pre>
+	 *
+	 * <p>
+	 * Requires the field to be from this instance to work.
+	 *
+	 * @param fkProp the foreign key property to ignore
+	 */
+	public void ignoreForeignKey(PropertyWrapper fkProp) throws IncorrectRowProviderInstanceSuppliedException {
+//		PropertyWrapper fkProp = getPropertyWrapperOf(qdt);
+		if (fkProp == null) {
+			throw new IncorrectRowProviderInstanceSuppliedException(this, fkProp);
+		}
+		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
+		fkFields.clear();
+	}
+
+	/**
 	 * Ignores the foreign keys of the property (field or method) given the
 	 * property's object reference.
 	 *
@@ -1393,7 +1419,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				}
 			}
 			if (ignore) {
-				ignoreForeignKey(prop.getQueryableDatatype());
+				ignoreForeignKey(prop);
 			}
 		}
 	}

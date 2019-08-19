@@ -233,38 +233,73 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'SECOND'))";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'MINUTE'))";
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "(" + dateValue + " + numtodsinterval( " + numberOfHours + ", 'HOUR'))";
 	}
 
 	@Override
-	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateValue, String numberOfDays) {
 		return "((" + dateValue + ")+(INTERVAL '1' DAY*(" + numberOfDays + ")))";
 	}
 
 	@Override
-	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return doAddDaysTransform(dateValue, "(" + numberOfWeeks + ")*7");
+	public String doDateAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return doDateAddDaysTransform(dateValue, "(" + numberOfWeeks + ")*7");
 	}
 
 	@Override
-	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+	public String doDateAddMonthsTransform(String dateValue, String numberOfMonths) {
 		return "ADD_MONTHS(" + dateValue + ", " + numberOfMonths + ")";
 	}
 
 	@Override
-	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return doAddMonthsTransform(dateValue, "(" + numberOfYears + ")*12");
+	public String doDateAddYearsTransform(String dateValue, String numberOfYears) {
+		return doDateAddMonthsTransform(dateValue, "(" + numberOfYears + ")*12");
+	}
+
+	@Override
+	public String doInstantAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'SECOND'))";
+	}
+
+	@Override
+	public String doInstantAddMinutesTransform(String dateValue, String numberOfSeconds) {
+		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'MINUTE'))";
+	}
+
+	@Override
+	public String doInstantAddHoursTransform(String dateValue, String numberOfHours) {
+		return "(" + dateValue + " + numtodsinterval( " + numberOfHours + ", 'HOUR'))";
+	}
+
+	@Override
+	public String doInstantAddDaysTransform(String dateValue, String numberOfDays) {
+		return "((" + dateValue + ")+(INTERVAL '1' DAY*(" + numberOfDays + ")))";
+	}
+
+	@Override
+	public String doInstantAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return doDateAddDaysTransform(dateValue, "(" + numberOfWeeks + ")*7");
+	}
+
+	@Override
+	public String doInstantAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "ADD_MONTHS(" + dateValue + ", " + numberOfMonths + ")";
+	}
+
+	@Override
+	public String doInstantAddYearsTransform(String dateValue, String numberOfYears) {
+		return doDateAddMonthsTransform(dateValue, "(" + numberOfYears + ")*12");
 	}
 
 	@Override
@@ -382,6 +417,12 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+//		return " (TO_CHAR("+dateSQL+",'D')+1)";
+		return "DECODE(trim(to_char((" + dateSQL + "), 'Day', 'NLS_DATE_LANGUAGE=ENGLISH')), 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday', 7)";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 //		return " (TO_CHAR("+dateSQL+",'D')+1)";
 		return "DECODE(trim(to_char((" + dateSQL + "), 'Day', 'NLS_DATE_LANGUAGE=ENGLISH')), 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday', 7)";
 	}

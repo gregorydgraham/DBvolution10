@@ -91,17 +91,17 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 	@Override
 	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support getQueryableDatatypeForExpressionValue() yet.");
 	}
 
 	@Override
 	public boolean isAggregator() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support isAggregator() yet.");
 	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support getTablesInvolved() yet.");
 	}
 
 	@Override
@@ -112,22 +112,22 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 	@Override
 	public boolean isComplexExpression() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support isComplexExpression() yet.");
 	}
 
 	@Override
 	public String createSQLForFromClause(DBDatabase database) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support createSQLForFromClause(DBDatabase) yet.");
 	}
 
 	@Override
 	public String createSQLForGroupByClause(DBDatabase database) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support createSQLForGroupByClause(DBDatabase) yet.");
 	}
 
 	@Override
 	public boolean isWindowingFunction() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support isWindowingFunction() yet.");
 	}
 
 	public static class Partitioned<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionRequiresOrderByInterface.Partitioned<A> {
@@ -176,17 +176,17 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
 		public boolean isAggregator() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support isAggregator() yet.");
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support getTablesInvolved() yet.");
 		}
 
 		@Override
@@ -202,27 +202,27 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 		@Override
 		public boolean isComplexExpression() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support isComplexExpression() yet.");
 		}
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support createSQLForFromClause() yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support createSQLForGroupByClause() yet.");
 		}
 
 		@Override
 		public boolean isWindowingFunction() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support isWindowingFunction() yet.");
 		}
 
 		@Override
 		public A orderByWithPrimaryKeys(SortProvider... partitionFields) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Partitioned does not support orderByWithPrimaryKeys() yet.");
 		}
 
 		@Override
@@ -300,7 +300,7 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Sorted does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
@@ -320,12 +320,12 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Sorted does not support createSQLForFromClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.Sorted does not support createSQLForGroupByClause(DBDatabase) yet.");
 		}
 
 		@Override
@@ -388,7 +388,7 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 		}
 
 		@Override
-		public A getRequiredExpression() {
+		public A build() {
 			try {
 				final Class<A> clazz = getStart().getRequiredExpressionClass();
 				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
@@ -408,7 +408,7 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
@@ -418,7 +418,7 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support getTablesInvolved() yet.");
 		}
 		
 		@Override
@@ -428,12 +428,12 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support createSQLForFromClause() yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support createSQLForGroupByClause() yet.");
 		}
 
 		@Override

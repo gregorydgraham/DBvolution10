@@ -248,37 +248,72 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doAddSecondsTransform(String dateExpression, String numberOfDays) {
+	public String doDateAddSecondsTransform(String dateExpression, String numberOfDays) {
 		return "cast({fn timestampadd(SQL_TSI_SECOND, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateExpression, String numberOfDays) {
+	public String doDateAddMinutesTransform(String dateExpression, String numberOfDays) {
 		return "cast({fn timestampadd(SQL_TSI_MINUTE, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateExpression, String numberOfDays) {
+	public String doDateAddHoursTransform(String dateExpression, String numberOfDays) {
 		return "cast({fn timestampadd(SQL_TSI_HOUR, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
 	@Override
-	public String doAddDaysTransform(String dateExpression, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateExpression, String numberOfDays) {
 		return "cast({fn timestampadd(SQL_TSI_DAY, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
 	@Override
-	public String doAddWeeksTransform(String dateExpression, String numberOfDays) {
+	public String doDateAddWeeksTransform(String dateExpression, String numberOfDays) {
 		return "cast({fn timestampadd(SQL_TSI_WEEK, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
 	@Override
-	public String doAddMonthsTransform(String dateExpression, String numberOfDays) {
+	public String doDateAddMonthsTransform(String dateExpression, String numberOfDays) {
 		return "cast({fn timestampadd(SQL_TSI_MONTH, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
 	@Override
-	public String doAddYearsTransform(String dateExpression, String numberOfDays) {
+	public String doDateAddYearsTransform(String dateExpression, String numberOfDays) {
+		return "cast({fn timestampadd(SQL_TSI_YEAR, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+	}
+
+	@Override
+	public String doInstantAddSecondsTransform(String dateExpression, String numberOfDays) {
+		return "cast({fn timestampadd(SQL_TSI_SECOND, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+	}
+
+	@Override
+	public String doInstantAddMinutesTransform(String dateExpression, String numberOfDays) {
+		return "cast({fn timestampadd(SQL_TSI_MINUTE, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+	}
+
+	@Override
+	public String doInstantAddHoursTransform(String dateExpression, String numberOfDays) {
+		return "cast({fn timestampadd(SQL_TSI_HOUR, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+	}
+
+	@Override
+	public String doInstantAddDaysTransform(String dateExpression, String numberOfDays) {
+		return "cast({fn timestampadd(SQL_TSI_DAY, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+	}
+
+	@Override
+	public String doInstantAddWeeksTransform(String dateExpression, String numberOfDays) {
+		return "cast({fn timestampadd(SQL_TSI_WEEK, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+	}
+
+	@Override
+	public String doInstantAddMonthsTransform(String dateExpression, String numberOfDays) {
+		return "cast({fn timestampadd(SQL_TSI_MONTH, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+	}
+
+	@Override
+	public String doInstantAddYearsTransform(String dateExpression, String numberOfDays) {
 		return "cast({fn timestampadd(SQL_TSI_YEAR, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
@@ -321,6 +356,11 @@ public class JavaDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		throw new UnsupportedOperationException("JavaDB does not support the DAYOFWEEK function");
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		throw new UnsupportedOperationException("JavaDB does not support the DAYOFWEEK function");
 	}
 

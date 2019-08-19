@@ -343,7 +343,7 @@ public class BooleanArrayExpression extends AnyExpression<Boolean[], BooleanArra
 
 	@Override
 	public String createSQLForFromClause(DBDatabase database) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("BooleanArrayExpression does not support createSQLForFromClause(DBDatabase) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

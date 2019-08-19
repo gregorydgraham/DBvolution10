@@ -21,6 +21,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -405,37 +406,72 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	}
 
 	@Override
-	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfSeconds + ")||' SECOND')";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfMinutes) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMinutes + ")||' minute')";
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfHours + ")||' hour')";
 	}
 
 	@Override
-	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateValue, String numberOfDays) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfDays + ")||' days')";
 	}
 
 	@Override
-	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddWeeksTransform(String dateValue, String numberOfWeeks) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (7*(" + numberOfWeeks + "))||' days')";
 	}
 
 	@Override
-	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+	public String doDateAddMonthsTransform(String dateValue, String numberOfMonths) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMonths + ")||' month')";
 	}
 
 	@Override
-	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+	public String doDateAddYearsTransform(String dateValue, String numberOfYears) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfYears + ")||' year')";
+	}
+
+	@Override
+	public String doInstantAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfSeconds + ")||' SECOND')";
+	}
+
+	@Override
+	public String doInstantAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMinutes + ")||' minute')";
+	}
+
+	@Override
+	public String doInstantAddHoursTransform(String dateValue, String numberOfHours) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfHours + ")||' hour')";
+	}
+
+	@Override
+	public String doInstantAddDaysTransform(String dateValue, String numberOfDays) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfDays + ")||' days')";
+	}
+
+	@Override
+	public String doInstantAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (7*(" + numberOfWeeks + "))||' days')";
+	}
+
+	@Override
+	public String doInstantAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMonths + ")||' month')";
+	}
+
+	@Override
+	public String doInstantAddYearsTransform(String dateValue, String numberOfYears) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfYears + ")||' year')";
 	}
 
@@ -476,6 +512,11 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		return " (cast(STRFTIME('%w', (" + dateSQL + ")) AS real)+1)";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		return " (cast(STRFTIME('%w', (" + dateSQL + ")) AS real)+1)";
 	}
 
@@ -1020,6 +1061,12 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	}
 
 	@Override
+	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
+		String getStringDate = inputFromResultSet.replaceAll(" ", "T")+"Z";
+		return Instant.parse(getStringDate.subSequence(0, getStringDate.length()));
+	}
+
+	@Override
 	public String doRightPadTransform(String toPad, String padWith, String length) {
 		return "(" + toPad
 				+ "||substr(replace(hex(zeroblob("
@@ -1034,6 +1081,46 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 				+ padWith + "), 1,"
 				+ length + " - length(" + toPad + "))||"
 				+ toPad + ")";
+	}
+
+	@Override
+	public String doCurrentUTCDateTimeTransform() {
+		return " strftime('%Y-%m-%d %H:%M:%f', 'now') ";
+	}
+
+	@Override
+	public String doInstantMonthTransform(String dateExpression) {
+		return " (CAST(strftime('%m', " + dateExpression + ") as BIGINT))";
+	}
+
+	@Override
+	public String doInstantYearTransform(String dateExpression) {
+		return " (CAST(strftime('%Y', " + dateExpression + ") as BIGINT))";
+	}
+
+	@Override
+	public String doInstantDayTransform(String dateExpression) {
+		return " (CAST(strftime('%d', " + dateExpression + ") as BIGINT))";
+	}
+
+	@Override
+	public String doInstantHourTransform(String dateExpression) {
+		return " (CAST(strftime('%H', " + dateExpression + ") as BIGINT))";
+	}
+
+	@Override
+	public String doInstantMinuteTransform(String dateExpression) {
+		return " (CAST(strftime('%M', " + dateExpression + ") as BIGINT))";
+	}
+
+	@Override
+	public String doInstantSecondTransform(String dateExpression) {
+		return " (CAST(strftime('%S', " + dateExpression + ") as BIGINT))";
+	}
+
+	@Override
+	public String doInstantSubsecondTransform(String dateExpression) {
+		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as BIGINT)))";
 	}
 
 }

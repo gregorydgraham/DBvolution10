@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.results.BooleanResult;
 import com.vividsolutions.jts.geom.Polygon;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -931,6 +931,44 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public LocalDateTimeExpression ifThenElse(LocalDateTimeExpression thenExpr, LocalDateTimeExpression elseExpr) {
 		return new LocalDateTimeExpression(new LocalDateTimeIfThenElseExpression(this, thenExpr, elseExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public InstantExpression ifThenElse(Instant thenExpr, Instant elseExpr) {
+		final InstantExpression value = value(thenExpr);
+		final InstantExpression otherValue = new InstantExpression(elseExpr);
+		return this.ifThenElse(value, otherValue);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public InstantExpression ifThenElse(InstantExpression thenExpr, InstantExpression elseExpr) {
+		return new InstantExpression(new InstantIfThenElseExpression(this, thenExpr, elseExpr));
 	}
 
 	/**
@@ -1965,6 +2003,58 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			}
 		}
 	}
+	
+private static abstract class DBBinaryInstantInstantFunction extends InstantExpression {
+
+		private static final long serialVersionUID = 1L;
+
+		protected BooleanExpression onlyBool = null;
+		protected InstantExpression first = null;
+		protected InstantExpression second = null;
+
+		DBBinaryInstantInstantFunction() {
+		}
+
+		DBBinaryInstantInstantFunction(BooleanExpression only, InstantExpression first, InstantExpression second) {
+			this.onlyBool = only;
+			this.first = first;
+			this.second = second;
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
 
 	private static abstract class DBBinaryGeometryGeometryFunction extends Polygon2DExpression {
 
@@ -2463,6 +2553,38 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		@Override
 		public LocalDateTimeIfThenElseExpression copy() {
 			return new LocalDateTimeIfThenElseExpression(
+					onlyBool == null ? null : onlyBool.copy(),
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class InstantIfThenElseExpression extends DBBinaryInstantInstantFunction {
+
+		public InstantIfThenElseExpression(BooleanExpression only, InstantExpression first, InstantExpression second) {
+			super(only, first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public InstantIfThenElseExpression copy() {
+			return new InstantIfThenElseExpression(
 					onlyBool == null ? null : onlyBool.copy(),
 					first == null ? null : first.copy(),
 					second == null ? null : second.copy()

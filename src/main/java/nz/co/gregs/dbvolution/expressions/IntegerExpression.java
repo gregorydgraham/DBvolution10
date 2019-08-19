@@ -3967,7 +3967,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 		@Override
 		String getFunctionName(DBDefinition db) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("StringResultFunction does not support getFunctionName(DBDefinition) yet.");
 		}
 
 		@Override
@@ -4297,7 +4297,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 		@Override
 		String getFunctionName(DBDefinition db) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			throw new UnsupportedOperationException("NumberResultFunction does not support getFunctionName(DBDefinition) yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 
 		@Override

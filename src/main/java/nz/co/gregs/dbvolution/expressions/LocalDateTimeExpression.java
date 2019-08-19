@@ -4111,10 +4111,6 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		}
 		private final static long serialVersionUID = 1l;
 
-		private LocalDateTimeAddSecondsExpression(LocalDateTimeExpression dateExpression) {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
 		@Override
 		public boolean getIncludesNull() {
 			return false;
@@ -4122,12 +4118,12 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
 		public LocalDateTimeAddSecondsExpression copy() {
-			return new LocalDateTimeAddSecondsExpression((LocalDateTimeExpression) getInnerResult().copy());
+			return new LocalDateTimeAddSecondsExpression(first.copy(), second.copy());
 		}
 	}
 
@@ -4145,7 +4141,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4168,7 +4164,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4191,7 +4187,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4214,7 +4210,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4237,7 +4233,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4260,7 +4256,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4283,7 +4279,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4306,7 +4302,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override
@@ -4329,7 +4325,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
+			return db.doDateAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
 		@Override

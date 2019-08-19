@@ -77,6 +77,12 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " BIGINT ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME(6) ";
+		} else if (qdt instanceof DBInstant) {
+			return " TIMESTAMP(6) ";
+		} else if (qdt instanceof DBDate) {
+			return " DATE ";
+		} else if (qdt instanceof DBLocalDateTime) {
+			return " TIMESTAMP(6) ";
 		} else if (qdt instanceof DBLargeBinary) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBLargeText) {
@@ -187,6 +193,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
 	}
+	
+	@Override
+	public String doInstantSubsecondTransform(String dateExpression) {
+		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
+	}
 
 //	@Override
 //	public String doMillisecondTransform(String dateExpression) {
@@ -247,6 +258,11 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		return " DAYOFWEEK(" + dateSQL + ")";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		return " DAYOFWEEK(" + dateSQL + ")";
 	}
 
@@ -711,5 +727,9 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doNumberToIntegerTransform(String sql) {
 		return "CAST(" + sql + " AS SIGNED)";
+	}
+
+	public boolean supportsTimeZones() {
+		return false;
 	}
 }

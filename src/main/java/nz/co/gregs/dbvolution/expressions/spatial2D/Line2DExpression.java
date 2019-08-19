@@ -772,7 +772,7 @@ public class Line2DExpression extends Spatial2DExpression<com.vividsolutions.jts
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
-		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
+		throw new UnsupportedOperationException("Line2DExpression does not support polygon2DResult(String) yet.");
 	}
 
 	@Override

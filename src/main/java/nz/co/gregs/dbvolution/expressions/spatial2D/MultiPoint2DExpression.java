@@ -487,7 +487,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
-		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
+		throw new UnsupportedOperationException("MultiPoint2DExpression does not support polygon2DResult() yet.");
 	}
 
 	@Override

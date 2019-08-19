@@ -226,7 +226,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				}
 			} catch (IOException ex) {
 				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-				throw new DBRuntimeException(ex);
+				throw new DBRuntimeException("Failed to read input", ex);
 			}
 		}
 		bytes = concatAllByteArrays(byteArrays);
@@ -242,7 +242,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		}
 	}
 
-	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
+	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] decodeBuffer = new byte[]{};
 		Reader inputReader = null;
 		try {
@@ -275,13 +275,13 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 					}
 				} catch (IOException ex) {
 					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-					throw new DBRuntimeException(ex);
+					throw new DBRuntimeException("Failed to read input", ex);
 				} finally {
 					try {
 						input.close();
 					} catch (IOException ex) {
 						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-						throw new DBRuntimeException(ex);
+						throw new DBRuntimeException("Failed to close input", ex);
 					}
 				}
 				byte[] bytes = concatAllByteArrays(byteArrays);
@@ -319,13 +319,13 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				}
 			} catch (IOException ex) {
 				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-				throw new DBRuntimeException(ex);
+				throw new DBRuntimeException("Failed to read input", ex);
 			} finally {
 				try {
 					input.close();
 				} catch (IOException ex) {
 					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-					throw new DBRuntimeException(ex);
+					throw new DBRuntimeException("Failed to CLOSE input", ex);
 				}
 			}
 			bytes = concatAllByteArrays(byteArrays);
@@ -569,11 +569,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				bytes = getFromBinaryStream(resultSet, fullColumnName);
 				break;
 			case CHARSTREAM:
-				try {
+//				try {
 					bytes = getFromCharacterReader(resultSet, fullColumnName);
-				} catch (IOException exp) {
-					throw new DBRuntimeException(exp);
-				}
+//				} catch (IOException exp) {
+//					throw new DBRuntimeException(exp);
+//				}
 				break;
 			case CLOB:
 				bytes = getFromCLOB(resultSet, fullColumnName);
@@ -598,7 +598,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBLargeText does not support setValueFromStandardStringEncoding(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	private byte[] getFromBase64(ResultSet resultSet, String fullColumnName) throws SQLException {
@@ -611,7 +611,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	}
 
 	private byte[] getFromJavaObject(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBLargeText does not support getFromJavaObject(ResultSet, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	private byte[] getFromByteArray(ResultSet resultSet, String fullColumnName) throws SQLException {

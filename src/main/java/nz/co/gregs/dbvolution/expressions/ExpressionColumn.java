@@ -33,5 +33,21 @@ public interface ExpressionColumn<T extends QueryableDatatype<?>> {
 	 * @return a QDT version of the expression
 	 */
 	public T asExpressionColumn();
+	/**
+	 * Creates a QueryableDatatype version of the expression suitable for use as a
+	 * column.
+	 *
+	 * <p>
+	 * For example: 	 <code>@DBColumn public DBString title =
+	 * person.column(person.fullname).substringBefore("
+	 * ").toExpressionColumn();</code>
+	 * 
+	 * <p>A synonym for {@link #asExpressionColumn() }</p>
+	 *
+	 * @return a QDT version of the expression
+	 */
+	public default T toExpressionColumn(){
+		return asExpressionColumn();
+	}
 
 }

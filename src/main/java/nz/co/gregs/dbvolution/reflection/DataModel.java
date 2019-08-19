@@ -497,8 +497,11 @@ public class DataModel {
 				}
 			}
 		}
-		final DBRow[] allTables = foundAlready.values().toArray(new DBRow[]{});
-		return db.getDBQuery(allTables);
+		final Collection<DBRow> values = foundAlready.values();
+		DBRow[] allTables = values.toArray(new DBRow[]{});
+		final DBQuery dbQuery = db.getDBQuery();
+		dbQuery.add(allTables);
+		return dbQuery;
 	}
 
 }

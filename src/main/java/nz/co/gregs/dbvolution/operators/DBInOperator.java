@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.InExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -155,6 +156,9 @@ public class DBInOperator extends DBOperator {
 			}
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			op = dateExpression.isIn(listDate.toArray(new DateResult[]{}));
+		} else if (genericExpression instanceof InExpression) {
+			InExpression expr = (InExpression) genericExpression;
+			op = expr.isIn(getListOfPossibleValues());
 		}
 		return this.invertOperator ? op.not() : op;
 	}

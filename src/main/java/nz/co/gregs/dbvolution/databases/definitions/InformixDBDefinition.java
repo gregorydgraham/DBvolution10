@@ -191,42 +191,82 @@ public class InformixDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+	public String doDateAddYearsTransform(String dateValue, String numberOfYears) {
 		return "((" + dateValue + ")+ (" + numberOfYears + ") UNITS YEAR)";
 	}
 
 	@Override
-	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+	public String doDateAddMonthsTransform(String dateValue, String numberOfMonths) {
 		return "((" + dateValue + ")+ (" + numberOfMonths + ") UNITS MONTH)";
 	}
 
 	@Override
-	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddWeeksTransform(String dateValue, String numberOfWeeks) {
 		return "((" + dateValue + ")+ (" + numberOfWeeks + ") UNITS WEEK)";
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "((" + dateValue + ")+ (" + numberOfHours + ") UNITS HOUR)";
 	}
 
 	@Override
-	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateValue, String numberOfDays) {
 		return "((" + dateValue + ")+ (" + numberOfDays + ") UNITS DAY)";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfMinutes) {
 		return "((" + dateValue + ")+ (" + numberOfMinutes + ") UNITS MINUTE)";
 	}
 
 	@Override
-	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "((" + dateValue + ")+ (" + numberOfSeconds + ") UNITS SECOND)";
+	}
+
+	@Override
+	public String doInstantAddYearsTransform(String dateValue, String numberOfYears) {
+		return "((" + dateValue + ")+ (" + numberOfYears + ") UNITS YEAR)";
+	}
+
+	@Override
+	public String doInstantAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "((" + dateValue + ")+ (" + numberOfMonths + ") UNITS MONTH)";
+	}
+
+	@Override
+	public String doInstantAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "((" + dateValue + ")+ (" + numberOfWeeks + ") UNITS WEEK)";
+	}
+
+	@Override
+	public String doInstantAddHoursTransform(String dateValue, String numberOfHours) {
+		return "((" + dateValue + ")+ (" + numberOfHours + ") UNITS HOUR)";
+	}
+
+	@Override
+	public String doInstantAddDaysTransform(String dateValue, String numberOfDays) {
+		return "((" + dateValue + ")+ (" + numberOfDays + ") UNITS DAY)";
+	}
+
+	@Override
+	public String doInstantAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "((" + dateValue + ")+ (" + numberOfMinutes + ") UNITS MINUTE)";
+	}
+
+	@Override
+	public String doInstantAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "((" + dateValue + ")+ (" + numberOfSeconds + ") UNITS SECOND)";
 	}
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		return " (WEEKDAY(" + dateSQL + ")+1)";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		return " (WEEKDAY(" + dateSQL + ")+1)";
 	}
 

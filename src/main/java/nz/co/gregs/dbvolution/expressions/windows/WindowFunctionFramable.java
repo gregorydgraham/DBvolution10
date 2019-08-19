@@ -12,7 +12,7 @@
  *     Adapt - remix, transform, and build upon the material
  * 
  *     The licensor cannot revoke these freedoms as long as you follow the license terms.               
- *     Under the following terms:
+ *     Under the forFollowing terms:
  *                 
  *         Attribution - 
  *             You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
@@ -111,17 +111,17 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 	@Override
 	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionFramable does not support getQueryableDatatypeForExpressionValue() yet.");
 	}
 
 	@Override
 	public boolean isAggregator() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionFramable does not support isAggregator() yet.");
 	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionFramable does not support getTablesInvolved() yet.");
 	}
 
 	@Override
@@ -132,22 +132,22 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 	@Override
 	public boolean isComplexExpression() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionFramable does not support isComplexExpression() yet.");
 	}
 
 	@Override
 	public String createSQLForFromClause(DBDatabase database) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionFramable does not support createSQLForFromClause(DBDatabase) yet.");
 	}
 
 	@Override
 	public String createSQLForGroupByClause(DBDatabase database) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionFramable does not support createSQLForGroupByClause(DBDatabase) yet.");
 	}
 
 	@Override
 	public boolean isWindowingFunction() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("WindowFunctionFramable does not support isWindowingFunction() yet.");
 	}
 
 	public static class Partitioned<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.Partitioned<A> {
@@ -221,17 +221,17 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
 		public boolean isAggregator() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support isAggregator() yet.");
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support getTablesInvolved() yet.");
 		}
 
 		@Override
@@ -247,27 +247,27 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public boolean isComplexExpression() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support isComplexExpression() yet.");
 		}
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support createSQLForFromClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support createSQLForGroupByClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public boolean isWindowingFunction() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support isWindowingFunction() yet.");
 		}
 
 		@Override
 		public Sorted<A> orderByWithPrimaryKeys(SortProvider... partitionFields) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Partitioned does not support orderByWithPrimaryKeys(SortProvider...) yet.");
 		}
 
 		@Override
@@ -337,7 +337,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public A withoutFrame() {
-			return new EmptyFrameEnd<>(this).getRequiredExpression();
+			return new EmptyFrameEnd<>(this).build();
 		}
 
 		@Override
@@ -379,37 +379,37 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Sorted does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
 		public boolean isAggregator() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Sorted does not support isAggregator() yet.");
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Sorted does not support getTablesInvolved() yet.");
 		}
 
 		@Override
 		public boolean isComplexExpression() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Sorted does not support isComplexExpression() yet.");
 		}
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Sorted does not support createSQLForFromClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Sorted does not support createSQLForGroupByClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public boolean isWindowingFunction() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.Sorted does not support isWindowingFunction() yet.");
 		}
 
 		/**
@@ -454,7 +454,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		}
 
 		public A onlyCurrentRow() {
-			return this.currentRow().currentRow();
+			return this.currentRow().toCurrentRow();
 		}
 
 		@Override
@@ -478,12 +478,12 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		}
 
 		@Override
-		public OffsetFollowingStart<A> following(int offset) {
+		public OffsetFollowingStart<A> forFollowing(int offset) {
 			return new OffsetFollowingStart<A>(this, offset);
 		}
 
 		@Override
-		public OffsetFollowingStart<A> following(IntegerExpression offset) {
+		public OffsetFollowingStart<A> forFollowing(IntegerExpression offset) {
 			return new OffsetFollowingStart<A>(this, offset);
 		}
 
@@ -502,32 +502,32 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameType does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
 		public boolean isAggregator() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameType does not support isAggregator() yet.");
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameType does not support getTablesInvolved() yet.");
 		}
 
 		@Override
 		public boolean isComplexExpression() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameType does not support isComplexExpression() yet.");
 		}
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameType does not support createSQLForFromClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameType does not support createSQLForGroupByClause(DBDatabase) yet.");
 		}
 
 		@Override
@@ -630,37 +630,37 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameStart does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
 		public boolean isAggregator() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameStart does not support isAggregator() yet.");
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameStart does not support getTablesInvolved0() yet.");
 		}
 
 		@Override
 		public boolean isComplexExpression() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameStart does not support isComplexExpression() yet.");
 		}
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameStart does not support createSQLForFromClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameStart does not support createSQLForGroupByClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public boolean isWindowingFunction() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameStart does not support isWindowingFunction() yet.");
 		}
 	}
 
@@ -719,32 +719,32 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		@Override
 		@SuppressWarnings("unchecked")
 		public A preceding(int offset) {
-			return new OffsetPrecedingEnd<A>(this, offset).getRequiredExpression();
+			return new OffsetPrecedingEnd<A>(this, offset).build();
 		}
 
 		@Override
 		public A preceding(IntegerExpression offset) {
-			return new OffsetPrecedingEnd<A>(this, offset).getRequiredExpression();
+			return new OffsetPrecedingEnd<A>(this, offset).build();
 		}
 
 		@Override
 		public A currentRow() {
-			return new CurrentRowEnd<A>(this).getRequiredExpression();
+			return new CurrentRowEnd<A>(this).build();
 		}
 
 		@Override
-		public A following(int offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(int offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
-		public A following(IntegerExpression offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(IntegerExpression offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
 		public A unboundedFollowing() {
-			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
+			return new UnboundedFollowingEnd<A>(this).build();
 		}
 
 	}
@@ -770,12 +770,12 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public A preceding(int offset) {
-			return new OffsetPrecedingEnd<A>(this, offset).getRequiredExpression();
+			return new OffsetPrecedingEnd<A>(this, offset).build();
 		}
 
 		@Override
 		public A preceding(IntegerExpression offset) {
-			return new OffsetPrecedingEnd<A>(this, offset).getRequiredExpression();
+			return new OffsetPrecedingEnd<A>(this, offset).build();
 		}
 
 		@Override
@@ -785,22 +785,22 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public A currentRow() {
-			return new CurrentRowEnd<A>(this).getRequiredExpression();
+			return new CurrentRowEnd<A>(this).build();
 		}
 
 		@Override
-		public A following(int offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(int offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
-		public A following(IntegerExpression offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(IntegerExpression offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
 		public A unboundedFollowing() {
-			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
+			return new UnboundedFollowingEnd<A>(this).build();
 		}
 
 	}
@@ -822,23 +822,23 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		}
 
 		@Override
-		public A currentRow() {
-			return new CurrentRowEnd<A>(this).getRequiredExpression();
+		public A toCurrentRow() {
+			return new CurrentRowEnd<A>(this).build();
 		}
 
 		@Override
-		public A following(int offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(int offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
-		public A following(IntegerExpression offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(IntegerExpression offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
 		public A unboundedFollowing() {
-			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
+			return new UnboundedFollowingEnd<A>(this).build();
 		}
 
 	}
@@ -868,18 +868,18 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		}
 
 		@Override
-		public A following(int offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(int offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
-		public A following(IntegerExpression offset) {
-			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		public A forFollowing(IntegerExpression offset) {
+			return new OffsetFollowingEnd<A>(this, offset).build();
 		}
 
 		@Override
 		public A unboundedFollowing() {
-			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
+			return new UnboundedFollowingEnd<A>(this).build();
 		}
 	}
 
@@ -918,7 +918,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		}
 
 		@Override
-		public A getRequiredExpression() {
+		public A build() {
 			try {
 				final Class<A> clazz = getStart().getRequiredExpressionClass();
 				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
@@ -938,7 +938,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameEnd does not support getQueryableDatatypeForExpressionValue() yet.");
 		}
 
 		@Override
@@ -948,7 +948,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameEnd does not support getTablesInvolved() yet.");
 		}
 
 		@Override
@@ -958,12 +958,12 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameEnd does not support createSQLForFromClause(DBDatabase) yet.");
 		}
 
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("WindowFunctionFramable.FrameEnd does not support createSQLForGroupByClause(DBDatabase) yet.");
 		}
 
 		@Override

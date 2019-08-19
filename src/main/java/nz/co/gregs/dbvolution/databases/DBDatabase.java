@@ -829,6 +829,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <p>
 	 * See {@link nz.co.gregs.dbvolution.DBTable#count()}
 	 *
+	 * @param example the first example
 	 * @param examples the examples
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -837,8 +838,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws AccidentalCartesianJoinException Thrown when a query will create a
 	 * Cartesian Join and cartesian joins have not been explicitly permitted.
 	 */
-	public long getCount(DBRow... examples) throws SQLException, AccidentalCartesianJoinException {
-		DBQuery query = getDBQuery(examples).setBlankQueryAllowed(true);
+	public long getCount(DBRow example, DBRow... examples) throws SQLException, AccidentalCartesianJoinException {
+		DBQuery query = getDBQuery(example, examples).setBlankQueryAllowed(true);
 		return query.count();
 	}
 
@@ -906,7 +907,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws SQLException database exceptions
 	 * @throws UnexpectedNumberOfRowsException the exception thrown when the
 	 * number of rows is not correct
-	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException thrown if a cluster is unable to service requests.
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
+	 * thrown if a cluster is unable to service requests.
 	 */
 	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return get(expectedNumberOfRows, exampleRow);
@@ -916,6 +918,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * creates a query and fetches the rows automatically, based on the examples
 	 * given
 	 *
+	 * @param row the first example
 	 * @param rows the examples of the rows required
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -924,8 +927,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
-	public List<DBQueryRow> get(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBQuery dbQuery = getDBQuery(rows);
+	public List<DBQueryRow> get(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+		DBQuery dbQuery = getDBQuery(row, rows);
 		return dbQuery.getAllRows();
 	}
 
@@ -941,8 +944,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
-	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		return get(rows);
+	public List<DBQueryRow> getByExamples(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+		return get(row, rows);
 	}
 
 	/**
@@ -973,6 +976,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * } for further details.
 	 *
 	 * @param expectedNumberOfRows the number of rows required
+	 * @param row the first example of the tables required
 	 * @param rows examples of the tables required
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -983,11 +987,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows(long)
 	 */
-	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow row, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		if (expectedNumberOfRows == null) {
-			return get(rows);
+			return get(row, rows);
 		} else {
-			return getDBQuery(rows).getAllRows(expectedNumberOfRows);
+			return getDBQuery(row, rows).getAllRows(expectedNumberOfRows);
 		}
 	}
 
@@ -1003,7 +1007,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction an encapsulated exception from the transaction
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * an encapsulated exception from the transaction
 	 * @see DBTransaction
 	 * @see
 	 * DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
@@ -1068,7 +1073,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction an encapsulated exception from the transaction
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * an encapsulated exception from the transaction
 	 * @see DBTransaction
 	 */
 	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
@@ -1092,7 +1098,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction an encapsulated exception from the transaction
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * an encapsulated exception from the transaction
 	 * @see DBTransaction
 	 */
 	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
@@ -1124,8 +1131,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList provided by the script
 	 * @throws java.sql.SQLException database errors
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction an encapsulated exception from the transaction
-	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException thrown when a cluster cannot service requests
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * an encapsulated exception from the transaction
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
+	 * thrown when a cluster cannot service requests
 	 */
 	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
 		return script.test(this);
@@ -1216,13 +1225,40 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * This is the easiest way to create DBQueries, and indeed queries.
 	 *
+	 * @param example the example rows that are required in the query
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBQuery with the examples as required tables
+	 */
+	public DBQuery getDBQuery(DBRow example) {
+		return DBQuery.getInstance(this, example);
+	}
+
+	/**
+	 * Creates a new DBQuery object with the examples added as
+	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[]) required} tables.This is
+	 * the easiest way to create DBQueries, and indeed queries.
+	 *
+	 * @return a DBQuery with the examples as required tables
+	 */
+	public DBQuery getDBQuery() {
+		return DBQuery.getInstance(this);
+	}
+
+	/**
+	 * Creates a new DBQuery object with the examples added as
+	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[]) required} tables.
+	 *
+	 * This is the easiest way to create DBQueries, and indeed queries.
+	 *
+	 * @param example the first example row that is required in the query
 	 * @param examples the example rows that are required in the query
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery with the examples as required tables
 	 */
-	public DBQuery getDBQuery(DBRow... examples) {
-		return DBQuery.getInstance(this, examples);
+	public DBQuery getDBQuery(DBRow example, DBRow... examples) {
+		return DBQuery.getInstance(this, example, examples);
 	}
 
 	/**
@@ -1236,10 +1272,20 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery with the examples as required tables
 	 */
-	public DBQuery getDBQuery(Collection<DBRow> examples) {
-		DBRow[] toArray = examples.toArray(new DBRow[]{});
-		//	return DBQuery.getDatabaseInstance(this, toArray);
-		return getDBQuery(toArray);
+	public DBQuery getDBQuery(final Collection<DBRow> examples) {
+		switch (examples.size()) {
+			case 0:
+				return getDBQuery();
+			case 1:
+				return getDBQuery(examples.toArray(new DBRow[]{})[0]);
+			default:
+				List<DBRow> list = new ArrayList<>(examples);
+				DBRow[] toArray = list.toArray(new DBRow[]{});
+				DBRow row = toArray[0];
+				list.remove(row);
+				toArray = list.toArray(new DBRow[]{});
+				return getDBQuery(row, toArray);
+		}
 	}
 
 	/**
@@ -1271,6 +1317,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public void printSQLIfRequested(String sqlString) {
 		printSQLIfRequested(sqlString, System.out);
+		LOG.debug(sqlString);
 	}
 
 	synchronized void printSQLIfRequested(String sqlString, PrintStream out) {
@@ -1286,7 +1333,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Implemented to facilitate testing, this method creates actual tables on the
 	 * database using the default data types supplied by the fields of the DBRows.
 	 *
-	 * @param includeForeignKeyClauses should explicit FK references be created in the database?
+	 * @param includeForeignKeyClauses should explicit FK references be created in
+	 * the database?
 	 * @param newTable the table to create
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
@@ -1328,7 +1376,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Implemented to facilitate testing, this method creates actual tables on the
 	 * database using the default data types supplied by the fields of the DBRows.
 	 *
-	 * @param includeForeignKeyClauses should explicit FK references be created in the database?
+	 * @param includeForeignKeyClauses should explicit FK references be created in
+	 * the database?
 	 * @param newTables the tables to create
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
@@ -1830,7 +1879,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the specified row has no specified criteria, FALSE
 	 * otherwise
-	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException thrown when a cluster cannot service requests
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
+	 * thrown when a cluster cannot service requests
 	 */
 	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException {
 		return row.willCreateBlankQuery(this.getDefinition());
@@ -1845,7 +1895,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param doIt don't do it.
 	 * @throws AccidentalDroppingOfDatabaseException See?
 	 * @throws UnableToDropDatabaseException Terrible!
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction If You Lucky.
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * If You Lucky.
 	 */
 	public synchronized void dropDatabase(boolean doIt) throws AccidentalDroppingOfDatabaseException, UnableToDropDatabaseException, SQLException, AutoCommitActionDuringTransactionException, ExceptionThrownDuringTransaction {
 		dropDatabase(getDatabaseName(), true);
@@ -1861,7 +1912,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * destroyed.
 	 * @param doIt don't do it.
 	 * @throws AccidentalDroppingOfDatabaseException Terrible!
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction If you're lucky...
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * If you're lucky...
 	 */
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
@@ -2305,8 +2357,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param dbRow required to define T
 	 * @return a recursive query
 	 * @throws ColumnProvidedMustBeAForeignKey Only FKs please
-	 * @throws ForeignKeyDoesNotReferenceATableInTheQuery Only FKs actually in the query please
-	 * @throws ForeignKeyIsNotRecursiveException the FK must be in _and_ reference T
+	 * @throws ForeignKeyDoesNotReferenceATableInTheQuery Only FKs actually in the
+	 * query please
+	 * @throws ForeignKeyIsNotRecursiveException the FK must be in _and_ reference
+	 * T
 	 */
 	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow, T dbRow) {
 		return new DBRecursiveQuery<T>(query, keyToFollow);
@@ -2398,7 +2452,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		} else {
 			String testQuery = getDefinition().getTableExistsSQL(table);
 			try (DBStatement dbStatement = getDBStatement()) {
-				ResultSet results = dbStatement.executeQuery(testQuery);
+				ResultSet results = dbStatement.executeQuery(testQuery, "CHECK FOR TABLE "+table.getTableName());
 				if (results != null) {
 					results.close();
 				}
@@ -2445,7 +2499,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				.setBlankQueryAllowed(true)
 				.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
 		try (DBStatement dbStatement = getDBStatement()) {
-			try (ResultSet resultSet = dbStatement.executeQuery(testQuery)) {
+			try (ResultSet resultSet = dbStatement.executeQuery(testQuery, "CHECK TABLE STRUCTURE FOR "+table.getTableName())) {
 				ResultSetMetaData metaData = resultSet.getMetaData();
 				List<PropertyWrapper> columnPropertyWrappers = table.getColumnPropertyWrappers();
 				for (PropertyWrapper columnPropertyWrapper : columnPropertyWrappers) {
@@ -2630,7 +2684,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param backupDatabase the place to store all the data.
 	 * @throws SQLException database errors
-	 * @throws UnableToRemoveLastDatabaseFromClusterException Cluster may not remove their last database
+	 * @throws UnableToRemoveLastDatabaseFromClusterException Cluster may not
+	 * remove their last database
 	 */
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		String randomName = new BigInteger(130, new SecureRandom()).toString(32);

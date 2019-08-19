@@ -213,7 +213,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 						}
 					} catch (IOException ex) {
 						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-						throw new DBRuntimeException(ex);
+						throw new DBRuntimeException("DBJavaObject.getFromCharacterReader: Unable to get from Character Reader",ex);
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
 					byte[] decodeBuffer = Base64.decodeBase64(bytes);
@@ -259,7 +259,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 						}
 					} catch (IOException ex) {
 						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-						throw new DBRuntimeException(ex);
+						throw new DBRuntimeException("Failed to get from BLOB", ex);
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
 					try (ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
@@ -275,7 +275,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 
 	@Override
 	public String formatValueForSQLStatement(DBDefinition db) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("DBJavaObject does not support formatValueForSQLStatement(DBDefinition) yet.");
 	}
 
 	@Override
@@ -367,7 +367,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 				try {
 					obj = getFromCharacterReader(resultSet, fullColumnName);
 				} catch (IOException exp) {
-					throw new DBRuntimeException(exp);
+					throw new DBRuntimeException("DBJavaObject.getFromResultSet: Failed to get from Character Reader", exp);
 				}
 				break;
 			case CLOB:
@@ -393,11 +393,11 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("DBJavaObject does not support setValueFromStandardStringEncoding(String) yet."); 
 	}
 
 	private O getFromString(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("DBJavaObject does not support getFromString(ResultSet, String) yet."); 
 	}
 
 	@SuppressWarnings("unchecked")
@@ -416,7 +416,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	private O getFromBase64(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("DBJavaObject does not support getFromBase64(ResultSet, String) yet."); 
 	}
 
 	@Override

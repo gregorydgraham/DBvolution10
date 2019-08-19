@@ -56,8 +56,12 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
@@ -135,7 +139,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the date formatted as a string that the database will correctly
 	 * interpret as a date.
 	 */
-	public final String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
 		if (date == null) {
 			return getNull();
 		}
@@ -149,7 +153,29 @@ public abstract class DBDefinition implements Serializable {
 //				.add(date.getSecond(),((0.0+date.getNano())/1000000000.0))
 //				.add(tzSign,tzHour, tzMinutes);
 //		System.out.println(strings.toString());
-		return getDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), "" + ((0.0 + date.getNano()) / 1000000000.0), tzSign, "" + tzHour, "" + tzMinutes);
+		return getLocalDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), "" + ((0.0 + date.getNano()) / 1000000000.0), tzSign, "" + tzHour, "" + tzMinutes);
+	}
+
+	/**
+	 * Transforms the Date instance into a SQL snippet that can be used as a date
+	 * in a query.
+	 *
+	 * <p>
+	 * For instance the date might be transformed into a string like "
+	 * DATETIME('2013-03-23 00:00:00') "
+	 *
+	 * @param instant	the time to store
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the date formatted as a string that the database will correctly
+	 * interpret as a date.
+	 */
+	public String getInstantFormattedForQuery(Instant instant) {
+		if (instant == null) {
+			return getNull();
+		}
+		ZonedDateTime date = instant.atZone(ZoneId.ofOffset("UTC", ZoneOffset.UTC));
+		return getDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), "" + ((0.0 + date.getNano()) / 1000000000.0), "+", "0", "0");
 	}
 
 	/**
@@ -178,9 +204,67 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the date formatted as a string that the database will be correctly
 	 * interpret as a date.
 	 */
-	public abstract String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet);// {
-//		return "";
-//	}
+	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return getDatePartsFormattedForQuery(years, months, days, hours, minutes, seconds, subsecond, timeZoneSign, timeZoneHourOffset, timeZoneMinuteOffSet);
+	}
+
+	/**
+	 * Transforms the specific parts of an instant from their SQL snippets into a
+	 * SQL snippet that can be used as a instant in a query.
+	 *
+	 * <p>
+	 * For instance the date parts might be transformed into a string like "
+	 * DATETIME('2013-03-23 00:00:00') "
+	 *
+	 * @param years the sql representing the years part of the date
+	 * @param months the sql representing the months (1-12) part of the date
+	 * @param days the sql representing the days (0-31) part of the date
+	 * @param minutes the sql representing the minutes (0-60) part of the date
+	 * @param hours the sql representing the hours (0-24) part of the date
+	 * @param seconds the sql representing the seconds (0-59) part of the date
+	 * @param subsecond the sql representing the subsecond (0.0-0.9999) part of
+	 * the date, precision is based on the database's limitations
+	 * @param timeZoneSign + or -
+	 * @param timeZoneMinuteOffSet the sql representing the hours (0-13) part of
+	 * the date's time zone
+	 * @param timeZoneHourOffset the sql representing the minutes (0-59) part of
+	 * the date's time zone
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the date formatted as a string that the database will be correctly
+	 * interpret as a date.
+	 */
+	public String getInstantPartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return getDatePartsFormattedForQuery(years, months, days, hours, minutes, seconds, subsecond, timeZoneSign, timeZoneHourOffset, timeZoneMinuteOffSet);
+	}
+
+	/**
+	 * Transforms the specific parts of a date from their SQL snippets into a SQL
+	 * snippet that can be used as a date in a query.
+	 *
+	 * <p>
+	 * For instance the date parts might be transformed into a string like "
+	 * DATETIME('2013-03-23 00:00:00') "
+	 *
+	 * @param years the sql representing the years part of the date
+	 * @param months the sql representing the months (1-12) part of the date
+	 * @param days the sql representing the days (0-31) part of the date
+	 * @param minutes the sql representing the minutes (0-60) part of the date
+	 * @param hours the sql representing the hours (0-24) part of the date
+	 * @param seconds the sql representing the seconds (0-59) part of the date
+	 * @param subsecond the sql representing the subsecond (0.0-0.9999) part of
+	 * the date, precision is based on the database's limitations
+	 * @param timeZoneSign + or -
+	 * @param timeZoneMinuteOffSet the sql representing the hours (0-13) part of
+	 * the date's time zone
+	 * @param timeZoneHourOffset the sql representing the minutes (0-59) part of
+	 * the date's time zone
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the date formatted as a string that the database will be correctly
+	 * interpret as a date.
+	 */
+	public abstract String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet);
 
 	/**
 	 * Transforms the Date instance into UTC time zone date.
@@ -197,7 +281,7 @@ public abstract class DBDefinition implements Serializable {
 		int hourPart = zoneOffset.intValue() * 100;
 		int minutePart = (int) ((zoneOffset - (zoneOffset.intValue())) * 60);
 
-		return doAddMinutesTransform(doAddHoursTransform(getDateFormattedForQuery(date), "" + hourPart), "" + minutePart);
+		return doDateAddMinutesTransform(doDateAddHoursTransform(getDateFormattedForQuery(date), "" + hourPart), "" + minutePart);
 	}
 
 	/**
@@ -1456,6 +1540,18 @@ public abstract class DBDefinition implements Serializable {
 	public String doCurrentDateTimeTransform() {
 		return getCurrentDateTimeFunction();
 	}
+	
+	public String getDefaultTimeZoneSign(){
+		return "case when extract(timezone_hour from "+getCurrentDateTimeFunction()+")>=0 then '+' else '-' end";
+	}
+	
+	public String getDefaultTimeZoneHour(){
+		return "extract(timezone_hour from "+getCurrentDateTimeFunction()+")";
+	}
+	
+	public String getDefaultTimeZoneMinute(){
+		return "extract(timezone_minute from "+getCurrentDateTimeFunction()+")";
+	}
 
 	/**
 	 * Defines the function used to get the current time from the database.
@@ -1479,6 +1575,18 @@ public abstract class DBDefinition implements Serializable {
 	 */
 	public String doCurrentTimeTransform() {
 		return getCurrentTimeFunction();
+	}
+
+	/**
+	 * Creates the CURRENTTIME function for this database.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the default implementation returns " CURRENT_TIMESTAMP "
+	 */
+	public String doCurrentUTCTimeTransform() {
+		return "UTC_TIMESTAMP(6)";
 	}
 
 	/**
@@ -1808,6 +1916,114 @@ public abstract class DBDefinition implements Serializable {
 	 */
 	public String doSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000)";
+	}
+
+	/**
+	 * Returns the instant expression in the standard format that can be used to
+	 * have consistent comparisons
+	 * @param instantExpression
+	 * @return string
+	 */
+	public String doComparableInstantTransform(String instantExpression) {
+		return instantExpression;
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the year part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the year of the supplied date.
+	 */
+	public String doInstantYearTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(YEAR FROM " + doComparableInstantTransform(dateExpression) + ")");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the month part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the month of the supplied date.
+	 */
+	public String doInstantMonthTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(MONTH FROM " + doComparableInstantTransform(dateExpression) + ")");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the day part of the date.
+	 *
+	 * <p>
+	 * Day in this sense is the number of the day within the month: that is the 23
+	 * part of Monday 25th of August 2014
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the day of the supplied date.
+	 */
+	public String doInstantDayTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(DAY FROM " + doComparableInstantTransform(dateExpression) + ")");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the hour part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the hour of the supplied date.
+	 */
+	public String doInstantHourTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(HOUR FROM " + doComparableInstantTransform(dateExpression) + ")");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the minute part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the minute of the supplied date.
+	 */
+	public String doInstantMinuteTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(MINUTE FROM " + doComparableInstantTransform(dateExpression) + ")");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the second part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the second of the supplied date.
+	 */
+	public String doInstantSecondTransform(String dateExpression) {
+		return "EXTRACT(SECOND FROM " + doComparableInstantTransform(dateExpression) + ")";
+	}
+
+	/**
+	 * Returns the partial second value from the date.
+	 *
+	 * <p>
+	 * This should return the most detailed possible value less than a second for
+	 * the date expression provided. It should always return a value less than 1s.
+	 *
+	 * @param dateExpression the date from which to get the subsecond part of.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL
+	 */
+	public String doInstantSubsecondTransform(String dateExpression) {
+		return "(EXTRACT(MILLISECOND FROM " + doComparableInstantTransform(dateExpression) + ")/1000.0000)";
 	}
 
 	/**
@@ -2551,6 +2767,29 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * returns the date format used when reading dates as strings.
+	 *
+	 * <p>
+	 * Normally dates are read as dates but this method allows DBvolution to read
+	 * them using a text mode.
+	 *
+	 * @param inputFromResultSet a date retrieved with {@link ResultSet#getString(java.lang.String)
+	 * }
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return return the date format required to interpret strings as dates.
+	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
+	 * exception
+	 * @see #prefersDatesReadAsStrings()
+	 */
+	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
+		LocalDateTime parse = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DateTimeFormatter.ISO_DATE_TIME);
+		Instant toInstant = parse.toInstant(ZoneOffset.UTC);
+		return toInstant;
+	}
+
+	/**
 	 * Provides an opportunity to tweak the generated DBTableField before creating
 	 * the Java classes
 	 *
@@ -2774,7 +3013,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
-	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfSeconds + ") SECOND )";
 	}
 
@@ -2788,7 +3027,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
-	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfMinutes) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfMinutes + ") MINUTE )";
 	}
 
@@ -2802,7 +3041,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
-	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateValue, String numberOfDays) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfDays + ") DAY )";
 	}
 
@@ -2816,7 +3055,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfHours + ") HOUR )";
 	}
 
@@ -2830,7 +3069,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
-	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddWeeksTransform(String dateValue, String numberOfWeeks) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfWeeks + ") WEEK )";
 	}
 
@@ -2844,7 +3083,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
-	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+	public String doDateAddMonthsTransform(String dateValue, String numberOfMonths) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfMonths + ") MONTH )";
 	}
 
@@ -2858,8 +3097,106 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
-	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+	public String doDateAddYearsTransform(String dateValue, String numberOfYears) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfYears + ") YEAR )";
+	}
+
+	/**
+	 * Does the required transformation to produce an SQL snippet that adds
+	 * numberOfSeconds seconds to the dateValue.
+	 *
+	 * @param InstantValue dateValue
+	 * @param numberOfSeconds numberOfSeconds
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an SQL snippet
+	 */
+	public String doInstantAddSecondsTransform(String InstantValue, String numberOfSeconds) {
+		return "DATE_ADD(" + InstantValue + ", INTERVAL (" + numberOfSeconds + ") SECOND )";
+	}
+
+	/**
+	 * Does the required transformation to produce an SQL snippet that adds
+	 * numberOfMinutes minutes to the dateValue.
+	 *
+	 * @param instantValue dateValue
+	 * @param numberOfMinutes numberOfMinutes
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an SQL snippet
+	 */
+	public String doInstantAddMinutesTransform(String instantValue, String numberOfMinutes) {
+		return "DATE_ADD(" + instantValue + ", INTERVAL (" + numberOfMinutes + ") MINUTE )";
+	}
+
+	/**
+	 * Does the required transformation to produce an SQL snippet that adds
+	 * numberOfdays days to the dateValue.
+	 *
+	 * @param instantValue dateValue
+	 * @param numberOfDays numberOfDays
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an SQL snippet
+	 */
+	public String doInstantAddDaysTransform(String instantValue, String numberOfDays) {
+		return "DATE_ADD(" + instantValue + ", INTERVAL (" + numberOfDays + ") DAY )";
+	}
+
+	/**
+	 * Does the required transformation to produce an SQL snippet that adds
+	 * numberOfHours hours to the dateValue.
+	 *
+	 * @param instantValue dateValue
+	 * @param numberOfHours numberOfHours
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an SQL snippet
+	 */
+	public String doInstantAddHoursTransform(String instantValue, String numberOfHours) {
+		return "DATE_ADD(" + instantValue + ", INTERVAL (" + numberOfHours + ") HOUR )";
+	}
+
+	/**
+	 * Does the required transformation to produce an SQL snippet that adds
+	 * numberOfWeeks weeks to the dateValue.
+	 *
+	 * @param instantValue dateValue
+	 * @param numberOfWeeks numberOfWeeks
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an SQL snippet
+	 */
+	public String doInstantAddWeeksTransform(String instantValue, String numberOfWeeks) {
+		return "DATE_ADD(" + instantValue + ", INTERVAL (" + numberOfWeeks + ") WEEK )";
+	}
+
+	/**
+	 * Does the required transformation to produce an SQL snippet that adds
+	 * numberOfMonths months to the dateValue.
+	 *
+	 * @param instantValue dateValue
+	 * @param numberOfMonths numberOfMonths
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an SQL snippet
+	 */
+	public String doInstantAddMonthsTransform(String instantValue, String numberOfMonths) {
+		return "DATE_ADD(" + instantValue + ", INTERVAL (" + numberOfMonths + ") MONTH )";
+	}
+
+	/**
+	 * Does the required transformation to produce an SQL snippet that adds
+	 * numberOfYears years to the dateValue.
+	 *
+	 * @param instantValue dateValue
+	 * @param numberOfYears numberOfYears
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an SQL snippet
+	 */
+	public String doInstantAddYearsTransform(String instantValue, String numberOfYears) {
+		return "DATE_ADD(" + instantValue + ", INTERVAL (" + numberOfYears + ") YEAR )";
 	}
 
 	/**
@@ -3669,6 +4006,20 @@ public abstract class DBDefinition implements Serializable {
 	abstract public String doDayOfWeekTransform(String dateSQL);
 
 	/**
+	 * Extracts the weekday from the date provided as a number from 1 to 7.
+	 *
+	 * <p>
+	 * Provides access to the day of the week as a number from 1 for Sunday to 7
+	 * for Saturday.
+	 *
+	 * @param dateSQL the date to get the day of the week for.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a number between 1 and 7 for the weekday.
+	 */
+	abstract public String doInstantDayOfWeekTransform(String dateSQL);
+
+	/**
 	 * Provides the CREATE INDEX clause for this database.
 	 *
 	 * <p>
@@ -3750,7 +4101,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a boolean derived from objRepresentingABoolean.
 	 */
 	public Boolean doBooleanArrayElementTransform(Object objRepresentingABoolean) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBStatement does not support doBooleanArrayElementTransform(Object) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4210,7 +4561,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetYearsTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetYearsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4222,7 +4573,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMonthsTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetMonthsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4234,7 +4585,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetDaysTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetDaysTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4246,7 +4597,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetHoursTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetHoursTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4258,7 +4609,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMinutesTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetMinutesTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4270,7 +4621,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetSecondsTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetSecondsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4366,7 +4717,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DGetXTransform(String pont2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4378,7 +4729,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DGetYTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4393,7 +4744,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DMeasurableDimensionsTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetMeasurableDimensionsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4406,7 +4757,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetBioundingBoxTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4418,7 +4769,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DAsTextTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DAsTextTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4570,7 +4921,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DAsTextTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DAsTextTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4583,7 +4934,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DEqualsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4608,7 +4959,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the dimension (probably 1)
 	 */
 	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DMeasurableDimensionsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4620,7 +4971,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetBoundingBoxTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4632,7 +4983,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support transformPoint2DArrayToDatabasePolygon2DFormat(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4645,7 +4996,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMaxXTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMaxXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4658,7 +5009,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMinXTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMinXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4671,7 +5022,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMaxYTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMaxYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4684,7 +5035,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMinYTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMinYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4697,7 +5048,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMaxXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4710,7 +5061,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMinXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4723,7 +5074,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMaxYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4736,7 +5087,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMinYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4749,7 +5100,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support transformPolygonIntoDatabasePolygon2DFormat(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4762,7 +5113,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL:
 	 */
 	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, String otherPolygon2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DDistanceBetweenTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4803,7 +5154,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doSubstringBeforeTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4818,7 +5169,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doSubstringAfterTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4863,7 +5214,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DContainsPoint2DTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4876,7 +5227,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DAsTextTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4890,7 +5241,7 @@ public abstract class DBDefinition implements Serializable {
 	 * depending on whether the lines cross at any point.
 	 */
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DIntersectsLine2DTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4905,7 +5256,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the 2 line segments or NULL.
 	 */
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DIntersectionPointWithLine2DTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4920,7 +5271,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the 2 line segments or NULL.
 	 */
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstLine, String secondLine) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DAllIntersectionPointsWithLine2DTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4986,7 +5337,7 @@ public abstract class DBDefinition implements Serializable {
 	 * java.lang.String)
 	 */
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DIntersectsLineSegment2DTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -4999,7 +5350,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMaxXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5012,7 +5363,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMinXTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMinXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5025,7 +5376,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMaxYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5038,7 +5389,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMinYTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMinYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5051,7 +5402,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetBoundingBoxTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5064,7 +5415,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DDimensionTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DDimensionTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5078,7 +5429,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DNotEqualsTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5092,7 +5443,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DEqualsTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5105,7 +5456,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DAsTextTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DAsTextTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5120,7 +5471,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the 2 line segments or NULL.
 	 */
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DIntersectionPointWithLineSegment2DTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5133,7 +5484,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DStartPointTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5146,7 +5497,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DEndPointTransform(String lineSegmentSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DEndPointTransform(String) yet.");
 	}
 
 	/**
@@ -5203,7 +5554,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DEqualsTransform(String firstMultiPointValue, String secondMultiPointValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DEqualsTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5217,7 +5568,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DNotEqualsTransform(String first, String second) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DNotEqualsTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5230,7 +5581,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetPointAtIndexTransform(String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5242,7 +5593,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetNumberOfPointsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5255,7 +5606,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DMeasurableDimensionsTransform(String multipoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DMeasurableDimensionsTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5268,7 +5619,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetBoundingBoxTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetBoundingBoxTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5280,7 +5631,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DAsTextTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5293,12 +5644,9 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DToLine2DTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DToLine2DTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-//	public String doMultiPoint2DToPolygon2DTransform(String first) {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//	}
 	/**
 	 * Provides the SQL that will derive the smallest Y value of all the points in
 	 * the MultiPoint2D value
@@ -5309,7 +5657,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMinYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5322,7 +5670,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMinXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5335,7 +5683,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMaxYTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5348,7 +5696,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMaxXTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5390,7 +5738,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return an ordered list of SQL.
 	 */
 	public List<String> getSpatial2DIndexSQL(DBDatabase database, String formatTableName, String formatColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support getSpatial2DIndexSQL(DBDatabase, String, String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5452,7 +5800,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMagnitudeTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5495,7 +5843,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doPoint2DGetMagnitudeTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetMagnitudeTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5538,7 +5886,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doMultiPoint2DGetMagnitudeTransform(String multipoint2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMagnitudeTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5581,7 +5929,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doPolygon2DGetMagnitudeTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMagnitudeTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5624,7 +5972,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doLineSegment2DGetMagnitudeTransform(String lineSegment2DSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMagnitudeTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5642,7 +5990,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a polygon2d value
 	 */
 	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support transformCoordinateArrayToDatabasePolygon2DFormat(List<String>) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5659,7 +6007,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the last day of the month that the date is in.
 	 */
 	public String doEndOfMonthTransform(String dateSQL) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support doEndOfMonthTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -5684,15 +6032,6 @@ public abstract class DBDefinition implements Serializable {
 	 */
 	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
 		return "(" + dateSQL + " AT TIME ZONE '" + timeZone.getDisplayName(false, TimeZone.SHORT) + "')";
-//		Double zoneOffset = 0.0 + timeZone.getRawOffset();//(0.0 + this.getSecond().getRawOffset()) / 60.0;
-//		final double inHours = zoneOffset / 1000 / 60 / 60;
-//
-//		int hourPart = Double.valueOf(inHours).intValue();
-//		int minutePart = Double.valueOf((inHours-hourPart)*60).intValue();
-//		return "("+dateSQL+ " AT TIME ZONE INTERVAL '"
-//				+(hourPart>0?"+":"-")+(hourPart<10?"0"+hourPart:""+hourPart)+":"
-//				+(minutePart<10?"0"+minutePart:""+minutePart)+"')";
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -6117,7 +6456,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String getSQLToCheckTableExists(DBRow table) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBDefinition does not support getSQLToCheckTableExists(DBRow) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	public boolean supportsTableCheckingViaMetaData() {
@@ -6281,7 +6620,7 @@ public abstract class DBDefinition implements Serializable {
 		String sign = tz > 0 ? "+" : "-";
 		int tzHours = tz / (1000 * 60 * 60);
 		int tzMinutes = tz - (tzHours * 1000 * 60 * 60);
-		return getDatePartsFormattedForQuery(years, months, days, "0", "0", "0", "0.0", sign, ""+tzHours, ""+tzMinutes);
+		return getDatePartsFormattedForQuery(years, months, days, "0", "0", "0", "0.0", sign, "" + tzHours, "" + tzMinutes);
 	}
 
 	public String doLeftPadTransform(String toPad, String padWith, String length) {
@@ -6305,6 +6644,14 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public boolean supportsRightPadTransform() {
+		return true;
+	}
+
+	public String doCurrentUTCDateTimeTransform() {
+		return "UTC_TIMESTAMP(6)";
+	}
+
+	public boolean supportsTimeZones() {
 		return true;
 	}
 }

@@ -351,7 +351,7 @@ public class DateExpressionTest extends AbstractTest {
 		DBDate test4 = new DBDate(this.column(this.creationDate).min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().currentRow().currentRow());
+				.rows().currentRow().toCurrentRow());
 		@DBColumn
 		DBDate test5 = new DBDate(this.column(this.creationDate).min()
 				.over().partition(this.column(this.carCompany))
@@ -366,7 +366,7 @@ public class DateExpressionTest extends AbstractTest {
 		DBDate test7 = new DBDate(this.column(this.creationDate).min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().currentRow().following(3));
+				.rows().currentRow().forFollowing(3));
 		@DBColumn
 		DBDate test8 = new DBDate(this.column(this.creationDate).min()
 				.over().partition(this.column(this.carCompany))
@@ -376,7 +376,7 @@ public class DateExpressionTest extends AbstractTest {
 		DBDate test9 = new DBDate(this.column(this.creationDate).min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().unboundedPreceding().following(1));
+				.rows().unboundedPreceding().forFollowing(1));
 	}
 
 	@Test
@@ -514,7 +514,6 @@ public class DateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCurrentTime() throws SQLException {
-database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addConditions(marq.column(marq.creationDate).isBetween(DateExpression.currentDate(), DateExpression.nullDate()));
@@ -524,13 +523,11 @@ database.setPrintSQLBeforeExecuting(true);
 		Assert.assertThat(got.size(), is(0));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-database.print(database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows());
 		Marque reportLimitingMarque = new Marque();
 		reportLimitingMarque.name.permittedPatternIgnoreCase("% HUMMER %");
 		CurrentDateReport currentDateReport = new CurrentDateReport();
 
 		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
-database.print(reportRows);
 		Assert.assertThat(reportRows.size(), is(1));
 
 		query = database.getDBQuery(marq);
@@ -545,7 +542,6 @@ database.print(reportRows);
 		got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(1));
-database.setPrintSQLBeforeExecuting(false);
 	}
 
 	@Test
@@ -1599,7 +1595,6 @@ database.setPrintSQLBeforeExecuting(false);
 	@Test
 //	@Ignore
 	public void testSecondsDifferenceFunction() throws SQLException, ParseException {
-		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1627,7 +1622,6 @@ database.setPrintSQLBeforeExecuting(false);
 		secondDateMarques.creationDate.permittedValues(secondDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
-		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	public static class MarqueWithSecondsFromDate extends Marque {
@@ -1643,16 +1637,16 @@ database.setPrintSQLBeforeExecuting(false);
 	public void testSecondsFromReturnsDecimal() throws SQLException {
 		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
 
-		for (MarqueWithSecondsFromDate row : allRows) {
+		allRows.forEach((row) -> {
 			Assert.assertThat(row.subseconds.doubleValue(), is(0.01));
-		}
+		});
 	}
 
 	@Test
 	public void testEndOfMonthCalculation() throws SQLException {
-		MarqueWithEndOfMonthColumn marq = new MarqueWithEndOfMonthColumn();
-		DBTable<MarqueWithEndOfMonthColumn> table = database.getDBTable(marq);
-		List<MarqueWithEndOfMonthColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
+		MarqueWithEndOfMonthForDateColumn marq = new MarqueWithEndOfMonthForDateColumn();
+		DBTable<MarqueWithEndOfMonthForDateColumn> table = database.getDBTable(marq);
+		List<MarqueWithEndOfMonthForDateColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
 		final Date march31st2013 = (new GregorianCalendar(2013, 2, 31)).getTime();
@@ -1660,7 +1654,7 @@ database.setPrintSQLBeforeExecuting(false);
 		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
 		final Date april1st2011 = (new GregorianCalendar(2011, 3, 1)).getTime();
 		final Date nullDate = null;
-		for (MarqueWithEndOfMonthColumn allRow : allRows) {
+		for (MarqueWithEndOfMonthForDateColumn allRow : allRows) {
 			Assert.assertThat(allRow.endOfMonth.dateValue(),
 					anyOf(
 							is(nullDate),
@@ -1689,7 +1683,7 @@ database.setPrintSQLBeforeExecuting(false);
 		}
 	}
 
-	public static class MarqueWithEndOfMonthColumn extends Marque {
+	public static class MarqueWithEndOfMonthForDateColumn extends Marque {
 
 		private static final long serialVersionUID = 1L;
 

@@ -135,7 +135,7 @@ public class LargeObjectExpression extends AnyExpression<byte[], LargeObjectResu
 
 	@Override
 	public String createSQLForFromClause(DBDatabase database) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("LargeObjectExpresssion does not support createSQLForFromClause(DBDatabase) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

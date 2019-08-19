@@ -259,6 +259,11 @@ public class MySQLDBDefinition_5_7 extends DBDefinition {
 	}
 
 	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
+		return " DAYOFWEEK(" + dateSQL + ")";
+	}
+
+	@Override
 	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
 		return "CONVERT_TZ(" + dateSQL + " , 'SYSTEM', '" + timeZone.getDisplayName(false, TimeZone.SHORT) + "')";
 	}

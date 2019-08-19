@@ -24,7 +24,7 @@ public class DBRuntimeException extends RuntimeException {
 	 * Thrown when unexpected errors occur.
 	 *
 	 */
-	public DBRuntimeException() {
+	protected DBRuntimeException() {
 		fillInStackTrace();
 	}
 
@@ -43,7 +43,7 @@ public class DBRuntimeException extends RuntimeException {
 	 *
 	 * @param cause	cause
 	 */
-	public DBRuntimeException(Throwable cause) {
+	protected DBRuntimeException(Throwable cause) {
 		super(cause);
 		fillInStackTrace();
 	}
@@ -56,6 +56,6 @@ public class DBRuntimeException extends RuntimeException {
 	 */
 	public DBRuntimeException(String message, Throwable cause) {
 		super(message, cause);
-		fillInStackTrace();
+		Throwable fillInStackTrace = fillInStackTrace();
 	}
 }

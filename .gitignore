@@ -27,3 +27,6 @@
 /dbvolutionTest.sqlite-bundledcluster.sqlite
 /dbvolutionTest.sqlite-opencluster.sqlite
 /retrieveRowWithBinaryObjectUsingInputStreamTwice.jpg
+/directTest.h2db.mv.db.mv.db
+/fileTest.h2db.mv.db.mv.db
+/fileTest.h2db.mv.db.trace.db

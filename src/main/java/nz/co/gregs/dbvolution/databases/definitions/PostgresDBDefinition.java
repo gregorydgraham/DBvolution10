@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
 import java.text.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
@@ -81,15 +80,28 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		return SeparatedString.startsWith("make_timestamp(").separatedBy(", ").endsWith(")")
 				.add(years, months, days)
-				.add(hours, minutes, "("+ seconds + "+" + subsecond + ")")
+				.add(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 //				.add(
 //						doConcatTransform(
-//								"'"+timeZoneSign+"'",timeZoneHourOffset, doRightPadTransform("'"+timeZoneMinuteOffSet+"'", "'0'", "2")
+//								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
 //						)
 //				)
+				.toString();
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return SeparatedString.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
+				.add(years, months, days)
+				.add(hours, minutes, "(" + seconds + "+" + subsecond + ")")
+				.add(
+						doConcatTransform(
+								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
+						)
+				)
 				.toString();
 	}
 
@@ -157,7 +169,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doNumberToIntegerTransform(String sql) {
-		return "CAST(("+sql+") as INTEGER)";
+		return "CAST((" + sql + ") as INTEGER)";
 	}
 
 	@Override
@@ -213,37 +225,72 @@ public class PostgresDBDefinition extends DBDefinition {
 //		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 MILLISECOND' )";
 //	}
 	@Override
-	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 SECOND' )";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfMinutes) {
 		return "(" + dateValue + "+ (" + numberOfMinutes + ")*INTERVAL '1 MINUTE' )";
 	}
 
 	@Override
-	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateValue, String numberOfDays) {
 		return "(" + dateValue + "+ (" + numberOfDays + ")*INTERVAL '1 DAY' )";
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "(" + dateValue + "+ (" + numberOfHours + ")*INTERVAL '1 HOUR')";
 	}
 
 	@Override
-	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddWeeksTransform(String dateValue, String numberOfWeeks) {
 		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 WEEK')";
 	}
 
 	@Override
-	public String doAddMonthsTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddMonthsTransform(String dateValue, String numberOfWeeks) {
 		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 MONTH')";
 	}
 
 	@Override
-	public String doAddYearsTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddYearsTransform(String dateValue, String numberOfWeeks) {
+		return "(" + dateValue + "+ (" + numberOfWeeks + ")*(INTERVAL '1 YEAR'))";
+	}
+
+	@Override
+	public String doInstantAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 SECOND' )";
+	}
+
+	@Override
+	public String doInstantAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "(" + dateValue + "+ (" + numberOfMinutes + ")*INTERVAL '1 MINUTE' )";
+	}
+
+	@Override
+	public String doInstantAddDaysTransform(String dateValue, String numberOfDays) {
+		return "(" + dateValue + "+ (" + numberOfDays + ")*INTERVAL '1 DAY' )";
+	}
+
+	@Override
+	public String doInstantAddHoursTransform(String dateValue, String numberOfHours) {
+		return "(" + dateValue + "+ (" + numberOfHours + ")*INTERVAL '1 HOUR')";
+	}
+
+	@Override
+	public String doInstantAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 WEEK')";
+	}
+
+	@Override
+	public String doInstantAddMonthsTransform(String dateValue, String numberOfWeeks) {
+		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 MONTH')";
+	}
+
+	@Override
+	public String doInstantAddYearsTransform(String dateValue, String numberOfWeeks) {
 		return "(" + dateValue + "+ (" + numberOfWeeks + ")*(INTERVAL '1 YEAR'))";
 	}
 
@@ -303,6 +350,15 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " (EXTRACT(DOW FROM (" + dateSQL + "))+1)";
+	}
+
+//	@Override
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1000)";
+//	}
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
+		return " (EXTRACT(DOW FROM (" + dateSQL + ") AT TIME ZONE 'UTC')+1)";
 	}
 
 	@Override
@@ -948,13 +1004,126 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "ROUND((" + number + ")::numeric, " + decimalPlaces + ")";
 	}
 
-//	@Override
-//	public String getLocalDateFormattedForQuery(LocalDate date) {
-//		return "(TIMESTAMP WITH TIME ZONE '" + DATETIME_FORMAT.format(date) + "')";
-//	}
-//
-//	@Override
-//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
-//		return "(TIMESTAMP WITH TIME ZONE '" + DATETIME_FORMAT.format(date) + "')";
-//	}
+	/**
+	 * Creates the CURRENTTIME function for this database.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the default implementation returns " CURRENT_TIMESTAMP "
+	 */
+	@Override
+	public String doCurrentUTCTimeTransform() {
+		return "(now() at time zone 'utc')";
+	}
+
+	@Override
+	public String doCurrentUTCDateTimeTransform() {
+		return "(now() at time zone 'utc')";
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the year part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the year of the supplied date.
+	 */
+	@Override
+	public String doInstantYearTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(YEAR FROM " + dateExpression + " AT TIME ZONE 'UTC')");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the month part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the month of the supplied date.
+	 */
+	@Override
+	public String doInstantMonthTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(MONTH FROM " + dateExpression + " AT TIME ZONE 'UTC')");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the day part of the date.
+	 *
+	 * <p>
+	 * Day in this sense is the number of the day within the month: that is the 23
+	 * part of Monday 25th of August 2014
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the day of the supplied date.
+	 */
+	@Override
+	public String doInstantDayTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(DAY FROM " + dateExpression + " AT TIME ZONE 'UTC')");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the hour part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the hour of the supplied date.
+	 */
+	@Override
+	public String doInstantHourTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(HOUR FROM " + dateExpression + " AT TIME ZONE 'UTC')");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the minute part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the minute of the supplied date.
+	 */
+	@Override
+	public String doInstantMinuteTransform(String dateExpression) {
+		return doNumberToIntegerTransform("EXTRACT(MINUTE FROM " + dateExpression + " AT TIME ZONE 'UTC')");
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the second part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a SQL snippet that will produce the second of the supplied date.
+	 */
+	@Override
+	public String doInstantSecondTransform(String dateExpression) {
+		return "EXTRACT(SECOND FROM " + dateExpression + " AT TIME ZONE 'UTC')";
+	}
+
+	/**
+	 * Returns the partial second value from the date.
+	 *
+	 * <p>
+	 * This should return the most detailed possible value less than a second for
+	 * the date expression provided. It should always return a value less than 1s.
+	 *
+	 * @param dateExpression the date from which to get the subsecond part of.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL
+	 */
+	@Override
+	public String doInstantSubsecondTransform(String dateExpression) {
+		return "(EXTRACT(MILLISECOND FROM " + dateExpression + " AT TIME ZONE 'UTC')/1000.0000)";
+	}
 }

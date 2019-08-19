@@ -351,7 +351,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		DBLocalDate test4 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().currentRow().currentRow());
+				.rows().currentRow().toCurrentRow());
 		@DBColumn
 		DBLocalDate test5 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
@@ -366,7 +366,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		DBLocalDate test7 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().currentRow().following(3));
+				.rows().currentRow().forFollowing(3));
 		@DBColumn
 		DBLocalDate test8 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
@@ -376,7 +376,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		DBLocalDate test9 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
-				.rows().unboundedPreceding().following(1));
+				.rows().unboundedPreceding().forFollowing(1));
 	}
 
 	@Test
@@ -1320,9 +1320,9 @@ public class LocalDateExpressionTest extends AbstractTest {
 	@Test
 	public void testEndOfMonthCalculation() throws SQLException {
 
-		MarqueWithEndOfMonthColumn marq = new MarqueWithEndOfMonthColumn();
-		DBTable<MarqueWithEndOfMonthColumn> table = database.getDBTable(marq);
-		List<MarqueWithEndOfMonthColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
+		MarqueWithEndOfMonthForLocalDateColumn marq = new MarqueWithEndOfMonthForLocalDateColumn();
+		DBTable<MarqueWithEndOfMonthForLocalDateColumn> table = database.getDBTable(marq);
+		List<MarqueWithEndOfMonthForLocalDateColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
 		final LocalDate march31st2013 = LocalDate.of(2013, Month.MARCH, 31);
@@ -1330,7 +1330,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		final LocalDate march1st2013 = LocalDate.of(2013, Month.MARCH, 1);
 		final LocalDate april1st2011 = LocalDate.of(2011, Month.APRIL, 1);
 		final LocalDate nullDate = null;
-		for (MarqueWithEndOfMonthColumn allRow : allRows) {
+		for (MarqueWithEndOfMonthForLocalDateColumn allRow : allRows) {
 			Assert.assertThat(allRow.endOfMonth.localDateValue(),
 					anyOf(
 							is(nullDate),
@@ -1360,7 +1360,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		}
 	}
 
-	public static class MarqueWithEndOfMonthColumn extends Marque {
+	public static class MarqueWithEndOfMonthForLocalDateColumn extends Marque {
 
 		private static final long serialVersionUID = 1L;
 

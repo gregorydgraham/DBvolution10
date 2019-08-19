@@ -48,6 +48,11 @@ public class ClusterDatabaseDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
+		throw new UnsupportedOperationException("Clusters Do Not Support These Operations Directly");
+	}
+
+	@Override
 	public boolean supportsStatementIsClosed() {
 		return false;
 	}

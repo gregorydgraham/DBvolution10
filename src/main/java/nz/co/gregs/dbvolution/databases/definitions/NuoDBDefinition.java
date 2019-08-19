@@ -127,12 +127,12 @@ public class NuoDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfHours + ")*60*60) SECOND )";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfMinutes) {
 		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfMinutes + ")*60) SECOND )";
 	}
 
@@ -178,6 +178,11 @@ public class NuoDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		return " DAYOFWEEK(" + dateSQL + ")";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		return " DAYOFWEEK(" + dateSQL + ")";
 	}
 

@@ -83,7 +83,36 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public ResultSet executeQuery(String sql) throws SQLException {
-		final String logSQL = "EXECUTING QUERY: " + sql;
+		return executeQuery(sql, "UNLABELLED");
+//		final String logSQL = "EXECUTING QUERY: " + sql;
+//		database.printSQLIfRequested(logSQL);
+//		ResultSet executeQuery = null;
+//		try {
+//			executeQuery = getInternalStatement().executeQuery(sql);
+//		} catch (SQLException exp) {
+//			try {
+//				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql);
+//			} catch (SQLException ex) {
+//				throw ex;
+//			} catch (Exception ex) {
+//				throw new SQLException(ex);
+//			}
+//		}
+//		return executeQuery;
+	}
+
+	/**
+	 * Executes the given SQL statement, which returns a single ResultSet object.
+	 *
+	 * @param sql SQL
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param label
+	 * @return a ResultSet
+	 * @throws SQLException database exceptions
+	 */
+	public ResultSet executeQuery(String sql, String label) throws SQLException {
+		final String logSQL = "EXECUTING QUERY \""+label+"\": " + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
 		try {
@@ -1172,7 +1201,7 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public void closeOnCompletion() throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBStatement does not support closeOnCompletion() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -1186,7 +1215,7 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public boolean isCloseOnCompletion() throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("DBStatement does not support closeOnCompletion() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**

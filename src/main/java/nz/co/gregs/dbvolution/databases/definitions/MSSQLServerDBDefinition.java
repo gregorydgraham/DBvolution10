@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
@@ -79,9 +80,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				tz = tz; // "+13:00" is perfect :)
 				break;
 			default:
-				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
+				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"", new ParseException(tz, 0));
 		}
-		final String result = " CAST('" + format.format(date) /*+ " " + tz*/ +"' as DATETIME2(7)) ";
+		final String result = " CAST('" + format.format(date) /*+ " " + tz*/ + "' as DATETIME2(7)) ";
 //		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET(7)) ";
 		return result;
 	}
@@ -91,9 +92,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "CAST("
 				+ doConcatTransform(
 						doNumberToStringTransform(years), "'-'", doNumberToStringTransform(months), "'-'", doNumberToStringTransform(days), "' '",
-						doNumberToStringTransform(hours), "':'", doNumberToStringTransform(minutes), "':'", doNumberToStringTransform("(" + seconds + "+" + subsecond + ")") 
-//						, "' '", timeZoneSign, timeZoneHourOffset, "':'", timeZoneMinuteOffSet
-//						, "'" + OffsetTime.now().format(DateTimeFormatter.ofPattern("XXX")) + "'"
+						doNumberToStringTransform(hours), "':'", doNumberToStringTransform(minutes), "':'", doNumberToStringTransform("(" + seconds + "+" + subsecond + ")")
+				//						, "' '", timeZoneSign, timeZoneHourOffset, "':'", timeZoneMinuteOffSet
+				//						, "'" + OffsetTime.now().format(DateTimeFormatter.ofPattern("XXX")) + "'"
 				)
 				+ " as DATETIME2(7))";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
@@ -115,6 +116,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
+			return " DATETIME2(7) ";
+		} else if (qdt instanceof DBInstant) {
 			return " DATETIME2(7) ";
 		} else if (qdt instanceof DBLocalDate) {
 			return " DATETIME2(7) ";
@@ -201,6 +204,26 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			parsed = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITH_ZONE);
 		} catch (DateTimeParseException ex) {
 			parsed = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
+		}
+		return parsed;
+	}
+
+	@Override
+	public Instant parseInstantFromGetString(String input) throws ParseException {
+		Instant parsed;
+		//either '2019-08-19 08:22:40.8135410' or '2019-08-19 20:22:40.8910319 +12:00'
+//		System.out.println("PARSING RESULTSET STRING: " + input);
+		String inputFromResultSet = input.replaceFirst(" ", "T");
+		if (inputFromResultSet.contains(" ")) {
+			inputFromResultSet = inputFromResultSet.replaceAll(" ", "");
+		} else {
+			inputFromResultSet += "Z";
+		}
+//		System.out.println("PARSING RESULTSET STRING: " + inputFromResultSet);
+		try {
+			parsed = Instant.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()));
+		} catch (DateTimeParseException ex) {
+			parsed = Instant.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()));
 		}
 		return parsed;
 	}
@@ -368,37 +391,72 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 //		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
 //	}
 	@Override
-	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+	public String doDateAddMinutesTransform(String dateValue, String numberOfMinutes) {
 		return "DATEADD( MINUTE, " + numberOfMinutes + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+	public String doDateAddDaysTransform(String dateValue, String numberOfDays) {
 		return "DATEADD( DAY, " + numberOfDays + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+	public String doDateAddHoursTransform(String dateValue, String numberOfHours) {
 		return "DATEADD( HOUR, " + numberOfHours + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+	public String doDateAddWeeksTransform(String dateValue, String numberOfWeeks) {
 		return "DATEADD( WEEK, " + numberOfWeeks + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+	public String doDateAddMonthsTransform(String dateValue, String numberOfMonths) {
 		return "DATEADD( MONTH, " + numberOfMonths + "," + dateValue + ")";
 	}
 
 	@Override
-	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+	public String doDateAddYearsTransform(String dateValue, String numberOfYears) {
+		return "DATEADD( YEAR, " + numberOfYears + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "DATEADD( MINUTE, " + numberOfMinutes + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddDaysTransform(String dateValue, String numberOfDays) {
+		return "DATEADD( DAY, " + numberOfDays + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddHoursTransform(String dateValue, String numberOfHours) {
+		return "DATEADD( HOUR, " + numberOfHours + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "DATEADD( WEEK, " + numberOfWeeks + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "DATEADD( MONTH, " + numberOfMonths + "," + dateValue + ")";
+	}
+
+	@Override
+	public String doInstantAddYearsTransform(String dateValue, String numberOfYears) {
 		return "DATEADD( YEAR, " + numberOfYears + "," + dateValue + ")";
 	}
 
@@ -479,6 +537,41 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doSubsecondTransform(String dateExpression) {
+		return "(DATEPART(MILLISECOND , " + dateExpression + ")/1000.0000)";
+	}
+
+	@Override
+	public String doInstantYearTransform(String dateExpression) {
+		return "DATEPART(YEAR, " + dateExpression + ")";
+	}
+
+	@Override
+	public String doInstantMonthTransform(String dateExpression) {
+		return "DATEPART(MONTH, " + dateExpression + ")";
+	}
+
+	@Override
+	public String doInstantDayTransform(String dateExpression) {
+		return "DATEPART(DAY, " + dateExpression + ")";
+	}
+
+	@Override
+	public String doInstantHourTransform(String dateExpression) {
+		return "DATEPART(HOUR, " + dateExpression + ")";
+	}
+
+	@Override
+	public String doInstantMinuteTransform(String dateExpression) {
+		return "DATEPART(MINUTE, " + dateExpression + ")";
+	}
+
+	@Override
+	public String doInstantSecondTransform(String dateExpression) {
+		return "DATEPART(SECOND , " + dateExpression + ")";
+	}
+
+	@Override
+	public String doInstantSubsecondTransform(String dateExpression) {
 		return "(DATEPART(MILLISECOND , " + dateExpression + ")/1000.0000)";
 	}
 
@@ -564,15 +657,24 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	protected String getCurrentDateTimeFunction() {
-		return " switchoffset("+
-				"SYSDATETIME()" + ", '"
-				+OffsetTime.now().format(DateTimeFormatter.ofPattern("ZZZZZ"))
-				+"')"
-				;
+		return " switchoffset("
+				+ "SYSDATETIME()" + ", '"
+				+ OffsetTime.now().format(DateTimeFormatter.ofPattern("ZZZZZ"))
+				+ "')";
+	}
+
+	@Override
+	public String doCurrentUTCDateTimeTransform() {
+		return " SYSUTCDATETIME()";
 	}
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
+		return " datepart(dw,(" + dateSQL + "))";
+	}
+
+	@Override
+	public String doInstantDayOfWeekTransform(String dateSQL) {
 		return " datepart(dw,(" + dateSQL + "))";
 	}
 

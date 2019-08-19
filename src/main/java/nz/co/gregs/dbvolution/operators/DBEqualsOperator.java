@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
 import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -30,11 +31,15 @@ import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
+import nz.co.gregs.dbvolution.expressions.EqualExpression;
+import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.results.InstantResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 
@@ -81,7 +86,7 @@ public class DBEqualsOperator extends DBOperator {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public BooleanExpression generateWhereExpression(DBDefinition db, DBExpression column) {
+	public BooleanExpression generateWhereExpression(DBDefinition db, DBExpression column) throws ComparisonBetweenTwoDissimilarTypes {
 		DBExpression genericExpression = column;
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof EqualComparable) {
@@ -120,6 +125,9 @@ public class DBEqualsOperator extends DBOperator {
 				} else if ((genericExpression instanceof DateExpression) && ((getFirstValue() instanceof DateResult) || getFirstValue() == null)) {
 					DateExpression dateExpression = (DateExpression) genericExpression;
 					op = dateExpression.is((DateResult) getFirstValue());
+//				} else if ((genericExpression instanceof InstantExpression) && ((getFirstValue() instanceof InstantResult) || getFirstValue() == null)) {
+//					InstantExpression expression = (InstantExpression) genericExpression;
+//					op = expression.is((InstantResult) getFirstValue());
 				} else if ((genericExpression instanceof BooleanExpression) && ((getFirstValue() instanceof BooleanResult) || getFirstValue() == null)) {
 					BooleanExpression boolExpr = (BooleanExpression) genericExpression;
 					op = boolExpr.is((BooleanResult) getFirstValue());
@@ -132,6 +140,13 @@ public class DBEqualsOperator extends DBOperator {
 				} else if ((genericExpression instanceof Polygon2DExpression) && ((getFirstValue() instanceof Polygon2DResult) || getFirstValue() == null)) {
 					Polygon2DExpression intervalExpr = (Polygon2DExpression) genericExpression;
 					op = intervalExpr.is((Polygon2DResult) getFirstValue());
+				} else if (genericExpression instanceof EqualExpression) {
+					if (genericExpression.getQueryableDatatypeForExpressionValue().getClass().equals(getFirstValue().getQueryableDatatypeForExpressionValue().getClass())) {
+						EqualExpression dateExpression = (EqualExpression) genericExpression;
+						op = dateExpression.is(getFirstValue());
+					} else {
+						throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, getFirstValue());
+					}
 				} else {
 					throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, getFirstValue());
 				}

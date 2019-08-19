@@ -37,6 +37,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -525,6 +526,38 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
+	 * @param date a literal value to use in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
+	public final static InstantExpression value(Instant date) {
+		return new InstantExpression(date);
+	}
+
+	/**
+	 * Create An Appropriate Expression Object For This Object
+	 *
+	 * <p>
+	 * The expression framework requires a *Expression to work with. The easiest
+	 * way to get that is the {@code DBRow.column()} method.
+	 *
+	 * <p>
+	 * However if you wish your expression to start with a literal value it is a
+	 * little trickier.
+	 *
+	 * <p>
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
 	 * @param period a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -773,6 +806,10 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 
 	public final static LocalDateTimeExpression nullLocalDateTime() {
 		return new LocalDateTimeExpression().nullExpression();
+	}
+
+	public final static InstantExpression nullInstant() {
+		return new InstantExpression().nullExpression();
 	}
 
 	public final static DateRepeatExpression nullDateRepeat() {

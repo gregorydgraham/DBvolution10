@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
@@ -92,6 +91,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private SortProvider[] sortOrderColumns;
 //	private ArrayList<PropertyWrapper> sortOrder;
 	private List<DBQueryRow> currentPage;
+	private String label = "UNLABELLED";
 
 	/**
 	 * <p style="color: #F90;">Support DBvolution at
@@ -369,7 +369,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		long result = 0L;
 		try (DBStatement dbStatement = db.getDBStatement()) {
 			final String sqlForCount = details.getSQLForCount(db, details);
-			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount)) {
+			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel())) {
 				while (resultSet.next()) {
 					result = resultSet.getLong(1);
 				}
@@ -1231,7 +1231,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 			}
 		}
-		final ResultSet queryResults = statement.executeQuery(sql);
+		final ResultSet queryResults = statement.executeQuery(sql, getLabel());
 
 		if (cancelHandle != null) {
 			cancelHandle.cancel(true);
@@ -1459,6 +1459,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 			default:
 				return getSQLForQuery(db, new QueryState(this), QueryType.SELECT, getOptions());
 		}
+	}
+
+	public void setLabel(String newLabel) {
+		synchronized (this) {
+			this.label = newLabel;
+		}
+	}
+
+	public String getLabel() {
+		return this.label;
 	}
 
 }

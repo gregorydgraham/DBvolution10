@@ -199,7 +199,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doMultiPoint2DGetBoundingBoxTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("Oracle11XEDBDefinition does not support doMultiPoint2DGetBoundingBoxTransform(String) yet.");
 	}
 
 	@Override

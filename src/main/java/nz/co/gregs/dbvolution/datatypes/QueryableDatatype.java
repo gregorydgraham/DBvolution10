@@ -20,6 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -46,6 +49,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.expressions.HasSQLString;
+import nz.co.gregs.dbvolution.results.InstantResult;
+import nz.co.gregs.dbvolution.results.LocalDateResult;
+import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
 
 /**
  *
@@ -216,41 +222,46 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	@SuppressWarnings("unchecked")
 	static public <S extends Object> QueryableDatatype<S> getQueryableDatatypeForObject(S o) {
 		QueryableDatatype<S> qdt;
-//		if (o instanceof QueryableDatatype) {
-//			qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype) o).getClass());
-//			qdt.setLiteralValue(((QueryableDatatype) o).getLiteralValue());
-//		} else {
-		if (o instanceof Integer) {
+		if (o instanceof Integer || o instanceof Long) {
 			qdt = (QueryableDatatype<S>) new DBInteger();
-		} else if (o instanceof Long) {
+		} else if (o instanceof IntegerResult) {
 			qdt = (QueryableDatatype<S>) new DBInteger();
 		} else if (o instanceof Number) {
 			qdt = (QueryableDatatype<S>) new DBNumber();
+		} else if (o instanceof NumberResult) {
+			qdt = (QueryableDatatype<S>) new DBNumber();
 		} else if (o instanceof String) {
+			qdt = (QueryableDatatype<S>) new DBString();
+		} else if (o instanceof StringResult) {
 			qdt = (QueryableDatatype<S>) new DBString();
 		} else if (o instanceof Date) {
 			qdt = (QueryableDatatype<S>) new DBDate();
+		} else if (o instanceof DateResult) {
+			qdt = (QueryableDatatype<S>) new DBDate();
+		} else if (o instanceof LocalDateResult) {
+			qdt = (QueryableDatatype<S>) new DBLocalDate();
+		} else if (o instanceof LocalDate) {
+			qdt = (QueryableDatatype<S>) new DBLocalDate();
+		} else if (o instanceof LocalDateTime) {
+			qdt = (QueryableDatatype<S>) new DBLocalDateTime();
+		} else if (o instanceof LocalDateTimeResult) {
+			qdt = (QueryableDatatype<S>) new DBLocalDateTime();
+		} else if (o instanceof Instant) {
+			qdt = (QueryableDatatype<S>) new DBInstant();
+		} else if (o instanceof InstantResult) {
+			qdt = (QueryableDatatype<S>) new DBInstant();
 		} else if (o instanceof Byte[]) {
+			qdt = (QueryableDatatype<S>) new DBLargeBinary();
+		} else if (o instanceof LargeObjectResult) {
 			qdt = (QueryableDatatype<S>) new DBLargeBinary();
 		} else if (o instanceof Boolean) {
 			qdt = (QueryableDatatype<S>) new DBBoolean();
-		} else if (o instanceof IntegerResult) {
-			qdt = (QueryableDatatype<S>) new DBInteger();
-		} else if (o instanceof NumberResult) {
-			qdt = (QueryableDatatype<S>) new DBNumber();
-		} else if (o instanceof StringResult) {
-			qdt = (QueryableDatatype<S>) new DBString();
-		} else if (o instanceof DateResult) {
-			qdt = (QueryableDatatype<S>) new DBDate();
-		} else if (o instanceof LargeObjectResult) {
-			qdt = (QueryableDatatype<S>) new DBLargeBinary();
 		} else if (o instanceof BooleanResult) {
 			qdt = (QueryableDatatype<S>) new DBBoolean();
 		} else {
 			qdt = new DBJavaObject<>();
 		}
 		qdt.setLiteralValue(o);
-//		}
 		return qdt;
 	}
 
@@ -1270,7 +1281,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 			}
 			return str.toString();
 		} else {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			throw new UnsupportedOperationException("QueryableDatatype does not support createSQLForFromClause(DBDatabase) for non-column-expression yet.");
 		}
 	}
 

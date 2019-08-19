@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -119,6 +120,9 @@ public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 				&& (getSecondValue() instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetween((DateResult) getFirstValue(), (DateResult) getSecondValue());
+		} else if (genericExpression instanceof RangeExpression) {
+			RangeExpression dateExpression = (RangeExpression) genericExpression;
+			betweenOp = dateExpression.isBetween(getFirstValue(), getSecondValue());
 		}
 		return this.invertOperator ? betweenOp.not() : betweenOp;
 	}

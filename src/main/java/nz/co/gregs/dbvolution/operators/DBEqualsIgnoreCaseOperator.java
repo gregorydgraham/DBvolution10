@@ -20,9 +20,11 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.EqualExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -73,6 +75,9 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			op = dateExpression.is((DateResult) getFirstValue());
+		} else if (genericExpression instanceof EqualExpression) {
+			EqualExpression expr = (EqualExpression) genericExpression;
+			op = expr.is(getFirstValue());
 		}
 		return this.invertOperator ? op.not() : op;
 	}
