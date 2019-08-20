@@ -552,8 +552,9 @@ public class InstantExpressionTest extends AbstractTest {
 		List<DBQueryRow> got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(0));
+		final Instant then = Instant.now();
 
-		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
+		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", then, 3, null));
 
 		MarqueWithInstant reportLimitingMarque = new MarqueWithInstant();
 		reportLimitingMarque.name.permittedPatternIgnoreCase("% HUMMER %");
@@ -567,14 +568,18 @@ public class InstantExpressionTest extends AbstractTest {
 		query.addConditions(
 				marq.column(marq.creationInstant)
 						.day().isIn(
-								InstantExpression.now().addSeconds(-100).day(),
-								InstantExpression.now().addSeconds(100).day()
+								InstantExpression.now().addSeconds(-10).day(),
+								InstantExpression.now().addSeconds(10).day()
 						),
 				marq.column(marq.creationInstant)
 						.isGreaterThan(march23rd2013Instant)
 		);
 
 		got = query.getAllRows();
+		if (got.size()!=1){
+			System.out.println("CREATION DATE EXPECTED: "+then);
+			database.getDBTable(marq).setBlankQueryAllowed(true).print();
+		}
 		Assert.assertThat(got.size(), is(1));
 	}
 
