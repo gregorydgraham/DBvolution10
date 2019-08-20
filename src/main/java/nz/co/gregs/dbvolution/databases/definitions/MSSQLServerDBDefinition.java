@@ -657,10 +657,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	protected String getCurrentDateTimeFunction() {
-		return " switchoffset("
-				+ "SYSDATETIME()" + ", '"
-				+ OffsetTime.now().format(DateTimeFormatter.ofPattern("ZZZZZ"))
-				+ "')";
+		return " SYSDATETIMEOFFSET() ";
+//		return " switchoffset("
+//				+ "SYSDATETIME()" + ", '"
+//				+ OffsetTime.now().format(DateTimeFormatter.ofPattern("ZZZZZ"))
+//				+ "')";
 	}
 
 	@Override
