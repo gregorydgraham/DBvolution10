@@ -521,8 +521,9 @@ public class DateExpressionTest extends AbstractTest {
 		List<DBQueryRow> got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(0));
+		final Date then = new Date();
 
-		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
+		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", then, 3, null));
 		Marque reportLimitingMarque = new Marque();
 		reportLimitingMarque.name.permittedPatternIgnoreCase("% HUMMER %");
 		CurrentDateReport currentDateReport = new CurrentDateReport();
@@ -541,6 +542,11 @@ public class DateExpressionTest extends AbstractTest {
 
 		got = query.getAllRows();
 
+		if(got.size()!=1){
+			System.out.println("EXPECTED CREATION DATE: "+then);
+			query.printSQLForQuery();
+			database.getDBTable(marq).setBlankQueryAllowed(true).print();
+		}
 		Assert.assertThat(got.size(), is(1));
 	}
 
