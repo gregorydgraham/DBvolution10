@@ -31,7 +31,7 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	CREATE("String", "Date original, Date compareTo", ""
-			+ "import org.joda.time.Period;"
+//			+ "import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return null;}\n"
 			+ "		int years = original.getYear() - compareTo.getYear();\n"
@@ -47,8 +47,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	EQUALS("boolean", "String original, String compareTo",
-			"import org.joda.time.Period;"
+	EQUALS("boolean", "String original, String compareTo",""
+//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -67,8 +67,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	LESSTHAN("boolean", "String original, String compareTo",
-			"import org.joda.time.Period;"
+	LESSTHAN("boolean", "String original, String compareTo",""
+//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -87,8 +87,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	LESSTHANEQUALS("boolean", "String original, String compareTo",
-			"import org.joda.time.Period;"
+	LESSTHANEQUALS("boolean", "String original, String compareTo",""
+//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -107,8 +107,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	GREATERTHAN("boolean", "String original, String compareTo",
-			"import org.joda.time.Period;"
+	GREATERTHAN("boolean", "String original, String compareTo",""
+//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -127,8 +127,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	GREATERTHANEQUALS("boolean", "String original, String compareTo",
-			"import org.joda.time.Period;"
+	GREATERTHANEQUALS("boolean", "String original, String compareTo",""
+//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -147,8 +147,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	DATEADDITION("Date", "Date original, String dateRepeatInput",
-			"import org.joda.time.Period;"
+	DATEADDITION("Date", "Date original, String dateRepeatInput",""
+//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"\n"
 			+ "		if (original == null || dateRepeatInput == null || dateRepeatInput.length() == 0) {\n"
@@ -177,8 +177,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	DATESUBTRACTION("Date", "Date original, String dateRepeatInput",
-			"import org.joda.time.Period;"
+	DATESUBTRACTION("Date", "Date original, String dateRepeatInput",""
+//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"\n"
 			+ "		if (original == null || dateRepeatInput == null || dateRepeatInput.length() == 0) {\n"
