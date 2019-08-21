@@ -69,8 +69,8 @@ public class QueryGraph {
 	 * Create a graph of the tables and connections for all the DBRows and
 	 * BooleanExpressions provided.
 	 *
-	 * @param allQueryTables
-	 * @param expressions
+	 * @param allQueryTables all the tables in the query
+	 * @param expressions the boolean expressions that connect the tables
 	 */
 	public QueryGraph(List<DBRow> allQueryTables, List<BooleanExpression> expressions) {
 		addAndConnectToRelevant(allQueryTables, expressions);
@@ -78,9 +78,6 @@ public class QueryGraph {
 
 	/**
 	 * Removes all state and prepares the graph for re-initialization.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this QueryGraph.
 	 */
@@ -95,8 +92,8 @@ public class QueryGraph {
 	 * Add the provided DBRows/tables and expressions to this QueryGraph,
 	 * generating new nodes and edges as required.
 	 *
-	 * @param otherTables
-	 * @param expressions
+	 * @param otherTables the tables to add to the query
+	 * @param expressions the expressions that connect the tables
 	 */
 	public final void addAndConnectToRelevant(List<DBRow> otherTables, List<BooleanExpression> expressions) {
 		addAndConnectToRelevant(otherTables, expressions, true);
@@ -110,8 +107,8 @@ public class QueryGraph {
 	 * The DBrows/tables will be added as optional (that is "outer join" tables)
 	 * and displayed as such.
 	 *
-	 * @param otherTables
-	 * @param expressions
+	 * @param otherTables the tables to add to the query
+	 * @param expressions the expressions that connect the tables
 	 */
 	public final void addOptionalAndConnectToRelevant(List<DBRow> otherTables, List<BooleanExpression> expressions) {
 		addAndConnectToRelevant(otherTables, expressions, false);
@@ -125,9 +122,10 @@ public class QueryGraph {
 	 * The DBrows/tables will be added as optional (that is "outer join" tables)
 	 * if requiredTables is FALSE.
 	 *
-	 * @param otherTables
-	 * @param expressions
-	 * @param requiredTables
+	 * @param otherTables the tables to add to the query
+	 * @param expressions the expressions that connect the tables
+	 * @param requiredTables TRUE if the tables are requires, FALSE if the tables
+	 * are optional
 	 */
 	public final void addAndConnectToRelevant(List<DBRow> otherTables, List<BooleanExpression> expressions, boolean requiredTables) {
 
@@ -234,9 +232,6 @@ public class QueryGraph {
 	/**
 	 * Scans the QueryGraph to detect full outer join.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return TRUE contains only optional tables, FALSE otherwise.
 	 */
 	public boolean willCreateFullOuterJoin() {
@@ -257,8 +252,6 @@ public class QueryGraph {
 	 * over an optional, or "outer join", table. It also prefers tables with
 	 * actual conditions to unaltered join or leaf tables.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the class of a DBRow from which to start a traversal.
 	 */
@@ -308,8 +301,6 @@ public class QueryGraph {
 	 * creating mid-query cartesian join that could have been avoided by including
 	 * a related required/inner table first.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of all DBRows in this QueryGraph in a smart an order as
 	 * possible.
@@ -338,8 +329,6 @@ public class QueryGraph {
 	 * a related required/inner table first.
 	 *
 	 * @param reversed TRUE if the list should be reversed, FALSE otherwise
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all DBRows in this QueryGraph in a smart an order as
 	 * possible.
 	 */
@@ -413,9 +402,6 @@ public class QueryGraph {
 	 * creating mid-query cartesian join that could have been avoided by including
 	 * a related required/inner table first.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all DBRows in this QueryGraph in a smart an order as
 	 * possible.
 	 */
@@ -443,8 +429,7 @@ public class QueryGraph {
 	 * a related required/inner table first.
 	 *
 	 * @param reverse TRUE if the list needs to be reversed, FALSE otherwise
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of all DBRows in this QueryGraph in a smart an order as
 	 * possible.
 	 */
@@ -477,8 +462,6 @@ public class QueryGraph {
 	 * <p>
 	 * Other graphs are available but we use {@link edu.uci.ics.jung.graph.Graph}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a Jung Graph.
 	 */

@@ -19,10 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
+ * 
  * @author gregorygraham
  */
 public enum Line2DFunctions implements DBVFeature {
@@ -322,11 +319,6 @@ public enum Line2DFunctions implements DBVFeature {
 		return functionName;
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {

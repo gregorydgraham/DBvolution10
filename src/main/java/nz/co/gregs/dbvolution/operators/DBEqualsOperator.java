@@ -58,7 +58,7 @@ public class DBEqualsOperator extends DBOperator {
 	/**
 	 * Implements the EQUALS operator.
 	 *
-	 * @param equalTo
+	 * @param equalTo the expression to compare to
 	 */
 	@SuppressFBWarnings(
 			value = "NP_LOAD_OF_KNOWN_NULL_VALUE",
@@ -69,8 +69,10 @@ public class DBEqualsOperator extends DBOperator {
 
 	/**
 	 * Implements the EQUALS operator.
+	 * 
+	 * <p>Probably not the right method to use.</p>
 	 *
-	 * @param equalTo
+	 * @param equalTo the expression to compare to.
 	 */
 	public DBEqualsOperator(Object equalTo) {
 		super(QueryableDatatype.getQueryableDatatypeForObject(equalTo));

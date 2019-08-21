@@ -198,12 +198,9 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	}
 
 	/**
-	 * Returns the set value of this DBDate as a Java ZonedDateTime instance.
+	 * Returns the set value of this DBInstant as a Java ZonedDateTime instance.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @param zoneId
+	 * @param zoneId the Zone ID to represent the instant at.
 	 * @return the value as a Java Instant.
 	 */
 	public ZonedDateTime zonedDateTimeValue(ZoneId zoneId) {
@@ -293,7 +290,7 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link Instant#parse(java.lang.String) }
+	 * The date String will be parsed by {@link Instant#parse(java.lang.CharSequence) }.
 	 * so please confirms to the requirements of that method.
 	 *
 	 * @param dateStr	dateStr
@@ -308,10 +305,7 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	}
 
 	/**
-	 * Returns the string value of the DBDate.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * Returns the string value of the DBInstant.
 	 *
 	 * @return a string version of the current value of this DBDate
 	 */
@@ -320,7 +314,6 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 		if (this.isNull() || getValue() == null) {
 			return "";
 		}
-//		System.out.println("DBINSTANT.TOSTRING: " + getValue());
 		return toStringFormat.format(getValue().atZone(ZoneId.of("Z")));
 	}
 

@@ -28,8 +28,6 @@ import org.sqlite.Function;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -133,7 +131,8 @@ public class Polygon2DFunctions {
 
 	/**
 	 *
-	 * @param connection
+	 * @param connection the database to add functions to
+	 *
 	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
@@ -202,7 +201,7 @@ public class Polygon2DFunctions {
 				Polygon polygon = getPolygon(value_text(0));
 				//			polygon.normalize();
 				result(polygon.toText());
-			} catch (SQLException|com.vividsolutions.jts.io.ParseException ex) {
+			} catch (SQLException | com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -631,7 +630,6 @@ public class Polygon2DFunctions {
 			}
 		}
 	}
-
 
 	private static class Union extends PolygonFunction {
 

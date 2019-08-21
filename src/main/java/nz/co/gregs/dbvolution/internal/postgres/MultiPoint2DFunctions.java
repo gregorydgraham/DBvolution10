@@ -20,9 +20,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ * 
  *
  * @author gregorygraham
  */
@@ -63,7 +61,7 @@ public enum MultiPoint2DFunctions {
 
 	/**
 	 *
-	 * @param stmt
+	 * @param stmt the database
 	 * @throws SQLException database errors
 	 */
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",

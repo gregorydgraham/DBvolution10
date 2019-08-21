@@ -240,7 +240,7 @@ public enum Line2DFunctions {
 
 	/**
 	 *
-	 * @param stmt
+	 * @param stmt the database statement to add the datatype to.
 	 * @throws SQLException database errors
 	 */
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",

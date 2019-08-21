@@ -47,8 +47,8 @@ public class DBBetweenInclusiveOperator extends DBOperator {
 	 * Implements a type agnostic comparison that finds items between the 2 values
 	 * including the values themselves.
 	 *
-	 * @param lowValue
-	 * @param highValue
+	 * @param lowValue the low value
+	 * @param highValue the high value
 	 */
 	@SuppressFBWarnings(
 			value = "NP_LOAD_OF_KNOWN_NULL_VALUE",

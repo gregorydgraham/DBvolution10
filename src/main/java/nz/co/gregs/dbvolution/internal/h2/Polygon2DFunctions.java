@@ -526,11 +526,6 @@ public enum Polygon2DFunctions implements DBVFeature {
 		return "DBV_POLYGON2D_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {

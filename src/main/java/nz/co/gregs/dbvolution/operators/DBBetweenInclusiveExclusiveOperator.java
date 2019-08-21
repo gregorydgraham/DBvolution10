@@ -57,8 +57,8 @@ public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 	 * from 1PM until 3PM will not be running during the 3PM hour. As comparison
 	 * an event that runs from the 1st until the 3rd will run during the 3rd day.
 	 *
-	 * @param lowValue
-	 * @param highValue
+	 * @param lowValue the low value
+	 * @param highValue the high value
 	 */
 	@SuppressFBWarnings(
 			value = "NP_LOAD_OF_KNOWN_NULL_VALUE", 

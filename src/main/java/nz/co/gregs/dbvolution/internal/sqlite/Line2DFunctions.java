@@ -32,8 +32,6 @@ import org.sqlite.Function;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -124,7 +122,7 @@ public class Line2DFunctions {
 
 	/**
 	 *
-	 * @param connection
+	 * @param connection the database to add functions to
 	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(Connection connection) throws SQLException {

@@ -74,12 +74,7 @@ public enum StringFunctions {
 	public String toString() {
 		return "DBV_STRINGFN_" + name();
 	}
-
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
+	
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + "(" + parameters + ");");

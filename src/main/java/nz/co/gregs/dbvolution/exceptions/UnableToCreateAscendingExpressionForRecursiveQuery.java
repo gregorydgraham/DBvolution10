@@ -38,8 +38,8 @@ public class UnableToCreateAscendingExpressionForRecursiveQuery extends DBRuntim
 	 * the associated Primary Key disagree: e.g. one is a DBString and the other a
 	 * DBInteger.
 	 *
-	 * @param keyToFollow
-	 * @param originatingRow
+	 * @param keyToFollow the foreign key suggested by the programmer.
+	 * @param originatingRow the table the foreign key is from.
 	 */
 	public UnableToCreateAscendingExpressionForRecursiveQuery(ColumnProvider keyToFollow, DBRow originatingRow) {
 		super("Unable To Create Ascending Expression For Recursive Query: some combination of the datatypes in " + keyToFollow.getColumn().getPropertyWrapper().javaName() + " and " + originatingRow.getClass().getSimpleName() + " prevents ascending queries working, please check them.");

@@ -59,7 +59,7 @@ import nz.co.gregs.dbvolution.expressions.search.SearchAcross;
  *
  * <p>
  * A DBQuery is most easily created by calling
- * {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBDatabase's getDBQuery method}.
+ * {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.DBRow...) DBDatabase's getDBQuery method}.
  *
  * <p>
  * The foreign keys from the DBRow instances will be automatically aligned and

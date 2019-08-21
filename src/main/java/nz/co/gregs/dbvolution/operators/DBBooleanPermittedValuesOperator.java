@@ -32,7 +32,7 @@ public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator<
 	/**
 	 * Implements the EQUALS operator for DBBooleans.
 	 *
-	 * @param permitted
+	 * @param permitted the boolean value that is permitted
 	 */
 	@SuppressWarnings("unchecked")
 	public DBBooleanPermittedValuesOperator(Boolean permitted) {

@@ -209,12 +209,7 @@ public enum Line2DFunctions {
 	public String toString() {
 		return "DBV_LN2D_" + name();
 	}
-
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
+	
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

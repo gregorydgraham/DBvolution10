@@ -73,17 +73,8 @@ public enum Point2DFunctions implements DBVFeature {
 		return functionName;
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
+	@Override
 	public void add(Statement stmt) throws SQLException {
-//		try {
-//			stmt.execute("DROP ALIAS " + functionName + ";");
-//		} catch (SQLException sqlex) {
-//			;
-//		}
 		stmt.execute("CREATE ALIAS IF NOT EXISTS " + functionName + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + functionName + "(" + parameters + ") {\n" + code + "} $$;");
 	}
 

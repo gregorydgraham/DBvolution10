@@ -107,7 +107,7 @@ public class DBStatement implements Statement {
 	 * @param sql SQL
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @param label
+	 * @param label an arbitrary label for the query to help with query identification
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
 	 */

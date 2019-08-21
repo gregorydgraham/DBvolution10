@@ -272,9 +272,15 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 
 	/**
 	 * Returns the instant expression in the standard format that can be used to
-	 * have consistent comparisons
-	 * @param instantExpression
-	 * @return string
+	 * have consistent comparisons.
+	 *
+	 * <p>
+	 * This generally adds the timezone back into the instant to convert it into a
+	 * local datetime for databases, like H2, which have only partial support for
+	 * Timestamp With Time Zone.</p>
+	 *
+	 * @param instantExpression the instant datatype expression to make comparable
+	 * @return string the instantexpression converted into a comparable expression
 	 */
 	@Override
 	public String doComparableInstantTransform(String instantExpression) {

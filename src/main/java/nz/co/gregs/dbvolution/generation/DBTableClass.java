@@ -47,7 +47,7 @@ public class DBTableClass {
 	 * class.
 	 *
 	 * @param tableName tableName
-	 * @param tableSchema
+	 * @param tableSchema the schema the table is contained within.
 	 * @param packageName packageName
 	 * @param className className
 	 */

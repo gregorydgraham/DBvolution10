@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.expressions.EqualExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
-import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -33,8 +32,6 @@ import nz.co.gregs.dbvolution.results.StringResult;
 /**
  * Implements the EQUALS operator for DBStrings, but case-insensitive.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -45,7 +42,7 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 	/**
 	 * Implements the EQUALS operator for DBStrings, but case-insensitive.
 	 *
-	 * @param equalTo
+	 * @param equalTo the expression to compare to
 	 */
 	public DBEqualsIgnoreCaseOperator(DBExpression equalTo) {
 		super(equalTo);

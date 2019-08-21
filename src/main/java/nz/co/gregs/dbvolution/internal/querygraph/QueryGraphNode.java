@@ -40,7 +40,7 @@ public class QueryGraphNode {
 	 * <p>
 	 * The table is assumed to be a required/inner table.
 	 *
-	 * @param table
+	 * @param table the table to base the node on
 	 */
 	public QueryGraphNode(DBRowClass table) {
 		this.table = table;
@@ -50,8 +50,8 @@ public class QueryGraphNode {
 	 * Create a node for the supplied table, with TRUE if the table is a
 	 * required/inner table or FALSE if it is optional/outer.
 	 *
-	 * @param table
-	 * @param requiredTable
+	 * @param table the table to base the node on
+	 * @param requiredTable TRUE if the table is required
 	 */
 	public QueryGraphNode(DBRowClass table, boolean requiredTable) {
 		this.table = table;
@@ -80,7 +80,7 @@ public class QueryGraphNode {
 	 * <p>
 	 * To retrieval all connected tables, use {@link #getConnectedTables() }.
 	 *
-	 * @param table
+	 * @param table add a connection to this table
 	 */
 	public void connectTable(DBRowClass table) {
 		connectedTables.add(table);

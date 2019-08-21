@@ -37,7 +37,7 @@ public class QueryGraphEdgeStrokeTransformer implements Transformer<DBExpression
 
 	/**
 	 *
-	 * @param originalQuery
+	 * @param originalQuery the original query
 	 */
 	public QueryGraphEdgeStrokeTransformer(final DBQuery originalQuery) {
 		this.query = originalQuery;

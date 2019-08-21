@@ -51,10 +51,9 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param original
-	 * @param compareTo
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param original the first date
+	 * @param compareTo the second date
+	 *
 	 * @return the DateRepeat the represents the difference between these 2 dates
 	 */
 	@SuppressWarnings("deprecation")
@@ -104,10 +103,9 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param original
-	 * @param compareTo
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param original the first date
+	 * @param compareTo the second date
+	 *
 	 * @return TRUE if the DateRepeats are the same, otherwise FALSE
 	 */
 	public static boolean isEqualTo(String original, String compareTo) {
@@ -116,10 +114,9 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param original
-	 * @param compareTo
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param original the first date
+	 * @param compareTo the second date
+	 *
 	 * @return TRUE if the first DateRepeat value is greater than the second,
 	 * otherwise FALSE
 	 */
@@ -129,10 +126,9 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param original
-	 * @param compareTo
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param original the first date
+	 * @param compareTo the second date
+	 *
 	 * @return TRUE if the first DateRepeat value is less than the second,
 	 * otherwise FALSE
 	 */
@@ -142,10 +138,9 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param original
-	 * @param compareTo
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param original the first date
+	 * @param compareTo the second date
+	 *
 	 * @return -1 if the first DateRepeat is the smallest, 0 if they are equal,
 	 * and 1 if the first is the largest.
 	 */
@@ -170,10 +165,9 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param original
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param original the first date.
+	 * @param intervalStr the DateRepeat to offset the date.
+	 *
 	 * @return the Date value offset by the DateRepeat value.
 	 */
 	public static Date addDateAndDateRepeatString(Date original, String intervalStr) {
@@ -203,10 +197,9 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param original
-	 * @param intervalInput
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param original the first date.
+	 * @param intervalInput the DateRepeat to offset the date.
+	 *
 	 * @return the Date shift backwards (towards the past) by the DateRepeat
 	 * value.
 	 */
@@ -237,9 +230,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat to parse
+	 *
 	 * @return the DateRepeat value represented by the String value
 	 */
 	public static Period parseDateRepeatFromGetString(String intervalStr) {
@@ -260,9 +252,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat
+	 *
 	 * @return get the fractional seconds to millisecond precision
 	 * @throws NumberFormatException
 	 */
@@ -279,9 +270,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat
+	 *
 	 * @return get the integer and fractional seconds part of the DateRepeat
 	 * @throws NumberFormatException
 	 */
@@ -295,9 +285,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat
+	 *
 	 * @return get the minutes part of the DateRepeat
 	 * @throws NumberFormatException
 	 */
@@ -310,9 +299,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat
+	 *
 	 * @return get the hour part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */
@@ -325,9 +313,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat
+	 *
 	 * @return get the day part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */
@@ -340,9 +327,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat
+	 *
 	 * @return get the month part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */
@@ -355,9 +341,8 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @param intervalStr
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intervalStr the DateRepeat
+	 *
 	 * @return get the year part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */

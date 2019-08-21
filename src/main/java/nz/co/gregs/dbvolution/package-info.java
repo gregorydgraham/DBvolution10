@@ -25,7 +25,7 @@
  * create simple queries using
  * {@link nz.co.gregs.dbvolution.databases.DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) DBTable}
  * or complex ones using
- * {@link nz.co.gregs.dbvolution.databases.DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBQuery}.
+ * {@link nz.co.gregs.dbvolution.databases.DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.DBRow...) DBQuery}.
  * <p>
  * You can create transactions easily using
  * {@link  nz.co.gregs.dbvolution.DBScript} testing the transaction with

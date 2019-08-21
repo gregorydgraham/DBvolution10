@@ -28,8 +28,9 @@ import java.sql.Statement;
 public interface DBVFeature {
 
 	/**
+	 * Add the datatype to the database.
 	 *
-	 * @param stmt
+	 * @param stmt the database statement to add this datatype to.
 	 * @throws SQLException database errors
 	 */
 	public void add(Statement stmt) throws SQLException;

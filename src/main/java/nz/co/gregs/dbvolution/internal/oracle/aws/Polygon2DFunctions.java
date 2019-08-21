@@ -553,7 +553,7 @@ public enum Polygon2DFunctions {
 
 	/**
 	 *
-	 * @param stmt
+	 * @param stmt the database
 	 * @throws SQLException database errors
 	 */
 	public void add(Statement stmt) throws SQLException {

@@ -113,11 +113,6 @@ public enum MigrationFunctions {
 		return "DBV_MIGRATION_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + ";");

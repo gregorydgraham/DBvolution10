@@ -264,11 +264,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 		return "DBV_LINESEGMENT2D_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {

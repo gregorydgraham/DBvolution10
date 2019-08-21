@@ -55,12 +55,7 @@ public enum StringFunctions {
 	public String toString() {
 		return "DBV_STRINGFN_" + name();
 	}
-
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
+	
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
 			justification = "The strings are actually constant but made dynamically")
 	public void add(Statement stmt) throws SQLException {

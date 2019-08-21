@@ -753,11 +753,6 @@ public enum Line2DFunctions {
 		return "DBV_LINE2DFN_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

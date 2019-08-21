@@ -46,8 +46,8 @@ public class DBBetweenOperator extends DBOperator {
 	/**
 	 * Uses the database's native BETWEEN operator and is thus not reliable.
 	 *
-	 * @param lowValue
-	 * @param highValue
+	 * @param lowValue the low value
+	 * @param highValue the high value
 	 */
 	public DBBetweenOperator(int lowValue, int highValue) {
 		this(NumberExpression.value(lowValue), NumberExpression.value(highValue));
@@ -56,8 +56,8 @@ public class DBBetweenOperator extends DBOperator {
 	/**
 	 * Uses the database's native BETWEEN operator and is thus not reliable.
 	 *
-	 * @param lowValue
-	 * @param highValue
+	 * @param lowValue the low value
+	 * @param highValue the high value
 	 */
 	public DBBetweenOperator(String lowValue, String highValue) {
 		this(StringExpression.value(lowValue), StringExpression.value(highValue));
@@ -66,8 +66,8 @@ public class DBBetweenOperator extends DBOperator {
 	/**
 	 * Uses the database's native BETWEEN operator and is thus not reliable.
 	 *
-	 * @param lowValue
-	 * @param highValue
+	 * @param lowValue the low value
+	 * @param highValue the high value
 	 */
 	public DBBetweenOperator(Date lowValue, Date highValue) {
 		this(DateExpression.value(lowValue), DateExpression.value(highValue));
@@ -76,8 +76,8 @@ public class DBBetweenOperator extends DBOperator {
 	/**
 	 * Uses the database's native BETWEEN operator and is thus not reliable.
 	 *
-	 * @param lowValue
-	 * @param highValue
+	 * @param lowValue the low value
+	 * @param highValue the high value
 	 */
 	@SuppressFBWarnings(
 			value = "NP_LOAD_OF_KNOWN_NULL_VALUE",

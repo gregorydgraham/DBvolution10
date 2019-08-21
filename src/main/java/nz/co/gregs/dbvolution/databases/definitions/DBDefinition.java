@@ -1540,17 +1540,17 @@ public abstract class DBDefinition implements Serializable {
 	public String doCurrentDateTimeTransform() {
 		return getCurrentDateTimeFunction();
 	}
-	
-	public String getDefaultTimeZoneSign(){
-		return "case when extract(timezone_hour from "+getCurrentDateTimeFunction()+")>=0 then '+' else '-' end";
+
+	public String getDefaultTimeZoneSign() {
+		return "case when extract(timezone_hour from " + getCurrentDateTimeFunction() + ")>=0 then '+' else '-' end";
 	}
-	
-	public String getDefaultTimeZoneHour(){
-		return "extract(timezone_hour from "+getCurrentDateTimeFunction()+")";
+
+	public String getDefaultTimeZoneHour() {
+		return "extract(timezone_hour from " + getCurrentDateTimeFunction() + ")";
 	}
-	
-	public String getDefaultTimeZoneMinute(){
-		return "extract(timezone_minute from "+getCurrentDateTimeFunction()+")";
+
+	public String getDefaultTimeZoneMinute() {
+		return "extract(timezone_minute from " + getCurrentDateTimeFunction() + ")";
 	}
 
 	/**
@@ -1920,9 +1920,15 @@ public abstract class DBDefinition implements Serializable {
 
 	/**
 	 * Returns the instant expression in the standard format that can be used to
-	 * have consistent comparisons
-	 * @param instantExpression
-	 * @return string
+	 * have consistent comparisons.
+	 *
+	 * <p>
+	 * This generally adds the timezone back into the instant to convert it into a
+	 * local datetime for databases, like H2, which have only partial support for
+	 * Timestamp With Time Zone.</p>
+	 *
+	 * @param instantExpression the instant datatype expression to make comparable
+	 * @return string the instantexpression converted into a comparable expression
 	 */
 	public String doComparableInstantTransform(String instantExpression) {
 		return instantExpression;

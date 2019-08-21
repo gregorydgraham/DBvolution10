@@ -222,7 +222,7 @@ public interface JavaProperty {
 	 *
 	 * A is the annotation type
 	 *
-	 * @param <A>
+	 * @param <A> the annotation type
 	 * @param annotationClass the annotation to check for
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>

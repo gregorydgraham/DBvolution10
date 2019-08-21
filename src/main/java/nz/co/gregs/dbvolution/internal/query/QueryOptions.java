@@ -310,7 +310,7 @@ public class QueryOptions  implements Serializable{
 	 * Used while simulating OUTER JOIN to indicate that the simulation is
 	 * occurring.
 	 *
-	 * @param creatingNativeQuery
+	 * @param creatingNativeQuery the setting required
 	 */
 	public final void setCreatingNativeQuery(boolean creatingNativeQuery) {
 		queryIsNativeQuery = creatingNativeQuery;

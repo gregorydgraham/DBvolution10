@@ -20,8 +20,6 @@ import java.sql.Statement;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -72,7 +70,7 @@ public enum DataTypes implements DBVFeature {
 
 	/**
 	 *
-	 * @param stmt
+	 * @param stmt the database statement to add the datatype to.
 	 * @throws SQLException database errors
 	 */
 	@Override
@@ -82,7 +80,7 @@ public enum DataTypes implements DBVFeature {
 
 	/**
 	 *
-	 * @param stmt
+	 * @param stmt the database statement to add the datatype to.
 	 * @throws SQLException database errors
 	 */
 	public static void addAll(Statement stmt) throws SQLException {
@@ -90,8 +88,6 @@ public enum DataTypes implements DBVFeature {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the DBvolution data type of this abstracted datatype
 	 */
@@ -101,8 +97,6 @@ public enum DataTypes implements DBVFeature {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the DBvolution data type as a String
 	 */

@@ -159,7 +159,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param database
+	 * @param database the database
 	 * @return all conditions in the query
 	 */
 	public synchronized List<BooleanExpression> getAllConditions(DBDatabase database) {
@@ -213,7 +213,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	/**
 	 * Set the requirement for a GROUP BY clause.
 	 *
-	 * @param b
+	 * @param b the setting required
 	 */
 	public synchronized void setGroupByRequiredByAggregator(boolean b) {
 		this.groupByRequiredByAggregator = true;
@@ -238,7 +238,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	/**
 	 * Define the SELECT clause used during the query.
 	 *
-	 * @param selectClause
+	 * @param selectClause the select clause to set
 	 */
 	public synchronized void setSelectSQLClause(String selectClause) {
 		this.selectSQLClause = selectClause;
@@ -1177,7 +1177,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * this instance.
 	 *
 	 * @param <R> DBRow
-	 * @param row
+	 * @param row the instance that the examples connect to.
 	 * @param example example
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1220,7 +1220,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the ResultSet returned from the actual database. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws java.sql.SQLTimeoutException
+	 * @throws java.sql.SQLTimeoutException time out exception
 	 */
 	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
 		final Long timeoutTime = this.getTimeoutInMilliseconds();
@@ -1299,7 +1299,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 *
 	 * Database exceptions may be thrown
 	 *
-	 * @param defn
+	 * @param defn the database definition
 	 * @param oldInstance oldInstance
 	 * @param newInstance newInstance
 	 * @param resultSet resultSet
@@ -1360,7 +1360,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * If the row is new then this method stores it, and returns it as the
 	 * existing instance.
 	 *
-	 * @param defn
+	 * @param defn the database definition
 	 * @param newInstance newInstance
 	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
 	 * <p style="color: #F90;">Support DBvolution at

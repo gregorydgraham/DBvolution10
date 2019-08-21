@@ -20,8 +20,6 @@ import java.sql.Statement;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -145,7 +143,7 @@ public enum MultiPoint2DFunctions {
 
 	/**
 	 *
-	 * @param stmt
+	 * @param stmt the database
 	 * @throws SQLException database errors
 	 */
 	public void add(Statement stmt) throws SQLException {

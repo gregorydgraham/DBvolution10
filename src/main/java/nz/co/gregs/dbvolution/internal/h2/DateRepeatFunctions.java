@@ -275,8 +275,9 @@ public enum DateRepeatFunctions implements DBVFeature {
 	}
 
 	/**
+	 * Add the datatype to the database.
 	 *
-	 * @param stmt
+	 * @param stmt the database statement to add this datatype to.
 	 * @throws SQLException database errors
 	 */
 	@Override

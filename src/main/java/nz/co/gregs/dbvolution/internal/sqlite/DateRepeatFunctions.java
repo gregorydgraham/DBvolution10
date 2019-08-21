@@ -110,7 +110,7 @@ public class DateRepeatFunctions {
 
 	/**
 	 *
-	 * @param connection
+	 * @param connection the database connection to add the functions to
 	 * @throws SQLException database errors
 	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
@@ -136,7 +136,7 @@ public class DateRepeatFunctions {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the date as an SQLite SQL statement
-	 * @throws ParseException
+	 * @throws ParseException parse exception
 	 */
 	public static String formatDateForGetString(Date date) throws ParseException {
 		return (new SQLiteDefinition()).getDateTimeFormat().format(date);

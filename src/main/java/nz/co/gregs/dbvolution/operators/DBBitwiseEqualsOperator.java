@@ -37,7 +37,7 @@ public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 	/**
 	 * Creates a bitwise comparison for boolean or number expressions
 	 *
-	 * @param equalTo
+	 * @param equalTo the boolean expression
 	 */
 	public DBBitwiseEqualsOperator(BooleanExpression equalTo) {
 		super(equalTo);

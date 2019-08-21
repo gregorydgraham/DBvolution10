@@ -934,8 +934,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	/**
 	 * creates a query and fetches the rows automatically, based on the examples
-	 * given
+	 * given.
 	 *
+	 * @param row the first table
 	 * @param rows the example rows for the tables required
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>

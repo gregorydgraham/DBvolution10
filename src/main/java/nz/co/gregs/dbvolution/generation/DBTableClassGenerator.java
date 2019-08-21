@@ -135,7 +135,7 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
-	 * @param options
+	 * @param options preferences for the class generation
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
