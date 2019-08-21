@@ -1183,7 +1183,7 @@
 	<distributionManagement>
 		<site>
 			<id>dbv-website-reports</id>
-			<url>ftp://www.gregs.co.nz/httpsdocs/dbvolution/reports/</url>
+			<url>ftp://www.gregs.co.nz/httpdocs/dbvolution/reports/</url>
 		</site>
 		<snapshotRepository>
 			<id>ossrh</id>
