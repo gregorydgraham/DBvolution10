@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.io.IOException;
 import java.io.InputStream;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.results.LargeObjectResult;
