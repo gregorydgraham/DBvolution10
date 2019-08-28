@@ -92,4 +92,9 @@ public abstract class DBLargeObject<T> extends QueryableDatatype<T> implements L
 	public DBLargeObject<T> copy() {
 		return (DBLargeObject<T>) super.copy();
 	}
+	
+	@Override
+	public boolean isLargeObject(){
+		return true;
+	}
 }

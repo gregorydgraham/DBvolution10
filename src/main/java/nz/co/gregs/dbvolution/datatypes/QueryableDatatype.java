@@ -1297,6 +1297,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		}
 		return false;
 	}
+	
+	public boolean isLargeObject(){
+		return false;
+	}
 
 	@Override
 	public String createSQLForGroupByClause(DBDatabase database) {
