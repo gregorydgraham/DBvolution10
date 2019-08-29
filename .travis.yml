@@ -1,5 +1,5 @@
 language: java
-dist: xenial
+dist: bionic
 sudo: required
 addons:
   mysql: "8"
