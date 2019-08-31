@@ -209,7 +209,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * @return a date expression of the current database timestamp.
 	 */
 	public static LocalDateTimeExpression currentLocalDateTime() {
-		return LocalDateExpression.currentLocalDateTime();
+		return LocalDateTimeExpression.now();
 	}
 
 	/**
@@ -3054,11 +3054,6 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return db.doCurrentDateOnlyTransform();
-		}
-
-		@Override
-		public DBDate getQueryableDatatypeForExpressionValue() {
-			return new DBDateOnly();
 		}
 
 		@Override
