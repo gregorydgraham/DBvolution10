@@ -6,10 +6,10 @@
 docker pull microsoft/mssql-server-linux
 
 -- Start the container
-docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=NZDT' -p 1433:1433 -d microsoft/mssql-server-linux
+docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d microsoft/mssql-server-linux
 
 -- Start the container in winter
-docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=NZST' -p 1433:1433 -d microsoft/mssql-server-linux
+docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d microsoft/mssql-server-linux
 
 -- Windows version (doesn't work on Mac :( )
 docker pull microsoft/mssql-server-windows-developer
