@@ -19,9 +19,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
@@ -31,7 +32,7 @@ import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
@@ -65,7 +66,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	private static final long serialVersionUID = 1L;
 //	private final SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
-	private final DateTimeFormatter toStringFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS ZZZZ");
+	private final transient DateTimeFormatter toStringFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS ZZZZ");
 
 	/**
 	 * The default constructor for DBDate.
@@ -131,8 +132,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * be defined in the database.
 	 *
 	 * <p>
-	 * The string is parsed using {@link Date#parse(java.lang.String) } so please
-	 * ensure your string matches the requirements of that method.
+	 * The string is parsed using {@link LocalDateTime#parse(java.lang.String) }
+	 * so please ensure your string matches the requirements of that method.
 	 *
 	 *
 	 */
@@ -143,16 +144,48 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	}
 
 	/**
-	 * Returns the set value of this DBDate as a Java Date instance.
+	 * Returns the set value of this DBDate as a Java LocalDateTime instance.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the value as a Java Date.
+	 * @return the value as a Java LocalDateTime.
 	 */
 	public LocalDateTime localDateTimeValue() {
 		if (getLiteralValue() instanceof LocalDateTime) {
 			return getLiteralValue();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the set value of this DBDate as a Java LocalDate instance.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the value as a Java LocalDateTime.
+	 */
+	public LocalDate localDateValue() {
+		if (getLiteralValue() instanceof LocalDateTime) {
+			return getLiteralValue().toLocalDate();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the set value of this DBDate as a Java LocalDate instance.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the value as a Java LocalDateTime.
+	 */
+	public LocalTime localTimeValue() {
+		if (getLiteralValue() instanceof LocalDateTime) {
+			return getLiteralValue().toLocalTime();
 		} else {
 			return null;
 		}
@@ -163,7 +196,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	}
 
 	/**
-	 * Sets the value of this QDT to the Java Date provided.
+	 * Sets the value of this QDT to the Java LocalDateTime provided.
 	 *
 	 * @param date	date
 	 */
@@ -184,7 +217,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link Date#parse(java.lang.String) }
+	 * The date String will be parsed by {@link LocalDateTime#parse(java.lang.String)
+	 * }
 	 * so please confirms to the requirements of that method.
 	 *
 	 * @param dateStr	dateStr
@@ -198,7 +232,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link Date#parse(java.lang.String) }
+	 * The date String will be parsed by {@link LocalDateTime#parse(java.lang.String)
+	 * }
 	 * so please confirms to the requirements of that method.
 	 *
 	 * @param dateStr	dateStr
@@ -251,7 +286,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		try {
 			string = resultSet.getString(fullColumnName);
 		} catch (SQLException sqlex) {
-			throw new DBRuntimeException("Unable to get Date from String:" + sqlex.getLocalizedMessage(), sqlex);
+			throw new DBRuntimeException("Unable to get LocalDateTime from String:" + sqlex.getLocalizedMessage(), sqlex);
 		}
 		if (string == null || string.isEmpty()) {
 			return null;
@@ -259,7 +294,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 			try {
 				return database.parseLocalDateTimeFromGetString(string);
 			} catch (ParseException ex) {
-				throw new DBRuntimeException("Unable To Parse Date: " + string, ex);
+				throw new DBRuntimeException("Unable To Parse LocalDateTime: " + string, ex);
 			}
 		}
 	}
@@ -267,19 +302,18 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	private LocalDateTime setByGetDate(DBDefinition defn, ResultSet resultSet, String fullColumnName) {
 		LocalDateTime dbValue = null;
 		try {
-			final java.sql.Date date = resultSet.getDate(fullColumnName);
+			final Timestamp timestamp = resultSet.getTimestamp(fullColumnName);
 
 			if (resultSet.wasNull()) {
 				dbValue = null;
 			} else {
-				final Timestamp timestamp = resultSet.getTimestamp(fullColumnName);
 				final LocalDateTime utcVersion = timestamp.toLocalDateTime();
 				final LocalDateTime localDateTime = utcVersion;
 				LocalDateTime timestampValue = localDateTime;
 				dbValue = timestampValue;
 			}
 		} catch (SQLException sqlex) {
-			throw new DBRuntimeException("Unable to set Date by getting Date: " + sqlex.getLocalizedMessage(), sqlex);
+			throw new DBRuntimeException("Unable to set LocalDateTime by getting LocalDateTime: " + sqlex.getLocalizedMessage(), sqlex);
 		}
 		return dbValue;
 	}
@@ -315,8 +349,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * @param permitted	permitted
 	 */
-	public void permittedValues(Date... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<Date>(permitted));
+	public void permittedValues(LocalDateTime... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<LocalDateTime>(permitted));
 	}
 
 	/**
@@ -326,8 +360,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * @param excluded	excluded
 	 */
-	public void excludedValues(Date... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<Date>(excluded));
+	public void excludedValues(LocalDateTime... excluded) {
+		this.setOperator(new DBPermittedValuesOperator<LocalDateTime>(excluded));
 		negateOperator();
 	}
 
@@ -353,8 +387,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRange(Date lowerBound, Date upperBound) {
-		setOperator(new DBPermittedRangeOperator<Date>(lowerBound, upperBound));
+	public void permittedRange(LocalDateTime lowerBound, LocalDateTime upperBound) {
+		setOperator(new DBPermittedRangeOperator<LocalDateTime>(lowerBound, upperBound));
 	}
 
 	/**
@@ -379,7 +413,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRangeInclusive(Date lowerBound, Date upperBound) {
+	public void permittedRangeInclusive(LocalDateTime lowerBound, LocalDateTime upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 	}
 
@@ -405,7 +439,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRangeExclusive(Date lowerBound, Date upperBound) {
+	public void permittedRangeExclusive(LocalDateTime lowerBound, LocalDateTime upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
@@ -431,8 +465,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRange(Date lowerBound, Date upperBound) {
-		setOperator(new DBPermittedRangeOperator<Date>(lowerBound, upperBound));
+	public void excludedRange(LocalDateTime lowerBound, LocalDateTime upperBound) {
+		setOperator(new DBPermittedRangeOperator<LocalDateTime>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -458,7 +492,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRangeInclusive(Date lowerBound, Date upperBound) {
+	public void excludedRangeInclusive(LocalDateTime lowerBound, LocalDateTime upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
@@ -485,7 +519,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRangeExclusive(Date lowerBound, Date upperBound) {
+	public void excludedRangeExclusive(LocalDateTime lowerBound, LocalDateTime upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
@@ -496,8 +530,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * @param permitted	permitted
 	 */
-	public void permittedValues(DateExpression... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<DateExpression>(permitted));
+	public void permittedValues(LocalDateTimeExpression... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<LocalDateTimeExpression>(permitted));
 	}
 
 	/**
@@ -507,8 +541,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * @param excluded	excluded
 	 */
-	public void excludedValues(DateExpression... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<DateExpression>(excluded));
+	public void excludedValues(LocalDateTimeExpression... excluded) {
+		this.setOperator(new DBPermittedValuesOperator<LocalDateTimeExpression>(excluded));
 		negateOperator();
 	}
 
@@ -534,8 +568,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRange(DateExpression lowerBound, DateExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator<DateExpression>(lowerBound, upperBound));
+	public void permittedRange(LocalDateTimeExpression lowerBound, LocalDateTimeExpression upperBound) {
+		setOperator(new DBPermittedRangeOperator<LocalDateTimeExpression>(lowerBound, upperBound));
 	}
 
 	/**
@@ -560,7 +594,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRangeInclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void permittedRangeInclusive(LocalDateTimeExpression lowerBound, LocalDateTimeExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 	}
 
@@ -586,7 +620,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRangeExclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void permittedRangeExclusive(LocalDateTimeExpression lowerBound, LocalDateTimeExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
@@ -612,8 +646,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRange(DateExpression lowerBound, DateExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator<DateExpression>(lowerBound, upperBound));
+	public void excludedRange(LocalDateTimeExpression lowerBound, LocalDateTimeExpression upperBound) {
+		setOperator(new DBPermittedRangeOperator<LocalDateTimeExpression>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -639,7 +673,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRangeInclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void excludedRangeInclusive(LocalDateTimeExpression lowerBound, LocalDateTimeExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
@@ -666,7 +700,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRangeExclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void excludedRangeExclusive(LocalDateTimeExpression lowerBound, LocalDateTimeExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
@@ -701,11 +735,11 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	}
 
 	public void excludeNotNull() {
-		this.permittedValues((Date) null);
+		this.permittedValues((LocalDateTime) null);
 	}
 
 	public void excludeNull() {
-		this.excludedValues((Date) null);
+		this.excludedValues((LocalDateTime) null);
 	}
 
 	public void permitOnlyNull() {
@@ -718,8 +752,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be inserted when no value has been set, using
-	 * {@link #setValue(java.time.LocalDateTime)  setValue(...)},
-	 * for the QDT.
+	 * {@link #setValue(java.time.LocalDateTime)  setValue(...)}, for the QDT.
 	 *
 	 * <p>
 	 * The value is only used during the initial insert and does not effect the
@@ -730,15 +763,15 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
 	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * .setDefaultInsertValue(LocalDateTimeExpression.currentDate())
+	 * .setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
@@ -753,8 +786,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be inserted when no value has been set, using
-	 * {@link #setValue(java.time.LocalDateTime)  setValue(...)},
-	 * for the QDT.
+	 * {@link #setValue(java.time.LocalDateTime)  setValue(...)}, for the QDT.
 	 *
 	 * <p>
 	 * The value is only used during the initial insert and does not effect the
@@ -763,22 +795,25 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
 	 * handled using the
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new LocalDateTime()) is probably NOT
+	 * what you want, setDefaultInsertValue(LocalDateTimeExpression.currentDate())
+	 * will produce a correct creation date value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
 	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * .setDefaultInsertValue(LocalDateTimeExpression.currentDate())
+	 * .setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
@@ -792,8 +827,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be used during an update when no value has been set, using
-	 * {@link #setValue(java.time.LocalDateTime)   setValue(...)},
-	 * for the QDT.
+	 * {@link #setValue(java.time.LocalDateTime)   setValue(...)}, for the QDT.
 	 *
 	 * <p>
 	 * The value is only used during updates and does not effect the definition of
@@ -802,22 +836,25 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
 	 * handled using the
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new LocalDateTime()) is probably NOT
+	 * what you want, setDefaultUpdateValue(LocalDateTimeExpression.currentDate())
+	 * will produce a correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
 	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * .setDefaultInsertValue(LocalDateTimeExpression.currentDate())
+	 * .setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
@@ -832,8 +869,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be used during an update when no value has been set, using
-	 * {@link #setValue(java.time.LocalDateTime)   setValue(...)},
-	 * for the QDT.
+	 * {@link #setValue(java.time.LocalDateTime)   setValue(...)}, for the QDT.
 	 *
 	 * <p>
 	 * The value is only used during updates and does not effect the definition of
@@ -844,15 +880,15 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 *
 	 * &#64;DBColumn
 	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * .setDefaultInsertValue(LocalDateTimeExpression.currentDate())
+	 * .setDefaultUpdateValue(LocalDateTimeExpression.currentDate());
 	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
@@ -865,34 +901,34 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	}
 
 	public void permitOnlyPastAndPresent() {
-		this.setOperator(new DBLessThanOrEqualOperator(DateExpression.currentDate()));
+		this.setOperator(new DBLessThanOrEqualOperator(LocalDateTimeExpression.currentLocalDateTime()));
 	}
 
 	public void permitOnlyPresentAndFuture() {
-		this.setOperator(new DBGreaterThanOrEqualsOperator(DateExpression.currentDate()));
+		this.setOperator(new DBGreaterThanOrEqualsOperator(LocalDateTimeExpression.currentLocalDateTime()));
 	}
 
 	public void permitOnlyPast() {
-		this.setOperator(new DBLessThanOperator(DateExpression.currentDate()));
+		this.setOperator(new DBLessThanOperator(LocalDateTimeExpression.currentLocalDateTime()));
 	}
 
 	public void permitOnlyFuture() {
-		this.setOperator(new DBGreaterThanOperator(DateExpression.currentDate()));
+		this.setOperator(new DBGreaterThanOperator(LocalDateTimeExpression.currentLocalDateTime()));
 	}
 
 	public void permitOnlyPastAndPresentByDateOnly() {
-		this.setOperator(new DBLessThanOrEqualOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBLessThanOrEqualOperator(LocalDateTimeExpression.currentLocalDate()));
 	}
 
 	public void permitOnlyPresentAndFutureByDateOnly() {
-		this.setOperator(new DBGreaterThanOrEqualsOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBGreaterThanOrEqualsOperator(LocalDateTimeExpression.currentLocalDate()));
 	}
 
 	public void permitOnlyPastByDateOnly() {
-		this.setOperator(new DBLessThanOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBLessThanOperator(LocalDateTimeExpression.currentLocalDate()));
 	}
 
 	public void permitOnlyFutureByDateOnly() {
-		this.setOperator(new DBGreaterThanOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBGreaterThanOperator(LocalDateTimeExpression.currentLocalDate()));
 	}
 }
