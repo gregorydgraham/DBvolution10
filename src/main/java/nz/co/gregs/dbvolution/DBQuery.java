@@ -1552,6 +1552,46 @@ public class DBQuery implements Serializable {
 	}
 
 	/**
+	 * Use this method to remove all existing conditions on the query and add the supplied conditions to the DBQuery.
+	 *
+	 * <p>
+	 * This method takes a list of BooleanExpressions and add them to the where clause of
+	 * the Query
+	 *
+	 * <p>
+	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
+	 * then apply the functions you require until you get a BooleanExpression
+	 * back.
+	 *
+	 * <p>
+	 * StringExpression, NumberExpression, DateExpression, and BooleanExpression
+	 * all provide methods that will help. In particular they have the value()
+	 * method to convert base Java types to expressions.
+	 *
+	 * <p>
+	 * Standard uses of this method are:
+	 * <pre>
+	 * setConditions(myRow.column(myRow.myColumn).like("%THis%"),
+	 * myRow.column(myRow.myNumber).cos().greaterThan(0.5),
+	 * StringExpression.value("THis").like(myRwo.column(myRow.myColumn)),
+	 * BooleanExpression.anyOf(
+	 * myRow.column(myRow.myColumn).between("That", "This"),
+	 * myRow.column(myRow.myColumn).is("Something"))
+	 * );
+	 * </pre>
+	 *
+	 * @param conditions all boolean expressions that defines the required limits on the
+	 * results of the query
+	 * 
+	 * @return this DBQuery instance
+	 */
+	public DBQuery setConditions(BooleanExpression... conditions) {
+		this.clearConditions();
+		this.addConditions(conditions);
+		return this;
+	}
+
+	/**
 	 * Use this method to add complex conditions to the DBQuery.
 	 *
 	 * <p>
