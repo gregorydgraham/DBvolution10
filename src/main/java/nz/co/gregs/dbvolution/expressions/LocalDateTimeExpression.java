@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,9 +46,9 @@ import org.joda.time.Period;
  * <p>
  * LocalDateTime and Time are considered synonymous with timestamp as that
  * appears to be the standard usage by developers. So every date has a time
- * component and every time has a date component. {@link DBLocalDate}
- * implements a time-less date for DBvolution but is considered a
- * DBLocalDateTime with a time of Midnight for LocalDateTimeExpression purposes.
+ * component and every time has a date component. {@link DBLocalDate} implements
+ * a time-less date for DBvolution but is considered a DBLocalDateTime with a
+ * time of Midnight for LocalDateTimeExpression purposes.
  *
  * <p>
  * Most query requirements are provided by {@link QueryableDatatype}s like
@@ -182,9 +183,8 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return a date expression of only the date part of the current database
 	 * timestamp.
 	 */
-	public static LocalDateTimeExpression currentLocalDateTimeOnly() {
-		return new LocalDateTimeExpression(
-				new LocalDateTimeOnlyCurrentLocalDateTimeExpression());
+	public static LocalDateTimeExpression currentLocalDate() {
+		return new CurrentLocalDateLocalDateTimeExpression();
 	}
 
 	/**
@@ -200,8 +200,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return a date expression of the current database timestamp.
 	 */
 	public static LocalDateTimeExpression currentLocalDateTime() {
-		return new LocalDateTimeExpression(
-				new LocalDateTimeCurrentLocalDateTimeExpression());
+		return new LocalDateTimeCurrentLocalDateTimeExpression();
 	}
 
 	/**
@@ -236,7 +235,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * timestamp.
 	 */
 	public static LocalDateTimeExpression now() {
-		return LocalDateTimeExpression.currentTime();
+		return LocalDateTimeExpression.currentLocalDateTime();
 	}
 
 	/**
@@ -2311,10 +2310,8 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 *
 	 * @return a LocalDateTime expression
 	 */
-	public LocalDateExpression endOfMonth() {
-		return new LocalDateExpression(
-				new LocalDateTimeEndOfMonthExpression(this)
-		);
+	public LocalDateTimeExpression endOfMonth() {
+		return new LocalDateTimeEndOfMonthExpression(this);
 	}
 
 	/**
@@ -2401,19 +2398,23 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 *
 	 * <p>
 	 * Similar to {@link #min() } but this operates on the list provided, rather
-	 * than aggregating a column.
+	 * than aggregating a column.</p>
 	 *
-	 * @param possibleValues needs to be the least of these
+	 * @param possibleValue the first possible value
+	 * @param possibleValue2 the second possible value
+	 * @param possibleValues all other possible values
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
-	public static LocalDateTimeExpression leastOf(LocalDateTime... possibleValues) {
+	public static LocalDateTimeExpression leastOf(LocalDateTime possibleValue, LocalDateTime possibleValue2, LocalDateTime... possibleValues) {
 		ArrayList<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
+		possVals.add(value(possibleValue));
+		possVals.add(value(possibleValue2));
 		for (LocalDateTime num : possibleValues) {
 			possVals.add(value(num));
 		}
-		return leastOf(possVals.toArray(new LocalDateTimeExpression[]{}));
+		return internalLeastOf(possVals.toArray(new LocalDateTimeExpression[]{}));
 	}
 
 	/**
@@ -2429,11 +2430,39 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return the least/smallest value from the list.
 	 */
 	public static LocalDateTimeExpression leastOf(Collection<? extends LocalDateTimeResult> possibleValues) {
-		ArrayList<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
-		for (LocalDateTimeResult num : possibleValues) {
-			possVals.add(new LocalDateTimeExpression(num));
+		if (possibleValues.size() > 1) {
+			ArrayList<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
+			possibleValues.forEach((num) -> {
+				possVals.add(new LocalDateTimeExpression(num));
+			});
+			return internalLeastOf(possVals.toArray(new LocalDateTimeExpression[]{}));
+		} else if (possibleValues.size() == 1) {
+			return new LocalDateTimeExpression(possibleValues.toArray(new LocalDateTimeResult[]{})[0]);
+		} else {
+			return nullLocalDateTime();
 		}
-		return leastOf(possVals.toArray(new LocalDateTimeExpression[]{}));
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValue the first possible value
+	 * @param possibleValue2 the second possible value
+	 * @param possibleValues needs to be the least of these
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the least/smallest value from the list.
+	 */
+	public static LocalDateTimeExpression leastOf(LocalDateTimeResult possibleValue, LocalDateTimeResult possibleValue2, LocalDateTimeResult... possibleValues) {
+		List<LocalDateTimeResult> vals = new ArrayList<>();
+		vals.add(possibleValue);
+		vals.add(possibleValue2);
+		vals.addAll(Arrays.asList(possibleValues));
+		return internalLeastOf(vals.toArray(new LocalDateTimeResult[]{}));
 	}
 
 	/**
@@ -2448,7 +2477,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
-	public static LocalDateTimeExpression leastOf(LocalDateTimeResult... possibleValues) {
+	protected static LocalDateTimeExpression internalLeastOf(LocalDateTimeResult... possibleValues) {
 		LocalDateTimeExpression leastExpr
 				= new LocalDateTimeExpression(new LocalDateTimeLeastOfExpression(possibleValues));
 		return leastExpr;
@@ -2461,17 +2490,21 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * Similar to {@link #min() } but this operates on the list provided, rather
 	 * than aggregating a column.
 	 *
-	 * @param possibleValues needs to be the largest of these
+	 * @param possibleValue the first possible value
+	 * @param possibleValue2 the second possible value
+	 * @param possibleValues all other possible values
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the largest value from the list.
 	 */
-	public static LocalDateTimeExpression greatestOf(LocalDateTime... possibleValues) {
+	public static LocalDateTimeExpression greatestOf(LocalDateTime possibleValue, LocalDateTime possibleValue2, LocalDateTime... possibleValues) {
 		ArrayList<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
+		possVals.add(value(possibleValue));
+		possVals.add(value(possibleValue2));
 		for (LocalDateTime num : possibleValues) {
 			possVals.add(value(num));
 		}
-		return greatestOf(possVals.toArray(new LocalDateTimeExpression[]{}));
+		return internalGreatestOf(possVals.toArray(new LocalDateTimeExpression[]{}));
 	}
 
 	/**
@@ -2487,11 +2520,39 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return the largest value from the list.
 	 */
 	public static LocalDateTimeExpression greatestOf(Collection<? extends LocalDateTimeResult> possibleValues) {
-		ArrayList<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
-		for (LocalDateTimeResult num : possibleValues) {
-			possVals.add(new LocalDateTimeExpression(num));
+		if (possibleValues.size() > 1) {
+			ArrayList<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
+			for (LocalDateTimeResult num : possibleValues) {
+				possVals.add(new LocalDateTimeExpression(num));
+			}
+			return internalGreatestOf(possVals.toArray(new LocalDateTimeExpression[]{}));
+		} else if (possibleValues.size() == 1) {
+			return new LocalDateTimeExpression(possibleValues.toArray(new LocalDateTimeResult[]{})[0]);
+		} else {
+			return nullLocalDateTime();
 		}
-		return greatestOf(possVals.toArray(new LocalDateTimeExpression[]{}));
+	}
+
+	/**
+	 * Returns the largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValue the first possible value
+	 * @param possibleValue2 the second possible value
+	 * @param possibleValues all other possible values
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the largest value from the list.
+	 */
+	public static LocalDateTimeExpression greatestOf(LocalDateTimeResult possibleValue, LocalDateTimeResult possibleValue2, LocalDateTimeResult... possibleValues) {
+		List<LocalDateTimeResult> vals = new ArrayList<>();
+		vals.add(possibleValue);
+		vals.add(possibleValue2);
+		vals.addAll(Arrays.asList(possibleValues));
+		return internalGreatestOf(vals.toArray(new LocalDateTimeResult[]{}));
 	}
 
 	/**
@@ -2506,7 +2567,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the largest value from the list.
 	 */
-	public static LocalDateTimeExpression greatestOf(LocalDateTimeResult... possibleValues) {
+	protected static LocalDateTimeExpression internalGreatestOf(LocalDateTimeResult... possibleValues) {
 		LocalDateTimeExpression greatestOf
 				= new LocalDateTimeExpression(new LocalDateTimeGreatestOfExpression(possibleValues));
 		return greatestOf;
@@ -3511,15 +3572,15 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		}
 	}
 
-	protected static class LocalDateTimeOnlyCurrentLocalDateTimeExpression extends FunctionWithLocalDateTimeResult {
+	protected static class CurrentLocalDateLocalDateTimeExpression extends FunctionWithLocalDateTimeResult {
 
-		public LocalDateTimeOnlyCurrentLocalDateTimeExpression() {
+		public CurrentLocalDateLocalDateTimeExpression() {
 		}
 		private final static long serialVersionUID = 1l;
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doCurrentDateTimeTransform();
+			return db.doCurrentDateOnlyTransform();
 		}
 
 		@Override
@@ -3528,8 +3589,8 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		}
 
 		@Override
-		public LocalDateTimeOnlyCurrentLocalDateTimeExpression copy() {
-			return new LocalDateTimeOnlyCurrentLocalDateTimeExpression();
+		public CurrentLocalDateLocalDateTimeExpression copy() {
+			return new CurrentLocalDateLocalDateTimeExpression();
 		}
 
 	}
@@ -3564,8 +3625,8 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		}
 
 		@Override
-		public LocalDateTimeOnlyCurrentLocalDateTimeExpression copy() {
-			return new LocalDateTimeOnlyCurrentLocalDateTimeExpression();
+		public CurrentLocalDateLocalDateTimeExpression copy() {
+			return new CurrentLocalDateLocalDateTimeExpression();
 		}
 
 	}
@@ -4495,7 +4556,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		}
 	}
 
-	protected static class LocalDateTimeEndOfMonthExpression extends LocalDateExpression {
+	protected static class LocalDateTimeEndOfMonthExpression extends LocalDateTimeExpression {
 
 		public LocalDateTimeEndOfMonthExpression(LocalDateTimeResult dateVariable) {
 			super(dateVariable);
@@ -4509,8 +4570,9 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 			} catch (UnsupportedOperationException exp) {
 				LocalDateTimeExpression only = (LocalDateTimeExpression) getInnerResult();
 				return only
-						.addDays(only.day().minus(1).bracket().times(-1).integerResult())
-						.addMonths(1).addDays(-1).toSQLString(db);
+						.setDay(1)
+						.addMonths(1).addDays(-1)
+						.toSQLString(db);
 			}
 		}
 
