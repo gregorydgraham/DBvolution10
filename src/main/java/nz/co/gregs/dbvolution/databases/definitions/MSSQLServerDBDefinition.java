@@ -21,7 +21,7 @@ import java.text.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -192,18 +192,24 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		try {
 			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITH_ZONE);
 		} catch (DateTimeParseException ex) {
-			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
-		}
+				parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
+			}
 		return parsed;
 	}
 
 	@Override
-	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
+	public LocalDateTime parseLocalDateTimeFromGetString(String input) throws ParseException {
 		LocalDateTime parsed;
-		try {
-			parsed = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITH_ZONE);
-		} catch (DateTimeParseException ex) {
-			parsed = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
+		//either '2019-08-19 08:22:40.8135410' or '2019-08-19 20:22:40.8910319 +12:00'
+//			System.out.println("PARSING RESULTSET STRING: " + input);
+		String inputFromResultSet = input.replaceFirst(" ", "T");
+		if (inputFromResultSet.contains(" ")) {
+			inputFromResultSet = inputFromResultSet.replaceAll(" ", "");
+			System.out.println("PARSING AS INSTANT: " + inputFromResultSet);
+			parsed = ZonedDateTime.parse(inputFromResultSet).toLocalDateTime();
+		} else {
+			System.out.println("PARSING AS LOCALDATETIME: " + inputFromResultSet);
+			parsed = LocalDateTime.parse(inputFromResultSet);
 		}
 		return parsed;
 	}
