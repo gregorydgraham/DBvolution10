@@ -177,6 +177,20 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 		return new DateNullExpression();
 	}
 
+	public LocalDateExpression toLocalDate() {
+		return this;
+	}
+	
+	public LocalDateTimeExpression toLocalDateTime(){
+		return new LocalDateTimeExpression()
+				.setYear(this.year())
+				.setMonth(this.month())
+				.setDay(this.day())
+				.setHour(0)
+				.setMinute(0)
+				.setSecond(0);
+	}
+
 	/**
 	 * Creates a date expression that returns only the date part of current date
 	 * on the database.
@@ -184,10 +198,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * <p>
 	 * That is to say the expression returns the current day, according to the
 	 * database, with the time set to Midnight.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
+	 * 
 	 * @return a date expression of only the date part of the current database
 	 * timestamp.
 	 */
@@ -202,66 +213,61 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * <p>
 	 * That is to say the expression returns the current day and time according to
 	 * the database.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a date expression of the current database timestamp.
+	 * 
+	 * @return a datetime expression of the current database timestamp.
 	 */
 	public static LocalDateTimeExpression currentLocalDateTime() {
 		return LocalDateTimeExpression.now();
 	}
 
 	/**
-	 * Creates a date expression that returns the current time on the database.
+	 * Creates a date expression that returns today's date, that is the current
+	 * date on the database.
 	 *
-	 * <p>
-	 * That is to say the expression returns the current time, according to the
-	 * database, with the date set to database's zero date.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a date expression of only the time part of the current database
-	 * timestamp.
+	 * @return a date expression of today's date.
 	 */
 	public static LocalDateExpression currentDate() {
-		return new LocalDateExpression(
-				new DateCurrentTimeExpression());
+		return currentLocalDate();
 	}
 
 	/**
-	 * Creates a date expression that returns the current time on the database.
+	 * Creates a date expression that returns today's date, that is the current
+	 * date on the database.
 	 *
-	 * <p>
-	 * That is to say the expression returns the current time, according to the
-	 * database, with the date set to database's zero date.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a date expression of only the time part of the current database
-	 * timestamp.
+	 * @return a date expression of today's date.
 	 */
 	public static LocalDateExpression now() {
-		return currentDate();
+		return currentLocalDate();
 	}
 
 	/**
-	 * Creates a date expression that returns the current time on the database.
+	 * Creates a date expression that returns today's date, that is the current
+	 * date on the database.
 	 *
-	 * <p>
-	 * That is to say the expression returns the current time, according to the
-	 * database, with the date set to database's zero date.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a date expression of only the time part of the current database
-	 * timestamp.
+	 * @return a date expression of today's date.
 	 */
 	public static LocalDateExpression today() {
-		return currentDate();
+		return currentLocalDate();
+	}
+
+	/**
+	 * Creates a date expression that returns yesterday's date, that is the
+	 * current date on the database minus one day.
+	 *
+	 * @return a date expression of yesterday's date.
+	 */
+	public static LocalDateExpression yesterday() {
+		return currentLocalDate().addDays(-1);
+	}
+
+	/**
+	 * Creates a date expression that returns tomorrow's date, that is the current
+	 * date on the database plus one day.
+	 *
+	 * @return a date expression of tomorrow's date.
+	 */
+	public static LocalDateExpression tomorrow() {
+		return currentLocalDate().addDays(1);
 	}
 
 	/**
@@ -274,8 +280,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * @return the year of this date expression as a number.
 	 */
 	public IntegerExpression year() {
-		return new IntegerExpression(
-				new DateYearExpression(this));
+		return new DateYearExpression(this);
 	}
 
 	/**
@@ -3485,7 +3490,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	}
 
 	private static class NewLocalDateExpression extends LocalDateExpression {
-		
+
 		private final static long serialVersionUID = 1l;
 
 		private final IntegerExpression yearExpression;
@@ -3512,45 +3517,45 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 		public LocalDateExpression copy() {
 			return new NewLocalDateExpression(yearExpression.copy(), monthExpression.copy(), dayExpression.copy());
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
-			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
-			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
-			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isPurelyFunctional()).reduce((t, u) -> t||u);
-			return reduced.isPresent()&&reduced.get();
+			List<AnyExpression<?, ?, ?>> exprs = new ArrayList<AnyExpression<?, ?, ?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?, ?, ?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isPurelyFunctional()).reduce((t, u) -> t || u);
+			return reduced.isPresent() && reduced.get();
 		}
 
 		@Override
 		public boolean isComplexExpression() {
-			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
-			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
-			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isComplexExpression()).reduce((t, u) -> t||u);
-			return reduced.isPresent()&&reduced.get();
+			List<AnyExpression<?, ?, ?>> exprs = new ArrayList<AnyExpression<?, ?, ?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?, ?, ?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isComplexExpression()).reduce((t, u) -> t || u);
+			return reduced.isPresent() && reduced.get();
 		}
 
 		@Override
 		public boolean isAggregator() {
-			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
-			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
-			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isAggregator()).reduce((t, u) -> t||u);
-			return reduced.isPresent()&&reduced.get();
+			List<AnyExpression<?, ?, ?>> exprs = new ArrayList<AnyExpression<?, ?, ?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?, ?, ?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isAggregator()).reduce((t, u) -> t || u);
+			return reduced.isPresent() && reduced.get();
 		}
 
 		@Override
 		protected boolean isNullSafetyTerminator() {
-			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
-			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
-			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isNullSafetyTerminator()).reduce((t, u) -> t||u);
-			return reduced.isPresent()&&reduced.get();
+			List<AnyExpression<?, ?, ?>> exprs = new ArrayList<AnyExpression<?, ?, ?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?, ?, ?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isNullSafetyTerminator()).reduce((t, u) -> t || u);
+			return reduced.isPresent() && reduced.get();
 		}
 
 		@Override
 		public boolean isWindowingFunction() {
-			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
-			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
-			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isWindowingFunction()).reduce((t, u) -> t||u);
-			return reduced.isPresent()&&reduced.get();
+			List<AnyExpression<?, ?, ?>> exprs = new ArrayList<AnyExpression<?, ?, ?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?, ?, ?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isWindowingFunction()).reduce((t, u) -> t || u);
+			return reduced.isPresent() && reduced.get();
 		}
 	}
 
