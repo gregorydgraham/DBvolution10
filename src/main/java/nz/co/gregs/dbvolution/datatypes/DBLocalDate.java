@@ -31,7 +31,6 @@ import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
@@ -64,7 +63,6 @@ import nz.co.gregs.dbvolution.results.LocalDateResult;
 public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDateResult {
 
 	private static final long serialVersionUID = 1L;
-//	private final SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
 	private final DateTimeFormatter toStringFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	/**
@@ -139,8 +137,6 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	@SuppressWarnings("deprecation")
 	DBLocalDate(String dateAsAString) {
 		final LocalDate dateValue = LocalDate.parse(dateAsAString);
-//		LocalDate localDateValue = new LocalDate();
-//		localDateValue.setTime(dateLong);
 		setLiteralValue(dateValue);
 	}
 
@@ -279,7 +275,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 
 	@Override
 	public DBLocalDate copy() {
-		return (DBLocalDate) super.copy(); //To change body of generated methods, choose Tools | Templates.
+		return (DBLocalDate) super.copy();
 	}
 
 	@Override
@@ -489,8 +485,8 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 *
 	 * @param permitted	permitted
 	 */
-	public void permittedValues(DateExpression... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<DateExpression>(permitted));
+	public void permittedValues(LocalDateExpression... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<LocalDateExpression>(permitted));
 	}
 
 	/**
@@ -500,8 +496,8 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 *
 	 * @param excluded	excluded
 	 */
-	public void excludedValues(DateExpression... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<DateExpression>(excluded));
+	public void excludedValues(LocalDateExpression... excluded) {
+		this.setOperator(new DBPermittedValuesOperator<LocalDateExpression>(excluded));
 		negateOperator();
 	}
 
@@ -527,8 +523,8 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRange(DateExpression lowerBound, DateExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator<DateExpression>(lowerBound, upperBound));
+	public void permittedRange(LocalDateExpression lowerBound, LocalDateExpression upperBound) {
+		setOperator(new DBPermittedRangeOperator<LocalDateExpression>(lowerBound, upperBound));
 	}
 
 	/**
@@ -553,7 +549,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRangeInclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void permittedRangeInclusive(LocalDateExpression lowerBound, LocalDateExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 	}
 
@@ -579,7 +575,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void permittedRangeExclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void permittedRangeExclusive(LocalDateExpression lowerBound, LocalDateExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
@@ -605,8 +601,8 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRange(DateExpression lowerBound, DateExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator<DateExpression>(lowerBound, upperBound));
+	public void excludedRange(LocalDateExpression lowerBound, LocalDateExpression upperBound) {
+		setOperator(new DBPermittedRangeOperator<LocalDateExpression>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -632,7 +628,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRangeInclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void excludedRangeInclusive(LocalDateExpression lowerBound, LocalDateExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
@@ -659,7 +655,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
 	 */
-	public void excludedRangeExclusive(DateExpression lowerBound, DateExpression upperBound) {
+	public void excludedRangeExclusive(LocalDateExpression lowerBound, LocalDateExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
@@ -722,15 +718,15 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(LocalDateExpression.currentDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(LocalDateExpression.currentDate());
 	 *
 	 * &#64;DBColumn
 	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * .setDefaultInsertValue(LocalDateExpression.currentDate())
+	 * .setDefaultUpdateValue(LocalDateExpression.currentDate());
 	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
@@ -838,7 +834,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * handled using the
 	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
 	 * In particular, setDefaultUpdateValue(new LocalDate()) is probably NOT what
-	 * you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce
+	 * you want, setDefaultUpdateValue(LocalDateExpression.currentDate()) will produce
 	 * a correct update time value.</p>
 	 *
 	 * <p>
@@ -877,7 +873,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * handled using the
 	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
 	 * In particular, setDefaultUpdateValue(new LocalDate()) is probably NOT what
-	 * you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce
+	 * you want, setDefaultUpdateValue(LocalDateExpression.currentDate()) will produce
 	 * a correct update time value.</p>
 	 *
 	 * <p>
@@ -940,34 +936,34 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	}
 
 	public void permitOnlyPastAndPresent() {
-		this.setOperator(new DBLessThanOrEqualOperator(DateExpression.currentDate()));
+		this.setOperator(new DBLessThanOrEqualOperator(LocalDateExpression.currentDate()));
 	}
 
 	public void permitOnlyPresentAndFuture() {
-		this.setOperator(new DBGreaterThanOrEqualsOperator(DateExpression.currentDate()));
+		this.setOperator(new DBGreaterThanOrEqualsOperator(LocalDateExpression.currentDate()));
 	}
 
 	public void permitOnlyPast() {
-		this.setOperator(new DBLessThanOperator(DateExpression.currentDate()));
+		this.setOperator(new DBLessThanOperator(LocalDateExpression.currentDate()));
 	}
 
 	public void permitOnlyFuture() {
-		this.setOperator(new DBGreaterThanOperator(DateExpression.currentDate()));
+		this.setOperator(new DBGreaterThanOperator(LocalDateExpression.currentDate()));
 	}
 
 	public void permitOnlyPastAndPresentByDateOnly() {
-		this.setOperator(new DBLessThanOrEqualOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBLessThanOrEqualOperator(LocalDateExpression.currentDate()));
 	}
 
 	public void permitOnlyPresentAndFutureByDateOnly() {
-		this.setOperator(new DBGreaterThanOrEqualsOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBGreaterThanOrEqualsOperator(LocalDateExpression.currentLocalDate()));
 	}
 
 	public void permitOnlyPastByDateOnly() {
-		this.setOperator(new DBLessThanOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBLessThanOperator(LocalDateExpression.now()));
 	}
 
 	public void permitOnlyFutureByDateOnly() {
-		this.setOperator(new DBGreaterThanOperator(DateExpression.currentDateOnly()));
+		this.setOperator(new DBGreaterThanOperator(LocalDateExpression.today()));
 	}
 }
