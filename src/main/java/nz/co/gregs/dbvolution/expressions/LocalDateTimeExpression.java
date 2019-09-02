@@ -2729,6 +2729,30 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		return this.addSeconds(IntegerExpression.value(i).minus(this.second().integerResult()));
 	}
 
+	public LocalDateTimeExpression setYear(IntegerExpression i) {
+		return this.addYears(i.minus(this.year().integerResult()));
+	}
+
+	public LocalDateTimeExpression setMonth(IntegerExpression i) {
+		return this.addMonths(i.minus(this.month().integerResult()));
+	}
+
+	public LocalDateTimeExpression setDay(IntegerExpression i) {
+		return this.addDays(i.minus(this.day().integerResult()));
+	}
+
+	public LocalDateTimeExpression setHour(IntegerExpression i) {
+		return this.addHours(i.minus(this.hour().integerResult()));
+	}
+
+	public LocalDateTimeExpression setMinute(IntegerExpression i) {
+		return this.addMinutes(i.minus(this.minute().integerResult()));
+	}
+
+	public LocalDateTimeExpression setSecond(IntegerExpression i) {
+		return this.addSeconds(i.minus(this.second().integerResult()));
+	}
+
 	private static abstract class FunctionWithLocalDateTimeResult extends LocalDateTimeExpression implements CanBeWindowingFunctionWithFrame<LocalDateTimeExpression> {
 
 		private static final long serialVersionUID = 1L;
