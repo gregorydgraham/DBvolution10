@@ -20,23 +20,28 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
-//import nz.co.gregs.dbvolution.datatypes.DBLocalDate;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLocalDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.example.CarCompany;
+//import nz.co.gregs.dbvolution.example.MarqueWithLocalDate;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class LocalDateExpressionTest extends AbstractTest {
@@ -48,11 +53,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 	public static class CurrentDateReport extends DBReport {
 
 		private static final long serialVersionUID = 1L;
-		public Marque marque = new Marque();
+		public MarqueWithLocalDate marque = new MarqueWithLocalDate();
 		@DBColumn
 		public DBString name = new DBString(marque.column(marque.name));
 		@DBColumn
-		public DBLocalDate savedJavaDate = new DBLocalDate(marque.column(marque.creationDate).toLocalDate());
+		public DBLocalDate savedJavaDate = new DBLocalDate(marque.column(marque.creationLocalDate).toLocalDate());
 		@DBColumn
 		public DBLocalDate actualJavaDate = new DBLocalDate(LocalDate.now());
 		@DBColumn
@@ -62,7 +67,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBLocalDate currentDateTime = new DBLocalDate(LocalDateExpression.currentDate());
 		@DBColumn
-		public DBLocalDate created = marque.column(marque.creationDate).toLocalDate().asExpressionColumn();
+		public DBLocalDate created = marque.column(marque.creationLocalDate).toLocalDate().asExpressionColumn();
 		@DBColumn
 		public DBLocalDate currentTime = LocalDateExpression.currentLocalDate().asExpressionColumn();
 	}
@@ -72,10 +77,10 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNotDateExpression() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		final LocalDateExpression fiveDaysPriorToCreation = marq.column(marq.creationDate).toLocalDate().addDays(-5);
-		query.addCondition(LocalDateExpression.leastOf(marq.column(marq.creationDate).toLocalDate(),
+		final LocalDateExpression fiveDaysPriorToCreation = marq.column(marq.creationLocalDate).toLocalDate().addDays(-5);
+		query.addCondition(LocalDateExpression.leastOf(marq.column(marq.creationLocalDate).toLocalDate(),
 				fiveDaysPriorToCreation,
 				LocalDateExpression.value(march23rd2013LocalDate).addWeeks(-5),
 				LocalDateExpression.value(march23rd2013LocalDate).addDays(-2))
@@ -89,11 +94,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 	@Test
 	public void testIsNotDate() throws SQLException {
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().isNot(april2nd2011LocalDate)
+				marq.column(marq.creationLocalDate).toLocalDate().isNot(april2nd2011LocalDate)
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
@@ -102,10 +107,10 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLeastOf() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		final LocalDateExpression fiveDaysPriorToCreation = marq.column(marq.creationDate).toLocalDate().addDays(-5);
-		query.addCondition(LocalDateExpression.leastOf(marq.column(marq.creationDate).toLocalDate(),
+		final LocalDateExpression fiveDaysPriorToCreation = marq.column(marq.creationLocalDate).toLocalDate().addDays(-5);
+		query.addCondition(LocalDateExpression.leastOf(marq.column(marq.creationLocalDate).toLocalDate(),
 				fiveDaysPriorToCreation,
 				LocalDateExpression.value(march23rd2013LocalDate).addWeeks(-5),
 				LocalDateExpression.value(march23rd2013LocalDate).addDays(-2))
@@ -118,9 +123,9 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLeastOfWithList() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		final LocalDateExpression creationDate = marq.column(marq.creationDate).toLocalDate();
+		final LocalDateExpression creationDate = marq.column(marq.creationLocalDate).toLocalDate();
 		final LocalDateExpression fiveDaysPriorToCreation = creationDate.addDays(-5);
 		List<LocalDateExpression> poss = new ArrayList<>();
 		poss.add(creationDate);
@@ -139,7 +144,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLeastOfWithDates() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(LocalDateExpression
@@ -154,9 +159,9 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGreatestOf() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		final LocalDateExpression creationDate = marq.column(marq.creationDate).toLocalDate();
+		final LocalDateExpression creationDate = marq.column(marq.creationLocalDate).toLocalDate();
 		final LocalDateExpression fiveDaysPriorToCreation = creationDate.addDays(-5);
 		query.addCondition(LocalDateExpression.greatestOf(creationDate,
 				fiveDaysPriorToCreation,
@@ -171,9 +176,9 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGreatestOfWithList() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		final LocalDateExpression creationDate = marq.column(marq.creationDate).toLocalDate();
+		final LocalDateExpression creationDate = marq.column(marq.creationLocalDate).toLocalDate();
 		final LocalDateExpression fiveDaysPriorToCreation = creationDate.addDays(-5);
 		List<LocalDateExpression> poss = new ArrayList<>();
 		poss.add(creationDate);
@@ -192,7 +197,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGreatestOfWithDates() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
 				LocalDateExpression
@@ -208,10 +213,10 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testOverlapsDateExpressionDateResult() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		query.addCondition(LocalDateExpression.overlaps(marq.column(marq.creationDate).toLocalDate(),
-				marq.column(marq.creationDate).toLocalDate().addDays(-5),
+		query.addCondition(LocalDateExpression.overlaps(marq.column(marq.creationLocalDate).toLocalDate(),
+				marq.column(marq.creationLocalDate).toLocalDate().addDays(-5),
 				LocalDateExpression.value(march23rd2013LocalDate).addWeeks(-5),
 				LocalDateExpression.value(march23rd2013LocalDate).addDays(-2))
 		);
@@ -221,10 +226,10 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testOverlapsAllDateResults() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		query.addCondition(LocalDateExpression.overlaps(marq.column(marq.creationDate).toLocalDate(),
-				marq.column(marq.creationDate).toLocalDate().addDays(-5),
+		query.addCondition(LocalDateExpression.overlaps(marq.column(marq.creationLocalDate).toLocalDate(),
+				marq.column(marq.creationLocalDate).toLocalDate().addDays(-5),
 				LocalDateExpression.value(march23rd2013LocalDate).addWeeks(-5),
 				LocalDateExpression.value(march23rd2013LocalDate).addDays(-2))
 		);
@@ -247,16 +252,16 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	}
 
-	public static class MarqueWithDateAggregators extends Marque {
+	public static class MarqueWithDateAggregators extends MarqueWithLocalDate {
 
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBNumber countOfDates = new DBNumber(this.column(this.creationDate).count());
+		DBNumber countOfDates = new DBNumber(this.column(this.creationLocalDate).count());
 		@DBColumn
-		DBLocalDate maxOfDates = new DBLocalDate(this.column(this.creationDate).toLocalDate().max());
+		DBLocalDate maxOfDates = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().max());
 		@DBColumn
-		DBLocalDate minOfDates = new DBLocalDate(this.column(this.creationDate).toLocalDate().min());
+		DBLocalDate minOfDates = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min());
 
 		{
 			this.setReturnFields(this.countOfDates, this.maxOfDates, this.minOfDates);
@@ -309,71 +314,71 @@ public class LocalDateExpressionTest extends AbstractTest {
 		}
 	}
 
-	public static class MarqueWithDateWindowingFunctions extends Marque {
+	public static class MarqueWithDateWindowingFunctions extends MarqueWithLocalDate {
 
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBNumber countOfAllRows = new DBNumber(this.column(this.creationDate).toLocalDate().count().over().allRows());
+		DBNumber countOfAllRows = new DBNumber(this.column(this.creationLocalDate).toLocalDate().count().over().allRows());
 		@DBColumn
-		DBNumber rowNumber = new DBNumber(this.column(this.creationDate).toLocalDate().count().over().AllRowsAndOrderBy(this.column(this.carCompany).ascending()));
+		DBNumber rowNumber = new DBNumber(this.column(this.creationLocalDate).toLocalDate().count().over().AllRowsAndOrderBy(this.column(this.carCompany).ascending()));
 		@DBColumn
-		DBNumber countOfDates = new DBNumber(this.column(this.creationDate).toLocalDate().count().over().partition(this.column(this.carCompany)).unordered());
+		DBNumber countOfDates = new DBNumber(this.column(this.creationLocalDate).toLocalDate().count().over().partition(this.column(this.carCompany)).unordered());
 		@DBColumn
-		DBNumber rowWithinCarCo = new DBNumber(this.column(this.creationDate).toLocalDate().count()
+		DBNumber rowWithinCarCo = new DBNumber(this.column(this.creationLocalDate).toLocalDate().count()
 				.over()
 				.partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).ascending())
 				.defaultFrame());
 		@DBColumn
-		DBLocalDate maxOfAll = new DBLocalDate(this.column(this.creationDate).toLocalDate().max().over().allRows());
+		DBLocalDate maxOfAll = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().max().over().allRows());
 		@DBColumn
-		DBLocalDate maxOfDates = new DBLocalDate(this.column(this.creationDate).toLocalDate().max().over().partition(this.column(this.carCompany)).unordered());
+		DBLocalDate maxOfDates = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().max().over().partition(this.column(this.carCompany)).unordered());
 		@DBColumn
-		DBLocalDate minOfDates = new DBLocalDate(this.column(this.creationDate).toLocalDate().min().over().partition(this.column(this.carCompany)).unordered());
+		DBLocalDate minOfDates = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min().over().partition(this.column(this.carCompany)).unordered());
 		@DBColumn
-		DBLocalDate test1 = new DBLocalDate(this.column(this.creationDate)
+		DBLocalDate test1 = new DBLocalDate(this.column(this.creationLocalDate)
 				.toLocalDate()
 				.min()
 				.over().partition(this.column(this.carCompany))
 				.unsorted());
 		@DBColumn
-		DBLocalDate test2 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test2 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().unboundedPreceding().currentRow());
 		@DBColumn
-		DBLocalDate test3 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test3 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().unboundedPreceding().currentRow());
 		@DBColumn
-		DBLocalDate test4 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test4 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().currentRow().toCurrentRow());
 		@DBColumn
-		DBLocalDate test5 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test5 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().offsetPrecedingAndCurrentRow(5));
 		@DBColumn
-		DBLocalDate test6 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test6 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().currentRow().unboundedFollowing());
 		@DBColumn
-		DBLocalDate test7 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test7 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().currentRow().forFollowing(3));
 		@DBColumn
-		DBLocalDate test8 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test8 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().unboundedPreceding().unboundedFollowing());
 		@DBColumn
-		DBLocalDate test9 = new DBLocalDate(this.column(this.creationDate).toLocalDate().min()
+		DBLocalDate test9 = new DBLocalDate(this.column(this.creationLocalDate).toLocalDate().min()
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().unboundedPreceding().forFollowing(1));
@@ -424,27 +429,27 @@ public class LocalDateExpressionTest extends AbstractTest {
 		}
 	}
 
-	public static class MarqueWithAggregatorAndDateWindowingFunctions extends Marque {
+	public static class MarqueWithAggregatorAndDateWindowingFunctions extends MarqueWithLocalDate {
 
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBNumber countAggregator = new DBNumber(this.column(this.creationDate).toLocalDate().count());
+		DBNumber countAggregator = new DBNumber(this.column(this.creationLocalDate).toLocalDate().count());
 		@DBColumn
-		DBNumber countOfAllRows = new DBNumber(this.column(this.creationDate).toLocalDate().count().over().allRows());
+		DBNumber countOfAllRows = new DBNumber(this.column(this.creationLocalDate).toLocalDate().count().over().allRows());
 		@DBColumn
-		DBNumber countOfDates = new DBNumber(this.column(this.creationDate).toLocalDate().count()
+		DBNumber countOfDates = new DBNumber(this.column(this.creationLocalDate).toLocalDate().count()
 				.over()
 				.partition(this.column(this.carCompany)).unordered());
 		@DBColumn
-		DBLocalDate maxOfAll = new DBLocalDate(this.column(this.creationDate)
+		DBLocalDate maxOfAll = new DBLocalDate(this.column(this.creationLocalDate)
 				.toLocalDate().max().over().allRows());
 		@DBColumn
-		DBLocalDate maxOfDates = new DBLocalDate(this.column(this.creationDate)
+		DBLocalDate maxOfDates = new DBLocalDate(this.column(this.creationLocalDate)
 				.toLocalDate().max().over()
 				.partition(this.column(this.carCompany)).unordered());
 		@DBColumn
-		DBLocalDate minOfDates = new DBLocalDate(this.column(this.creationDate)
+		DBLocalDate minOfDates = new DBLocalDate(this.column(this.creationLocalDate)
 				.toLocalDate().min()
 				.over()
 				.partition(this.column(this.carCompany)).unordered());
@@ -500,7 +505,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		}
 	}
 
-	public static class MarqueWithComplexWindowingFunction extends Marque {
+	public static class MarqueWithComplexWindowingFunction extends MarqueWithLocalDate {
 
 		private static final long serialVersionUID = 1L;
 
@@ -515,20 +520,20 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCurrentTime() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
-		query.addConditions(marq.column(marq.creationDate).toLocalDate().isBetween(LocalDateExpression.currentLocalDate(), LocalDateExpression.nullLocalDate()));
+		query.addConditions(marq.column(marq.creationLocalDate).toLocalDate().isBetween(LocalDateExpression.currentLocalDate(), LocalDateExpression.nullLocalDate()));
 
 		List<DBQueryRow> got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(0));
 
-		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     LADA               ", "", "Y", new Date(), 3, null));
+		database.insert(new MarqueWithLocalDate(3, "False", 1246974, "", 0, "", "     LADA               ", "", "Y", LocalDate.now(), 3, null));
 
-		Marque reportLimitingMarque = new Marque();
+		MarqueWithLocalDate reportLimitingMarque = new MarqueWithLocalDate();
 		reportLimitingMarque.name.permittedPatternIgnoreCase("% LADA %");
 		CurrentDateReport currentDateReport = new CurrentDateReport();
-		
+
 		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
 
 		Assert.assertThat(reportRows.size(), is(1));
@@ -536,12 +541,12 @@ public class LocalDateExpressionTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		final LocalDateExpression now = LocalDateExpression.now();
 		query.addConditions(
-				marq.column(marq.creationDate).toLocalDate().day()
+				marq.column(marq.creationLocalDate).toLocalDate().day()
 						.isIn(
 								now.day(),
 								now.addDays(-1).day(),
 								now.addDays(1).day()),
-				marq.column(marq.creationDate).toLocalDate().isGreaterThan(march23rd2013LocalDate)
+				marq.column(marq.creationLocalDate).toLocalDate().isGreaterThan(march23rd2013LocalDate)
 		);
 
 		got = query.getAllRows();
@@ -552,24 +557,24 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCurrentDateAndAddDaysFunctions() throws SQLException {
-		Marque marq = new Marque();
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
-		List<Marque> got = database.get(marq);
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate(), null);
+		List<MarqueWithLocalDate> got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(0));
 
-		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addDays(-1), null);
+		database.insert(new MarqueWithLocalDate(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDate.now(), 3, null));
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate().addDays(-1), null);
 		got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(1));
 
-		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDate().addDays(-1));
+		marq.creationLocalDate.permittedRangeInclusive(null, LocalDateExpression.currentDate().addDays(-1));
 		got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(21));
 
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addDays(-1), DateExpression.currentDate().addDays(+1));
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate().addDays(-1), LocalDateExpression.currentDate().addDays(+1));
 		got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -577,14 +582,14 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCurrentDateAndAddWeeksFunctions() throws SQLException {
-		Marque marq = new Marque();
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
-		List<Marque> got = database.get(marq);
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate(), null);
+		List<MarqueWithLocalDate> got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(0));
 
-		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addWeeks(-1), null);
+		database.insert(new MarqueWithLocalDate(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDate.now(), 3, null));
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate().addWeeks(-1), null);
 		got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -592,14 +597,14 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCurrentDateAndAddMonthsFunctions() throws SQLException {
-		Marque marq = new Marque();
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
-		List<Marque> got = database.get(marq);
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate(), null);
+		List<MarqueWithLocalDate> got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(0));
 
-		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addMonths(-1), null);
+		database.insert(new MarqueWithLocalDate(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDate.now(), 3, null));
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate().addMonths(-1), null);
 		got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -607,14 +612,14 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCurrentDateAndAddYearsFunctions() throws SQLException {
-		Marque marq = new Marque();
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
-		List<Marque> got = database.get(marq);
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate(), null);
+		List<MarqueWithLocalDate> got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(0));
 
-		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addYears(-1), null);
+		database.insert(new MarqueWithLocalDate(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDate.now(), 3, null));
+		marq.creationLocalDate.permittedRangeInclusive(LocalDateExpression.currentDate().addYears(-1), null);
 		got = database.get(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -622,17 +627,17 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testYearFunction() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().year().is(2014));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().year().is(2014));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().year().is(2013));
+				marq.column(marq.creationLocalDate).toLocalDate().year().is(2013));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
@@ -640,31 +645,31 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testYearIsFunction() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().yearIs(2014));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().yearIs(2014));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().yearIs(2013));
+				marq.column(marq.creationLocalDate).toLocalDate().yearIs(2013));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().yearIs(NumberExpression.value(2014).numberResult()));
+				marq.column(marq.creationLocalDate).toLocalDate().yearIs(NumberExpression.value(2014).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().yearIs(NumberExpression.value(2013)));
+				marq.column(marq.creationLocalDate).toLocalDate().yearIs(NumberExpression.value(2013)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
@@ -672,31 +677,31 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testMonthFunction() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().monthIs(3));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().monthIs(3));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().monthIs(4));
+				marq.column(marq.creationLocalDate).toLocalDate().monthIs(4));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().monthIs(NumberExpression.value(3).numberResult()));
+				marq.column(marq.creationLocalDate).toLocalDate().monthIs(NumberExpression.value(3).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().monthIs(NumberExpression.value(4)));
+				marq.column(marq.creationLocalDate).toLocalDate().monthIs(NumberExpression.value(4)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
@@ -704,24 +709,24 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testEndOfMonthFunction() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().endOfMonth().day().is(31));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().endOfMonth().day().is(31));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().endOfMonth().day().is(30));
+				marq.column(marq.creationLocalDate).toLocalDate().endOfMonth().day().is(30));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().endOfMonth().day().isNull());
+				marq.column(marq.creationLocalDate).toLocalDate().endOfMonth().day().isNull());
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -733,35 +738,35 @@ public class LocalDateExpressionTest extends AbstractTest {
 		LocalDate march2nd2013 = LocalDate.of(2013, Month.MARCH, 2);
 		LocalDate march31st2011 = LocalDate.of(2011, Month.MARCH, 31);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetween(february28th2013, march2nd2013));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetween(february28th2013, march2nd2013));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetween(march31st2011, april2nd2011LocalDate));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetween(march31st2011, april2nd2011LocalDate));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetween(LocalDateExpression.value(march31st2011), april2nd2011LocalDate));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetween(LocalDateExpression.value(march31st2011), april2nd2011LocalDate));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetween(march31st2011, LocalDateExpression.value(april2nd2011LocalDate)));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetween(march31st2011, LocalDateExpression.value(april2nd2011LocalDate)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isNull());
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -769,11 +774,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNotNull() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isNotNull());
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isNotNull());
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(21));
 	}
@@ -784,35 +789,35 @@ public class LocalDateExpressionTest extends AbstractTest {
 		LocalDate march2nd2013 = LocalDate.of(2013, Month.MARCH, 2);
 		LocalDate april1st2011 = LocalDate.of(2011, Month.APRIL, 1);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenInclusive(march1st2013, march2nd2013));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenInclusive(march1st2013, march2nd2013));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenInclusive(april1st2011, april2nd2011LocalDate));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenInclusive(april1st2011, april2nd2011LocalDate));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenInclusive(LocalDateExpression.value(april1st2011), april2nd2011LocalDate));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenInclusive(LocalDateExpression.value(april1st2011), april2nd2011LocalDate));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenInclusive(april1st2011, LocalDateExpression.value(april2nd2011LocalDate)));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenInclusive(april1st2011, LocalDateExpression.value(april2nd2011LocalDate)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isNull());
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -822,11 +827,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 	public void testisGreaterThan() throws SQLException {
 		LocalDate february28th2013 = LocalDate.of(2013, Month.FEBRUARY, 28);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isGreaterThan(february28th2013));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isGreaterThan(february28th2013));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 	}
@@ -835,11 +840,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 	public void testisGreaterThanOrEqual() throws SQLException {
 		LocalDate march1st2013 = LocalDate.of(2013, Month.MARCH, 1);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isGreaterThanOrEqual(march1st2013));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isGreaterThanOrEqual(march1st2013));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 	}
@@ -848,13 +853,13 @@ public class LocalDateExpressionTest extends AbstractTest {
 	public void testisGreaterThanWithFallback() throws SQLException {
 		LocalDate february28th2013 = LocalDate.of(2013, Month.FEBRUARY, 28);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isGreaterThan(february28th2013, marq.column(marq.name).isGreaterThan("T")));
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isGreaterThan(february28th2013, marq.column(marq.name).isGreaterThan("T")));
 
-		List<Marque> got = query.getAllInstancesOf(marq);
-		
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
+
 		Assert.assertThat(got.size(), is(18));
 	}
 
@@ -862,11 +867,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 	public void testisLessThan() throws SQLException {
 		LocalDate march1st2013 = LocalDate.of(2013, Month.MARCH, 1);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isLessThan(march1st2013));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isLessThan(march1st2013));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 	}
@@ -875,11 +880,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 	public void testisLessThanWithFallback() throws SQLException {
 		LocalDate february28th2013 = LocalDate.of(2013, Month.FEBRUARY, 28);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isLessThan(february28th2013, marq.column(marq.name).isGreaterThan("T")));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isLessThan(february28th2013, marq.column(marq.name).isGreaterThan("T")));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 	}
@@ -890,36 +895,36 @@ public class LocalDateExpressionTest extends AbstractTest {
 		LocalDate march2nd2013 = LocalDate.of(2013, Month.MARCH, 2);
 		LocalDate march31st2011 = LocalDate.of(2011, Month.MARCH, 31);
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenExclusive(february28th2013, march2nd2013));
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenExclusive(february28th2013, march2nd2013));
 
-		List<Marque> got = query.getAllInstancesOf(marq);
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenExclusive(march31st2011, april2nd2011LocalDate));
-		got = query.getAllInstancesOf(marq);
-		
-		Assert.assertThat(got.size(), is(3));
-
-		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenExclusive(LocalDateExpression.value(march31st2011), april2nd2011LocalDate));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenExclusive(march31st2011, april2nd2011LocalDate));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationDate).toLocalDate().firstOfMonth().isBetweenExclusive(march31st2011, LocalDateExpression.value(april2nd2011LocalDate)));
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenExclusive(LocalDateExpression.value(march31st2011), april2nd2011LocalDate));
+		got = query.getAllInstancesOf(marq);
+
+		Assert.assertThat(got.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isBetweenExclusive(march31st2011, LocalDateExpression.value(april2nd2011LocalDate)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().firstOfMonth().isNull());
+				marq.column(marq.creationLocalDate).toLocalDate().firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -929,24 +934,24 @@ public class LocalDateExpressionTest extends AbstractTest {
 	@Test
 	public void testDayOfWeekFunction() throws SQLException {
 
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().addMonths(1).dayOfWeek().is(LocalDateExpression.TUESDAY));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().addMonths(1).dayOfWeek().is(LocalDateExpression.TUESDAY));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().addMonths(1).dayOfWeek().is(LocalDateExpression.MONDAY));
+				marq.column(marq.creationLocalDate).toLocalDate().addMonths(1).dayOfWeek().is(LocalDateExpression.MONDAY));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().addMonths(1).dayOfWeek().isNull());
+				marq.column(marq.creationLocalDate).toLocalDate().addMonths(1).dayOfWeek().isNull());
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(1));
@@ -955,17 +960,17 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testDayFunction() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().day().is(23));
-		List<Marque> got = query.getAllInstancesOf(marq);
+				marq.column(marq.creationLocalDate).toLocalDate().day().is(23));
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().day().is(2));
+				marq.column(marq.creationLocalDate).toLocalDate().day().is(2));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
@@ -973,31 +978,31 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testDayIsFunction() throws SQLException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().dayIs(23));
+				marq.column(marq.creationLocalDate).toLocalDate().dayIs(23));
 //		query.printSQLForQuery();
-		List<Marque> got = query.getAllInstancesOf(marq);
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().dayIs(2));
+				marq.column(marq.creationLocalDate).toLocalDate().dayIs(2));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().dayIs(NumberExpression.value(2)));
+				marq.column(marq.creationLocalDate).toLocalDate().dayIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate().dayIs(NumberExpression.value(2).numberResult()));
+				marq.column(marq.creationLocalDate).toLocalDate().dayIs(NumberExpression.value(2).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
@@ -1005,11 +1010,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsInWithNulls() throws SQLException, ParseException {
-		Marque marque = new Marque();
+		MarqueWithLocalDate marque = new MarqueWithLocalDate();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate()
+				marque.column(marque.creationLocalDate).toLocalDate()
 						.isIn((LocalDate) null,
 								LocalDate.parse(
 										firstDateStr.subSequence(0, firstDateStr.length()),
@@ -1021,7 +1026,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(19));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
+		MarqueWithLocalDate newMarque = new MarqueWithLocalDate(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);
@@ -1031,7 +1036,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate()
+				marque.column(marque.creationLocalDate).toLocalDate()
 						.isIn(
 								(LocalDate) null,
 								LocalDate.parse(
@@ -1048,18 +1053,18 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsIn() throws SQLException, ParseException {
-		Marque marque = new Marque();
+		MarqueWithLocalDate marque = new MarqueWithLocalDate();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate().isIn((LocalDate) null, LocalDate.parse(firstDateStr.subSequence(0, firstDateStr.length()), LOCALDATETIME_FORMAT))
+				marque.column(marque.creationLocalDate).toLocalDate().isIn((LocalDate) null, LocalDate.parse(firstDateStr.subSequence(0, firstDateStr.length()), LOCALDATETIME_FORMAT))
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(19));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
+		MarqueWithLocalDate newMarque = new MarqueWithLocalDate(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);
@@ -1068,7 +1073,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(23));
 
-		dbQuery.addCondition(marque.column(marque.creationDate).toLocalDate().isIn(april2nd2011LocalDate, march23rd2013LocalDate)
+		dbQuery.addCondition(marque.column(marque.creationLocalDate).toLocalDate().isIn(april2nd2011LocalDate, march23rd2013LocalDate)
 		);
 
 		allRows = dbQuery.getAllRows();
@@ -1078,11 +1083,11 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsInWithList() throws SQLException, ParseException {
-		Marque marque = new Marque();
+		MarqueWithLocalDate marque = new MarqueWithLocalDate();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate()
+				marque.column(marque.creationLocalDate).toLocalDate()
 						.isIn(
 								(LocalDate) null,
 								LocalDate.parse(firstDateStr.subSequence(0, firstDateStr.length()), LOCALDATETIME_FORMAT))
@@ -1092,7 +1097,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(19));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
+		MarqueWithLocalDate newMarque = new MarqueWithLocalDate(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);
@@ -1106,7 +1111,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		dates.add(LocalDateExpression.value(april2nd2011LocalDate));
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate().isIn(dates)
+				marque.column(marque.creationLocalDate).toLocalDate().isIn(dates)
 		);
 
 		allRows = dbQuery.getAllRows();
@@ -1116,18 +1121,18 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsWithNulls() throws SQLException, ParseException {
-		Marque marque = new Marque();
+		MarqueWithLocalDate marque = new MarqueWithLocalDate();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate().is((LocalDate) null)
+				marque.column(marque.creationLocalDate).toLocalDate().is((LocalDate) null)
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
+		MarqueWithLocalDate newMarque = new MarqueWithLocalDate(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);
@@ -1137,7 +1142,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate().is((LocalDate) null)
+				marque.column(marque.creationLocalDate).toLocalDate().is((LocalDate) null)
 		);
 
 		allRows = dbQuery.getAllRows();
@@ -1147,18 +1152,18 @@ public class LocalDateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNull() throws SQLException, ParseException {
-		Marque marque = new Marque();
+		MarqueWithLocalDate marque = new MarqueWithLocalDate();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate().isNull()
+				marque.column(marque.creationLocalDate).toLocalDate().isNull()
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
+		MarqueWithLocalDate newMarque = new MarqueWithLocalDate(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);
@@ -1168,7 +1173,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).toLocalDate().isNull()
+				marque.column(marque.creationLocalDate).toLocalDate().isNull()
 		);
 
 		allRows = dbQuery.getAllRows();
@@ -1179,135 +1184,125 @@ public class LocalDateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testDayDifferenceFunction() throws SQLException, ParseException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.daysFrom(
-								marq.column(marq.creationDate).toLocalDate().addDays(2))
+								marq.column(marq.creationLocalDate).toLocalDate().addDays(2))
 						.is(2));
-		List<Marque> got = query.getAllInstancesOf(marq);
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
-		Marque nonNullMarque = new Marque();
-		nonNullMarque.creationDate.excludeNull();
+		MarqueWithLocalDate nonNullMarque = new MarqueWithLocalDate();
+		nonNullMarque.creationLocalDate.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDate secondLocalDate = LocalDate.of(2011, Month.APRIL, 2);
 //		LocalDate secondLocalDate = LocalDate.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-		marq = new Marque();
+		marq = new MarqueWithLocalDate();
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.daysFrom(secondLocalDate)
 						.is(0));
 		got = query.getAllInstancesOf(marq);
 
-		Marque secondDateMarques = new Marque();
-		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
-		secondDateMarques.creationDate.permittedValues(secondDate);
+		MarqueWithLocalDate secondDateMarques = new MarqueWithLocalDate();
+		secondDateMarques.creationLocalDate.permittedValues(secondLocalDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
-//	@Ignore
 	public void testWeekDifferenceFunction() throws SQLException, ParseException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.weeksFrom(
-								marq.column(marq.creationDate).toLocalDate().addWeeks(2))
+								marq.column(marq.creationLocalDate).toLocalDate().addWeeks(2))
 						.is(2));
-		List<Marque> got = query.getAllInstancesOf(marq);
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
-		Marque nonNullMarque = new Marque();
-		nonNullMarque.creationDate.excludeNull();
+		MarqueWithLocalDate nonNullMarque = new MarqueWithLocalDate();
+		nonNullMarque.creationLocalDate.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDate secondLocalDate = LocalDate.of(2011, Month.APRIL, 2);
-//		LocalDate secondLocalDate = LocalDate.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
-		marq = new Marque();
+		marq = new MarqueWithLocalDate();
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.weeksFrom(secondLocalDate)
 						.is(0));
 		got = query.getAllInstancesOf(marq);
 
-		Marque secondDateMarques = new Marque();
-		secondDateMarques.creationDate.permittedValues(secondDate);
+		MarqueWithLocalDate secondDateMarques = new MarqueWithLocalDate();
+		secondDateMarques.creationLocalDate.permittedValues(secondLocalDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
-//	@Ignore
 	public void testMonthDifferenceFunction() throws SQLException, ParseException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.monthsFrom(
-								marq.column(marq.creationDate).toLocalDate().addMonths(2))
+								marq.column(marq.creationLocalDate).toLocalDate().addMonths(2))
 						.is(2));
-		List<Marque> got = query.getAllInstancesOf(marq);
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
-		Marque nonNullMarque = new Marque();
-		nonNullMarque.creationDate.excludeNull();
+		MarqueWithLocalDate nonNullMarque = new MarqueWithLocalDate();
+		nonNullMarque.creationLocalDate.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDate secondLocalDate = LocalDate.of(2011, Month.APRIL, 2);
-//		LocalDate secondLocalDate = LocalDate.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
-		marq = new Marque();
+		marq = new MarqueWithLocalDate();
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.monthsFrom(secondLocalDate)
 						.is(0));
 		got = query.getAllInstancesOf(marq);
 
-		Marque secondDateMarques = new Marque();
-		secondDateMarques.creationDate.permittedValues(secondDate);
+		MarqueWithLocalDate secondDateMarques = new MarqueWithLocalDate();
+		secondDateMarques.creationLocalDate.permittedValues(secondLocalDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
-//	@Ignore
 	public void testYearDifferenceFunction() throws SQLException, ParseException {
-		Marque marq = new Marque();
+		MarqueWithLocalDate marq = new MarqueWithLocalDate();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.yearsFrom(
-								marq.column(marq.creationDate).toLocalDate().addYears(2))
+								marq.column(marq.creationLocalDate).toLocalDate().addYears(2))
 						.is(2));
-		List<Marque> got = query.getAllInstancesOf(marq);
+		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 
-		Marque nonNullMarque = new Marque();
-		nonNullMarque.creationDate.excludeNull();
+		MarqueWithLocalDate nonNullMarque = new MarqueWithLocalDate();
+		nonNullMarque.creationLocalDate.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDate secondLocalDate = LocalDate.of(2011, Month.APRIL, 2);
-//		LocalDate secondLocalDate = LocalDate.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
-		marq = new Marque();
+		marq = new MarqueWithLocalDate();
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).toLocalDate()
+				marq.column(marq.creationLocalDate).toLocalDate()
 						.yearsFrom(secondLocalDate)
 						.is(0));
 		got = query.getAllInstancesOf(marq);
 
-		Marque secondDateMarques = new Marque();
-		secondDateMarques.creationDate.permittedValues(secondDate);
+		MarqueWithLocalDate secondDateMarques = new MarqueWithLocalDate();
+		secondDateMarques.creationLocalDate.permittedValues(secondLocalDate);
 		int numberOfSecondDateRows
 				= database
 						.getDBTable(secondDateMarques)
@@ -1359,16 +1354,112 @@ public class LocalDateExpressionTest extends AbstractTest {
 			);
 		}
 	}
-
-	public static class MarqueWithEndOfMonthForLocalDateColumn extends Marque {
+	
+	public static class MarqueWithEndOfMonthForLocalDateColumn extends MarqueWithLocalDate {
 
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBLocalDate firstOfMonth = new DBLocalDate(this.column(this.creationDate).toLocalDate().addDays(this.column(this.creationDate).toLocalDate().day().minus(1).bracket().times(-1)));
+		DBLocalDate firstOfMonth = new DBLocalDate(this.column(this.creationLocalDate).addDays(this.column(this.creationLocalDate).day().minus(1).bracket().times(-1)));
 		@DBColumn
-		DBLocalDate endOfMonth = this.column(this.creationDate).toLocalDate().endOfMonth().asExpressionColumn();
+		DBLocalDate endOfMonth = this.column(this.creationLocalDate).endOfMonth().asExpressionColumn();
 		@DBColumn
-		DBLocalDate shouldBreakPostgreSQL = new DBLocalDate(this.column(this.creationDate).toLocalDate().addDays(this.column(this.creationDate).day().minus(1).times(-1)).addMonths(1).addDays(-1));
+		DBLocalDate shouldBreakPostgreSQL = new DBLocalDate(this.column(this.creationLocalDate).addDays(this.column(this.creationLocalDate).day().minus(1).times(-1)).addMonths(1).addDays(-1));
+	}
+
+	@Before
+	public void setupMarqueWithLocalDateTime() throws Exception {
+		DBDatabase db = database;
+		db.preventDroppingOfTables(false);
+		db.dropTableIfExists(new MarqueWithLocalDate());
+		db.createTable(new MarqueWithLocalDate());
+
+		List<MarqueWithLocalDate> toInsert = new ArrayList<>();
+		toInsert.add(new MarqueWithLocalDate(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, true));
+		toInsert.add(new MarqueWithLocalDate(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", march23rd2013LocalDate, 2, false));
+		toInsert.add(new MarqueWithLocalDate(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", march23rd2013LocalDate, 3, null));
+		toInsert.add(new MarqueWithLocalDate(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(4896300, "False", 1246974, null, 2, "UV", "HYUNDAI", null, "Y", march23rd2013LocalDate, 1, null));
+		toInsert.add(new MarqueWithLocalDate(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y", march23rd2013LocalDate, 3, null));
+		toInsert.add(new MarqueWithLocalDate(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(8376505, "False", 1246974, "", null, "", "ISUZU", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(8587147, "False", 1246974, "", null, "", "DAEWOO", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y", march23rd2013LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(13224369, "False", 1246974, "", 0, "", "VW", "", "Y", april2nd2011LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", april2nd2011LocalDate, 4, null));
+		toInsert.add(new MarqueWithLocalDate(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", march23rd2013LocalDate, 1, true));
+		toInsert.add(new MarqueWithLocalDate(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", april2nd2011LocalDate, 3, null));
+
+		db.insert(toInsert);
+	}
+
+	public static class MarqueWithEndOfMonthForInstantColumn extends MarqueWithLocalDate {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBLocalDate firstOfMonth = this.column(this.creationLocalDate)
+				.firstOfMonth()
+				.asExpressionColumn();
+		@DBColumn
+		DBLocalDate endOfMonth = this.column(this.creationLocalDate).endOfMonth().asExpressionColumn();
+	}
+
+	@DBTableName("marque_with_instant")
+	public static class MarqueWithLocalDate extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn("uid_marque")
+		@DBPrimaryKey
+		public DBInteger uidMarque = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString();
+
+		@DBColumn("creation_date")
+		public DBLocalDate creationLocalDate = new DBLocalDate();
+
+		@DBForeignKey(CarCompany.class)
+		@DBColumn("fk_carcompany")
+		public DBInteger carCompany = new DBInteger();
+
+		/**
+		 * Required Public No-Argument Constructor.
+		 *
+		 */
+		public MarqueWithLocalDate() {
+		}
+
+		/**
+		 * Convenience Constructor.
+		 *
+		 * @param uidMarque uidMarque
+		 * @param isUsedForTAFROs isUsedForTAFROs
+		 * @param statusClass statusClass
+		 * @param carCompany carCompany
+		 * @param intIndividualAllocationsAllowed intIndividualAllocationsAllowed
+		 * @param pricingCodePrefix pricingCodePrefix
+		 * @param updateCount updateCount
+		 * @param name name
+		 * @param reservationsAllowed reservationsAllowed
+		 * @param autoCreated autoCreated
+		 * @param creationLocalDateTime creationLocalDate
+		 * @param enabled enabled
+		 */
+		public MarqueWithLocalDate(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, LocalDate creationLocalDateTime, int carCompany, Boolean enabled) {
+			this.uidMarque.setValue(uidMarque);
+			this.name.setValue(name);
+			this.creationLocalDate.setValue(creationLocalDateTime);
+			this.carCompany.setValue(carCompany);
+		}
 	}
 }
