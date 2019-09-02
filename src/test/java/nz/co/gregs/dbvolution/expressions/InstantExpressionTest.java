@@ -578,6 +578,7 @@ public class InstantExpressionTest extends AbstractTest {
 		got = query.getAllRows();
 		if (got.size()!=1){
 			System.out.println("CREATION DATE EXPECTED: "+then);
+			System.out.println("FOUND ROWS: "+then);
 			database.getDBTable(marq).setBlankQueryAllowed(true).print();
 		}
 		Assert.assertThat(got.size(), is(1));
@@ -1401,6 +1402,7 @@ public class InstantExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).get(new MarqueWithInstant()).creationInstant.getValue(), nullValue());
 
 		MarqueWithInstant newMarque = new MarqueWithInstant(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1822,10 +1824,6 @@ public class InstantExpressionTest extends AbstractTest {
 		@DBColumn
 		DBInstant endOfMonth = this.column(this.creationInstant)
 				.endOfMonth().asExpressionColumn();
-//		@DBColumn
-//		DBInstant shouldBreakPostgreSQL = this.column(this.creationInstant)
-//				.addDays(this.column(this.creationInstant).day().minus(1).times(-1)).addMonths(1).addDays(-1)
-//				.toExpressionColumn();
 	}
 
 	@DBTableName("marque_with_instant")

@@ -359,7 +359,7 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 			if (resultSet.wasNull()) {
 				dbValue = null;
 			} else {
-					final Instant utcVersion;//.toLocalDateTime().atZone(ZoneOffset.UTC).toInstant();
+				final Instant utcVersion;//.toLocalDateTime().atZone(ZoneOffset.UTC).toInstant();
 				if (defn.supportsTimeZones()) {
 					utcVersion = timestamp.toInstant();
 				} else {
