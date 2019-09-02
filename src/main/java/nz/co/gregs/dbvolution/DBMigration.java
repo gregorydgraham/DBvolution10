@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.actions.DBMigrationAction;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -148,7 +149,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-	private SortProvider[] sortColumns = new SortProvider[]{};
+//	private SortProvider[] sortColumns = new SortProvider[]{};
+	private final ArrayList<SortProvider> sortColumns = new ArrayList<>();
 	Boolean cartesian = false;
 	Boolean blank = false;
 
@@ -276,10 +278,14 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	}
 
 	private List<M> getInsertedRowsFromQueryResults(List<DBQueryRow> allRows) {
-		List<M> reportRows = new ArrayList<>();
-		for (DBQueryRow row : allRows) {
-			reportRows.add(getMappedTarget(row));
-		}
+//		List<M> reportRows = new ArrayList<>();
+		List<M> reportRows = allRows
+				.stream()
+				.map((t) -> getMappedTarget(t))
+				.collect(Collectors.toList());
+//		for (DBQueryRow row : allRows) {
+//			reportRows.add(getMappedTarget(row));
+//		}
 		return reportRows;
 	}
 
@@ -410,8 +416,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return this DBReport instance
 	 */
 	public DBMigration<M> setSortOrder(SortProvider... columns) {
-		sortColumns = new SortProvider[columns.length];
-		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
+		sortColumns.clear();
+		sortColumns.addAll(Arrays.asList(columns));
+//		sortColumns = new SortProvider[columns.length];
+//		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
 		return this;
 	}
 
@@ -440,7 +448,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 			final ColumnProvider expr = this.column(qdt);
 			columnProviders.add(expr.getSortProvider());
 		}
-		sortColumns = columnProviders.toArray(new SortProvider[]{});
+		sortColumns.addAll(columnProviders);
+//		sortColumns = columnProviders.toArray(new SortProvider[]{});
 		return this;
 	}
 
@@ -476,7 +485,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return the sortColumns
 	 */
 	protected SortProvider[] getSortColumns() {
-		return sortColumns;
+		return sortColumns.toArray(new SortProvider[]{});
 	}
 
 	/**
