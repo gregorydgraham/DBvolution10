@@ -3915,7 +3915,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 		@Override
 		public WindowFunctionFramable<NumberExpression> over() {
-			return new WindowFunctionFramable<>(new NumberExpression(only));
+			return new WindowFunctionFramable<>(only);
 		}
 	}
 
