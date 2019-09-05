@@ -31,7 +31,7 @@ package nz.co.gregs.dbvolution.results;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
- * Top of the Result heirarchy.
+ * Top of the Result hierarchy.
  * 
  * @author gregorygraham
  * @param <T> the base Java type that this result class produces and manipulates, e.g. Integer
