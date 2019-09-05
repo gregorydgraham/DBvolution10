@@ -381,8 +381,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * This method is useful to test values will fit within a specific field
 	 * size</p>
 	 *
-	 * @param maxIntegerLength the largest number of digits allowed before the decimal point
-	 * @param maxDecimals the largest numbers of digits allowed after the decimal point
+	 * @param maxIntegerLength the largest number of digits allowed before the
+	 * decimal point
+	 * @param maxDecimals the largest numbers of digits allowed after the decimal
+	 * point
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(Number maxIntegerLength, Number maxDecimals) {
@@ -396,8 +398,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * This method is useful to test values will fit within a specific field
 	 * size</p>
 	 *
-	 * @param maxIntegerLength the largest number of digits allowed before the decimal point
-	 * @param maxDecimals the largest numbers of digits allowed after the decimal point
+	 * @param maxIntegerLength the largest number of digits allowed before the
+	 * decimal point
+	 * @param maxDecimals the largest numbers of digits allowed after the decimal
+	 * point
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(IntegerResult maxIntegerLength, IntegerResult maxDecimals) {
@@ -411,8 +415,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * This method is useful to test values will fit within a specific field
 	 * size</p>
 	 *
-	 * @param maxIntegerLength the largest number of digits allowed before the decimal point
-	 * @param maxDecimals the largest numbers of digits allowed after the decimal point
+	 * @param maxIntegerLength the largest number of digits allowed before the
+	 * decimal point
+	 * @param maxDecimals the largest numbers of digits allowed after the decimal
+	 * point
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(NumberResult maxIntegerLength, NumberResult maxDecimals) {
@@ -2304,6 +2310,28 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	/**
+	 * Creates a running total expression based on the values specified.
+	 *
+	 * <p>
+	 * This expression uses the windowing functions to create a partitioned sum
+	 * window which returns the value of the expression plus all the preceding
+	 * totals.</p>
+	 *
+	 * <p>
+	 * Please note that, like all windowing functions, the order on the expression
+	 * is unrelated to the ordering on the query.</p>
+	 * 
+	 * <p>If you would like more control over the running total use something like tableName.column(tableName.priceColumn).sum().over() to get started.</p>
+	 *
+	 * @param expressionsToPartitionBy
+	 * @param expressionsToOrderBy
+	 * @return
+	 */
+	public NumberExpression runningTotal(RangeExpression[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
+		return this.sum().over().partition(expressionsToPartitionBy).orderBy(expressionsToOrderBy).withoutFrame();
+	}
+
+	/**
 	 * Implements support for ROUND()
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -2948,8 +2976,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @return the sum of all the values from the column.
 	 */
-	public NumberExpression sum() {
-		return new NumberExpression(new SumExpression(this));
+	public SumExpression sum() {
+		return new SumExpression(this);
 	}
 
 	@Override
