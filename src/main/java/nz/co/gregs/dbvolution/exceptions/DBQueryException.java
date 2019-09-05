@@ -34,6 +34,7 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author gregorygraham
  */
+@Deprecated
 public class DBQueryException extends DBRuntimeException {
 
 	public DBQueryException(Throwable e) {
