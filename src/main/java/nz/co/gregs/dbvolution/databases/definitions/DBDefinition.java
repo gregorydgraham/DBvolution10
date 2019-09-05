@@ -6660,4 +6660,12 @@ public abstract class DBDefinition implements Serializable {
 	public boolean supportsTimeZones() {
 		return true;
 	}
+
+	public String getLagFunctionName() {
+		return "LAG";
+	}
+
+	public String getLeadFunctionName() {
+		return "LEAD";
+	}
 }
