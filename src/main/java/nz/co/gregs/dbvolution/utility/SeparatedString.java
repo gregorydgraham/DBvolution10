@@ -202,6 +202,10 @@ public class SeparatedString {
 		getStrings().addAll(Arrays.asList(strings));
 		return this;
 	}
+	
+	public SeparatedString containing(String... strings){
+		return add(strings);
+	}
 
 	/**
 	 * @return the separator
