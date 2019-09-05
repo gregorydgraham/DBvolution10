@@ -66,6 +66,11 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		return new WindowFunctionFramable.Partitioned<A>(this, cols);
 	}
 
+	@Override
+	public Partitioned<A> unpartitioned() {
+		return new WindowFunctionFramable.Partitioned<A>(this);
+	}
+
 	public A allRows() {
 		return this.partition().unsorted();
 	}
@@ -153,6 +158,11 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 			super();
 			this.innerExpression = expression;
 			this.partitionExpressions = cols;
+		}
+		private Partitioned(WindowFunctionFramable<A> expression) {
+			super();
+			this.innerExpression = expression;
+			this.partitionExpressions = new EqualExpression<?,?,?>[]{};
 		}
 
 		@Override

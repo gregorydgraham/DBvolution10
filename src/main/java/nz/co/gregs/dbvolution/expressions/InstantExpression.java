@@ -123,12 +123,11 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	}
 
 	/**
-	 * Create a InstantExpression based on an existing
-	 * {@link InstantResult}.
+	 * Create a InstantExpression based on an existing {@link InstantResult}.
 	 *
 	 * <p>
-	 * {@link InstantResult} is generally a InstantExpression but it
-	 * may also be a {@link DBInstant} or {@link DBInstant}.
+	 * {@link InstantResult} is generally a InstantExpression but it may also be a
+	 * {@link DBInstant} or {@link DBInstant}.
 	 *
 	 * @param dateVariable a date expression or QueryableDatatype
 	 */
@@ -137,12 +136,11 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	}
 
 	/**
-	 * Create a InstantExpression based on an existing
-	 * {@link InstantResult}.
+	 * Create a InstantExpression based on an existing {@link InstantResult}.
 	 *
 	 * <p>
-	 * {@link InstantResult} is generally a InstantExpression but it
-	 * may also be a {@link DBInstant} or {@link InstantColumn}.
+	 * {@link InstantResult} is generally a InstantExpression but it may also be a
+	 * {@link DBInstant} or {@link InstantColumn}.
 	 *
 	 * @param variable a date expression or QueryableDatatype
 	 */
@@ -210,8 +208,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @return a date expression of the current database timestamp.
 	 */
 	public static InstantExpression currentInstant() {
-		return 
-				new CurrentInstantExpression();
+		return new CurrentInstantExpression();
 	}
 
 	/**
@@ -2258,7 +2255,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	public InstantExpression atStartOfDay() {
 		return this.setHour(0).setMinute(0).setSecond(0);
 	}
-	
+
 	/**
 	 * Derive the first day of the month for this date expression
 	 *
@@ -2284,7 +2281,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 				new EndOfMonthExpression(this)
 		);
 	}
-	
+
 	/**
 	 * Derive the first day of the year for this date expression
 	 *
@@ -2308,7 +2305,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	public InstantExpression atEndOfYear() {
 		return this.addYears(1).atStartOfYear().addDays(-1).atStartOfDay();
 	}
-	
+
 	/**
 	 * Derive the first day of the month for this date expression
 	 *
@@ -2767,7 +2764,6 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 		@Override
 		public abstract String toSQLString(DBDefinition db);
 	}
-
 
 	private static abstract class InstantExpressionWithNumberResult extends NumberExpression {
 
@@ -4744,6 +4740,219 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 		public WindowFunctionFramable<InstantExpression> over() {
 			return new WindowFunctionFramable<InstantExpression>(new InstantExpression(this));
 		}
+	}
 
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<InstantExpression> lag() {
+		return lag(IntegerExpression.value(1));
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<InstantExpression> lag(IntegerExpression offset) {
+		return lag(offset,nullExpression());
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<InstantExpression> lag(IntegerExpression offset, InstantExpression defaultExpression) {
+		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<InstantExpression> lead() {
+		return lead(value(1));
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<InstantExpression> lead(IntegerExpression offset) {
+		return lead(offset, nullExpression());
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * @param offset the number of rows to look forwards
+	 * @param defaultExpression the expression to use when there is no row at the
+	 * offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<InstantExpression> lead(IntegerExpression offset, InstantExpression defaultExpression) {
+		return new LeadExpression(this, offset, defaultExpression).over();
+	}
+
+	private static abstract class LagLeadExpression extends InstantExpression implements CanBeWindowingFunctionWithFrame<InstantExpression> {
+
+		private static final long serialVersionUID = 1L;
+
+		protected InstantExpression first;
+		protected IntegerExpression second;
+		protected InstantExpression third;
+
+		LagLeadExpression(InstantExpression first, IntegerExpression second, InstantExpression third) {
+			this.first = first;
+			this.second = second==null?value(1):second;
+			this.third = third==null?nullInstant():third;
+		}
+
+		@Override
+		public DBInstant getQueryableDatatypeForExpressionValue() {
+			return new DBInstant();
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return " " + getFunctionName(db) + "( ";
+		}
+
+		protected String getSeparator(DBDefinition db) {
+			return ", ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+				hashSet.addAll(getFirst().getTablesInvolved());
+				hashSet.addAll(getSecond().getTablesInvolved());
+				hashSet.addAll(getThird().getTablesInvolved());
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator()||getThird().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
+		 */
+		protected InstantExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected IntegerExpression getSecond() {
+			return second;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected InstantExpression getThird() {
+			return third;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
+		}
+
+		@Override
+		public WindowFunctionFramable<InstantExpression> over() {
+			return new WindowFunctionFramable<>(new InstantExpression(this));
+		}
+	}
+
+	public class LagExpression extends LagLeadExpression {
+
+		public LagExpression(InstantExpression first, IntegerExpression second, InstantExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLagFunctionName();
+		}
+
+		@Override
+		public LagExpression copy() {
+			return new LagExpression(first, second, third);
+		}
+	}
+
+	public class LeadExpression extends LagLeadExpression {
+
+		public LeadExpression(InstantExpression first, IntegerExpression second, InstantExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLeadFunctionName();
+		}
+
+		@Override
+		public LeadExpression copy() {
+			return new LeadExpression(first, second, third);
+		}
 	}
 }

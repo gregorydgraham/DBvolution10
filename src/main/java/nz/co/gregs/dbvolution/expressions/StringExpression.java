@@ -641,9 +641,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <p>
 	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
 	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
-	 * }: e.g. marq.column(marq.name).searchFor(searchString). If you have individual
-	 * strings use
-	 * {@link StringExpression#searchFor(java.lang.String...)} and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 * }: e.g. marq.column(marq.name).searchFor(searchString). If you have
+	 * individual strings use
+	 * {@link StringExpression#searchFor(java.lang.String...)} and {@link StringExpression#searchForRanking(java.lang.String...)
+	 * }.</p>
 	 *
 	 * <p>
 	 * searchForRanking produces a number value that can be used for sorting. </p>
@@ -4356,4 +4357,217 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new WindowFunctionFramable<StringExpression>(new StringExpression(this));
 		}
 	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<StringExpression> lag() {
+		return lag(IntegerExpression.value(1));
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<StringExpression> lag(IntegerExpression offset) {
+		return lag(offset,nullExpression());
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<StringExpression> lag(IntegerExpression offset, StringExpression defaultExpression) {
+		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<StringExpression> lead() {
+		return lead(value(1));
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<StringExpression> lead(IntegerExpression offset) {
+		return lead(offset, nullExpression());
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * @param offset the number of rows to look forwards
+	 * @param defaultExpression the expression to use when there is no row at the
+	 * offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<StringExpression> lead(IntegerExpression offset, StringExpression defaultExpression) {
+		return new LeadExpression(this, offset, defaultExpression).over();
+	}
+
+	private static abstract class LagLeadExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+
+		private static final long serialVersionUID = 1L;
+
+		protected StringExpression first;
+		protected IntegerExpression second;
+		protected StringExpression third;
+
+		LagLeadExpression(StringExpression first, IntegerExpression second, StringExpression third) {
+			this.first = first;
+			this.second = second==null?value(1):second;
+			this.third = third==null?nullString():third;
+		}
+
+		@Override
+		public DBString getQueryableDatatypeForExpressionValue() {
+			return new DBString();
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return " " + getFunctionName(db) + "( ";
+		}
+
+		protected String getSeparator(DBDefinition db) {
+			return ", ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+				hashSet.addAll(getFirst().getTablesInvolved());
+				hashSet.addAll(getSecond().getTablesInvolved());
+				hashSet.addAll(getThird().getTablesInvolved());
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator()|| getThird().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
+		 */
+		protected StringExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected IntegerExpression getSecond() {
+			return second;
+		}
+
+		/**
+		 *
+		 * @return the third
+		 */
+		protected StringExpression getThird() {
+			return third;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
+		}
+
+		@Override
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<>(new StringExpression(this));
+		}
+	}
+
+	public class LagExpression extends LagLeadExpression {
+
+		public LagExpression(StringExpression first, IntegerExpression second, StringExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLagFunctionName();
+		}
+
+		@Override
+		public LagExpression copy() {
+			return new LagExpression(first, second, third);
+		}
+	}
+
+	public class LeadExpression extends LagLeadExpression {
+
+		public LeadExpression(StringExpression first, IntegerExpression second, StringExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLeadFunctionName();
+		}
+
+		@Override
+		public LeadExpression copy() {
+			return new LeadExpression(first, second, third);
+		}
+	}
+
 }

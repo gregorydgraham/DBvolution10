@@ -3401,6 +3401,239 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 	}
 
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<NumberExpression> lag() {
+		return lag(IntegerExpression.value(1));
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<NumberExpression> lag(IntegerExpression offset) {
+		return lag(offset, NumberExpression.nullNumber());
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<NumberExpression> lag(IntegerExpression offset, NumberExpression defaultExpression) {
+		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<NumberExpression> lead() {
+		return lead(value(1));
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<NumberExpression> lead(IntegerExpression offset) {
+		return lead(offset, nullNumber());
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * @param offset the number of rows to look forwards
+	 * @param defaultExpression the expression to use when there is no row at the
+	 * offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<NumberExpression> lead(IntegerExpression offset, NumberExpression defaultExpression) {
+		return new LeadExpression(this, offset, defaultExpression).over();
+	}
+
+	private static abstract class NumberIntegerNumberFunctionNumberResult extends NumberExpression implements CanBeWindowingFunctionWithFrame<NumberExpression> {
+
+		private static final long serialVersionUID = 1L;
+
+		protected NumberExpression first;
+		protected IntegerExpression second;
+		protected NumberExpression third;
+
+		NumberIntegerNumberFunctionNumberResult(NumberExpression first, IntegerExpression second, NumberExpression third) {
+			this.first = first==null?nullNumber():first;
+			this.second = second==null?value(1):second;
+			this.third = third==null?nullNumber():third;
+		}
+
+		@Override
+		public DBNumber getQueryableDatatypeForExpressionValue() {
+			return new DBNumber();
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public NumberIntegerNumberFunctionNumberResult copy() {
+			NumberIntegerNumberFunctionNumberResult newInstance;
+			try {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = getFirst() == null ? null : getFirst().copy();
+			newInstance.second = getSecond() == null ? null : getSecond().copy();
+			newInstance.third = getThird()== null ? null : getThird().copy();
+			return newInstance;
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return " " + getFunctionName(db) + "( ";
+		}
+
+		protected String getSeparator(DBDefinition db) {
+			return ", ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			hashSet.addAll(getFirst().getTablesInvolved());
+			hashSet.addAll(getSecond().getTablesInvolved());
+			hashSet.addAll(getThird().getTablesInvolved());
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
+		 */
+		protected NumberExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected IntegerExpression getSecond() {
+			return second;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected NumberExpression getThird() {
+			return third;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
+		}
+	}
+
+	public class LagExpression extends NumberIntegerNumberFunctionNumberResult {
+
+		public LagExpression(NumberExpression first, IntegerExpression second, NumberExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLagFunctionName();
+		}
+
+		@Override
+		public LagExpression copy() {
+			return new LagExpression(first, second, third);
+		}
+
+		@Override
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<>(new NumberExpression(this));
+		}
+	}
+
+	public class LeadExpression extends NumberIntegerNumberFunctionNumberResult {
+
+		public LeadExpression(NumberExpression first, IntegerExpression second, NumberExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLeadFunctionName();
+		}
+
+		@Override
+		public LeadExpression copy() {
+			return new LeadExpression(first, second, third);
+		}
+
+		@Override
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<>(this);
+		}
+	}
+
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
 		private final static long serialVersionUID = 1l;

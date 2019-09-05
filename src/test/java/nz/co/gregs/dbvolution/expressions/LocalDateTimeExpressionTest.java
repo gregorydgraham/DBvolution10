@@ -312,40 +312,45 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				.setSortOrder(marq.column(marq.carCompany));
 
 		List<DBQueryRow> allRows = query.getAllRows();
+		System.out.println(""+query.getSQLForQuery());
+		query.print();
 
 		Assert.assertThat(allRows.size(), is(22));
 
 		MarqueWithDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
-		expectedValues.add(new Object[]{2, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
-		expectedValues.add(new Object[]{2, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
-		expectedValues.add(new Object[]{1, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
-		expectedValues.add(new Object[]{3, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{3, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{3, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
-		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
+		expectedValues.add(new Object[]{2, march23rd2013LocalDateTime, march23rd2013LocalDateTime, null, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{2, march23rd2013LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{1, march23rd2013LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
+		expectedValues.add(new Object[]{3, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{3, march23rd2013LocalDateTime, april2nd2011LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{3, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, null});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, null, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, march23rd2013LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, april2nd2011LocalDateTime});
+		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, null});
 		for (int i = 0; i < allRows.size(); i++) {
 			got = allRows.get(i).get(marq);
+			System.out.println(""+got.toString());
 			Object[] expect = expectedValues.get(i);
 			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
 			Assert.assertThat(got.maxOfAll.getValue(), is((LocalDateTime) expect[1]));
 			Assert.assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
 			Assert.assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
+			Assert.assertThat(got.lag1.getValue(), is((LocalDateTime) expect[3]));
+//			Assert.assertThat(got.lead1.getValue(), is((LocalDateTime) expect[4]));
 		}
 	}
 
@@ -416,6 +421,15 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				.over().partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().unboundedPreceding().forFollowing(1));
+		@DBColumn
+		DBLocalDateTime lag1 = new DBLocalDateTime(
+				this.column(this.creationLocalDateTime).lag(1, null).unpartitioned()
+				.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending()).defaultFrame()
+		);
+		@DBColumn
+		DBLocalDateTime lead1 = new DBLocalDateTime(this.column(
+				this.creationLocalDateTime).lead().unpartitioned()
+				.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending()).defaultFrame());
 	}
 
 	@Test

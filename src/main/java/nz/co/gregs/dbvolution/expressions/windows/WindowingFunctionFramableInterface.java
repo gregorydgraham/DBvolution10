@@ -45,6 +45,8 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 
 	Partitioned<A> partition(EqualExpression... cols);
 
+	Partitioned<A> unpartitioned();
+
 	Class<A> getRequiredExpressionClass();
 
 	public interface WindowPart<A extends EqualExpression<?,?,?>> extends DBExpression {

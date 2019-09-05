@@ -2003,8 +2003,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			}
 		}
 	}
-	
-private static abstract class DBBinaryInstantInstantFunction extends InstantExpression {
+
+	private static abstract class DBBinaryInstantInstantFunction extends InstantExpression {
 
 		private static final long serialVersionUID = 1L;
 
@@ -2767,5 +2767,210 @@ private static abstract class DBBinaryInstantInstantFunction extends InstantExpr
 			return new WindowFunctionFramable<BooleanExpression>(new BooleanExpression(this));
 		}
 
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<BooleanExpression> lag() {
+		return lag(IntegerExpression.value(1));
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<BooleanExpression> lag(IntegerExpression offset) {
+		return lag(offset, nullExpression());
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<BooleanExpression> lag(IntegerExpression offset, BooleanExpression defaultExpression) {
+		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<BooleanExpression> lead() {
+		return lead(value(1));
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<BooleanExpression> lead(IntegerExpression offset) {
+		return lead(offset, nullBoolean());
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * @param offset the number of rows to look forwards
+	 * @param defaultExpression the expression to use when there is no row at the
+	 * offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<BooleanExpression> lead(IntegerExpression offset, BooleanExpression defaultExpression) {
+		return new LeadExpression(this, offset, defaultExpression).over();
+	}
+
+	private static abstract class LagLeadFunction extends BooleanExpression implements CanBeWindowingFunctionWithFrame<BooleanExpression> {
+
+		private static final long serialVersionUID = 1L;
+
+		protected BooleanExpression first;
+		protected IntegerExpression second;
+		protected BooleanExpression third;
+
+		LagLeadFunction(BooleanExpression first, IntegerExpression second, BooleanExpression third) {
+			this.first = first==null?nullBoolean():first;
+			this.second = second==null?value(1):second;
+			this.third = third==null?nullBoolean():third;
+		}
+
+		@Override
+		public DBBoolean getQueryableDatatypeForExpressionValue() {
+			return new DBBoolean();
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return " " + getFunctionName(db) + "( ";
+		}
+
+		protected String getSeparator(DBDefinition db) {
+			return ", ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			hashSet.addAll(getFirst().getTablesInvolved());
+			hashSet.addAll(getSecond().getTablesInvolved());
+			hashSet.addAll(getThird().getTablesInvolved());
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator() || getThird().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		/**
+		 * @return the first
+		 */
+		protected BooleanExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		protected IntegerExpression getSecond() {
+			return second;
+		}
+
+		/**
+		 * @return the second
+		 */
+		protected BooleanExpression getThird() {
+			return third;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
+		}
+
+		@Override
+		public WindowFunctionFramable<BooleanExpression> over() {
+			return new WindowFunctionFramable<>(new BooleanExpression(this));
+		}
+	}
+
+	public class LagExpression extends LagLeadFunction {
+
+		public LagExpression(BooleanExpression first, IntegerExpression second, BooleanExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLagFunctionName();
+		}
+
+		@Override
+		public LagExpression copy() {
+			return new LagExpression(first, second, third);
+		}
+	}
+
+	public class LeadExpression extends LagLeadFunction {
+
+		public LeadExpression(BooleanExpression first, IntegerExpression second, BooleanExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLeadFunctionName();
+		}
+
+		@Override
+		public LeadExpression copy() {
+			return new LeadExpression(first, second, third);
+		}
 	}
 }

@@ -37,6 +37,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 import org.joda.time.Period;
 
 /**
@@ -165,7 +166,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	}
 
 	@Override
-	public LocalDateTimeExpression nullExpression() {
+	public final LocalDateTimeExpression nullExpression() {
 		return new LocalDateTimeNullExpression();
 	}
 
@@ -4795,5 +4796,257 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 			return new WindowFunctionFramable<LocalDateTimeExpression>(new LocalDateTimeExpression(this));
 		}
 
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lag() {
+		return lag(IntegerExpression.value(1));
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lag(IntegerExpression offset) {
+		return lag(offset, LocalDateTimeExpression.nullLocalDateTime());
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lag(IntegerExpression offset, LocalDateTimeExpression defaultExpression) {
+		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lag(Integer offset, LocalDateTime defaultExpression) {
+		final LagExpression lagExpression = new LagExpression(this, IntegerExpression.value(offset), LocalDateTimeExpression.value(defaultExpression));
+		final WindowFunctionFramable<LocalDateTimeExpression> over = lagExpression.over();
+		return over;
+	}
+
+	/**
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lag(Long offset, LocalDateTime defaultExpression) {
+		return new LagExpression(this, IntegerExpression.value(offset), LocalDateTimeExpression.value(defaultExpression)).over();
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lead() {
+		return lead(value(1));
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * <p>
+	 * When there is no row at the offset NULL will be returned.</p>
+	 *
+	 * @param offset the number of rows to look backwards
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lead(IntegerExpression offset) {
+		return lead(offset, nullLocalDateTime());
+	}
+
+	/**
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.
+	 *
+	 * @param offset the number of rows to look forwards
+	 * @param defaultExpression the expression to use when there is no row at the
+	 * offset
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionFramable<LocalDateTimeExpression> lead(IntegerExpression offset, LocalDateTimeExpression defaultExpression) {
+		return new LeadExpression(this, offset, defaultExpression).over();
+	}
+
+	private static abstract class LagLeadFunction extends LocalDateTimeExpression implements CanBeWindowingFunctionWithFrame<LocalDateTimeExpression> {
+
+		private static final long serialVersionUID = 1L;
+
+		protected LocalDateTimeExpression first;
+		protected IntegerExpression second;
+		protected LocalDateTimeExpression third;
+
+		LagLeadFunction(LocalDateTimeExpression first, IntegerExpression second, LocalDateTimeExpression third) {
+			this.first = (first == null ? nullExpression() : first);
+			this.second = (second == null ? IntegerExpression.value(1) : second);
+			this.third = (third == null ? nullLocalDateTime() : third);
+		}
+
+		@Override
+		public DBLocalDateTime getQueryableDatatypeForExpressionValue() {
+			return new DBLocalDateTime();
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return SeparatedString
+					.forSeparator(getSeparator(db))
+					.withPrefix(beforeValue(db))
+					.containing(
+							first.toSQLString(db),
+							second.toSQLString(db),
+							third.toSQLString(db)
+					).withSuffix(afterValue(db))
+					.toString();
+//			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return " " + getFunctionName(db) + "( ";
+		}
+
+		protected String getSeparator(DBDefinition db) {
+			return ", ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			hashSet.addAll(getFirst().getTablesInvolved());
+			hashSet.addAll(getSecond().getTablesInvolved());
+			hashSet.addAll(getThird().getTablesInvolved());
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator() || getThird().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
+		 */
+		protected LocalDateTimeExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected IntegerExpression getSecond() {
+			return second;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected LocalDateTimeExpression getThird() {
+			return third;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
+		}
+
+		@Override
+		public WindowFunctionFramable<LocalDateTimeExpression> over() {
+			final LocalDateTimeExpression localDateTimeExpression = new LocalDateTimeExpression(this);
+			return new WindowFunctionFramable<>(localDateTimeExpression);
+		}
+	}
+
+	public class LagExpression extends LagLeadFunction {
+
+		public LagExpression(LocalDateTimeExpression first, IntegerExpression second, LocalDateTimeExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLagFunctionName();
+		}
+
+		@Override
+		public LagExpression copy() {
+			return new LagExpression(getFirst(), getSecond(), getThird());
+		}
+	}
+
+	public class LeadExpression extends LagLeadFunction {
+
+		public LeadExpression(LocalDateTimeExpression first, IntegerExpression second, LocalDateTimeExpression third) {
+			super(first, second, third);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLeadFunctionName();
+		}
+
+		@Override
+		public LeadExpression copy() {
+			return new LeadExpression(getFirst(), getSecond(), getThird());
+		}
 	}
 }
