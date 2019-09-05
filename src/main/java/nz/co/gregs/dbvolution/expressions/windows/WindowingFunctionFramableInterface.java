@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
  */
 public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,?,?>> extends DBExpression {
 
-	Partitioned<A> partition(ColumnProvider... cols);
+	Partitioned<A> partition(EqualExpression... cols);
 
 	Class<A> getRequiredExpressionClass();
 
@@ -66,7 +66,7 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 		 */
 		A unordered();
 
-		Sorted<A> orderBy(SortProvider sort, SortProvider... sorts);
+		Sorted<A> orderBy(SortProvider... sorts);
 
 		Sorted<A> unsortedWithFrame();
 
@@ -82,6 +82,8 @@ public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,
 		/**
 		 * Orders by the provided sort providers and adds the required primary keys
 		 * as well.
+		 * 
+		 * <p>The default ordering will be used for all columns provided.</p>
 		 *
 		 * @param sorts the columns to sort by
 		 * @return an expression
