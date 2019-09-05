@@ -654,7 +654,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 			return sqlString;
 		} catch (Throwable e) {
-			throw new DBQueryException(e);
+			StackTraceElement[] trace = e.getStackTrace();
+			System.out.println("" + trace[0]);
+			System.out.println("" + trace[1]);
+			System.out.println("" + trace[2]);
+			System.out.println("" + trace[3]);
+			System.out.println("" + trace[4]);
+			throw e;
 		}
 	}
 
@@ -1115,7 +1121,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 				}
 			}
 		} catch (Throwable e) {
-			throw new DBQueryException(e);
+			StackTraceElement[] trace = e.getStackTrace();
+			System.out.println("" + trace[0]);
+			System.out.println("" + trace[1]);
+			System.out.println("" + trace[2]);
+			System.out.println("" + trace[3]);
+			System.out.println("" + trace[4]);
+			throw e;
 		}
 		for (DBQueryRow result : details.getResults()) {
 			List<DBRow> rows = result.getAll();
