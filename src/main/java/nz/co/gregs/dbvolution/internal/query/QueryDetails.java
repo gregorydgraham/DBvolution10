@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
+import nz.co.gregs.dbvolution.exceptions.DBQueryException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
@@ -42,6 +43,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -391,82 +393,170 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	public synchronized String getSQLForQuery(DBDatabase database, QueryState queryState, QueryType queryType, QueryOptions options) {
-		String sqlString = "";
+		try {
+			String sqlString = "";
 
-		if (getAllQueryTables().size() > 0) {
+			if (getAllQueryTables().size() > 0) {
 
-			initialiseQueryGraph();
+				initialiseQueryGraph();
 
-			DBDefinition defn = database.getDefinition();
-			StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
-			int columnIndex = 1;
-			boolean groupByIsRequired = false;
-			String groupByColumnIndex = defn.beginGroupByClause();
-			String groupByColumnIndexSeparator = "";
-			HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<>();
-			HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
-			StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
-			final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
-			StringBuilder whereClause = new StringBuilder(initialWhereClause);
-			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
-			String havingClause;
-			String lineSep = System.getProperty("line.separator");
+				DBDefinition defn = database.getDefinition();
+				StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
+				int columnIndex = 1;
+				boolean groupByIsRequired = false;
+				String groupByColumnIndex = defn.beginGroupByClause();
+				String groupByColumnIndexSeparator = "";
+				HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<>();
+				HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
+				StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
+				final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
+				StringBuilder whereClause = new StringBuilder(initialWhereClause);
+				StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
+				String havingClause;
+				String lineSep = System.getProperty("line.separator");
 
-			List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
-					? queryGraph.toListIncludingCartesianReversable(queryType == QueryType.REVERSESELECT)
-					: queryGraph.toListReversable(queryType == QueryType.REVERSESELECT);
+				List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
+						? queryGraph.toListIncludingCartesianReversable(queryType == QueryType.REVERSESELECT)
+						: queryGraph.toListReversable(queryType == QueryType.REVERSESELECT);
 
-			if (options.getRowLimit() > 0) {
-				selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
-			}
+				if (options.getRowLimit() > 0) {
+					selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
+				}
 
-			String fromClauseTableSeparator = "";
-			String colSep = defn.getStartingSelectSubClauseSeparator();
-			String groupByColSep = "";
-			String tableName;
+				String fromClauseTableSeparator = "";
+				String colSep = defn.getStartingSelectSubClauseSeparator();
+				String groupByColSep = "";
+				String tableName;
 
-			for (DBRow tabRow : sortedQueryTables) {
-				tableName = tabRow.getTableNameOrVariantIdentifier();
+				for (DBRow tabRow : sortedQueryTables) {
+					tableName = tabRow.getTableNameOrVariantIdentifier();
 
-				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
-				for (PropertyWrapper propWrapper : tabProps) {
-					final QueryableDatatype<?> qdt = propWrapper.getQueryableDatatype();
-					final List<PropertyWrapperDefinition.ColumnAspects> columnAspectsList = propWrapper.getColumnAspects(defn);
-					for (PropertyWrapperDefinition.ColumnAspects columnAspects : columnAspectsList) {
-						String selectableName = columnAspects.selectableName;
-						String columnAlias = columnAspects.columnAlias;
-						String selectColumn = defn.doColumnTransformForSelect(qdt, selectableName);
-						selectClause.append(colSep).append(selectColumn).append(" ").append(columnAlias);
+					List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
+					for (PropertyWrapper propWrapper : tabProps) {
+						final QueryableDatatype<?> qdt = propWrapper.getQueryableDatatype();
+						final List<PropertyWrapperDefinition.ColumnAspects> columnAspectsList = propWrapper.getColumnAspects(defn);
+						for (PropertyWrapperDefinition.ColumnAspects columnAspects : columnAspectsList) {
+							String selectableName = columnAspects.selectableName;
+							String columnAlias = columnAspects.columnAlias;
+							String selectColumn = defn.doColumnTransformForSelect(qdt, selectableName);
+							selectClause.append(colSep).append(selectColumn).append(" ").append(columnAlias);
+							colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+
+							// Now deal with the GROUP BY and ORDER BY clause requirements
+							DBExpression expression = columnAspects.expression;
+							if (expression != null && expression.isAggregator()) {
+								setGroupByRequiredByAggregator(true);
+							}
+							if (expression == null
+									|| (!expression.isAggregator() && !expression.isWindowingFunction()
+									&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))) {
+								groupByIsRequired = true;
+								groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
+								groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
+								if (expression != null) {
+									groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
+									groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+								} else {
+									groupByClause.append(groupByColSep).append(selectColumn);
+									groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+								}
+
+								indexesOfSelectedColumns.put(propWrapper.getPropertyWrapperDefinition(), columnIndex);
+							}
+							if (expression != null && expression.isComplexExpression()) {
+								final boolean needsJoiner = queryState.hasHadATableAdded();
+								String joiner = needsJoiner ? options.isUseANSISyntax() ? " join " : fromClauseTableSeparator : "";
+								fromClause
+										.append(joiner)
+										.append(expression.createSQLForFromClause(database));
+								fromClauseTableSeparator = ", " + lineSep;
+								if (options.isUseANSISyntax()
+										&& defn.requiresOnClauseForAllJoins()
+										&& queryState.hasHadATableAdded()) {
+									fromClause
+											.append(defn.beginOnClause())
+											.append(BooleanExpression.trueExpression().toSQLString(defn))
+											.append(defn.endOnClause());
+								}
+								if (!expression.isWindowingFunction()) {
+									final String groupBySQL = expression.createSQLForGroupByClause(database);
+									if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
+										groupByClause.append(groupByColSep).append(groupBySQL);
+										groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+										groupByIsRequired = true;
+									}
+								}
+								queryState.addJoinedExpression(expression);
+							}
+
+							columnIndex++;
+						}
+					}
+					if (!options.isUseANSISyntax()) {
+						fromClause.append(fromClauseTableSeparator).append(tableName);
+						queryState.addedInnerJoinToQuery();
+					} else {
+						fromClause.append(getANSIJoinClause(defn, queryState, tabRow, options));
+					}
+					queryState.addJoinedTable(tabRow);
+
+					if (!options.isUseANSISyntax()) {
+						List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(defn);
+						if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
+							for (String clause : tabRowCriteria) {
+								whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
+							}
+						}
+						getNonANSIJoin(tabRow, whereClause, defn, queryState.getJoinedTables(), lineSep, options);
+						queryState.addedInnerJoinToQuery();
+					}
+
+					fromClauseTableSeparator = ", " + lineSep;
+				}
+
+				//add conditions found during the ANSI Join creation
+				final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getRequiredConditions(), defn, options);
+				if (!conditionsAsSQLClause.isEmpty()) {
+					whereClause.append(defn.beginConditionClauseLine(options)).append(conditionsAsSQLClause);
+				}
+
+				for (DBRow extra : getExtraExamples()) {
+					List<String> extraCriteria = extra.getWhereClausesWithAliases(defn);
+					if (extraCriteria != null && !extraCriteria.isEmpty()) {
+						for (String clause : extraCriteria) {
+							whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
+						}
+					}
+				}
+
+				for (BooleanExpression expression : queryState.getRemainingExpressions()) {
+					whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(expression.toSQLString(defn)).append(")");
+					queryState.consumeExpression(expression);
+				}
+
+				for (Map.Entry<Object, QueryableDatatype<?>> entry : getExpressionColumns().entrySet()) {
+					final Object key = entry.getKey();
+					final QueryableDatatype<?> qdt = entry.getValue();
+					DBExpression[] expressions = qdt.getColumnExpression();
+					for (DBExpression expression : expressions) {
+						selectClause.append(colSep).append(defn.transformToSelectableType(expression).toSQLString(defn)).append(" ").append(defn.formatExpressionAlias(key));
 						colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-
-						// Now deal with the GROUP BY and ORDER BY clause requirements
-						DBExpression expression = columnAspects.expression;
-						if (expression != null && expression.isAggregator()) {
+						if (expression.isAggregator()) {
 							setGroupByRequiredByAggregator(true);
 						}
-						if (expression == null
-								|| (!expression.isAggregator() && !expression.isWindowingFunction()
-								&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))) {
+						if (!expression.isAggregator() && !expression.isWindowingFunction()
+								&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
 							groupByIsRequired = true;
 							groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 							groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-							if (expression != null) {
-								groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
-								groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-							} else {
-								groupByClause.append(groupByColSep).append(selectColumn);
-								groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-							}
+							groupByClause.append(groupByColSep).append(defn.transformToSelectableType(expression).toSQLString(defn));
+							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 
-							indexesOfSelectedColumns.put(propWrapper.getPropertyWrapperDefinition(), columnIndex);
 						}
-						if (expression != null && expression.isComplexExpression()) {
-							final boolean needsJoiner = queryState.hasHadATableAdded();
-							String joiner = needsJoiner ? options.isUseANSISyntax() ? " join " : fromClauseTableSeparator : "";
+						if (expression.isComplexExpression()) {
 							fromClause
-									.append(joiner)
+									.append(options.isUseANSISyntax() ? " join " : fromClauseTableSeparator)
 									.append(expression.createSQLForFromClause(database));
-							fromClauseTableSeparator = ", " + lineSep;
 							if (options.isUseANSISyntax()
 									&& defn.requiresOnClauseForAllJoins()
 									&& queryState.hasHadATableAdded()) {
@@ -475,6 +565,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 										.append(BooleanExpression.trueExpression().toSQLString(defn))
 										.append(defn.endOnClause());
 							}
+							fromClauseTableSeparator = (options.isUseANSISyntax() ? " join " : ", ") + lineSep;
 							if (!expression.isWindowingFunction()) {
 								final String groupBySQL = expression.createSQLForGroupByClause(database);
 								if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
@@ -485,171 +576,86 @@ public class QueryDetails implements DBQueryable, Serializable {
 							}
 							queryState.addJoinedExpression(expression);
 						}
-
+						indexesOfSelectedExpressions.put(expression, columnIndex);
 						columnIndex++;
 					}
 				}
-				if (!options.isUseANSISyntax()) {
-					fromClause.append(fromClauseTableSeparator).append(tableName);
-					queryState.addedInnerJoinToQuery();
-				} else {
-					fromClause.append(getANSIJoinClause(defn, queryState, tabRow, options));
-				}
-				queryState.addJoinedTable(tabRow);
 
-				if (!options.isUseANSISyntax()) {
-					List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(defn);
-					if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-						for (String clause : tabRowCriteria) {
-							whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
-						}
-					}
-					getNonANSIJoin(tabRow, whereClause, defn, queryState.getJoinedTables(), lineSep, options);
-					queryState.addedInnerJoinToQuery();
-				}
-
-				fromClauseTableSeparator = ", " + lineSep;
-			}
-
-			//add conditions found during the ANSI Join creation
-			final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getRequiredConditions(), defn, options);
-			if (!conditionsAsSQLClause.isEmpty()) {
-				whereClause.append(defn.beginConditionClauseLine(options)).append(conditionsAsSQLClause);
-			}
-
-			for (DBRow extra : getExtraExamples()) {
-				List<String> extraCriteria = extra.getWhereClausesWithAliases(defn);
-				if (extraCriteria != null && !extraCriteria.isEmpty()) {
-					for (String clause : extraCriteria) {
-						whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
-					}
-				}
-			}
-
-			for (BooleanExpression expression : queryState.getRemainingExpressions()) {
-				whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(expression.toSQLString(defn)).append(")");
-				queryState.consumeExpression(expression);
-			}
-
-			for (Map.Entry<Object, QueryableDatatype<?>> entry : getExpressionColumns().entrySet()) {
-				final Object key = entry.getKey();
-				final QueryableDatatype<?> qdt = entry.getValue();
-				DBExpression[] expressions = qdt.getColumnExpression();
-				for (DBExpression expression : expressions) {
-					selectClause.append(colSep).append(defn.transformToSelectableType(expression).toSQLString(defn)).append(" ").append(defn.formatExpressionAlias(key));
-					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-					if (expression.isAggregator()) {
-						setGroupByRequiredByAggregator(true);
-					}
-					if (!expression.isAggregator() && !expression.isWindowingFunction()
+				for (Map.Entry<Object, DBExpression> entry : getDBReportGroupByColumns().entrySet()) {
+					final DBExpression expression = entry.getValue();
+					if (!expression.isWindowingFunction()
 							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
-						groupByIsRequired = true;
-						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
-						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-						groupByClause.append(groupByColSep).append(defn.transformToSelectableType(expression).toSQLString(defn));
+						groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
 						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-
 					}
-					if (expression.isComplexExpression()) {
-						fromClause
-								.append(options.isUseANSISyntax() ? " join " : fromClauseTableSeparator)
-								.append(expression.createSQLForFromClause(database));
-						if (options.isUseANSISyntax()
-								&& defn.requiresOnClauseForAllJoins()
-								&& queryState.hasHadATableAdded()) {
-							fromClause
-									.append(defn.beginOnClause())
-									.append(BooleanExpression.trueExpression().toSQLString(defn))
-									.append(defn.endOnClause());
+				}
+
+				boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
+
+				// tidy up the raw SQL provided
+				String rawSQLClauseFinal = (getRawSQLClause().isEmpty() ? "" : getRawSQLClause() + lineSep);
+
+				// Strip the unnecessary where clause if possible
+				if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
+					whereClause = new StringBuilder("");
+				}
+
+				if (queryType == QueryType.SELECT
+						|| queryType == QueryType.REVERSESELECT) {
+					if (getSelectSQLClause() == null) {
+						setSelectSQLClause(selectClause.toString());
+					}
+					if (queryType == QueryType.REVERSESELECT) {
+						selectClause = new StringBuilder(getSelectSQLClause());
+					}
+					String groupByClauseFinal = "";
+					if (isGroupedQuery() && groupByIsRequired) {
+						if (useColumnIndexGroupBy) {
+							groupByClauseFinal = groupByColumnIndex;
+						} else {
+							groupByClauseFinal = groupByClause.toString() + lineSep;
 						}
-						fromClauseTableSeparator = (options.isUseANSISyntax() ? " join " : ", ") + lineSep;
-						if (!expression.isWindowingFunction()) {
-							final String groupBySQL = expression.createSQLForGroupByClause(database);
-							if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
-								groupByClause.append(groupByColSep).append(groupBySQL);
-								groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-								groupByIsRequired = true;
-							}
-						}
-						queryState.addJoinedExpression(expression);
 					}
-					indexesOfSelectedExpressions.put(expression, columnIndex);
-					columnIndex++;
-				}
-			}
-
-			for (Map.Entry<Object, DBExpression> entry : getDBReportGroupByColumns().entrySet()) {
-				final DBExpression expression = entry.getValue();
-				if (!expression.isWindowingFunction()
-						&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
-					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
-					groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-				}
-			}
-
-			boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
-
-			// tidy up the raw SQL provided
-			String rawSQLClauseFinal = (getRawSQLClause().isEmpty() ? "" : getRawSQLClause() + lineSep);
-
-			// Strip the unnecessary where clause if possible
-			if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
-				whereClause = new StringBuilder("");
-			}
-
-			if (queryType == QueryType.SELECT
-					|| queryType == QueryType.REVERSESELECT) {
-				if (getSelectSQLClause() == null) {
-					setSelectSQLClause(selectClause.toString());
-				}
-				if (queryType == QueryType.REVERSESELECT) {
-					selectClause = new StringBuilder(getSelectSQLClause());
-				}
-				String groupByClauseFinal = "";
-				if (isGroupedQuery() && groupByIsRequired) {
-					if (useColumnIndexGroupBy) {
-						groupByClauseFinal = groupByColumnIndex;
-					} else {
-						groupByClauseFinal = groupByClause.toString() + lineSep;
+					String orderByClauseFinal = getOrderByClause(queryState, defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
+					if (!orderByClauseFinal.trim().isEmpty()) {
+						orderByClauseFinal += lineSep;
+						queryState.setHasBeenOrdered(true);
 					}
+					havingClause = getHavingClause(database, options);
+					if (!havingClause.trim().isEmpty()) {
+						havingClause += lineSep;
+					}
+					sqlString = defn.doWrapQueryForPaging(
+							selectClause.append(lineSep)
+									.append(fromClause).append(lineSep)
+									.append(whereClause).append(lineSep)
+									.append(rawSQLClauseFinal)
+									.append(groupByClauseFinal)
+									.append(havingClause)
+									.append(orderByClauseFinal)
+									.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(queryState, options) : "")
+									.append(defn.endSQLStatement())
+									.toString(),
+							options);
+				} else if (queryType == QueryType.COUNT) {
+					setSelectSQLClause(defn.countStarClause());
+					sqlString = defn.beginSelectStatement()
+							+ defn.countStarClause() + lineSep
+							+ fromClause + lineSep
+							+ whereClause + lineSep
+							+ rawSQLClauseFinal + lineSep
+							+ defn.endSQLStatement();
 				}
-				String orderByClauseFinal = getOrderByClause(queryState, defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
-				if (!orderByClauseFinal.trim().isEmpty()) {
-					orderByClauseFinal += lineSep;
-					queryState.setHasBeenOrdered(true);
+				if (options.isCreatingNativeQuery()
+						&& queryState.isFullOuterJoin()
+						&& !defn.supportsFullOuterJoinNatively()) {
+					sqlString = getSQLForFakeFullOuterJoin(database, sqlString, queryState, this, options, queryType);
 				}
-				havingClause = getHavingClause(database, options);
-				if (!havingClause.trim().isEmpty()) {
-					havingClause += lineSep;
-				}
-				sqlString = defn.doWrapQueryForPaging(
-						selectClause.append(lineSep)
-								.append(fromClause).append(lineSep)
-								.append(whereClause).append(lineSep)
-								.append(rawSQLClauseFinal)
-								.append(groupByClauseFinal)
-								.append(havingClause)
-								.append(orderByClauseFinal)
-								.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(queryState, options) : "")
-								.append(defn.endSQLStatement())
-								.toString(),
-						options);
-			} else if (queryType == QueryType.COUNT) {
-				setSelectSQLClause(defn.countStarClause());
-				sqlString = defn.beginSelectStatement()
-						+ defn.countStarClause() + lineSep
-						+ fromClause + lineSep
-						+ whereClause + lineSep
-						+ rawSQLClauseFinal + lineSep
-						+ defn.endSQLStatement();
 			}
-			if (options.isCreatingNativeQuery()
-					&& queryState.isFullOuterJoin()
-					&& !defn.supportsFullOuterJoinNatively()) {
-				sqlString = getSQLForFakeFullOuterJoin(database, sqlString, queryState, this, options, queryType);
-			}
+			return sqlString;
+		} catch (Throwable e) {
+			throw new DBQueryException(e);
 		}
-		return sqlString;
 	}
 
 	private synchronized void initialiseQueryGraph() {
@@ -1108,6 +1114,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 					details.getResults().add(queryRow);
 				}
 			}
+		} catch (Throwable e) {
+			throw new DBQueryException(e);
 		}
 		for (DBQueryRow result : details.getResults()) {
 			List<DBRow> rows = result.getAll();
@@ -1312,14 +1320,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 			QueryableDatatype<?> qdt = newProp.getQueryableDatatype();
 			for (PropertyWrapper propertyWrapper : selectedProperties) {
 				if (propertyWrapper.getPropertyWrapperDefinition().equals(newProp.getPropertyWrapperDefinition())) {
+					final String[] columnAliases = newProp.getColumnAlias(defn);
+					if (columnAliases.length > 0) {
+						String resultSetColumnName = columnAliases[0];
+						//for (String resultSetColumnName : resultSetColumnNames) {
 
-					String resultSetColumnName = newProp.getColumnAlias(defn)[0];
-					//for (String resultSetColumnName : resultSetColumnNames) {
+						qdt.setFromResultSet(defn, resultSet, resultSetColumnName);
 
-					qdt.setFromResultSet(defn, resultSet, resultSetColumnName);
-
-					if (newInstance.isEmptyRow() && !qdt.isNull()) {
-						newInstance.setEmptyRow(false);
+						if (newInstance.isEmptyRow() && !qdt.isNull()) {
+							newInstance.setEmptyRow(false);
+						}
 					}
 					//}
 				}
