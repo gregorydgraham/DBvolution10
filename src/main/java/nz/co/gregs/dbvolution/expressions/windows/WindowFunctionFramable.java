@@ -49,7 +49,8 @@ import nz.co.gregs.dbvolution.results.AnyResult;
 /**
  *
  * @author gregorygraham
- * @param <A> the expression type returned by this windowing function, e.g. IntegerExpression
+ * @param <A> the expression type returned by this windowing function, e.g.
+ * IntegerExpression
  */
 public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface<A> {
 
@@ -61,7 +62,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 	}
 
 	@Override
-	public Partitioned<A> partition(ColumnProvider... cols) {
+	public Partitioned<A> partition(EqualExpression... cols) {
 		return new WindowFunctionFramable.Partitioned<A>(this, cols);
 	}
 
@@ -79,14 +80,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 
 	public A AllRowsAndOrderBy(SortProvider... sorts) {
 		if (sorts.length > 0) {
-			if (sorts.length > 1) {
-				SortProvider sort = sorts[0];
-				SortProvider[] newSorts = new SortProvider[sorts.length - 1];
-				System.arraycopy(sorts, 1, newSorts, 0, sorts.length - 1);
-				return this.partition().orderBy(sort, newSorts).rows().unboundedPreceding().currentRow();
-			} else {
-				return this.partition().orderBy(sorts[0]).rows().unboundedPrecedingAndCurrentRow();
-			}
+				return this.partition().orderBy(sorts).rows().unboundedPreceding().currentRow();
 		} else {
 			return this.partition().unsorted();
 		}
@@ -153,29 +147,30 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 	public static class Partitioned<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.Partitioned<A> {
 
 		private final WindowFunctionFramable<A> innerExpression;
-		private final ColumnProvider[] columns;
+		private final EqualExpression<?, ?, ?>[] partitionExpressions;
 
-		private Partitioned(WindowFunctionFramable<A> expression, ColumnProvider... cols) {
+		private Partitioned(WindowFunctionFramable<A> expression, EqualExpression... cols) {
 			super();
 			this.innerExpression = expression;
-			this.columns = cols;
+			this.partitionExpressions = cols;
 		}
 
 		@Override
-		public WindowFunctionFramable.Sorted<A> orderBy(SortProvider sort, SortProvider... sorts) {
-			SortProvider[] newSorts = new SortProvider[sorts.length + 1];
-			newSorts[0] = sort;
-			System.arraycopy(sorts, 0, newSorts, 1, sorts.length);
-			return new WindowFunctionFramable.Sorted<A>(this, newSorts);
+		public WindowFunctionFramable.Sorted<A> orderBy(SortProvider... sorts) {
+			if (sorts.length == 0) {
+				return new UnSorted<A>(this);
+			} else {
+				return new WindowFunctionFramable.Sorted<A>(this, sorts);
+			}
 		}
 
 		@Override
 		public String toSQLString(DBDefinition defn) {
 			StringBuilder partitionClause = new StringBuilder();
-			if (getColumns().length > 0) {
+			if (getPartitionExpressions().length > 0) {
 				partitionClause.append("PARTITION BY ");
 				String separator = "";
-				for (ColumnProvider partitionByColumn : getColumns()) {
+				for (EqualExpression partitionByColumn : getPartitionExpressions()) {
 					partitionClause.append(separator).append(partitionByColumn.toSQLString(defn));
 					separator = ", ";
 				}
@@ -191,7 +186,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		@SuppressWarnings("unchecked")
 		@Override
 		public Partitioned<A> copy() {
-			return new Partitioned<A>(this.getInnerExpression().copy(), this.getColumns());
+			return new Partitioned<A>(this.getInnerExpression().copy(), this.getPartitionExpressions());
 		}
 
 		@Override
@@ -238,7 +233,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		public boolean isPurelyFunctional() {
 			boolean functional = getInnerExpression().isPurelyFunctional();
 			if (functional == true) {
-				for (ColumnProvider column : getColumns()) {
+				for (EqualExpression column : getPartitionExpressions()) {
 					functional = functional && column.isPurelyFunctional();
 				}
 			}
@@ -283,10 +278,18 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		}
 
 		/**
+		 * @return the expressions used in the partition clause
+		 */
+		protected EqualExpression[] getPartitionExpressions() {
+			return partitionExpressions;
+		}
+
+		/**
 		 * @return the columns
 		 */
-		protected ColumnProvider[] getColumns() {
-			return columns;
+		@Deprecated
+		protected EqualExpression[] getColumns() {
+			return partitionExpressions;
 		}
 
 		private class UnSorted<A extends EqualExpression<?, ?, ?>> extends Sorted<A> {
