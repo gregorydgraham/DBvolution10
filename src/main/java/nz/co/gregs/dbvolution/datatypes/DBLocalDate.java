@@ -210,9 +210,9 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	@Override
 	public String toString() {
 		if (this.isNull() || localDateValue() == null) {
-			return "";
+			return "<NULL>";
 		}
-		return toStringFormat.format(localDateValue());
+		return DateTimeFormatter.ISO_LOCAL_DATE.format(localDateValue());
 	}
 
 	@Override
