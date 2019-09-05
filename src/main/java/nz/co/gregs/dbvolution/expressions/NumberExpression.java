@@ -1770,8 +1770,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(NumberResult... possibleValues) {
-		NumberExpression greatestExpr
-				= new NumberExpression(new GreatestOfExpression(possibleValues));
+		NumberExpression greatestExpr = new GreatestOfExpression(possibleValues);
 		return greatestExpr;
 	}
 
@@ -1848,7 +1847,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * current function.
 	 */
 	public NumberExpression exp() {
-		return new NumberExpression(new ExponentialExpression(this));
+		return new ExponentialExpression(this);
 	}
 
 	/**
@@ -1865,7 +1864,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression cos() {
-		return new NumberExpression(new CosineExpression(this));
+		return new CosineExpression(this);
 	}
 
 	/**
@@ -1883,7 +1882,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * current number expression.
 	 */
 	public NumberExpression cosh() {
-		return new NumberExpression(new HyperbolicCosineExpression(this));
+		return new HyperbolicCosineExpression(this);
 	}
 
 	/**
@@ -1900,7 +1899,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression sine() {
-		return new NumberExpression(new SineExpression(this));
+		return new SineExpression(this);
 	}
 
 	/**
@@ -1976,7 +1975,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression tan() {
-		return new NumberExpression(new TangentExpression(this));
+		return new TangentExpression(this);
 	}
 
 	/**
@@ -1994,7 +1993,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * current number expression.
 	 */
 	public NumberExpression tanh() {
-		return new NumberExpression(new HyperbolicTangentExpression(this));
+		return new HyperbolicTangentExpression(this);
 	}
 
 	/**
@@ -2007,7 +2006,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression abs() {
-		return new NumberExpression(new AbsoluteValueExpression(this));
+		return new AbsoluteValueExpression(this);
 	}
 
 	/**
@@ -2036,7 +2035,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression arccos() {
-		return new NumberExpression(new InverseCosineExpression(this));
+		return new InverseCosineExpression(this);
 	}
 
 	/**
@@ -2049,7 +2048,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression arcsin() {
-		return new NumberExpression(new InverseSineExpression(this));
+		return new InverseSineExpression(this);
 	}
 
 	/**
@@ -2062,7 +2061,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression arctan() {
-		return new NumberExpression(new InverseTangentExpression(this));
+		return new InverseTangentExpression(this);
 	}
 
 	/**
@@ -2090,7 +2089,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression arctan2(NumberExpression number) {
-		return new NumberExpression(new InverseTangent2Expression(this, number));
+		return new InverseTangent2Expression(this, number);
 	}
 
 	/**
@@ -2159,7 +2158,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression cotangent() {
-		return new NumberExpression(new CotangentExpression(this));
+		return new CotangentExpression(this);
 	}
 
 	/**
@@ -2175,7 +2174,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression degrees() {
-		return new NumberExpression(new DegreesExpression(this));
+		return new DegreesExpression(this);
 	}
 
 	/**
@@ -2191,7 +2190,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression radians() {
-		return new NumberExpression(new RadiansExpression(this));
+		return new RadiansExpression(this);
 	}
 
 	/**
@@ -2204,7 +2203,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression logN() {
-		return new NumberExpression(new NaturalLogExpression(this));
+		return new NaturalLogExpression(this);
 	}
 
 	/**
@@ -2217,7 +2216,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression logBase10() {
-		return new NumberExpression(new LogBase10Expression(this));
+		return new LogBase10Expression(this);
 	}
 
 	/**
@@ -2232,7 +2231,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression power(NumberResult n) {
-		return new NumberExpression(new PowerExpression(this, n));
+		return new PowerExpression(this, n);
 	}
 
 	/**
@@ -2261,7 +2260,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * query.
 	 */
 	static public NumberExpression random() {
-		return new NumberExpression(new RandomNumberExpression());
+		return new RandomNumberExpression();
 	}
 
 	/**
@@ -2274,7 +2273,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression sign() {
-		return new NumberExpression(new SignExpression(this));
+		return new SignExpression(this);
 	}
 
 	/**
@@ -2286,7 +2285,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression squareRoot() {
-		return new NumberExpression(new SquareRootExpression(this));
+		return new SquareRootExpression(this);
 	}
 
 	/**
@@ -2306,7 +2305,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the value of the equation rounded up to the nearest integer.
 	 */
 	public NumberExpression roundUp() {
-		return new NumberExpression(new RoundUpExpression(this));
+		return new RoundUpExpression(this);
 	}
 
 	/**
@@ -2320,8 +2319,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <p>
 	 * Please note that, like all windowing functions, the order on the expression
 	 * is unrelated to the ordering on the query.</p>
-	 * 
-	 * <p>If you would like more control over the running total use something like tableName.column(tableName.priceColumn).sum().over() to get started.</p>
+	 *
+	 * <p>
+	 * If you would like more control over the running total use something like
+	 * tableName.column(tableName.priceColumn).sum().over() to get started.</p>
 	 *
 	 * @param expressionsToPartitionBy
 	 * @param expressionsToOrderBy
@@ -2340,7 +2341,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round() {
-		return new NumberExpression(new RoundExpression(this));
+		return new RoundExpression(this);
 	}
 
 	/**
@@ -2420,7 +2421,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(NumberExpression decimalPlaces) {
-		return new NumberExpression(new RoundToNumberofDecimalPlaces(this, NumberExpression.value(decimalPlaces)));
+		return new RoundToNumberofDecimalPlaces(this, NumberExpression.value(decimalPlaces));
 	}
 
 	/**
@@ -2439,7 +2440,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the value of the equation rounded down to the nearest integer.
 	 */
 	public NumberExpression roundDown() {
-		return new NumberExpression(new RoundDownExpression(this));
+		return new RoundDownExpression(this);
 	}
 
 	/**
@@ -2538,7 +2539,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression minus(NumberResult number) {
-		return new NumberExpression(new MinusBinaryArithmetic(this, number));
+		return new MinusBinaryArithmetic(this, number);
 	}
 
 	/**
@@ -2583,7 +2584,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression plus(NumberResult number) {
-		return new NumberExpression(new PlusExpression(this, new NumberExpression(number)));
+		return new PlusExpression(this, new NumberExpression(number));
 	}
 
 	/**
@@ -2628,7 +2629,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression times(NumberResult number) {
-		return new NumberExpression(new TimesExpression(this, new NumberExpression(number)));
+		return new TimesExpression(this, new NumberExpression(number));
 	}
 
 	/**
@@ -2673,9 +2674,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression dividedBy(NumberResult number) {
-		return new NumberExpression(new DivideByExpression(this,
-				new NumberExpression(number))
-		);
+		return new DivideByExpression(this,
+				new NumberExpression(number));
 	}
 
 	/**
@@ -2690,7 +2690,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression of a division operation.
 	 */
 	public NumberExpression dividedBy(Number num) {
-		return new NumberExpression(new DivisionBinaryArithmetic(this, new NumberExpression(num)));
+		return new DivisionBinaryArithmetic(this, new NumberExpression(num));
 	}
 
 	/**
@@ -2729,7 +2729,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression of a Modulus operation.
 	 */
 	public NumberExpression mod(NumberResult number) {
-		return new NumberExpression(new ModulusRemainderExpression(this, NumberExpression.value(number)));
+		return new ModulusRemainderExpression(this, NumberExpression.value(number));
 	}
 
 	/**
@@ -2904,7 +2904,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return A number expression representing the average of the grouped rows.
 	 */
 	public NumberExpression average() {
-		return new NumberExpression(new AverageExpression(this));
+		return new AverageExpression(this);
 	}
 
 	/**
@@ -2930,7 +2930,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * grouped rows.
 	 */
 	public NumberExpression standardDeviation() {
-		return new NumberExpression(new StandardDeviationExpression(this));
+		return new StandardDeviationExpression(this);
 	}
 
 	/**
@@ -2948,7 +2948,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the greatest/largest value from the column.
 	 */
 	public NumberExpression max() {
-		return new NumberExpression(new MaxUnaryFunction(this));
+		return new MaxUnaryFunction(this);
 	}
 
 	/**
@@ -2965,7 +2965,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the least/smallest value from the column.
 	 */
 	public NumberExpression min() {
-		return new NumberExpression(new MinUnaryFunction(this));
+		return new MinUnaryFunction(this);
 	}
 
 	/**
