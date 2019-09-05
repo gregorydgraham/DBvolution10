@@ -62,7 +62,7 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
  */
-public class PropertyWrapperDefinition  implements Serializable{
+public class PropertyWrapperDefinition implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -624,11 +624,13 @@ public class PropertyWrapperDefinition  implements Serializable{
 		if (hasColumnExpression()) {
 			DBExpression[] columnExpression1 = getColumnExpression();
 			for (DBExpression dBExpression : columnExpression1) {
-				allColumnAspects.add(new ColumnAspects(
-						defn.transformToStorableType(dBExpression).toSQLString(defn),
-						defn.formatForColumnAlias(String.valueOf(dBExpression.hashCode())),
-						dBExpression)
-				);
+				if (dBExpression != null) {
+					allColumnAspects.add(new ColumnAspects(
+							defn.transformToStorableType(dBExpression).toSQLString(defn),
+							defn.formatForColumnAlias(String.valueOf(dBExpression.hashCode())),
+							dBExpression)
+					);
+				}
 			}
 		} else {
 			allColumnAspects.add(new ColumnAspects(
@@ -645,9 +647,10 @@ public class PropertyWrapperDefinition  implements Serializable{
 			ArrayList<String> strList = new ArrayList<String>();
 			DBExpression[] columnExpression1 = getColumnExpression();
 			for (DBExpression dBExpression : columnExpression1) {
-				final String formattedForColumnAlias = defn.formatForColumnAlias(String.valueOf(dBExpression.hashCode()));
-//				dBExpression.setColumnAlias(formattedForColumnAlias);
-				strList.add(formattedForColumnAlias);
+				if (dBExpression != null) {
+					final String formattedForColumnAlias = defn.formatForColumnAlias(String.valueOf(dBExpression.hashCode()));
+					strList.add(formattedForColumnAlias);
+				}
 			}
 			return strList.toArray(new String[]{});
 		} else {
@@ -681,9 +684,6 @@ public class PropertyWrapperDefinition  implements Serializable{
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the columnIndex
 	 */
 	public Integer getColumnIndex() {
@@ -709,12 +709,11 @@ public class PropertyWrapperDefinition  implements Serializable{
 
 	boolean isLargeObject() {
 		return DBLargeObject.class.isAssignableFrom(type());
-//		return type().getClass().isAssignableFrom(DBLargeObject.class);
 	}
 
-	public static class ColumnAspects implements Serializable{
+	public static class ColumnAspects implements Serializable {
 
-	private static final long serialVersionUID = 1l;
+		private static final long serialVersionUID = 1l;
 
 		public final String selectableName;
 		public final String columnAlias;
