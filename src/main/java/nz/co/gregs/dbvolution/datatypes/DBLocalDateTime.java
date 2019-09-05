@@ -260,9 +260,9 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	@Override
 	public String toString() {
 		if (this.isNull() || getValue() == null) {
-			return "";
+			return "<NULL>";
 		}
-		return toStringFormat.format(getValue());
+		return DateTimeFormatter.ISO_DATE_TIME.format(getValue());
 	}
 
 	@Override
