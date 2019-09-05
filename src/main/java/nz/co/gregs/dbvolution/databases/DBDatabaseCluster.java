@@ -215,15 +215,23 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * set up as a bean, using the default constructor and a collection of
 	 * settings.</p>
 	 *
-	 * @param settings an array of DatabaseConnectionSettings that can be used to add databases to the cluster
+	 * @param settings an array of DatabaseConnectionSettings that can be used to
+	 * add databases to the cluster
 	 * @throws SQLException database errors
-	 * @throws InvocationTargetException  all database need an accessible default constructor
-	 * @throws IllegalArgumentException all database need an accessible default constructor
-	 * @throws IllegalAccessException all database need an accessible default constructor
-	 * @throws InstantiationException all database need an accessible default constructor
-	 * @throws SecurityException all database need an accessible default constructor
-	 * @throws NoSuchMethodException all database need an accessible default constructor
-	 * @throws ClassNotFoundException all database need an accessible default constructor
+	 * @throws InvocationTargetException all database need an accessible default
+	 * constructor
+	 * @throws IllegalArgumentException all database need an accessible default
+	 * constructor
+	 * @throws IllegalAccessException all database need an accessible default
+	 * constructor
+	 * @throws InstantiationException all database need an accessible default
+	 * constructor
+	 * @throws SecurityException all database need an accessible default
+	 * constructor
+	 * @throws NoSuchMethodException all database need an accessible default
+	 * constructor
+	 * @throws ClassNotFoundException all database need an accessible default
+	 * constructor
 	 */
 	public void setConnectionSettings(DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
 		removeDatabases(getDatabases());
@@ -309,7 +317,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param backupDatabase the database to use as a backup
 	 * @throws SQLException database errors
-	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
+	 * remove the last remaining database
 	 */
 	@Override
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
@@ -323,21 +332,22 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * it is unchanged. More formally, removes the element with the lowest index
 	 * <code>i</code> such that
 	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
-	 * (if such an element exists). Returns true if this list contained
-	 * the specified element (or equivalently, if this list changed as a result of
-	 * the call).
+	 * (if such an element exists). Returns true if this list contained the
+	 * specified element (or equivalently, if this list changed as a result of the
+	 * call).
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
 	 * @return true if this list contained the specified element
-	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
+	 * remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the quarantineDatabase
-	 * operation is not supported by this list
+	 * @throws UnsupportedOperationException if the quarantineDatabase operation
+	 * is not supported by this list
 	 */
 	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException {
 		return removeDatabases(databases.toArray(new DBDatabase[]{}));
@@ -346,24 +356,25 @@ public class DBDatabaseCluster extends DBDatabase {
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation). If this list does not contain the element,
-	 * it is unchanged. More formally, removes the element with the lowest index
-	 * i such that
+	 * it is unchanged. More formally, removes the element with the lowest index i
+	 * such that
 	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
-	 * (if such an element exists). Returns <code>true</code> if this list contained
-	 * the specified element (or equivalently, if this list changed as a result of
-	 * the call).
+	 * (if such an element exists). Returns <code>true</code> if this list
+	 * contained the specified element (or equivalently, if this list changed as a
+	 * result of the call).
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
 	 * @return true if this list contained the specified element
-	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
+	 * remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the quarantineDatabase
-	 * operation is not supported by this list
+	 * @throws UnsupportedOperationException if the quarantineDatabase operation
+	 * is not supported by this list
 	 */
 	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException {
 		for (DBDatabase database : databases) {
@@ -375,24 +386,25 @@ public class DBDatabaseCluster extends DBDatabase {
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation). If this list does not contain the element,
-	 * it is unchanged. More formally, removes the element with the lowest index
-	 * i such that
+	 * it is unchanged. More formally, removes the element with the lowest index i
+	 * such that
 	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
-	 * (if such an element exists). Returns <code>true</code> if this list contained
-	 * the specified element (or equivalently, if this list changed as a result of
-	 * the call).
+	 * (if such an element exists). Returns <code>true</code> if this list
+	 * contained the specified element (or equivalently, if this list changed as a
+	 * result of the call).
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
 	 * @return <code>true</code> if this list contained the specified element
-	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
+	 * remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <code>quarantineDatabase</code>
-	 * operation is not supported by this list
+	 * @throws UnsupportedOperationException if the
+	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
 	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
 		return details.removeDatabase(database);
@@ -406,15 +418,16 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
 	 * @param except the exception that caused the database to be quarantined
-	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot remove the last remaining database
+	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
+	 * remove the last remaining database
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <code>quarantineDatabase</code>
-	 * operation is not supported by this list
+	 * @throws UnsupportedOperationException if the
+	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
 	protected void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
 		details.quarantineDatabase(database, except);
@@ -424,7 +437,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Returns a single random database that is ready for queries
 	 *
 	 * @return a ready database
-	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException the cluster is current unable to service requests
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException the
+	 * cluster is current unable to service requests
 	 */
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
 		return details.getReadyDatabase();
@@ -1474,7 +1488,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public boolean isMemoryDatabase() {
-		return !details.getAutoRebuild()||!details.hasAuthoritativeDatabase();
+		return !details.getAutoRebuild() || !details.hasAuthoritativeDatabase();
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {
