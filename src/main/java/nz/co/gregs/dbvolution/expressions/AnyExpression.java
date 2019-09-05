@@ -40,7 +40,6 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -173,9 +172,6 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public AnyResult<?> getInnerResult() {
 		return innerResult;
 	}
-
-	@Override
-	public abstract AnyResult<?> copy();
 
 	@Override
 	public boolean getIncludesNull() {
@@ -470,7 +466,6 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public final static LocalDateExpression value(LocalDate date) {
 		return new LocalDateExpression(date);
 	}
-
 
 	/**
 	 * Create An Appropriate Expression Object For This Object
@@ -864,7 +859,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public SortProvider highestLast() {
 		return ascending();
 	}
-	
+
 	/**
 	 * Creates an expression that will count all the values of the column
 	 * supplied.
@@ -881,43 +876,55 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public CountExpression count() {
 		return new CountExpression(this);
 	}
+
+	/**
+	 * Creates a running count expression based on the values specified.
+	 *
+	 * <p>
+	 * This expression uses the windowing functions to create a partitioned count
+	 * window which returns the value of the expression plus all the preceding
+	 * counts.</p>
+	 *
+	 * <p>
+	 * Please note that, like all windowing functions, the ordering on the
+	 * expression is unrelated to the ordering on the query.</p>
+	 *
+	 * <p>
+	 * If you would like more control over the running total use something like
+	 * tableName.column(tableName.priceColumn).sum().over() to get started.</p>
+	 *
+	 * @param expressionsToPartitionBy
+	 * @param expressionsToOrderBy
+	 * @return
+	 */
+	public IntegerExpression runningCount(RangeExpression[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
+		return this.count().over().partition(expressionsToPartitionBy).orderBy(expressionsToOrderBy).withoutFrame();
+	}
+
 	public static WindowFunctionRequiresOrderBy<IntegerExpression> rank() {
 		return new RankExpression().over();
 	}
+
 	public static WindowFunctionRequiresOrderBy<NumberExpression> percentageRank() {
 		return new PercentageExpression().over();
 	}
-//	public static NumberExpression fakePercentageRank(ColumnProvider[] partitionFields) {
-		// (0.0+( ROW_NUMBER() OVER (partition by *PARTITION_FIELDS* order by *PARTITION_FIELDS*, PK_FIELDS ) - 1)) 
-		//  / greatest(1,(COUNT(*) OVER (partition by *PARTITION_FIELDS* ORDER BY  (1=1)  ASC  ) - 1))
-		//
-//		final IntegerExpression rank = IntegerExpression
-//				.rowNumber()
-//				.partition()
-//				.orderByWithPrimaryKeys(partitionFields)
-//				.withoutFrame();
-//		final IntegerExpression numerator = rank.minus(1).bracket();
-//		
-//		final IntegerExpression totalNumberOfRows = IntegerExpression
-//				.countAll()
-//				.over()
-//				.allRows();
-//		final IntegerExpression divisor = totalNumberOfRows.minus(1);
-//		final NumberExpression wholeFn = numerator.dividedBy(divisor);
-//		return wholeFn;
-//	}
+
 	public static WindowFunctionRequiresOrderBy<IntegerExpression> denseRank() {
 		return new DenseRankExpression().over();
 	}
+
 	public static WindowFunctionRequiresOrderBy<IntegerExpression> rowNumber() {
 		return new RowNumberExpression().over();
 	}
+
 	public static WindowFunctionRequiresOrderBy<IntegerExpression> nTile(Integer tiles) {
 		return new NTileExpression(tiles).over();
 	}
+
 	public static WindowFunctionRequiresOrderBy<IntegerExpression> nTile(IntegerExpression tiles) {
 		return new NTileExpression(tiles).over();
 	}
+
 	public static WindowFunctionRequiresOrderBy<IntegerExpression> nTile(Long tiles) {
 		return new NTileExpression(tiles).over();
 	}
@@ -965,19 +972,17 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		return new CountAllExpression();
 	}
 
-	public static class CountAllExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression>{
+	public static class CountAllExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		public CountAllExpression() {
 			super();
 		}
 		private final static long serialVersionUID = 1l;
 
-		
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return db.getCountFunctionName() + "(*)";
 		}
-
 
 		@Override
 		public boolean isAggregator() {
@@ -1124,7 +1129,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.getNTilesFunctionName() + "("+getInnerResult().toSQLString(db)+")";
+			return db.getNTilesFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
 		}
 
 		@Override
@@ -1135,7 +1140,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		@Override
 		public NTileExpression copy() {
 			return new NTileExpression(
-					(IntegerExpression )(getInnerResult() == null ? null : getInnerResult().copy())
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy())
 			);
 		}
 
