@@ -312,9 +312,9 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	@Override
 	public String toString() {
 		if (this.isNull() || getValue() == null) {
-			return "";
+			return "<NULL>";
 		}
-		return toStringFormat.format(getValue().atZone(ZoneId.of("Z")));
+		return DateTimeFormatter.ISO_INSTANT.format(getValue().atZone(ZoneId.of("Z")));
 	}
 
 	@Override
