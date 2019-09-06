@@ -130,6 +130,14 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 		throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy does not support isWindowingFunction() yet.");
 	}
 
+	public Partitioned<A> unpartitioned() {
+		return this.partition();
+	}
+
+	public Partitioned<A> allRows() {
+		return this.partition();
+	}
+
 	public static class Partitioned<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionRequiresOrderByInterface.Partitioned<A> {
 
 		private final WindowFunctionRequiresOrderBy<A> innerExpression;
@@ -350,100 +358,6 @@ public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> i
 		 */
 		protected SortProvider[] getSorts() {
 			return sorts;
-		}
-	}
-
-	public static abstract class FrameEnd<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.WindowEnd<A>, AnyResult<A> {
-
-		private final WindowPart<A> start;
-		private final IntegerExpression offset;
-
-		protected FrameEnd(WindowPart<A> start) {
-			this.start = start;
-			this.offset = IntegerExpression.value(0);
-		}
-
-		protected FrameEnd(WindowPart<A> start, int offset) {
-			this.start = start;
-			this.offset = IntegerExpression.value(offset);
-		}
-
-		protected FrameEnd(WindowPart<A> start, IntegerExpression offset) {
-			this.start = start;
-			this.offset = offset;
-		}
-
-		/**
-		 * @return the and
-		 */
-		protected WindowPart<A> getStart() {
-			return start;
-		}
-
-		/**
-		 * @return the offset
-		 */
-		protected IntegerExpression getOffset() {
-			return offset;
-		}
-
-		@Override
-		public A build() {
-			try {
-				final Class<A> clazz = getStart().getRequiredExpressionClass();
-				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-				for (Constructor<?> constructor : constructors) {
-					if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
-						constructor.setAccessible(true);
-						@SuppressWarnings("unchecked")
-						A newInstance = (A) constructor.newInstance((AnyResult) this);
-						return newInstance;
-					}
-				}
-			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				Logger.getLogger(WindowFunctionRequiresOrderBy.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			return null;
-		}
-
-		@Override
-		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support getQueryableDatatypeForExpressionValue() yet.");
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return false;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support getTablesInvolved() yet.");
-		}
-		
-		@Override
-		public boolean isComplexExpression() {
-			return false;
-		}
-
-		@Override
-		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support createSQLForFromClause() yet.");
-		}
-
-		@Override
-		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("WindowFunctionRequiresOrderBy.FrameEnd does not support createSQLForGroupByClause() yet.");
-		}
-
-		@Override
-		public boolean isWindowingFunction() {
-			return true;
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return true;
 		}
 	}
 }
