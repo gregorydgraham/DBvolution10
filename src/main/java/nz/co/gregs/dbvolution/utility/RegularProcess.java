@@ -37,6 +37,7 @@ import java.util.GregorianCalendar;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jdt.core.dom.SimpleName;
 
 /**
  * Regular Processes provide a standard means of performing regular database
@@ -76,6 +77,7 @@ public abstract class RegularProcess implements Serializable {
 	private DBDatabase dbDatabase;
 	private String lastResult = "Not Processed Yet";
 	private Date lastRunTime = new Date();
+	private String simpleName = null;
 
 	/**
 	 * Method that does all the processing that needs to be regularly performed.
@@ -208,6 +210,22 @@ public abstract class RegularProcess implements Serializable {
 
 	public void setLastResult(String process) {
 		this.lastResult = process;
+	}
+
+	public String getSimpleName() {
+		if (simpleName == null || simpleName.isEmpty()) {
+			return this.getClass().getSimpleName();
+		} else {
+			return simpleName;
+		}
+	}
+	
+	public void setSimpleName(String simpleName){
+		this.simpleName = simpleName;
+	}
+	
+	public void clearSimpleName(){
+		this.simpleName = null;
 	}
 
 }
