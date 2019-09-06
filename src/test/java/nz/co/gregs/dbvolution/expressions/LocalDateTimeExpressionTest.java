@@ -423,13 +423,19 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				.rows().unboundedPreceding().forFollowing(1));
 		@DBColumn
 		DBLocalDateTime lag1 = new DBLocalDateTime(
-				this.column(this.creationLocalDateTime).lag(1, null).unpartitioned()
-				.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending()).defaultFrame()
+				this.column(this.creationLocalDateTime)
+						.lag(1, null)
+						.unpartitioned()
+						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
+						.defaultFrame()
 		);
 		@DBColumn
 		DBLocalDateTime lead1 = new DBLocalDateTime(this.column(
-				this.creationLocalDateTime).lead().unpartitioned()
-				.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending()).defaultFrame());
+				this.creationLocalDateTime)
+				.lead()
+				.unpartitioned()
+				.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
+				.defaultFrame());
 	}
 
 	@Test
