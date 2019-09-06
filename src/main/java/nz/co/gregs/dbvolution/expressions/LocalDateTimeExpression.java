@@ -4801,6 +4801,22 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	}
 
 	/**
+	 * previousRowValue is a synonym for LAG.
+	 * 
+	 * <p>LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<LocalDateTimeExpression> previousRowValue() {
+		return lag();
+	}
+
+	/**
 	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.
 	 *
@@ -4852,6 +4868,22 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 */
 	public WindowFunctionRequiresOrderBy<LocalDateTimeExpression> lag(Integer offset, LocalDateTime defaultExpression) {
 		return lag(IntegerExpression.value(offset), LocalDateTimeExpression.value(defaultExpression));
+	}
+
+	/**
+	 * nextRowValue is a synonym for LEAD.
+	 * 
+	 * <p>LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<LocalDateTimeExpression> nextRowValue() {
+		return lead();
 	}
 
 	/**
