@@ -345,7 +345,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		}
 
 		public A defaultFrame() {
-			return this.rows().unboundedPreceding().unboundedFollowing();
+			return this.withoutFrame();
 		}
 
 		@Override
