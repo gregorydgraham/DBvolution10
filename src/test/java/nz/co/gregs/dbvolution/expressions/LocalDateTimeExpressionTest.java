@@ -309,7 +309,10 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
-				.setSortOrder(marq.column(marq.carCompany));
+				.setSortOrder(
+						marq.column(marq.carCompany).ascending(),
+						marq.column(marq.uidMarque).ascending()
+				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
