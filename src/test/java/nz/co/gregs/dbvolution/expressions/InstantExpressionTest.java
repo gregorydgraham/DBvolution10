@@ -578,7 +578,7 @@ public class InstantExpressionTest extends AbstractTest {
 		got = query.getAllRows();
 		if (got.size()!=1){
 			System.out.println("CREATION DATE EXPECTED: "+then);
-			System.out.println("FOUND ROWS: "+then);
+			System.out.println("FOUND ROWS: "+got.size());
 			database.getDBTable(marq).setBlankQueryAllowed(true).print();
 		}
 		Assert.assertThat(got.size(), is(1));
