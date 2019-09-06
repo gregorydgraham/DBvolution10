@@ -312,8 +312,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				.setSortOrder(marq.column(marq.carCompany));
 
 		List<DBQueryRow> allRows = query.getAllRows();
-		System.out.println(""+query.getSQLForQuery());
-		query.print();
 
 		Assert.assertThat(allRows.size(), is(22));
 
@@ -343,14 +341,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, null});
 		for (int i = 0; i < allRows.size(); i++) {
 			got = allRows.get(i).get(marq);
-			System.out.println(""+got.toString());
+			System.out.println("" + got.toString());
 			Object[] expect = expectedValues.get(i);
 			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
 			Assert.assertThat(got.maxOfAll.getValue(), is((LocalDateTime) expect[1]));
 			Assert.assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
 			Assert.assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
 			Assert.assertThat(got.lag1.getValue(), is((LocalDateTime) expect[3]));
-//			Assert.assertThat(got.lead1.getValue(), is((LocalDateTime) expect[4]));
+			Assert.assertThat(got.lead1.getValue(), is((LocalDateTime) expect[4]));
 		}
 	}
 
@@ -422,20 +420,21 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().unboundedPreceding().forFollowing(1));
 		@DBColumn
-		DBLocalDateTime lag1 = new DBLocalDateTime(
+		DBLocalDateTime lag1 = 
 				this.column(this.creationLocalDateTime)
 						.lag(1, null)
-						.unpartitioned()
+						.allRows()
 						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
-						.defaultFrame()
-		);
+						.asExpressionColumn();
 		@DBColumn
 		DBLocalDateTime lead1 = new DBLocalDateTime(this.column(
 				this.creationLocalDateTime)
 				.lead()
-				.unpartitioned()
-				.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
-				.defaultFrame());
+				.AllRowsAndOrderBy(
+						this.column(this.carCompany).ascending(),
+						this.column(this.uidMarque).ascending()
+				)
+		);
 	}
 
 	@Test
