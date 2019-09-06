@@ -422,14 +422,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		@DBColumn
 		DBLocalDateTime lag1 = 
 				this.column(this.creationLocalDateTime)
-						.lag(1, null)
+						.previousRowValue()
 						.allRows()
 						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
 						.asExpressionColumn();
 		@DBColumn
 		DBLocalDateTime lead1 = new DBLocalDateTime(this.column(
 				this.creationLocalDateTime)
-				.lead()
+				.nextRowValue()
 				.AllRowsAndOrderBy(
 						this.column(this.carCompany).ascending(),
 						this.column(this.uidMarque).ascending()
