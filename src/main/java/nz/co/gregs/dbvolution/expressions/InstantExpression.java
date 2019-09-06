@@ -33,6 +33,8 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.InstantColumn;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -4752,7 +4754,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<InstantExpression> lag() {
+	public WindowFunctionRequiresOrderBy<InstantExpression> lag() {
 		return lag(IntegerExpression.value(1));
 	}
 
@@ -4766,7 +4768,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<InstantExpression> lag(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<InstantExpression> lag(IntegerExpression offset) {
 		return lag(offset,nullExpression());
 	}
 
@@ -4779,7 +4781,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * the offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<InstantExpression> lag(IntegerExpression offset, InstantExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<InstantExpression> lag(IntegerExpression offset, InstantExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
 	}
 
@@ -4793,7 +4795,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<InstantExpression> lead() {
+	public WindowFunctionRequiresOrderBy<InstantExpression> lead() {
 		return lead(value(1));
 	}
 
@@ -4807,7 +4809,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<InstantExpression> lead(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<InstantExpression> lead(IntegerExpression offset) {
 		return lead(offset, nullExpression());
 	}
 
@@ -4820,11 +4822,11 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<InstantExpression> lead(IntegerExpression offset, InstantExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<InstantExpression> lead(IntegerExpression offset, InstantExpression defaultExpression) {
 		return new LeadExpression(this, offset, defaultExpression).over();
 	}
 
-	private static abstract class LagLeadExpression extends InstantExpression implements CanBeWindowingFunctionWithFrame<InstantExpression> {
+	private static abstract class LagLeadExpression extends InstantExpression implements CanBeWindowingFunctionRequiresOrderBy<InstantExpression> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -4917,8 +4919,8 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 		}
 
 		@Override
-		public WindowFunctionFramable<InstantExpression> over() {
-			return new WindowFunctionFramable<>(new InstantExpression(this));
+		public WindowFunctionRequiresOrderBy<InstantExpression> over() {
+			return new WindowFunctionRequiresOrderBy<InstantExpression>(new InstantExpression(this));
 		}
 	}
 

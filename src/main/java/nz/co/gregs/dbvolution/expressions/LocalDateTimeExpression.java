@@ -33,7 +33,6 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderByOptionalFrame;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
@@ -41,6 +40,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 import org.joda.time.Period;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 
 /**
  * LocalDateTimeExpression implements standard functions that produce a
@@ -4940,7 +4940,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		return new LeadExpression(this, offset, defaultExpression).over();
 	}
 
-	private static abstract class LagLeadFunction extends LocalDateTimeExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<LocalDateTimeExpression> {
+	private static abstract class LagLeadFunction extends LocalDateTimeExpression implements CanBeWindowingFunctionRequiresOrderBy<LocalDateTimeExpression> {
 
 		private static final long serialVersionUID = 1L;
 

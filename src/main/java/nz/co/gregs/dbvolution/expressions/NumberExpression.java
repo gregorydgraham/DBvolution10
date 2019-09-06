@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
@@ -3411,7 +3413,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<NumberExpression> lag() {
+	public WindowFunctionRequiresOrderBy<NumberExpression> lag() {
 		return lag(IntegerExpression.value(1));
 	}
 
@@ -3425,7 +3427,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<NumberExpression> lag(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<NumberExpression> lag(IntegerExpression offset) {
 		return lag(offset, NumberExpression.nullNumber());
 	}
 
@@ -3438,7 +3440,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * the offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<NumberExpression> lag(IntegerExpression offset, NumberExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<NumberExpression> lag(IntegerExpression offset, NumberExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
 	}
 
@@ -3452,7 +3454,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<NumberExpression> lead() {
+	public WindowFunctionRequiresOrderBy<NumberExpression> lead() {
 		return lead(value(1));
 	}
 
@@ -3466,7 +3468,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<NumberExpression> lead(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<NumberExpression> lead(IntegerExpression offset) {
 		return lead(offset, nullNumber());
 	}
 
@@ -3479,11 +3481,11 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<NumberExpression> lead(IntegerExpression offset, NumberExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<NumberExpression> lead(IntegerExpression offset, NumberExpression defaultExpression) {
 		return new LeadExpression(this, offset, defaultExpression).over();
 	}
 
-	private static abstract class NumberIntegerNumberFunctionNumberResult extends NumberExpression implements CanBeWindowingFunctionWithFrame<NumberExpression> {
+	private static abstract class LagLeadFunction extends NumberExpression implements CanBeWindowingFunctionRequiresOrderBy<NumberExpression> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -3491,7 +3493,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		protected IntegerExpression second;
 		protected NumberExpression third;
 
-		NumberIntegerNumberFunctionNumberResult(NumberExpression first, IntegerExpression second, NumberExpression third) {
+		LagLeadFunction(NumberExpression first, IntegerExpression second, NumberExpression third) {
 			this.first = first==null?nullNumber():first;
 			this.second = second==null?value(1):second;
 			this.third = third==null?nullNumber():third;
@@ -3508,8 +3510,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		@Override
-		public NumberIntegerNumberFunctionNumberResult copy() {
-			NumberIntegerNumberFunctionNumberResult newInstance;
+		public LagLeadFunction copy() {
+			LagLeadFunction newInstance;
 			try {
 				newInstance = getClass().getDeclaredConstructor().newInstance();
 			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
@@ -3588,9 +3590,14 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public boolean isPurelyFunctional() {
 			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
 		}
+
+		@Override
+		public WindowFunctionRequiresOrderBy<NumberExpression> over() {
+			return new WindowFunctionRequiresOrderBy<>(new NumberExpression(this));
+		}
 	}
 
-	public class LagExpression extends NumberIntegerNumberFunctionNumberResult {
+	public class LagExpression extends LagLeadFunction {
 
 		public LagExpression(NumberExpression first, IntegerExpression second, NumberExpression third) {
 			super(first, second, third);
@@ -3605,14 +3612,9 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public LagExpression copy() {
 			return new LagExpression(first, second, third);
 		}
-
-		@Override
-		public WindowFunctionFramable<NumberExpression> over() {
-			return new WindowFunctionFramable<>(new NumberExpression(this));
-		}
 	}
 
-	public class LeadExpression extends NumberIntegerNumberFunctionNumberResult {
+	public class LeadExpression extends LagLeadFunction {
 
 		public LeadExpression(NumberExpression first, IntegerExpression second, NumberExpression third) {
 			super(first, second, third);
@@ -3626,11 +3628,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public LeadExpression copy() {
 			return new LeadExpression(first, second, third);
-		}
-
-		@Override
-		public WindowFunctionFramable<NumberExpression> over() {
-			return new WindowFunctionFramable<>(this);
 		}
 	}
 

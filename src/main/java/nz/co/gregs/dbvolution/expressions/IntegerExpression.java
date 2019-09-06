@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.lang.reflect.InvocationTargetException;
-import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
-import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.SimpleNumericResult;
@@ -4732,7 +4734,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<IntegerExpression> lag() {
+	public WindowFunctionRequiresOrderBy<IntegerExpression> lag() {
 		return lag(IntegerExpression.value(1));
 	}
 
@@ -4746,7 +4748,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<IntegerExpression> lag(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<IntegerExpression> lag(IntegerExpression offset) {
 		return lag(offset, nullExpression());
 	}
 
@@ -4759,7 +4761,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<IntegerExpression> lag(IntegerExpression offset, IntegerExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<IntegerExpression> lag(IntegerExpression offset, IntegerExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
 	}
 
@@ -4773,7 +4775,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<IntegerExpression> lead() {
+	public WindowFunctionRequiresOrderBy<IntegerExpression> lead() {
 		return lead(value(1));
 	}
 
@@ -4787,7 +4789,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<IntegerExpression> lead(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<IntegerExpression> lead(IntegerExpression offset) {
 		return lead(offset, nullExpression());
 	}
 
@@ -4800,11 +4802,11 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<IntegerExpression> lead(IntegerExpression offset, IntegerExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<IntegerExpression> lead(IntegerExpression offset, IntegerExpression defaultExpression) {
 		return new LeadExpression(this, offset, defaultExpression).over();
 	}
 
-	private static abstract class IntegerIntegerNumberFunctionIntegerResult extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
+	private static abstract class IntegerIntegerNumberFunctionIntegerResult extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderBy<IntegerExpression> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -4897,8 +4899,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		@Override
-		public WindowFunctionFramable<IntegerExpression> over() {
-			return new WindowFunctionFramable<>(new IntegerExpression(this));
+		public WindowFunctionRequiresOrderBy<IntegerExpression> over() {
+				return new WindowFunctionRequiresOrderBy<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
 

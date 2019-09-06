@@ -42,6 +42,8 @@ import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.RangeResult;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 
 /**
  * BooleanExpression implements standard functions that produce a Boolean or
@@ -2779,7 +2781,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<BooleanExpression> lag() {
+	public WindowFunctionRequiresOrderBy<BooleanExpression> lag() {
 		return lag(IntegerExpression.value(1));
 	}
 
@@ -2793,7 +2795,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<BooleanExpression> lag(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<BooleanExpression> lag(IntegerExpression offset) {
 		return lag(offset, nullExpression());
 	}
 
@@ -2806,7 +2808,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * the offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<BooleanExpression> lag(IntegerExpression offset, BooleanExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<BooleanExpression> lag(IntegerExpression offset, BooleanExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
 	}
 
@@ -2820,7 +2822,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<BooleanExpression> lead() {
+	public WindowFunctionRequiresOrderBy<BooleanExpression> lead() {
 		return lead(value(1));
 	}
 
@@ -2834,7 +2836,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<BooleanExpression> lead(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<BooleanExpression> lead(IntegerExpression offset) {
 		return lead(offset, nullBoolean());
 	}
 
@@ -2847,11 +2849,11 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<BooleanExpression> lead(IntegerExpression offset, BooleanExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<BooleanExpression> lead(IntegerExpression offset, BooleanExpression defaultExpression) {
 		return new LeadExpression(this, offset, defaultExpression).over();
 	}
 
-	private static abstract class LagLeadFunction extends BooleanExpression implements CanBeWindowingFunctionWithFrame<BooleanExpression> {
+	private static abstract class LagLeadFunction extends BooleanExpression implements CanBeWindowingFunctionRequiresOrderBy<BooleanExpression> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -2935,8 +2937,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		@Override
-		public WindowFunctionFramable<BooleanExpression> over() {
-			return new WindowFunctionFramable<>(new BooleanExpression(this));
+		public WindowFunctionRequiresOrderBy<BooleanExpression> over() {
+			return new WindowFunctionRequiresOrderBy<BooleanExpression>(new BooleanExpression(this));
 		}
 	}
 

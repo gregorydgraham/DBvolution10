@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.LocalDateResult;
@@ -4324,7 +4326,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<LocalDateExpression> lag() {
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> lag() {
 		return lag(IntegerExpression.value(1));
 	}
 
@@ -4338,7 +4340,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<LocalDateExpression> lag(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> lag(IntegerExpression offset) {
 		return lag(offset, nullExpression());
 	}
 
@@ -4351,7 +4353,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * the offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<LocalDateExpression> lag(IntegerExpression offset, LocalDateExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> lag(IntegerExpression offset, LocalDateExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
 	}
 
@@ -4365,7 +4367,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<LocalDateExpression> lead() {
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> lead() {
 		return lead(value(1));
 	}
 
@@ -4379,7 +4381,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<LocalDateExpression> lead(IntegerExpression offset) {
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> lead(IntegerExpression offset) {
 		return lead(offset, nullExpression());
 	}
 
@@ -4392,11 +4394,11 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<LocalDateExpression> lead(IntegerExpression offset, LocalDateExpression defaultExpression) {
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> lead(IntegerExpression offset, LocalDateExpression defaultExpression) {
 		return new LeadExpression(this, offset, defaultExpression).over();
 	}
 
-	private static abstract class LagLeadExpression extends LocalDateExpression implements CanBeWindowingFunctionWithFrame<LocalDateExpression> {
+	private static abstract class LagLeadExpression extends LocalDateExpression implements CanBeWindowingFunctionRequiresOrderBy<LocalDateExpression> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -4484,8 +4486,8 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 		}
 
 		@Override
-		public WindowFunctionFramable<LocalDateExpression> over() {
-			return new WindowFunctionFramable<>(new LocalDateExpression(this));
+		public WindowFunctionRequiresOrderBy<LocalDateExpression> over() {
+			return new WindowFunctionRequiresOrderBy<>(new LocalDateExpression(this));
 		}
 	}
 

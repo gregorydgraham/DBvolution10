@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 import nz.co.gregs.dbvolution.expressions.search.SearchString;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 
 /**
  * StringExpression implements standard functions that produce a character or
@@ -4368,7 +4370,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<StringExpression> lag() {
+	public LagLeadWindow lag() {
 		return lag(IntegerExpression.value(1));
 	}
 
@@ -4382,7 +4384,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<StringExpression> lag(IntegerExpression offset) {
+	public LagLeadWindow lag(IntegerExpression offset) {
 		return lag(offset,nullExpression());
 	}
 
@@ -4395,7 +4397,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * the offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<StringExpression> lag(IntegerExpression offset, StringExpression defaultExpression) {
+	public LagLeadWindow lag(IntegerExpression offset, StringExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
 	}
 
@@ -4409,7 +4411,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<StringExpression> lead() {
+	public LagLeadWindow lead() {
 		return lead(value(1));
 	}
 
@@ -4423,7 +4425,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param offset the number of rows to look backwards
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<StringExpression> lead(IntegerExpression offset) {
+	public LagLeadWindow lead(IntegerExpression offset) {
 		return lead(offset, nullExpression());
 	}
 
@@ -4436,11 +4438,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * offset
 	 * @return a lag expression ready for additional configuration
 	 */
-	public WindowFunctionFramable<StringExpression> lead(IntegerExpression offset, StringExpression defaultExpression) {
+	public LagLeadWindow lead(IntegerExpression offset, StringExpression defaultExpression) {
 		return new LeadExpression(this, offset, defaultExpression).over();
 	}
 
-	private static abstract class LagLeadExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+	private static abstract class LagLeadExpression extends StringExpression implements CanBeWindowingFunctionRequiresOrderBy<StringExpression> {
 
 		private static final long serialVersionUID = 1L;
 
@@ -4531,8 +4533,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 
 		@Override
-		public WindowFunctionFramable<StringExpression> over() {
-			return new WindowFunctionFramable<>(new StringExpression(this));
+		public LagLeadWindow over() {
+			return new LagLeadWindow(new StringExpression(this));
+		}
+	}
+	
+	public class LagLeadWindow extends WindowFunctionRequiresOrderBy<StringExpression>{
+		public LagLeadWindow(StringExpression expression) {
+			super(expression);
 		}
 	}
 

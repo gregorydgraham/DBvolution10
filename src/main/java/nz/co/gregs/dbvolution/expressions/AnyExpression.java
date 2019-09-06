@@ -49,7 +49,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.results.*;
 import org.joda.time.Period;
-import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderByOptionalFrame;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 
 /**
  *
@@ -1000,7 +1000,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
-	public static class RankExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
+	public static class RankExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderBy<IntegerExpression> {
 
 		public RankExpression() {
 			super();
@@ -1028,7 +1028,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
-	public static class PercentageExpression extends NumberExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<NumberExpression> {
+	public static class PercentageExpression extends NumberExpression implements CanBeWindowingFunctionRequiresOrderBy<NumberExpression> {
 
 		public PercentageExpression() {
 			super();
@@ -1056,7 +1056,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
-	private static class DenseRankExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
+	private static class DenseRankExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderBy<IntegerExpression> {
 
 		public DenseRankExpression() {
 			super();
@@ -1084,7 +1084,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
-	private static class RowNumberExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
+	private static class RowNumberExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderBy<IntegerExpression> {
 
 		public RowNumberExpression() {
 			super();
@@ -1112,7 +1112,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
-	public static class NTileExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
+	public static class NTileExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderBy<IntegerExpression> {
 
 		public NTileExpression(IntegerExpression only) {
 			super(only);
