@@ -1014,12 +1014,14 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doCurrentUTCTimeTransform() {
-		return "(now() at time zone 'utc')";
+		return "(now())";
+//		return "(now() at time zone 'utc')";
 	}
 
 	@Override
 	public String doCurrentUTCDateTimeTransform() {
-		return "(now() at time zone 'utc')";
+		return "(now())";
+//		return "(now() at time zone 'utc')";
 	}
 
 	/**
