@@ -26,6 +26,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,6 +104,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
 	private Exception exception = null;
+	private ScheduledFuture<?> regularThreadPoolFuture;
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -2696,8 +2698,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		cluster.dismantle();
 	}
 
-	private void startRegularProcessor() {
-		getRegularThreadPool().schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
+	private synchronized void startRegularProcessor() {
+		if (regularThreadPoolFuture!=null){
+			regularThreadPoolFuture.cancel(true);
+		}
+		regularThreadPoolFuture = getRegularThreadPool().scheduleWithFixedDelay(new RunRegularProcessors(), 1, 1, TimeUnit.MINUTES);
 	}
 
 	public final void addRegularProcess(RegularProcess processor) {
