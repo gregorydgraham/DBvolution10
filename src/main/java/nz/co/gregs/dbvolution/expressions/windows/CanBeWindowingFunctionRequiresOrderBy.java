@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.expressions.EqualExpression;
  * @author gregorygraham
  * @param <A> the expression type returned by this windowing function, e.g. IntegerExpression
  */
-public interface CanBeWindowingFunctionRequiresOrderByOptionalFrame<A extends EqualExpression<?,?,?>> {
+public interface CanBeWindowingFunctionRequiresOrderBy<A extends EqualExpression<?,?,?>> {
 
 	public WindowFunctionRequiresOrderBy<A> over();
 	
