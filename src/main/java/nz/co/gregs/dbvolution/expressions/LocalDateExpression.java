@@ -4317,6 +4317,23 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	}
 
 	/**
+	 * Synonym for lag.
+	 *
+	 * <p>
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> previousRowValue() {
+		return lag();
+	}
+
+	/**
 	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.
 	 *
@@ -4355,6 +4372,23 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 */
 	public WindowFunctionRequiresOrderBy<LocalDateExpression> lag(IntegerExpression offset, LocalDateExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * Synonym for lead.
+	 * 
+	 * <p>
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<LocalDateExpression> nextRowValue() {
+		return lead();
 	}
 
 	/**
@@ -4408,8 +4442,8 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		LagLeadExpression(LocalDateExpression first, IntegerExpression second, LocalDateExpression third) {
 			this.first = first;
-			this.second = second==null?value(1):second;
-			this.third = third==null?nullLocalDate():third;
+			this.second = second == null ? value(1) : second;
+			this.third = third == null ? nullLocalDate() : third;
 		}
 
 		@Override
@@ -4434,15 +4468,15 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-				hashSet.addAll(getFirst().getTablesInvolved());
-				hashSet.addAll(getSecond().getTablesInvolved());
-				hashSet.addAll(getThird().getTablesInvolved());
+			hashSet.addAll(getFirst().getTablesInvolved());
+			hashSet.addAll(getSecond().getTablesInvolved());
+			hashSet.addAll(getThird().getTablesInvolved());
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return getFirst().isAggregator() || getSecond().isAggregator()||getThird().isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator() || getThird().isAggregator();
 		}
 
 		@Override
