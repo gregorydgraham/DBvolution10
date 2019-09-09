@@ -4375,6 +4375,24 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	/**
+	 *
+	 * Synonym for lag.
+	 *
+	 * <p>
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public LagLeadWindow previousRowValue() {
+		return lag(IntegerExpression.value(1));
+	}
+
+	/**
 	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.
 	 *
@@ -4385,7 +4403,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a lag expression ready for additional configuration
 	 */
 	public LagLeadWindow lag(IntegerExpression offset) {
-		return lag(offset,nullExpression());
+		return lag(offset, nullExpression());
 	}
 
 	/**
@@ -4399,6 +4417,23 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public LagLeadWindow lag(IntegerExpression offset, StringExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * Synonym for lead.
+	 *
+	 * <p>
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public LagLeadWindow nextRowValue() {
+		return lead();
 	}
 
 	/**
@@ -4452,8 +4487,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		LagLeadExpression(StringExpression first, IntegerExpression second, StringExpression third) {
 			this.first = first;
-			this.second = second==null?value(1):second;
-			this.third = third==null?nullString():third;
+			this.second = second == null ? value(1) : second;
+			this.third = third == null ? nullString() : third;
 		}
 
 		@Override
@@ -4483,15 +4518,15 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-				hashSet.addAll(getFirst().getTablesInvolved());
-				hashSet.addAll(getSecond().getTablesInvolved());
-				hashSet.addAll(getThird().getTablesInvolved());
+			hashSet.addAll(getFirst().getTablesInvolved());
+			hashSet.addAll(getSecond().getTablesInvolved());
+			hashSet.addAll(getThird().getTablesInvolved());
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return getFirst().isAggregator() || getSecond().isAggregator()|| getThird().isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator() || getThird().isAggregator();
 		}
 
 		@Override
@@ -4537,8 +4572,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new LagLeadWindow(new StringExpression(this));
 		}
 	}
-	
-	public class LagLeadWindow extends WindowFunctionRequiresOrderBy<StringExpression>{
+
+	public class LagLeadWindow extends WindowFunctionRequiresOrderBy<StringExpression> {
+
 		public LagLeadWindow(StringExpression expression) {
 			super(expression);
 		}
