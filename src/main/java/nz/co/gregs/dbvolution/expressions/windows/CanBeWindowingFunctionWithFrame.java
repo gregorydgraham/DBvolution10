@@ -33,12 +33,40 @@ package nz.co.gregs.dbvolution.expressions.windows;
 import nz.co.gregs.dbvolution.expressions.EqualExpression;
 
 /**
+ * Over creates a window function.
+ *
+ * <p>
+ * Window functions allow access to data in the records right before and after
+ * the current record. A window function defines a frame or window of rows with
+ * a given length around the current row, and performs a calculation across the
+ * set of data in the window. Wikipedia has more information at
+ * https://en.wikipedia.org/wiki/SQL_window_function</p>
  *
  * @author gregorygraham
- * @param <A> the expression type returned by this windowing function, e.g. IntegerExpression
+ * @param <A> the expression type returned by this windowing function, e.g.
+ * IntegerExpression
  */
-public interface CanBeWindowingFunctionWithFrame<A extends EqualExpression<?,?,?>> {
+public interface CanBeWindowingFunctionWithFrame<A extends EqualExpression<?, ?, ?>> {
 
+	/**
+	 * Starts a windowing function.
+	 *
+	 *
+	 *
+	 * @return
+	 */
 	public WindowFunctionFramable<A> over();
-	
+
+	/**
+	 * Synonym for over.
+	 *
+	 * <p>
+	 * Check {@link #over() } for details</p>
+	 *
+	 * @return a windowing function
+	 */
+	public default WindowFunctionFramable<A> window() {
+		return over();
+	}
+
 }
