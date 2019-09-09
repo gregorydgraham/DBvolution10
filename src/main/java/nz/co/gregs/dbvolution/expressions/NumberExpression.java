@@ -3404,6 +3404,23 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	/**
+	 * Synonym for lag.
+	 *
+	 * <p>
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<NumberExpression> previousRowValue() {
+		return lag();
+	}
+
+	/**
 	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.
 	 *
@@ -3442,6 +3459,23 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public WindowFunctionRequiresOrderBy<NumberExpression> lag(IntegerExpression offset, NumberExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * Synonym for Lead.
+	 *
+	 * <p>
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<NumberExpression> nextRowValue() {
+		return lead();
 	}
 
 	/**
@@ -3494,9 +3528,9 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		protected NumberExpression third;
 
 		LagLeadFunction(NumberExpression first, IntegerExpression second, NumberExpression third) {
-			this.first = first==null?nullNumber():first;
-			this.second = second==null?value(1):second;
-			this.third = third==null?nullNumber():third;
+			this.first = first == null ? nullNumber() : first;
+			this.second = second == null ? value(1) : second;
+			this.third = third == null ? nullNumber() : third;
 		}
 
 		@Override
@@ -3519,7 +3553,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			}
 			newInstance.first = getFirst() == null ? null : getFirst().copy();
 			newInstance.second = getSecond() == null ? null : getSecond().copy();
-			newInstance.third = getThird()== null ? null : getThird().copy();
+			newInstance.third = getThird() == null ? null : getThird().copy();
 			return newInstance;
 		}
 
