@@ -37,6 +37,7 @@ import nz.co.gregs.dbvolution.datatypes.DBLocalDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.Marque;
 //import nz.co.gregs.dbvolution.example.MarqueWithLocalDate;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -1461,5 +1462,92 @@ public class LocalDateExpressionTest extends AbstractTest {
 			this.creationLocalDate.setValue(creationLocalDateTime);
 			this.carCompany.setValue(carCompany);
 		}
+	}
+
+	@Test
+	public void testLagAndLeadFunctions() throws SQLException {
+		MarqueWithLagAndLeadFunctions marq = new MarqueWithLagAndLeadFunctions();
+
+		DBQuery query = database.getDBQuery(marq)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(
+						marq.column(marq.carCompany).ascending(),
+						marq.column(marq.uidMarque).ascending()
+				);
+
+		List<DBQueryRow> allRows = query.getAllRows();
+		query.printSQLForQuery();
+		Assert.assertThat(allRows.size(), is(22));
+
+		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
+		ArrayList<Object[]> expectedValues = new ArrayList<>();
+
+		expectedValues.add(new Object[]{22, 1, 2, 2, null, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 2, 2, 2, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 3, 1, 1, march23rd2013LocalDate, april2nd2011LocalDate});
+		expectedValues.add(new Object[]{22, 4, 3, 3, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 5, 3, 3, april2nd2011LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 6, 3, 3, march23rd2013LocalDate, null});
+		expectedValues.add(new Object[]{22, 7, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 8, 16, 16, null, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 9, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 10, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 11, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 12, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 13, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 14, 16, 16, march23rd2013LocalDate, april2nd2011LocalDate});
+		expectedValues.add(new Object[]{22, 15, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 16, 16, 16, april2nd2011LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 17, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 18, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 19, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 20, 16, 16, march23rd2013LocalDate, march23rd2013LocalDate});
+		expectedValues.add(new Object[]{22, 21, 16, 16, march23rd2013LocalDate, april2nd2011LocalDate});
+		expectedValues.add(new Object[]{22, 22, 16, 16, march23rd2013LocalDate, (null)});
+
+		for (int i = 0; i < allRows.size(); i++) {
+			got = allRows.get(i).get(marq);
+			System.out.println("" + got.toString());
+			Object[] expect = expectedValues.get(i);
+			Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
+			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
+			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
+			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
+			Assert.assertThat(got.lag.getValue(), is((LocalDate) expect[4]));
+			Assert.assertThat(got.lead.getValue(), is((LocalDate) expect[5]));
+		}
+	}
+
+	public static class MarqueWithLagAndLeadFunctions extends MarqueWithLocalDate {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBNumber countOfAllRows = new DBNumber(this.column(this.carCompany).count().over().allRows());
+		@DBColumn
+		DBNumber rowNumber = new DBNumber(this.column(this.uidMarque).count().over().AllRowsAndOrderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending()));
+		@DBColumn
+		DBNumber countOfEnabled = new DBNumber(this.column(this.carCompany).count().over().partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBNumber rowWithinCarCo = new DBNumber(this.column(this.carCompany).count()
+				.over()
+				.partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).ascending())
+				.defaultFrame());
+		@DBColumn
+		DBLocalDate lag
+				= this.column(this.creationLocalDate)
+						.lag()
+						.allRows()
+						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
+						.asExpressionColumn();
+		@DBColumn
+		DBLocalDate lead = new DBLocalDate(this.column(this.creationLocalDate)
+				.nextRowValue()
+				.AllRowsAndOrderBy(
+						this.column(this.carCompany).ascending(),
+						this.column(this.uidMarque).ascending()
+				)
+		);
 	}
 }
