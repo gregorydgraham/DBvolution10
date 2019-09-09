@@ -1395,4 +1395,102 @@ public class NumberExpressionTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testLagAndLeadFunctions() throws SQLException {
+		MarqueWithLagAndLeadFunctions marq = new MarqueWithLagAndLeadFunctions();
+
+		DBQuery query = database.getDBQuery(marq)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(
+						marq.column(marq.carCompany).ascending(),
+						marq.column(marq.uidMarque).ascending()
+				);
+
+		List<DBQueryRow> allRows = query.getAllRows();
+//		query.printSQLForQuery();
+		Assert.assertThat(allRows.size(), is(22));
+
+		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
+		ArrayList<Object[]> expectedValues = new ArrayList<>();
+
+		expectedValues.add(new Object[]{20, 1, 2, 2, null, 1.0});
+		expectedValues.add(new Object[]{20, 2, 2, 2, 0.0, 0.5});
+		expectedValues.add(new Object[]{20, 3, 1, 1, 1.0, (0.0)});
+		expectedValues.add(new Object[]{20, 4, 3, 3, 0.5, (1.0)});
+		expectedValues.add(new Object[]{20, 5, 3, 3, 0.0, (0.5)});
+		expectedValues.add(new Object[]{20, 6, 3, 3, 1.0, 1.5});
+		expectedValues.add(new Object[]{20, 7, 14, 14, 0.5, (1.0)});
+		expectedValues.add(new Object[]{20, 8, 14, 14, 1.5, 1.5});
+		expectedValues.add(new Object[]{20, 9, 14, 14, 1.0, (1.0)});
+		expectedValues.add(new Object[]{20, 10, 14, 14, (1.5), (2.0)});
+		expectedValues.add(new Object[]{20, 11, 14, 14, (1.0), (1.0)});
+		expectedValues.add(new Object[]{20, 12, 14, 14, (2.0), (1.0)});
+		expectedValues.add(new Object[]{20, 13, 14, 14, (1.0), (1.0)});
+		expectedValues.add(new Object[]{20, 14, 14, 14, 1.0, (0.0)});
+		expectedValues.add(new Object[]{20, 15, 14, 14, (1.0), (1.5)});
+		expectedValues.add(new Object[]{20, 16, 14, 14, (0.0), (1.0)});
+		expectedValues.add(new Object[]{20, 17, 14, 14, (1.5), (1.0)});
+		expectedValues.add(new Object[]{20, 18, 14, 14, (1.0), (null)});
+		expectedValues.add(new Object[]{20, 19, 14, 14, (1.0), (null)});
+		expectedValues.add(new Object[]{20, 20, 14, 14, (null), (0.5)});
+		expectedValues.add(new Object[]{20, 21, 14, 14, (null), (0.0)});
+		expectedValues.add(new Object[]{20, 22, 14, 14, (0.5), (null)});
+
+		for (int i = 0; i < allRows.size(); i++) {
+			got = allRows.get(i).get(marq);
+//			System.out.println("" + got.toString());
+			Object[] expect = expectedValues.get(i);
+			Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
+			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
+			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
+			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
+			Assert.assertThat(got.lag.doubleValue(), is((Double) expect[4]));
+			Assert.assertThat(got.lead.doubleValue(), is((Double) expect[5]));
+		}
+	}
+
+	public static class MarqueWithLagAndLeadFunctions extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBNumber countOfAllRows = new DBNumber(this.column(this.updateCount).numberResult().dividedBy(2)
+				.count()
+				.over()
+				.allRows());
+		@DBColumn
+		DBNumber rowNumber = new DBNumber(this.column(this.uidMarque)
+				.count()
+				.over()
+				.AllRowsAndOrderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending()));
+		@DBColumn
+		DBNumber countOfEnabled = new DBNumber(this.column(this.updateCount).numberResult().dividedBy(2)
+				.count()
+				.over()
+				.partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBNumber rowWithinCarCo = new DBNumber(this.column(this.updateCount).numberResult().dividedBy(2)
+				.count()
+				.over()
+				.partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).ascending())
+				.defaultFrame());
+		@DBColumn
+		DBNumber lag
+				= this.column(this.updateCount).numberResult().dividedBy(2)
+						.lag()
+						.allRows()
+						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
+						.asExpressionColumn();
+		@DBColumn
+		DBNumber lead = new DBNumber(
+				this.column(this.updateCount).numberResult().dividedBy(2)
+				.nextRowValue()
+				.AllRowsAndOrderBy(
+						this.column(this.carCompany).ascending(),
+						this.column(this.uidMarque).ascending()
+				)
+		);
+	}
+
 }
