@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -898,7 +899,6 @@ public class StringExpressionTest extends AbstractTest {
 //		Assert.assertThat((got.get(9)).ranking.intValue(), is(16));
 //		Assert.assertThat((got.get(10)).ranking.intValue(), is(16));
 //	}
-
 	@Test
 	public void testStringBetweenInclusiveResultLeft() throws SQLException {
 
@@ -1319,4 +1319,107 @@ public class StringExpressionTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testLagAndLeadFunctions() throws SQLException {
+		MarqueWithLagAndLeadFunctions marq = new MarqueWithLagAndLeadFunctions();
+
+		DBQuery query = database.getDBQuery(marq)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(
+						marq.column(marq.carCompany).ascending(),
+						marq.column(marq.uidMarque).ascending()
+				);
+
+		List<DBQueryRow> allRows = query.getAllRows();
+		query.printSQLForQuery();
+		Assert.assertThat(allRows.size(), is(22));
+
+		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
+		ArrayList<Object[]> expectedValues = new ArrayList<>();
+
+		expectedValues.add(new Object[]{22, 1, 2, 2, null, "HY"});
+		expectedValues.add(new Object[]{22, 2, 2, 2, "TO", "FO"});
+		expectedValues.add(new Object[]{22, 3, 1, 1, "HY", "HU"});
+		expectedValues.add(new Object[]{22, 4, 3, 3, "FO", "HO"});
+		expectedValues.add(new Object[]{22, 5, 3, 3, "HU", "JE"});
+		expectedValues.add(new Object[]{22, 6, 3, 3, "HO", "PE"});
+		expectedValues.add(new Object[]{22, 7, 16, 16, "JE", "MI"});
+		expectedValues.add(new Object[]{22, 8, 16, 16, "PE", "SU"});
+		expectedValues.add(new Object[]{22, 9, 16, 16, "MI", "HO"});
+		expectedValues.add(new Object[]{22, 10, 16, 16, "SU", "NI"});
+		expectedValues.add(new Object[]{22, 11, 16, 16, "HO", "SU"});
+		expectedValues.add(new Object[]{22, 12, 16, 16, "NI", "MA"});
+		expectedValues.add(new Object[]{22, 13, 16, 16, "SU", "RO"});
+		expectedValues.add(new Object[]{22, 14, 16, 16, "MA", "BM"});
+		expectedValues.add(new Object[]{22, 15, 16, 16, "RO", "DA"});
+		expectedValues.add(new Object[]{22, 16, 16, 16, "BM", "LA"});
+		expectedValues.add(new Object[]{22, 17, 16, 16, "DA", "VO"});
+		expectedValues.add(new Object[]{22, 18, 16, 16, "LA", "IS"});
+		expectedValues.add(new Object[]{22, 19, 16, 16, "VO", "DA"});
+		expectedValues.add(new Object[]{22, 20, 16, 16, "IS", "CH"});
+		expectedValues.add(new Object[]{22, 21, 16, 16, "DA", "VW"});
+		expectedValues.add(new Object[]{22, 22, 16, 16, "CH", null});
+
+		for (int i = 0; i < allRows.size(); i++) {
+			got = allRows.get(i).get(marq);
+			System.out.println("" + got.toString());
+			Object[] expect = expectedValues.get(i);
+			Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
+			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
+			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
+			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
+			Assert.assertThat(got.lag.getValue(), is((String) expect[4]));
+			Assert.assertThat(got.lead.getValue(), is((String) expect[5]));
+		}
+	}
+
+	public static class MarqueWithLagAndLeadFunctions extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		StringExpression stringTest = this.column(this.name).substring(0, 2);
+		@DBColumn
+		DBInteger countOfAllRows = new DBInteger(
+				stringTest
+						.count()
+						.over()
+						.allRows());
+		@DBColumn
+		DBNumber rowNumber = new DBNumber(
+				stringTest
+						.count()
+						.over()
+						.AllRowsAndOrderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
+		);
+		@DBColumn
+		DBNumber countOfEnabled = new DBNumber(
+				stringTest
+						.count()
+						.over()
+						.partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBNumber rowWithinCarCo = new DBNumber(
+				stringTest
+						.count()
+						.over()
+						.partition(this.column(this.carCompany))
+						.orderBy(this.column(this.carCompany).ascending())
+						.defaultFrame());
+		@DBColumn
+		DBString lag
+				= stringTest
+						.lag()
+						.allRows()
+						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
+						.asExpressionColumn();
+		@DBColumn
+		DBString lead = new DBString(
+				stringTest
+						.nextRowValue()
+						.AllRowsAndOrderBy(
+								this.column(this.carCompany).ascending(),
+								this.column(this.uidMarque).ascending()
+						)
+		);
+	}
 }
