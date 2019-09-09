@@ -2772,6 +2772,23 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	/**
+	 * Synonym for the lag method.
+	 *
+	 * <p>
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<BooleanExpression> previousRowValue() {
+		return lag(IntegerExpression.value(1));
+	}
+
+	/**
 	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.
 	 *
@@ -2810,6 +2827,23 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public WindowFunctionRequiresOrderBy<BooleanExpression> lag(IntegerExpression offset, BooleanExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * Synonym for the lead method.
+	 *
+	 * <p>
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<BooleanExpression> nextRowValue() {
+		return lead(value(1));
 	}
 
 	/**
@@ -2862,9 +2896,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		protected BooleanExpression third;
 
 		LagLeadFunction(BooleanExpression first, IntegerExpression second, BooleanExpression third) {
-			this.first = first==null?nullBoolean():first;
-			this.second = second==null?value(1):second;
-			this.third = third==null?nullBoolean():third;
+			this.first = first == null ? nullBoolean() : first;
+			this.second = second == null ? value(1) : second;
+			this.third = third == null ? nullBoolean() : third;
 		}
 
 		@Override
