@@ -4745,6 +4745,23 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	}
 
 	/**
+	 * Synonym for lag.
+	 *
+	 * <p>
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<InstantExpression> previousRowValue() {
+		return lag();
+	}
+
+	/**
 	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.
 	 *
@@ -4769,7 +4786,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @return a lag expression ready for additional configuration
 	 */
 	public WindowFunctionRequiresOrderBy<InstantExpression> lag(IntegerExpression offset) {
-		return lag(offset,nullExpression());
+		return lag(offset, nullExpression());
 	}
 
 	/**
@@ -4783,6 +4800,23 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 */
 	public WindowFunctionRequiresOrderBy<InstantExpression> lag(IntegerExpression offset, InstantExpression defaultExpression) {
 		return new LagExpression(this, offset, defaultExpression).over();
+	}
+
+	/**
+	 * Synonym for lead().
+	 * 
+	 * <p>
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<InstantExpression> nextRowValue() {
+		return lead();
 	}
 
 	/**
@@ -4836,8 +4870,8 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 		LagLeadExpression(InstantExpression first, IntegerExpression second, InstantExpression third) {
 			this.first = first;
-			this.second = second==null?value(1):second;
-			this.third = third==null?nullInstant():third;
+			this.second = second == null ? value(1) : second;
+			this.third = third == null ? nullInstant() : third;
 		}
 
 		@Override
@@ -4867,15 +4901,15 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-				hashSet.addAll(getFirst().getTablesInvolved());
-				hashSet.addAll(getSecond().getTablesInvolved());
-				hashSet.addAll(getThird().getTablesInvolved());
+			hashSet.addAll(getFirst().getTablesInvolved());
+			hashSet.addAll(getSecond().getTablesInvolved());
+			hashSet.addAll(getThird().getTablesInvolved());
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return getFirst().isAggregator() || getSecond().isAggregator()||getThird().isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator() || getThird().isAggregator();
 		}
 
 		@Override
