@@ -321,8 +321,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * This method is useful to test values will fit within a specific field
 	 * size</p>
 	 *
-	 * @param maxIntegerLength the largest number of digits allowed before the decimal point
-	 * @param maxDecimals the largest numbers of digits allowed after the decimal point
+	 * @param maxIntegerLength the largest number of digits allowed before the
+	 * decimal point
+	 * @param maxDecimals the largest numbers of digits allowed after the decimal
+	 * point
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(int maxIntegerLength, int maxDecimals) {
@@ -4721,7 +4723,23 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public WindowFunctionFramable<IntegerExpression> over() {
 			return new WindowFunctionFramable<IntegerExpression>(new IntegerExpression(this));
 		}
+	}
 
+	/**
+	 * Synonym for lag.
+	 * 
+	 * <p>
+	 * LAG() is a window function that provides access to a row at a specified
+	 * physical offset which comes before the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" back one row and return the value there. If there
+	 * is no previous row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<IntegerExpression> previousRowValue() {
+		return lag();
 	}
 
 	/**
@@ -4757,8 +4775,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * physical offset which comes before the current row.
 	 *
 	 * @param offset the number of rows to look backwards
-	 * @param defaultExpression the expression to return when there is no row at the
-	 * offset
+	 * @param defaultExpression the expression to return when there is no row at
+	 * the offset
 	 * @return a lag expression ready for additional configuration
 	 */
 	public WindowFunctionRequiresOrderBy<IntegerExpression> lag(IntegerExpression offset, IntegerExpression defaultExpression) {
@@ -4766,12 +4784,29 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	/**
+	 * Synonym for lead.
+	 * 
+	 * <p>
+	 * LEAD() is a window function that provides access to a row at a specified
+	 * physical offset which comes after the current row.</p>
+	 *
+	 * <p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
+	 *
+	 * @return a lag expression ready for additional configuration
+	 */
+	public WindowFunctionRequiresOrderBy<IntegerExpression> nextRowValue() {
+		return lead();
+	}
+
+	/**
 	 * LEAD() is a window function that provides access to a row at a specified
 	 * physical offset which comes after the current row.
 	 *
 	 * <p>
-	 * The function will "look" forward one row and return the value there. If there
-	 * is no next row NULL will be returned.</p>
+	 * The function will "look" forward one row and return the value there. If
+	 * there is no next row NULL will be returned.</p>
 	 *
 	 * @return a lag expression ready for additional configuration
 	 */
@@ -4816,8 +4851,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 		IntegerIntegerNumberFunctionIntegerResult(IntegerExpression first, IntegerExpression second, IntegerExpression third) {
 			this.first = first;
-			this.second = second==null?value(1):second;
-			this.third = third==null?nullInteger():third;
+			this.second = second == null ? value(1) : second;
+			this.third = third == null ? nullInteger() : third;
 		}
 
 		@Override
@@ -4847,9 +4882,9 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-				hashSet.addAll(getFirst().getTablesInvolved());
-				hashSet.addAll(getSecond().getTablesInvolved());
-				hashSet.addAll(getThird().getTablesInvolved());
+			hashSet.addAll(getFirst().getTablesInvolved());
+			hashSet.addAll(getSecond().getTablesInvolved());
+			hashSet.addAll(getThird().getTablesInvolved());
 			return hashSet;
 		}
 
@@ -4895,12 +4930,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 		@Override
 		public boolean isPurelyFunctional() {
-				return first.isPurelyFunctional() && second.isPurelyFunctional()&&third.isPurelyFunctional();
+			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
 		}
 
 		@Override
 		public WindowFunctionRequiresOrderBy<IntegerExpression> over() {
-				return new WindowFunctionRequiresOrderBy<IntegerExpression>(new IntegerExpression(this));
+			return new WindowFunctionRequiresOrderBy<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
 
