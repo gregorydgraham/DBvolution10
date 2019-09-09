@@ -44,6 +44,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBStringTrimmed;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -576,9 +577,9 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 
 		got = query.getAllRows();
-		if (got.size()!=1){
-			System.out.println("CREATION DATE EXPECTED: "+then);
-			System.out.println("FOUND ROWS: "+got.size());
+		if (got.size() != 1) {
+			System.out.println("CREATION DATE EXPECTED: " + then);
+			System.out.println("FOUND ROWS: " + got.size());
 			database.getDBTable(marq).setBlankQueryAllowed(true).print();
 		}
 		Assert.assertThat(got.size(), is(1));
@@ -1314,7 +1315,6 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 
 //		dbQuery.printSQLForQuery();
-
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(21));
@@ -1777,15 +1777,6 @@ public class InstantExpressionTest extends AbstractTest {
 		db.dropTableIfExists(new MarqueWithInstant());
 		db.createTable(new MarqueWithInstant());
 
-//		Instant march23rd2013Instant =LocalDateTime.parse(firstDateStr, LOCALDATETIME_FORMAT)
-//				.atZone(ZoneOffset.UTC)
-//				.toInstant();
-//		System.out.println("FIRSTDATE: " + march23rd2013Instant);
-		//"2/April/2011 1:2:3";
-//		Instant april2nd2011Instant = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3)
-//				.atZone(ZoneOffset.UTC)
-//				.toInstant();
-//		System.out.println("SECONDDATE: " + april2nd2011Instant);
 		List<MarqueWithInstant> toInsert = new ArrayList<>();
 		toInsert.add(new MarqueWithInstant(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, true));
 		toInsert.add(new MarqueWithInstant(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", march23rd2013Instant, 2, false));
@@ -1909,5 +1900,92 @@ public class InstantExpressionTest extends AbstractTest {
 			this.carCompany.setValue(carCompany);
 			this.enabled.setValue(enabled);
 		}
+	}
+
+	@Test
+	public void testLagAndLeadFunctions() throws SQLException {
+		MarqueWithLagAndLeadFunctions marq = new MarqueWithLagAndLeadFunctions();
+
+		DBQuery query = database.getDBQuery(marq)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(
+						marq.column(marq.carCompany).ascending(),
+						marq.column(marq.uidMarque).ascending()
+				);
+
+		List<DBQueryRow> allRows = query.getAllRows();
+//		query.printSQLForQuery();
+		Assert.assertThat(allRows.size(), is(22));
+
+		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
+		ArrayList<Object[]> expectedValues = new ArrayList<>();
+
+		expectedValues.add(new Object[]{21, 1, 2, 2, null, march23rd2013Instant});
+		expectedValues.add(new Object[]{21, 2, 2, 2, march23rd2013Instant, march23rd2013Instant});
+		expectedValues.add(new Object[]{21, 3, 1, 1, (march23rd2013Instant), (april2nd2011Instant)});
+		expectedValues.add(new Object[]{21, 4, 3, 3, march23rd2013Instant, (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 5, 3, 3, april2nd2011Instant, (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 6, 3, 3, march23rd2013Instant, null});
+		expectedValues.add(new Object[]{21, 7, 15, 15, march23rd2013Instant, (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 8, 15, 15, null, march23rd2013Instant});
+		expectedValues.add(new Object[]{21, 9, 15, 15, march23rd2013Instant, (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 10, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 11, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 12, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 13, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 14, 15, 15, (march23rd2013Instant), (april2nd2011Instant)});
+		expectedValues.add(new Object[]{21, 15, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 16, 15, 15, (april2nd2011Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 17, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 18, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 19, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 20, 15, 15, (march23rd2013Instant), (march23rd2013Instant)});
+		expectedValues.add(new Object[]{21, 21, 15, 15, (march23rd2013Instant), (april2nd2011Instant)});
+		expectedValues.add(new Object[]{21, 22, 15, 15, (march23rd2013Instant), (null)});
+
+		for (int i = 0; i < allRows.size(); i++) {
+			got = allRows.get(i).get(marq);
+//			System.out.println("" + got.toString());
+			Object[] expect = expectedValues.get(i);
+			Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
+			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
+			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
+			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
+			Assert.assertThat(got.lag.getValue(), is((Instant) expect[4]));
+			Assert.assertThat(got.lead.getValue(), is((Instant) expect[5]));
+		}
+	}
+
+	public static class MarqueWithLagAndLeadFunctions extends MarqueWithInstant {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBNumber countOfAllRows = new DBNumber(this.column(this.creationInstant).count().over().allRows());
+		@DBColumn
+		DBNumber rowNumber = new DBNumber(this.column(this.uidMarque).count().over().AllRowsAndOrderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending()));
+		@DBColumn
+		DBNumber countOfEnabled = new DBNumber(this.column(this.creationInstant).count().over().partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBNumber rowWithinCarCo = new DBNumber(this.column(this.creationInstant).count()
+				.over()
+				.partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).ascending())
+				.defaultFrame());
+		@DBColumn
+		DBInstant lag
+				= this.column(this.creationInstant)
+						.lag()
+						.allRows()
+						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
+						.asExpressionColumn();
+		@DBColumn
+		DBInstant lead = new DBInstant(this.column(this.creationInstant)
+				.nextRowValue()
+				.AllRowsAndOrderBy(
+						this.column(this.carCompany).ascending(),
+						this.column(this.uidMarque).ascending()
+				)
+		);
 	}
 }
