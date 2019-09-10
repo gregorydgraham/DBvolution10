@@ -309,20 +309,17 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	/**
-	 * Creates an expression that will count all the values of the column
+	 * Creates an expression that will count all rows with non-null values in the column
 	 * supplied.
 	 *
 	 * <p>
 	 * Count is an aggregator function for use in DBReport or in a column
 	 * expression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a number expression.
 	 */
 	@Override
-	public AnyExpression.CountExpression count() {
+	public AnyExpression.CountExpression countNotNull() {
 		return this.integerValue().count();
 	}
 
@@ -685,6 +682,42 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	@Override
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public BooleanExpression ifThenElse(Boolean thenExpr, Boolean elseExpr) {
+		return this.ifThenElse(new BooleanExpression(thenExpr), new BooleanExpression(elseExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public BooleanExpression ifThenElse(BooleanExpression thenExpr, BooleanExpression elseExpr) {
+		return new BooleanExpression(new BooleanIfThenElseExpression(this, thenExpr, elseExpr));
 	}
 
 	/**
@@ -1746,6 +1779,58 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 	}
 
+	private static abstract class DBBooleanBooleanBooleanFunction extends StringExpression {
+
+		private static final long serialVersionUID = 1L;
+
+		protected BooleanExpression onlyBool = null;
+		protected BooleanResult first = null;
+		protected BooleanResult second = null;
+
+		DBBooleanBooleanBooleanFunction() {
+		}
+
+		DBBooleanBooleanBooleanFunction(BooleanExpression only, BooleanResult first, BooleanResult second) {
+			this.onlyBool = only;
+			this.first = first;
+			this.second = second;
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
 	private static abstract class DBBooleanNumberNumberFunction extends NumberExpression {
 
 		private static final long serialVersionUID = 1L;
@@ -2369,6 +2454,39 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			return new IsNullExpression(onlyBool == null ? null : onlyBool.copy());
 		}
 	}
+
+	protected class BooleanIfThenElseExpression extends DBBooleanBooleanBooleanFunction {
+
+		public BooleanIfThenElseExpression(BooleanExpression only, BooleanResult first, BooleanResult second) {
+			super(only, first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public BooleanIfThenElseExpression copy() {
+			return new BooleanIfThenElseExpression(
+					onlyBool == null ? null : onlyBool.copy(),
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
 
 	protected class StringIfThenElseExpression extends DBBooleanStringStringFunction {
 
