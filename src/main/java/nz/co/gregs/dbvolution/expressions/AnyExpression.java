@@ -861,8 +861,11 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	}
 
 	/**
+	 * Synonym for {@link #countNotNull() }.
+	 *
+	 * <p>
 	 * Creates an expression that will count all the values of the column
-	 * supplied.
+	 * supplied.</p>
 	 *
 	 * <p>
 	 * Count is an aggregator function for use in DBReport or in a column
@@ -874,7 +877,41 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 * @return a number expression.
 	 */
 	public CountExpression count() {
+		return countNotNull();
+	}
+
+	/**
+	 * Creates an expression that will count all the rows with non-null values in
+	 * the column supplied.
+	 *
+	 * <p>
+	 * Count is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	public CountExpression countNotNull() {
 		return new CountExpression(this);
+	}
+
+	/**
+	 * Creates an expression that will count all the distinct values in the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Count is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	public CountDistinctExpression countDistinctValues() {
+		return new CountDistinctExpression(this);
 	}
 
 	/**
@@ -949,6 +986,37 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		@Override
 		public CountExpression copy() {
 			return new CountExpression(
+					(AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy())
+			);
+		}
+
+		@Override
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<IntegerExpression>(new IntegerExpression(this));
+		}
+
+	}
+
+	public static class CountDistinctExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
+
+		public CountDistinctExpression(AnyResult<?> only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getCountFunctionName() + "(DISTINCT " + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public CountDistinctExpression copy() {
+			return new CountDistinctExpression(
 					(AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy())
 			);
 		}
