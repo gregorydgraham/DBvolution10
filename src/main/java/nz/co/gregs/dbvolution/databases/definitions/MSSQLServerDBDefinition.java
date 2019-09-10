@@ -387,10 +387,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return " GETDATE";
 	}
 
-	@Override
-	public String doBooleanToIntegerTransform(String booleanExpression) {
-		return "(case when (" + booleanExpression + ") then 1 else 0 end)";
-	}
+//	@Override
+//	public String doBooleanToIntegerTransform(String booleanExpression) {
+//		return "(case when (" + booleanExpression + ") then 1 else 0 end)";
+//	}
 
 //	@Override
 //	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {

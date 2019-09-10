@@ -172,10 +172,11 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "CAST((" + sql + ") as INTEGER)";
 	}
 
-	@Override
-	public String doBooleanToIntegerTransform(String columnName) {
-		return "(" + columnName + ")::integer";
-	}
+//	@Override
+//	public String doBooleanToIntegerTransform(String columnName) {
+//		return "case when " + columnName + " is null then null when " + columnName + " then 1 else 0 end";
+////		return "(" + columnName + ")::integer";
+//	}
 
 	@Override
 	public String doIntegerToBitTransform(String columnName) {
