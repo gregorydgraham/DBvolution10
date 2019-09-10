@@ -876,7 +876,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 *
 	 * @return a number expression.
 	 */
-	public CountExpression count() {
+	public final CountExpression count() {
 		return countNotNull();
 	}
 
