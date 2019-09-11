@@ -106,22 +106,22 @@ public class CaseExpression {
 
 	public static class WhenExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> implements AnyResult {
 
-		protected final List<WhenClause<B, R, D, E>> clauses = new ArrayList<WhenClause<B,R,D,E>>();
+		protected final List<WhenClause<B, R>> clauses = new ArrayList<WhenClause<B,R>>();
 		protected R defaultValue;
 		protected final E firstValue;
 
 		public WhenExpression(BooleanExpression test, E value) {
 			firstValue = value;
-			clauses.add(new WhenClause<B,R,D,E>(test, value.asResult()));
+			clauses.add(new WhenClause<B,R>(test, value.asResult()));
 		}
 
 		public WhenExpression<B, R, D, E> when(BooleanExpression test, R value) {
-			clauses.add(new WhenClause<B,R,D,E>(test, value));
+			clauses.add(new WhenClause<B,R>(test, value));
 			return this;
 		}
 
 		public WhenExpression<B, R, D, E> when(BooleanExpression test, B value) {
-			clauses.add(new WhenClause<B,R,D,E>(test, firstValue.expression(value)));
+			clauses.add(new WhenClause<B,R>(test, firstValue.expression(value)));
 			return this;
 		}
 
@@ -230,7 +230,7 @@ public class CaseExpression {
 		}
 	}
 
-	protected static class WhenClause<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> implements HasSQLString {
+	protected static class WhenClause<B extends Object, R extends AnyResult<B>> implements HasSQLString {
 
 		public BooleanExpression test;
 		public R returnValue;
