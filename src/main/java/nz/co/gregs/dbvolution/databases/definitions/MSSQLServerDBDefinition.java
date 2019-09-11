@@ -201,14 +201,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public LocalDateTime parseLocalDateTimeFromGetString(String input) throws ParseException {
 		LocalDateTime parsed;
 		//either '2019-08-19 08:22:40.8135410' or '2019-08-19 20:22:40.8910319 +12:00'
-//			System.out.println("PARSING RESULTSET STRING: " + input);
 		String inputFromResultSet = input.replaceFirst(" ", "T");
 		if (inputFromResultSet.contains(" ")) {
 			inputFromResultSet = inputFromResultSet.replaceAll(" ", "");
-			System.out.println("PARSING AS INSTANT: " + inputFromResultSet);
 			parsed = ZonedDateTime.parse(inputFromResultSet).toLocalDateTime();
 		} else {
-			System.out.println("PARSING AS LOCALDATETIME: " + inputFromResultSet);
 			parsed = LocalDateTime.parse(inputFromResultSet);
 		}
 		return parsed;
