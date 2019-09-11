@@ -87,6 +87,8 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	abstract public R expression(R value);
 
 	abstract public R expression(D value);
+	
+	public R asResult(){return (R)this;}
 
 	@Override
 	public String createSQLForFromClause(DBDatabase database) {
