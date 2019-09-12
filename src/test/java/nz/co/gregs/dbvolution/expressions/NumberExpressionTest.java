@@ -111,12 +111,12 @@ public class NumberExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).integerValue().is(1));
+		dbQuery.addCondition(marq.column(marq.updateCount).numberResult().mod(2).is(0).integerValue().is(1));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(11));
+		Assert.assertThat(allRows.size(), is(14));
 		for (Marque marque : dbQuery.getAllInstancesOf(marq)) {
-			Assert.assertThat(marque.uidMarque.getValue().intValue() % 2, is(0));
+			Assert.assertThat(marque.updateCount.getValue().intValue() % 2, is(0));
 		}
 
 	}
