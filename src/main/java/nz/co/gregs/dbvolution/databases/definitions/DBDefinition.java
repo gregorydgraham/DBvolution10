@@ -2312,8 +2312,7 @@ public abstract class DBDefinition implements Serializable {
 	 * integer expression in the SQL.
 	 */
 	public String doBooleanToIntegerTransform(String booleanExpression) {
-		return "case when " + booleanExpression + " is null then null when " + booleanExpression + " then 1 else 0 end";
-//		return doIfThenElseTransform(booleanExpression, "" + 1, "" + 0);
+		return " case when (" + booleanExpression + ") then 1 when not (" + booleanExpression + ") then 0 else null end ";
 	}
 
 	/**
