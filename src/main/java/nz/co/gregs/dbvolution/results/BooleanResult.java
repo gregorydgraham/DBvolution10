@@ -45,7 +45,7 @@ public interface BooleanResult extends EqualResult<Boolean>, ExpressionHasStanda
 	 * Indicates whether the result is a boolean statement or boolean value.
 	 *
 	 * <p>
-	 * A boolean statement is a a comparison like 1=1 which results in a boolean
+	 * A boolean statement is a  comparison like 1=1 which results in a boolean
 	 * value and is used in the where clause. Conversely a boolean value is the
 	 * database representation TRUE or FALSE.</p>
 	 *
@@ -59,5 +59,5 @@ public interface BooleanResult extends EqualResult<Boolean>, ExpressionHasStanda
 	 * @return TRUE if the BooleanResult is a boolean statement, FALSE otherwise.
 	 */
 	boolean isBooleanStatement();
-
+	
 }
