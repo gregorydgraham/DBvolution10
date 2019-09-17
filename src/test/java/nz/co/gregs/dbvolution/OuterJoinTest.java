@@ -304,8 +304,8 @@ public class OuterJoinTest extends AbstractTest {
 		Assert.assertThat(testableSQL(sqlForQuery),
 				anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
 						containsString(testableSQL("__1997432637.enabled = 1")),
-						containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )")),
-						containsString(testableSQL("(( case when __1997432637.enabled is null then -1 else __1997432637.enabled end )) = (( case when 1 is null then -1 else 1 end ))")
+						containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
+						containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))")
 						)
 				)
 		);
@@ -319,8 +319,8 @@ public class OuterJoinTest extends AbstractTest {
 								containsString(testableSQL("(__78874071.name) <= N'toyota'"))),
 						anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
 								containsString(testableSQL("__1997432637.enabled = 1")),
-								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )")),
-								containsString(testableSQL("(( case when __1997432637.enabled is null then -1 else __1997432637.enabled end )) = (( case when 1 is null then -1 else 1 end ))"))
+								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
+								containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))"))
 						)
 				)
 		);
@@ -355,7 +355,7 @@ public class OuterJoinTest extends AbstractTest {
 			Assert.assertThat(testableQuery,
 					anyOf(containsString(marqueCondition),
 							containsString(marqueConditionForDBsWithoutBooleans),
-							containsString(testableSQL("( CASE WHEN __1997432637.ENABLED IS NULL THEN -1 ELSE __1997432637.ENABLED END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END ))"))
+							containsString(testableSQL("( CASE WHEN __1997432637.ENABLED IS NULL THEN NULL ELSE __1997432637.ENABLED END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END ))"))
 					)
 			);
 		}
