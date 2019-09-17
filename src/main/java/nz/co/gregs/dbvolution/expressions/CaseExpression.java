@@ -31,7 +31,6 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -97,7 +96,18 @@ public class CaseExpression {
 		return new WhenExpression<String, StringResult, DBString, StringExpression>(aThis, AnyExpression.value(i));
 	}
 
-	public <B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> WhenExpression<B, R, D, E> when(BooleanExpression aThis, E i) {
+	public static WhenExpression<Boolean, BooleanResult, DBBoolean, BooleanExpression> when(BooleanExpression aThis, BooleanExpression i) {
+		return new WhenExpression<>(
+				aThis,
+				new BooleanExpression(i) {
+			@Override
+			public boolean isBooleanStatement() {
+				return false;
+			}
+		});
+	}
+
+	public static <B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> WhenExpression<B, R, D, E> when(BooleanExpression aThis, E i) {
 		return new WhenExpression<>(aThis, i);
 	}
 
@@ -106,22 +116,22 @@ public class CaseExpression {
 
 	public static class WhenExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> implements AnyResult {
 
-		protected final List<WhenClause<B, R>> clauses = new ArrayList<WhenClause<B,R>>();
+		protected final List<WhenClause<B, R>> clauses = new ArrayList<WhenClause<B, R>>();
 		protected R defaultValue;
 		protected final E firstValue;
 
 		public WhenExpression(BooleanExpression test, E value) {
 			firstValue = value;
-			clauses.add(new WhenClause<B,R>(test, value.asResult()));
+			clauses.add(new WhenClause<B, R>(test, value.asResult()));
 		}
 
 		public WhenExpression<B, R, D, E> when(BooleanExpression test, R value) {
-			clauses.add(new WhenClause<B,R>(test, value));
+			clauses.add(new WhenClause<B, R>(test, value));
 			return this;
 		}
 
 		public WhenExpression<B, R, D, E> when(BooleanExpression test, B value) {
-			clauses.add(new WhenClause<B,R>(test, firstValue.expression(value)));
+			clauses.add(new WhenClause<B, R>(test, firstValue.expression(value)));
 			return this;
 		}
 
@@ -133,17 +143,20 @@ public class CaseExpression {
 		private E build() {
 			try {
 				@SuppressWarnings("unchecked")
-				final Class<E> clazz = (Class<E>) clauses.get(0).returnValue.getClass();
-				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-				for (Constructor<?> constructor : constructors) {
-					if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
-						constructor.setAccessible(true);
-						@SuppressWarnings("unchecked")
-						E newInstance = (E) constructor.newInstance((AnyResult) this);
-						return newInstance;
+				Class<?> clazz = clauses.get(0).returnValue.getClass();
+				do {
+					Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+					for (Constructor<?> constructor : constructors) {
+						if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
+							constructor.setAccessible(true);
+							@SuppressWarnings("unchecked")
+							E newInstance = (E) constructor.newInstance((AnyResult) this);
+							return newInstance;
+						}
 					}
-				}
-			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+					clazz = clazz.getSuperclass();
+				} while (AnyExpression.class.isAssignableFrom(clazz));
+			} catch (Exception ex) {
 				System.out.println("" + ex.getLocalizedMessage());
 				System.out.println("" + ex.getStackTrace()[0]);
 				System.out.println("" + ex.getStackTrace()[1]);
@@ -158,7 +171,7 @@ public class CaseExpression {
 		@Override
 		public String toSQLString(DBDefinition defn) {
 			return SeparatedString
-					.startsWith(" CASE")
+					.startsWith(" CASE ")
 					.endsWith(" ELSE " + defaultValue.toSQLString(defn) + " END")
 					.addAll(
 							this.clauses.stream().map((t) -> t.toSQLString(defn)).collect(Collectors.toList())
@@ -174,16 +187,16 @@ public class CaseExpression {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public WhenExpression<B,R,D,E> copy() {
-			WhenExpression<B,R,D,E> newOne = new WhenExpression<B,R,D,E>(clauses.get(0).test, (E) clauses.get(0).returnValue);
-			this.clauses.stream().skip(1).forEach((t)->newOne.when(t.test, t.returnValue));
+		public WhenExpression<B, R, D, E> copy() {
+			WhenExpression<B, R, D, E> newOne = new WhenExpression<B, R, D, E>(clauses.get(0).test, (E) clauses.get(0).returnValue);
+			this.clauses.stream().skip(1).forEach((t) -> newOne.when(t.test, t.returnValue));
 			newOne.defaultValue(defaultValue);
 			return newOne;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return clauses.stream().anyMatch((t) -> t.returnValue.isAggregator() || t.test.isAggregator()) 
+			return clauses.stream().anyMatch((t) -> t.returnValue.isAggregator() || t.test.isAggregator())
 					|| defaultValue.isAggregator();
 		}
 
@@ -200,7 +213,7 @@ public class CaseExpression {
 
 		@Override
 		public boolean isPurelyFunctional() {
-				return clauses.stream().anyMatch((t) -> t.returnValue.isPurelyFunctional()&& t.test.isPurelyFunctional()) 
+			return clauses.stream().anyMatch((t) -> t.returnValue.isPurelyFunctional() && t.test.isPurelyFunctional())
 					&& defaultValue.isPurelyFunctional();
 		}
 
