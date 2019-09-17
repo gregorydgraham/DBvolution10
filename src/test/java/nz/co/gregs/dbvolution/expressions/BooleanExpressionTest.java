@@ -867,7 +867,7 @@ public class BooleanExpressionTest extends AbstractTest {
 	@Test
 	public void testCountUsingDBRow() throws SQLException, ParseException {
 		MarqueWithBooleanExpressionCount marque = new MarqueWithBooleanExpressionCount();
-		final DBQuery dbQuery = database.getDBQuery(marque);
+		final DBQuery dbQuery = database.getDBQuery(marque).setQueryLabel("testCountUsingDBRow");
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(marque.column(marque.greaterThan3));
 
@@ -1026,13 +1026,13 @@ public class BooleanExpressionTest extends AbstractTest {
 		try {
 			MarqueWithWindowingFunctions marq = new MarqueWithWindowingFunctions();
 
-			DBQuery query = database.getDBQuery(marq)
+			DBQuery query = database.getDBQuery(marq).setQueryLabel("testWindowingFunctions")
 					.setBlankQueryAllowed(true)
 					.setSortOrder(
 							marq.column(marq.carCompany).ascending(),
 							marq.column(marq.uidMarque).ascending()
 					);
-
+			
 			List<DBQueryRow> allRows = query.getAllRows();
 			query.printSQLForQuery();
 			Assert.assertThat(allRows.size(), is(22));
@@ -1065,15 +1065,12 @@ public class BooleanExpressionTest extends AbstractTest {
 
 			for (int i = 0; i < allRows.size(); i++) {
 				got = allRows.get(i).get(marq);
-				System.out.println("" + got.toString());
+//				System.out.println("" + got.toString());
 				Object[] expect = expectedValues.get(i);
 				Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
 				Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
 				Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
 				Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
-				Assert.assertThat(got.lag.getValue(), is((Boolean) expect[4]));
-				Assert.assertThat(got.lead.getValue(), is((Boolean) expect[5]));
-				Assert.assertThat(got.case1.getValue(), is((Boolean) expect[6]));
 			}
 		} catch (Exception e) {
 			System.out.println("" + e.getLocalizedMessage());
@@ -1102,6 +1099,73 @@ public class BooleanExpressionTest extends AbstractTest {
 				.partition(this.column(this.carCompany))
 				.orderBy(this.column(this.carCompany).ascending())
 				.defaultFrame());
+	}
+
+	@Test
+	public void testLeadAndLagFunctions() throws SQLException {
+		try {
+			MarqueWithLeadAndLagFunctions marq = new MarqueWithLeadAndLagFunctions();
+
+			DBQuery query = database.getDBQuery(marq).setQueryLabel("testLeadAndLagFunctions")
+					.setBlankQueryAllowed(true)
+					.setSortOrder(
+							marq.column(marq.carCompany).ascending(),
+							marq.column(marq.uidMarque).ascending()
+					);
+			query.printSQLForQuery();
+			List<DBQueryRow> allRows = query.getAllRows();
+			query.printSQLForQuery();
+			Assert.assertThat(allRows.size(), is(22));
+
+			MarqueWithLeadAndLagFunctions got;
+			ArrayList<Object[]> expectedValues = new ArrayList<>();
+
+			expectedValues.add(new Object[]{3, 1, 1, 1, null, null, null});
+			expectedValues.add(new Object[]{3, 2, 1, 1, true, false, false});
+			expectedValues.add(new Object[]{3, 3, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 4, 0, 0, false, (null), (null)});
+			expectedValues.add(new Object[]{3, 5, 0, 0, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 6, 0, 0, (null), true, true});
+			expectedValues.add(new Object[]{3, 7, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 8, 1, 1, true, (null), (null)});
+			expectedValues.add(new Object[]{3, 9, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 10, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 11, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 12, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 13, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 14, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 15, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 16, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 17, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 18, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 19, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 20, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 21, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 22, 1, 1, (null), (null), (null)});
+
+			for (int i = 0; i < allRows.size(); i++) {
+				got = allRows.get(i).get(marq);
+				System.out.println("" + got.toString());
+				Object[] expect = expectedValues.get(i);
+				Assert.assertThat(got.lag.getValue(), is((Boolean) expect[4]));
+				Assert.assertThat(got.lead.getValue(), is((Boolean) expect[5]));
+				Assert.assertThat(got.case1.getValue(), is((Boolean) expect[6]));
+			}
+		} catch (Exception e) {
+			System.out.println("" + e.getLocalizedMessage());
+			System.out.println("" + e.getStackTrace()[0]);
+			System.out.println("" + e.getStackTrace()[1]);
+			System.out.println("" + e.getStackTrace()[2]);
+			System.out.println("" + e.getStackTrace()[3]);
+			System.out.println("" + e.getStackTrace()[4]);
+			throw e;
+		}
+	}
+
+	public static class MarqueWithLeadAndLagFunctions extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn
 		DBBoolean lag
 				= this.column(this.enabled)
@@ -1121,15 +1185,18 @@ public class BooleanExpressionTest extends AbstractTest {
 		@DBColumn
 		DBBoolean case1
 				= CaseExpression
-						.when(this.column(this.enabled), true)
-						.when(this.column(this.enabled).not(), false)
-						.when(this.column(this.enabled).not(), BooleanExpression.falseExpression())
-						.defaultValue(BooleanExpression.nullBoolean())
+						//						.when(this.column(this.enabled), true)
+						//						.when(this.column(this.enabled).not(), false)
+						//						.when(this.column(this.enabled).not(), BooleanExpression.falseExpression())
+						//						.defaultValue(BooleanExpression.nullBoolean())
+						.when(this.column(this.enabled).isNull(), BooleanExpression.nullBoolean())
+						.defaultValue(this.column(this.enabled))
 						.nextRowValue()
 						.AllRowsAndOrderBy(
 								this.column(this.carCompany).ascending(),
 								this.column(this.uidMarque).ascending()
-						).asExpressionColumn();
+						)
+						.asExpressionColumn();
 	}
 
 }
