@@ -30,7 +30,6 @@ import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -67,23 +66,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		DateFormat tzFormat = new SimpleDateFormat("XXX");
-		String tz = tzFormat.format(date);
-		switch (tz.length()) {
-			case 4:
-				tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
-				break;
-			case 5:
-				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
-				break;
-			case 6:
-				tz = tz; // "+13:00" is perfect :)
-				break;
-			default:
-				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"", new ParseException(tz, 0));
-		}
-		final String result = " CAST('" + format.format(date) /*+ " " + tz*/ + "' as DATETIME2(7)) ";
-//		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET(7)) ";
+		final String result = " CAST('" + format.format(date) + "' as DATETIME2(7)) ";
 		return result;
 	}
 
@@ -93,11 +76,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				+ doConcatTransform(
 						doNumberToStringTransform(years), "'-'", doNumberToStringTransform(months), "'-'", doNumberToStringTransform(days), "' '",
 						doNumberToStringTransform(hours), "':'", doNumberToStringTransform(minutes), "':'", doNumberToStringTransform("(" + seconds + "+" + subsecond + ")")
-				//						, "' '", timeZoneSign, timeZoneHourOffset, "':'", timeZoneMinuteOffSet
-				//						, "'" + OffsetTime.now().format(DateTimeFormatter.ofPattern("XXX")) + "'"
 				)
 				+ " as DATETIME2(7))";
-		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -192,8 +172,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		try {
 			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITH_ZONE);
 		} catch (DateTimeParseException ex) {
-				parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
-			}
+			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
+		}
 		return parsed;
 	}
 
@@ -384,10 +364,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return " GETDATE";
 	}
 
-//	@Override
-//	public String doBooleanToIntegerTransform(String booleanExpression) {
-//		return "(case when (" + booleanExpression + ") then 1 else 0 end)";
-//	}
+	@Override
+	public String doBooleanToIntegerTransform(String booleanExpression) {
+		return " case when (" + booleanExpression + ") then 1 when not (" + booleanExpression + ") then 0 else null end ";
+	}
 
 //	@Override
 //	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
@@ -715,7 +695,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof BooleanExpression) {
-			return ((BooleanExpression) columnExpression).ifThenElse(1, 0).bracket();
+			final BooleanExpression boolExpr = (BooleanExpression) columnExpression;
+			if (boolExpr.isWindowingFunction()) {
+				return columnExpression;
+			} else {
+				return boolExpr.ifTrueFalseNull(1, 0, null).bracket();
+			}
 		} else if (columnExpression instanceof AbstractColumn) {
 			Object col = ((AbstractColumn) columnExpression).getField();
 			if (col != null && (col instanceof DBBoolean)) {
@@ -724,7 +709,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				if (exprns.length > 0) {
 					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
 						if (expr instanceof BooleanExpression) {
-							return ((BooleanExpression) expr).ifThenElse(1, 0).bracket();
+							return ((BooleanExpression) expr).ifTrueFalseNull(1, 0, null).bracket();
 						} else {
 							return super.transformToStorableType(columnExpression);
 						}
@@ -1372,7 +1357,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public DBExpression transformToSelectableType(DBExpression expression) {
 		if (expression instanceof BooleanExpression) {
-			return ((BooleanExpression) expression).ifThenElse(1, 0).bracket();
+			final BooleanExpression boolexpr = (BooleanExpression) expression;
+			return ((BooleanExpression) expression).ifTrueFalseNull(true, false,null);
 		} else if (expression instanceof Spatial2DExpression) {
 			return ((ExpressionHasStandardStringResult) expression).stringResult();
 		} else {
