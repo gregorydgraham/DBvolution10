@@ -309,8 +309,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	/**
-	 * Creates an expression that will count all rows with non-null values in the column
-	 * supplied.
+	 * Creates an expression that will count all rows with non-null values in the
+	 * column supplied.
 	 *
 	 * <p>
 	 * Count is an aggregator function for use in DBReport or in a column
@@ -328,14 +328,18 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	protected String getComparableBooleanSQL(DBDefinition db, String preparedSQL) {
-		String firstSQL;
-		boolean firstIsStatement = this.isBooleanStatement();
-		if (firstIsStatement) {
-			firstSQL = db.doBooleanStatementToBooleanComparisonValueTransform(preparedSQL);
+		if (db.supportsComparingBooleanResults()) {
+			return preparedSQL;
 		} else {
-			firstSQL = db.doBooleanValueToBooleanComparisonValueTransform(preparedSQL);
+			String firstSQL;
+			boolean firstIsStatement = this.isBooleanStatement();
+			if (firstIsStatement) {
+				firstSQL = db.doBooleanStatementToBooleanComparisonValueTransform(preparedSQL);
+			} else {
+				firstSQL = db.doBooleanValueToBooleanComparisonValueTransform(preparedSQL);
+			}
+			return "(" + firstSQL + ")";
 		}
-		return "(" + firstSQL + ")";
 	}
 
 	/**
@@ -534,7 +538,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a 0 or 1 depending on the expression
 	 */
 	public IntegerExpression integerValue() {
-		return IntegerExpression.value(new IntegerValueFunction(this));
+		return new IntegerValueFunction(this);
 	}
 
 	/**
@@ -581,6 +585,41 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression not() {
 		return this.negate();
+	}
+
+	/**
+	 * Returns FALSE if this expression is TRUE, or TRUE if it is FALSE.
+	 *
+	 * <p>
+	 * Synonym for {@link #negate() the negate() method}
+	 *
+	 * <p>
+	 * The 3 main boolean operators are AND, OR, and NOT. This method implements
+	 * NOT.
+	 *
+	 * <p>
+	 * The boolean result of the expression will be negated by this call so that
+	 * TRUE becomes FALSE and FALSE becomes TRUE.
+	 *
+	 * <p>
+	 * Please note that databases use
+	 * <a href="https://en.wikipedia.org/wiki/Three-valued_logic">Three-valued
+	 * logic</a>
+	 * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
+	 * expression
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a Boolean expression representing the negation of the current
+	 * expression.
+	 */
+	public BooleanExpression isFalse() {
+		return this.negate();
+	}
+
+	public BooleanExpression isTrue() {
+		return this;
 	}
 
 	/**
@@ -1042,6 +1081,210 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
 		return new Polygon2DExpression(new Polygon2DIfThenElseExpression(this, thenExpr, elseExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr expression to use when this expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public BooleanExpression ifTrueFalseNull(Boolean trueExpr, Boolean falseExpr, Boolean nullExpr) {
+		return this.ifTrueFalseNull(
+				new BooleanExpression(trueExpr),
+				new BooleanExpression(falseExpr),
+				BooleanExpression.value(nullExpr)
+		);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public BooleanExpression ifTrueFalseNull(BooleanExpression trueExpr, BooleanExpression falseExpr, BooleanExpression nullExpr) {
+		return CaseExpression
+				.when(this, trueExpr)
+				.when(this.isFalse(), falseExpr)
+				.defaultValue(nullExpr);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueValue expression to use when this expression is TRUE
+	 * @param falseValue expression to use when this expression is FALSE
+	 * @param nullValue the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public StringExpression ifTrueFalseNull(String trueValue, String falseValue, String nullValue) {
+		return this.ifTrueFalseNull(
+				new StringExpression(trueValue),
+				new StringExpression(falseValue),
+				StringExpression.value(nullValue)
+		);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public StringExpression ifTrueFalseNull(StringExpression trueExpr, StringExpression falseExpr, StringExpression nullExpr) {
+		return CaseExpression
+				.when(this, trueExpr)
+				.when(this.isFalse(), falseExpr)
+				.defaultValue(nullExpr);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueValue expression to use when this expression is TRUE
+	 * @param falseValue expression to use when this expression is FALSE
+	 * @param nullValue  the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public NumberExpression ifTrueFalseNull(Number trueValue, Number falseValue, Number nullValue) {
+		return this.ifTrueFalseNull(
+				new NumberExpression(trueValue),
+				new NumberExpression(falseValue),
+				NumberExpression.value(nullValue)
+		);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueValue expression to use when this expression is TRUE
+	 * @param falseValue expression to use when this expression is FALSE
+	 * @param nullValue the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public IntegerExpression ifTrueFalseNull(Long trueValue, Long falseValue, Long nullValue) {
+		return this.ifTrueFalseNull(
+				new IntegerExpression(trueValue),
+				new IntegerExpression(falseValue),
+				IntegerExpression.value(nullValue)
+		);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueValue expression to use when this expression is TRUE
+	 * @param falseValue expression to use when this expression is FALSE
+	 * @param nullValue the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public IntegerExpression ifTrueFalseNull(Integer trueValue, Integer falseValue, Integer nullValue) {
+		return this.ifTrueFalseNull(
+				new IntegerExpression(trueValue),
+				new IntegerExpression(falseValue),
+				IntegerExpression.value(nullValue)
+		);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public NumberExpression ifTrueFalseNull(NumberExpression trueExpr, NumberExpression falseExpr, NumberExpression nullExpr) {
+		return CaseExpression
+				.when(this, trueExpr)
+				.when(this.isFalse(), falseExpr)
+				.defaultValue(nullExpr);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 *
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public IntegerExpression ifTrueFalseNull(IntegerExpression trueExpr, IntegerExpression falseExpr, IntegerExpression nullExpr) {
+		return CaseExpression
+				.when(this, trueExpr)
+				.when(this.isFalse(), falseExpr)
+				.defaultValue(nullExpr);
 	}
 
 	/**
@@ -2192,7 +2435,13 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
+			if (db.supportsComparingBooleanResults()) {
+				return db.doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
+			} else {
+				String returnString
+						= innerBool.getComparableBooleanSQL(db);
+				return returnString;
+			}
 		}
 
 		@Override
@@ -2486,7 +2735,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			);
 		}
 	}
-
 
 	protected class StringIfThenElseExpression extends DBBooleanStringStringFunction {
 
@@ -3086,6 +3334,11 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		@Override
 		public boolean isPurelyFunctional() {
 			return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
+		}
+
+		@Override
+		public boolean isBooleanStatement() {
+			return true;
 		}
 
 		@Override
