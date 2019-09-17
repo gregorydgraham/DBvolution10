@@ -157,7 +157,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(3));
-	}
+		}
 
 	@Test
 	public void testLeastOfWithDates() throws SQLException {
@@ -344,7 +344,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		expectedValues.add(new Object[]{15, march23rd2013LocalDateTime, april2nd2011LocalDateTime, march23rd2013LocalDateTime, null});
 		for (int i = 0; i < allRows.size(); i++) {
 			got = allRows.get(i).get(marq);
-			System.out.println("" + got.toString());
+//			System.out.println("" + got.toString());
 			Object[] expect = expectedValues.get(i);
 			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
 			Assert.assertThat(got.maxOfAll.getValue(), is((LocalDateTime) expect[1]));
