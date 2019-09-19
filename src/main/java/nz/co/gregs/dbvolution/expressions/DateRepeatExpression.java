@@ -1418,6 +1418,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 	public class LagExpression extends LagLeadFunction {
 
+		private static final long serialVersionUID = 1L;
+
 		public LagExpression(DateRepeatExpression first, IntegerExpression second, DateRepeatExpression third) {
 			super(first, second, third);
 		}
@@ -1434,6 +1436,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	}
 
 	public class LeadExpression extends LagLeadFunction {
+
+		private static final long serialVersionUID = 1L;
 
 		public LeadExpression(DateRepeatExpression first, IntegerExpression second, DateRepeatExpression third) {
 			super(first, second, third);
