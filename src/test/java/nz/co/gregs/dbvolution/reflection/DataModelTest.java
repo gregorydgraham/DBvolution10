@@ -104,12 +104,15 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
-				System.out.println("CONSTRUCTOR: -" + knownString + "-");
+				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
+				constr.stream().forEachOrdered((t) -> {
+					System.out.println("EXISTING CONSTRUCTOR: "+t);
+				});
 			}
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
