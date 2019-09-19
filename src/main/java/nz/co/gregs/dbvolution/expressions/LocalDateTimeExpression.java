@@ -5050,6 +5050,8 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 	public class LagExpression extends LagLeadFunction {
 
+		private static final long serialVersionUID = 1L;
+
 		public LagExpression(LocalDateTimeExpression first, IntegerExpression second, LocalDateTimeExpression third) {
 			super(first, second, third);
 		}
@@ -5066,6 +5068,8 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	}
 
 	public class LeadExpression extends LagLeadFunction {
+
+		private static final long serialVersionUID = 1L;
 
 		public LeadExpression(LocalDateTimeExpression first, IntegerExpression second, LocalDateTimeExpression third) {
 			super(first, second, third);
