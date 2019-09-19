@@ -4527,6 +4527,8 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 	public class LagExpression extends LagLeadExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		public LagExpression(LocalDateExpression first, IntegerExpression second, LocalDateExpression third) {
 			super(first, second, third);
 		}
@@ -4543,6 +4545,8 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	}
 
 	public class LeadExpression extends LagLeadExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		public LeadExpression(LocalDateExpression first, IntegerExpression second, LocalDateExpression third) {
 			super(first, second, third);
