@@ -4960,6 +4960,8 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 	public class LagExpression extends LagLeadExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		public LagExpression(InstantExpression first, IntegerExpression second, InstantExpression third) {
 			super(first, second, third);
 		}
@@ -4976,6 +4978,8 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	}
 
 	public class LeadExpression extends LagLeadExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		public LeadExpression(InstantExpression first, IntegerExpression second, InstantExpression third) {
 			super(first, second, third);
