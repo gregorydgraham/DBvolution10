@@ -464,6 +464,185 @@
 					</execution>
 				</executions>
 			</plugin>
+<!--			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M3</version>
+				 We're going to use Docker for integration testing so ensure you have it running 
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<systemPropertyVariables>
+								
+						<testMSSQLServer>true</testMSSQLServer>
+						 Use the docker-maven-plugin instance of MS SQLServer 
+						<sqlserver.url></sqlserver.url>
+						<sqlserver.host>localhost</sqlserver.host>
+						<sqlserver.port>61433</sqlserver.port>
+						<sqlserver.instance>MSSQLServer</sqlserver.instance>
+						<sqlserver.database></sqlserver.database>
+						<sqlserver.username>sa</sqlserver.username>
+						<sqlserver.password>Password23</sqlserver.password>
+						<sqlserver.schema></sqlserver.schema>
+																
+						<testPostgresSQL>true</testPostgresSQL>
+						 Use the docker-maven-plugin instance of Postgres 
+						<postgres.url></postgres.url>
+						<postgres.host>localhost</postgres.host>
+						<postgres.port>65432</postgres.port>
+						<postgres.database>postgres</postgres.database>
+						<postgres.instance>postgres</postgres.instance>
+						<postgres.username>postgres</postgres.username>
+						<postgres.password>dontusesomethingobvious</postgres.password>
+						<postgres.schema></postgres.schema>
+						
+						<testMySQL>true</testMySQL>
+						<mysql.url>${mysql.url}</mysql.url>
+						<mysql.host>${mysql.host}</mysql.host>
+						<mysql.port>${mysql.port}</mysql.port>
+						<mysql.instance>${mysql.instance}</mysql.instance>
+						<mysql.database>${mysql.database}</mysql.database>
+						<mysql.username>${mysql.username}</mysql.username>
+						<mysql.password>${mysql.password}</mysql.password>
+						<mysql.schema>${mysql.schema}</mysql.schema>
+						
+						<testSQLite>true</testSQLite>
+						<sqlite.url>${sqlite.url}</sqlite.url>
+						<sqlite.filename>${sqlite.filename}</sqlite.filename>
+						<sqlite.host />
+						<sqlite.port />
+						<sqlite.instance />
+						<sqlite.username>${sqlite.username}</sqlite.username>
+						<sqlite.password>${sqlite.password}</sqlite.password>
+						<sqlite.schema />
+                        							
+						<testH2DB>true</testH2DB>						
+						<h2.url>${h2.url}</h2.url>
+						<h2.host>${h2.host}</h2.host>
+						<h2.port>${h2.port}</h2.port>
+						<h2.instance>${h2.instance}</h2.instance>
+						<h2.username>${h2.username}</h2.username>
+						<h2.password>${h2.password}</h2.password>
+						<h2.schema>${h2.schema}</h2.schema>
+								
+					</systemPropertyVariables>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.31.0</version>	
+				 Connect start/stop to pre- and
+				post-integration-test phase, respectively if you want to start
+				your docker containers during integration tests 
+				<executions>
+					<execution>
+						<id>start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>volume-create</goal>
+							<goal>build</goal>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+							<goal>remove</goal>
+							<goal>volume-remove</goal>
+						</goals>
+					</execution>
+				</executions>					
+				<configuration>
+					<showLogs>true</showLogs>
+					<detail>true</detail>
+					<verbose>true</verbose>
+					<allContainers>true</allContainers>
+					<startParallel>true</startParallel>
+					
+					<images>
+						 MS SQLServer database instance 
+						<image>
+							<name>microsoft/mssql-server-linux:latest</name>
+							<alias>sqlserver</alias>
+							<run>
+								<volumes>
+									<bind>
+										<name>./target:/MSSQLServer</name>
+									</bind>
+								</volumes>
+								<ports>
+									 host port is 61433 to avoid any actual installations of MS SQLServer 
+									<port>61433:1433</port>
+								</ports>
+								 
+								-e ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
+								-e SA_PASSWORD=Password23 defines the password so we can login
+								-e 'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
+								
+								<env>
+									<ACCEPT_EULA>Y</ACCEPT_EULA>
+									<SA_PASSWORD>Password23</SA_PASSWORD>
+									<TZ>Pacific/Auckland</TZ>
+								</env>
+								<wait>
+									<time>120000</time>
+									<log>.*SQL Server is now ready for client connections.*</log>
+								</wait>
+							</run>
+						</image>
+						
+						
+						 PostgresSQL image definition 
+						<image>
+							<name>mdillon/postgis:9.4</name>
+							<alias>dbv-verify-postgres</alias>
+							<run>
+								<volumes>
+									<bind>
+										<name>./target:/PostgresSQL</name>
+									</bind>
+								</volumes>
+								<ports>
+									 host port is 65432 to avoid any actual installations of Postgres 
+									<port>65432:5432</port>
+								</ports>
+								 
+								-e POSTGRES_PASSWORD=mysecretpassword defines the password so we can login
+								-e 'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
+								
+								<env>
+									<POSTGRES_PASSWORD>dontusesomethingobvious</POSTGRES_PASSWORD>
+									<TZ>Pacific/Auckland</TZ>
+									<POSTGIS_MAJOR>2.4</POSTGIS_MAJOR>
+									<POSTGIS_VERSION>2.4.3+dfsg-2.pgdg90+1</POSTGIS_VERSION>
+								</env>
+																<cmd>
+									<shell>apt-get update </shell>
+									<shell>apt-get search postgis </shell>
+									<shell>apt-get install -y DASHDASHno-install-recommends postgresql-11-postgis-2.5 postgresql-11-postgis-scripts
+									</shell>
+								</cmd>
+								<wait>
+									<time>600000</time> 10 minutes to handle downloading time 
+									<log>.*database system is ready to accept connections.*</log>
+								</wait>
+							</run>
+						</image>
+					</images>
+				</configuration>
+			</plugin>-->
 		</plugins>
 	</build>
 	
@@ -757,6 +936,16 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testMSSQLServer>true</testMSSQLServer>
+								<!--<testMSSQLServer>true</testMSSQLServer>-->
+								<!-- Use the docker-maven-plugin instance of MS SQLServer -->
+								<sqlserver.url></sqlserver.url>
+								<!--<sqlserver.host>localhost</sqlserver.host>-->
+								<!--<sqlserver.port>61433</sqlserver.port>-->
+								<sqlserver.instance>MSSQLServer</sqlserver.instance>
+								<sqlserver.database></sqlserver.database>
+								<sqlserver.username>sa</sqlserver.username>
+								<sqlserver.password>Password23</sqlserver.password>
+								<sqlserver.schema></sqlserver.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -1178,6 +1367,12 @@
 			<groupId>net.openhft</groupId>
 			<artifactId>compiler</artifactId>
 			<version>2.3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>1.12.1</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<distributionManagement>
