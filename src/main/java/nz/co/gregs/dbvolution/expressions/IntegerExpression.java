@@ -4941,6 +4941,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	public class LagExpression extends IntegerIntegerNumberFunctionIntegerResult {
 
+		private static final long serialVersionUID = 1L;
+
 		public LagExpression(IntegerExpression first, IntegerExpression second, IntegerExpression third) {
 			super(first, second, third);
 		}
@@ -4957,6 +4959,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	public class LeadExpression extends IntegerIntegerNumberFunctionIntegerResult {
+
+		private static final long serialVersionUID = 1L;
 
 		public LeadExpression(IntegerExpression first, IntegerExpression second, IntegerExpression third) {
 			super(first, second, third);
