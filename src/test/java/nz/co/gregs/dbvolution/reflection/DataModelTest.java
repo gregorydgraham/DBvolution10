@@ -156,6 +156,7 @@ public class DataModelTest extends AbstractTest {
 			try {
 				DBDatabase db = (DBDatabase) creator.invoke(null);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+				ex.printStackTrace();
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
