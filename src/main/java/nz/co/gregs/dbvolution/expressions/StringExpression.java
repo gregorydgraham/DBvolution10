@@ -4582,6 +4582,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	public class LagExpression extends LagLeadExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		public LagExpression(StringExpression first, IntegerExpression second, StringExpression third) {
 			super(first, second, third);
 		}
@@ -4598,6 +4600,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	public class LeadExpression extends LagLeadExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		public LeadExpression(StringExpression first, IntegerExpression second, StringExpression third) {
 			super(first, second, third);
