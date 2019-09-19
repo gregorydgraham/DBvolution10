@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
-import java.io.File; 
+import java.io.File;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
@@ -37,6 +38,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.testcontainers.containers.GenericContainer;
 
 /**
  *
@@ -94,7 +96,7 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
-				new DBDatabaseCluster("MySQL+Cluster",DBDatabaseCluster.Configuration.manual(),
+				new DBDatabaseCluster("MySQL+Cluster", DBDatabaseCluster.Configuration.manual(),
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
@@ -505,24 +507,69 @@ public abstract class AbstractTest {
 		}
 	}
 
+//	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
+//
+//		private final static long serialVersionUID = 1l;
+//
+//		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
+//			String url = System.getProperty("" + prefix + ".url");
+//			String host = System.getProperty("" + prefix + ".host");
+//			String port = System.getProperty("" + prefix + ".port");
+//			String instance = System.getProperty("" + prefix + ".instance");
+//			String database = System.getProperty("" + prefix + ".database");
+//			String username = System.getProperty("" + prefix + ".username");
+//			String password = System.getProperty("" + prefix + ".password");
+//			String schema = System.getProperty("" + prefix + ".schema");
+//			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerTestDB.getFromSettings()");
+//			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+//			return new MSSQLServerTestDB(host, instance, database, port, username, password);
+//		}
+//
+//		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
+//			super(host, instance, database, Integer.parseInt(port), username, password);
+//		}
+//	}
+
 	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
 
 		private final static long serialVersionUID = 1l;
 
+		static GenericContainer container = null;
+		private static MSSQLServerTestDB staticDatabase;
+
 		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
-			String url = System.getProperty("" + prefix + ".url");
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			return new MSSQLServerTestDB(host, instance, database, port, username, password);
+			if (container == null) {
+				String url = System.getProperty("" + prefix + ".url");
+				String instance = System.getProperty("" + prefix + ".instance", "MSSQLServer");
+				String database = System.getProperty("" + prefix + ".database");
+				String username = System.getProperty("" + prefix + ".username", "sa");
+				String password = System.getProperty("" + prefix + ".password", "Password23");
+				String schema = System.getProperty("" + prefix + ".schema");
+
+				/*
+					ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
+					SA_PASSWORD=Password23 defines the password so we can login
+					'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
+				 */
+				container = new GenericContainer<>("microsoft/mssql-server-linux:latest")
+						.withEnv("ACCEPT_EULA", "Y")
+						.withEnv("SA_PASSWORD", password)
+						.withEnv("TZ", "Pacific/Auckland")
+						.withExposedPorts(1433);
+				container.start();
+				String host = container.getContainerIpAddress();
+				Integer port = container.getFirstMappedPort();
+
+				System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerTestDB.getFromSettings()");
+				System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+
+				staticDatabase = new MSSQLServerTestDB(host, instance, database, port, username, password);
+			}
+			return staticDatabase;
 		}
 
-		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
-			super(host, instance, database, Integer.parseInt(port), username, password);
+		private MSSQLServerTestDB(String host, String instance, String database, Integer port, String username, String password) throws SQLException {
+			super(host, instance, database, port, username, password);
 		}
 	}
 
