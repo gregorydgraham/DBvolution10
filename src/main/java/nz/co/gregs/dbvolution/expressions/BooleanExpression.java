@@ -3349,6 +3349,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	public class LagExpression extends LagLeadFunction {
 
+		private static final long serialVersionUID = 1L;
+
 		public LagExpression(BooleanExpression first, IntegerExpression second, BooleanExpression third) {
 			super(first, second, third);
 		}
@@ -3365,6 +3367,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	public class LeadExpression extends LagLeadFunction {
+
+		private static final long serialVersionUID = 1L;
 
 		public LeadExpression(BooleanExpression first, IntegerExpression second, BooleanExpression third) {
 			super(first, second, third);
