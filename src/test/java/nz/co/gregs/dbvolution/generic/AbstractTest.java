@@ -135,8 +135,11 @@ public abstract class AbstractTest {
 		if (System.getProperty("testOracleXE") != null) {
 			databases.add(new Object[]{"Oracle11DB", Oracle11XETestDB.getFromSettings("oraclexe")});
 		}
-		if (System.getProperty("testMSSQLServer") != null) {
-			databases.add(new Object[]{"MSSQLServer", MSSQLServerTestDB.getFromSettings("sqlserver")});
+		if (System.getProperty("testMSSQLServerContainer") != null) {
+			databases.add(new Object[]{"MSSQLServerContainer", MSSQLServerContainerTestDB.getFromSettings("sqlservercontainer")});
+		}
+		if (System.getProperty("testMSSQLServerLocal") != null) {
+			databases.add(new Object[]{"MSSQLServerLocal", MSSQLServerLocalTestDB.getFromSettings("sqlserver")});
 		}
 		if (System.getProperty("testH2MemoryDB") != null) {
 			databases.add(new Object[]{"H2MemoryDB", H2MemoryTestDB.getFromSettings("h2memory")});
@@ -506,37 +509,37 @@ public abstract class AbstractTest {
 		}
 	}
 
-//	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
-//
-//		private final static long serialVersionUID = 1l;
-//
-//		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
-//			String url = System.getProperty("" + prefix + ".url");
-//			String host = System.getProperty("" + prefix + ".host");
-//			String port = System.getProperty("" + prefix + ".port");
-//			String instance = System.getProperty("" + prefix + ".instance");
-//			String database = System.getProperty("" + prefix + ".database");
-//			String username = System.getProperty("" + prefix + ".username");
-//			String password = System.getProperty("" + prefix + ".password");
-//			String schema = System.getProperty("" + prefix + ".schema");
-//			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerTestDB.getFromSettings()");
-//			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
-//			return new MSSQLServerTestDB(host, instance, database, port, username, password);
-//		}
-//
-//		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
-//			super(host, instance, database, Integer.parseInt(port), username, password);
-//		}
-//	}
+	private static class MSSQLServerLocalTestDB extends MSSQLServer2012DB {
 
-	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
+		private final static long serialVersionUID = 1l;
+
+		public static MSSQLServerLocalTestDB getFromSettings(String prefix) throws SQLException {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
+			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerLocalTestDB.getFromSettings()");
+			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+			return new MSSQLServerLocalTestDB(host, instance, database, port, username, password);
+		}
+
+		public MSSQLServerLocalTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
+			super(host, instance, database, Integer.parseInt(port), username, password);
+		}
+	}
+
+	private static class MSSQLServerContainerTestDB extends MSSQLServer2012DB {
 
 		private final static long serialVersionUID = 1l;
 
 		static GenericContainer container = null;
-		private static MSSQLServerTestDB staticDatabase;
+		private static MSSQLServerContainerTestDB staticDatabase;
 
-		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
+		public static MSSQLServerContainerTestDB getFromSettings(String prefix) throws SQLException {
 			if (container == null) {
 				String url = System.getProperty("" + prefix + ".url");
 				String instance = System.getProperty("" + prefix + ".instance", "MSSQLServer");
@@ -562,12 +565,12 @@ public abstract class AbstractTest {
 				System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerTestDB.getFromSettings()");
 				System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
 
-				staticDatabase = new MSSQLServerTestDB(host, instance, database, port, username, password);
+				staticDatabase = new MSSQLServerContainerTestDB(host, instance, database, port, username, password);
 			}
 			return staticDatabase;
 		}
 
-		private MSSQLServerTestDB(String host, String instance, String database, Integer port, String username, String password) throws SQLException {
+		private MSSQLServerContainerTestDB(String host, String instance, String database, Integer port, String username, String password) throws SQLException {
 			super(host, instance, database, port, username, password);
 		}
 	}

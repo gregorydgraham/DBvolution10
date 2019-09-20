@@ -68,7 +68,8 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerTestDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase");
@@ -84,7 +85,7 @@ public class DataModelTest extends AbstractTest {
 //		for (Class<? extends DBDatabase> val : conMap.values()) {
 //			System.out.println(val);
 //		}
-		Assert.assertThat(result.size(), is(10));
+		Assert.assertThat(result.size(), is(11));
 	}
 
 	@Test
@@ -104,7 +105,8 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
-		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		for (String knownString : knownStrings) {
@@ -120,7 +122,7 @@ public class DataModelTest extends AbstractTest {
 //		for (Constructor<DBDatabase> constructor : conMap.values()) {
 //			System.out.println(constructor);
 //		}
-		Assert.assertThat(result.size(), is(13));
+		Assert.assertThat(result.size(), is(14));
 	}
 
 	@Test
@@ -142,7 +144,7 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBRowClasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowSubclasses();
-		Assert.assertThat(result.size(), is(296));
+		Assert.assertThat(result.size(), is(297));
 	}
 
 	@Test
