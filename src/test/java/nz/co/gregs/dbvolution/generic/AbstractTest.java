@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -556,7 +557,8 @@ public abstract class AbstractTest {
 				container = new GenericContainer<>("microsoft/mssql-server-linux:latest")
 						.withEnv("ACCEPT_EULA", "Y")
 						.withEnv("SA_PASSWORD", password)
-						.withEnv("TZ", "Pacific/Auckland")
+//						.withEnv("TZ", "Pacific/Auckland")
+						.withEnv("TZ", ZoneId.systemDefault().getId())
 						.withExposedPorts(1433);
 				container.start();
 				String host = container.getContainerIpAddress();
