@@ -40,6 +40,9 @@ import java.util.regex.Pattern;
  * common character or sequence.
  *
  * <p>
+ * The default separator is a space (" "). All other defaults are empty.</p>
+ *
+ * <p>
  * Also supports string prefix and suffix, and is a fluent API.</p>
  *
  * @author gregorygraham
@@ -202,8 +205,8 @@ public class SeparatedString {
 		getStrings().addAll(Arrays.asList(strings));
 		return this;
 	}
-	
-	public SeparatedString containing(String... strings){
+
+	public SeparatedString containing(String... strings) {
 		return add(strings);
 	}
 
