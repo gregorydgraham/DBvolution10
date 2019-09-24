@@ -349,7 +349,6 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapperTest$MyTable1");
 		knownKeys.add("class nz.co.gregs.dbvolution.example.CompanyLogo");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest$MarqueWithComplexWindowingFunction");
-		knownKeys.add("class nz.co.gregs.dbvolution.expressions.BooleanExpressionTest$MarqueWithEquivalentCaseStatements");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.TableHandlerTest$MyNonAnnotatedDBRow");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.TypeAdaptorUsabilityTest$4MyTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBBulkInsertTest$BulkInsertTestTable");
@@ -472,6 +471,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest$MarqueWithEndOfMonthForInstantColumn");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$8TestCustomer");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.IntegerExpressionTest$ExtendedCarCompany");
+//		knownKeys.add("class nz.co.gregs.dbvolution.expressions.BooleanExpressionTest$MarqueWithEquivalentCaseStatements");
 
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {
@@ -492,7 +492,7 @@ public class DataModelTest extends AbstractTest {
 			}
 			Assert.assertTrue(knownKeys.contains(foundString));
 		}
-		Assert.assertThat(result.size(), is(297));
+		Assert.assertThat(result.size(), is(296));
 	}
 
 	@Test
