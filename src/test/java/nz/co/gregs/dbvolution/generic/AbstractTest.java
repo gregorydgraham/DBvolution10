@@ -15,12 +15,14 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
+import com.github.dockerjava.api.DockerClient;
 import java.io.File;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -39,6 +41,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**
  *
@@ -135,6 +140,9 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testOracleXE") != null) {
 			databases.add(new Object[]{"Oracle11DB", Oracle11XETestDB.getFromSettings("oraclexe")});
+		}
+		if (System.getProperty("testOracleXEContainer") != null) {
+			databases.add(new Object[]{"Oracle11XEContainer", Oracle11XEContainerTestDB.getFromSettings("oraclexecontainer")});
 		}
 		if (System.getProperty("testMSSQLServerContainer") != null) {
 			databases.add(new Object[]{"MSSQLServerContainer", MSSQLServerContainerTestDB.getFromSettings("sqlservercontainer")});
@@ -510,6 +518,52 @@ public abstract class AbstractTest {
 		}
 	}
 
+	private static class Oracle11XEContainerTestDB extends Oracle11XEDB {
+
+		private final static long serialVersionUID = 1l;
+//		private static GenericContainer container = null;
+		private static OracleContainer container = null;
+		private static Oracle11XEContainerTestDB staticDatabase;
+
+		public static Oracle11XEContainerTestDB getFromSettings(String prefix) throws SQLException {
+			if (container == null) {
+				String url = System.getProperty("" + prefix + ".url");
+				String instance = System.getProperty("" + prefix + ".instance", "xe");
+				String database = System.getProperty("" + prefix + ".database");
+				String username = System.getProperty("" + prefix + ".username", "system");
+				String password = System.getProperty("" + prefix + ".password", "oracle");
+				String schema = System.getProperty("" + prefix + ".schema");
+
+				/*
+					ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
+					ORACLE_ALLOW_REMOTE=true "if you want the database to be connected remotely"
+					'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
+				 */
+//				container = new GenericContainer<>("oracleinanutshell/oracle-xe-11g")
+//						.withEnv("TZ", ZoneId.systemDefault().getId())
+//						.withEnv("ORACLE_SID", "XE")
+//						.withEnv(" ORACLE_ALLOW_REMOTE", "true")
+//						.withExposedPorts(1521)
+//						;
+				container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
+				container.start();
+				String host = container.getContainerIpAddress();
+				Integer port = container.getMappedPort(1521);
+
+				System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.Oracle11XEContainerTestDB.getFromSettings()");
+				System.out.println("CONTAINER JDBCURL: "+container.getJdbcUrl());
+				System.out.println("" + host + " : " + port + " : " + instance + " : " + username + " : " + password);
+
+				staticDatabase = new Oracle11XEContainerTestDB(host, port, instance, username, password);
+			}
+			return staticDatabase;
+		}
+
+		private Oracle11XEContainerTestDB(String host, Integer port, String instance, String username, String password) throws SQLException {
+			super(host, port, instance, username, password);
+		}
+	}
+
 	private static class MSSQLServerLocalTestDB extends MSSQLServer2012DB {
 
 		private final static long serialVersionUID = 1l;
@@ -557,7 +611,7 @@ public abstract class AbstractTest {
 				container = new GenericContainer<>("microsoft/mssql-server-linux:latest")
 						.withEnv("ACCEPT_EULA", "Y")
 						.withEnv("SA_PASSWORD", password)
-//						.withEnv("TZ", "Pacific/Auckland")
+						//						.withEnv("TZ", "Pacific/Auckland")
 						.withEnv("TZ", ZoneId.systemDefault().getId())
 						.withExposedPorts(1433);
 				container.start();

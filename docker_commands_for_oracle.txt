@@ -1,0 +1,21 @@
+-- IP Address for connections is the IP of the host machine (for instance 192.168.0.2)
+
+-- Remember to start the Docker app
+
+-- Get latest version
+docker pull oracleinanutshell/oracle-xe-11g
+
+-- Start the container
+-- -name oracle_container is the name of the container for docker control purposes
+-- OPTIONAL -v /Users/gregorygraham/Projects/Oracle:/Oracle is the volume where we'll store the data 
+-- OPTIONAL -i is interactive (keep stdin open), 
+-- OPTIONAL --cap-add=SYS_TIME adds linux capabilities for sys_time
+-- -e 'TZ=Pacific/Auckland' sets the container timezone to the where I do my test (needs improving)
+-- -p 1521:1521 is the port of the host and container
+-- -d is detach "Run container in background and print container ID"
+docker run --name oracle_container -v /Users/gregorygraham/Projects/Oracle:/Oracle -i --cap-add=SYS_TIME -e 'TZ=Pacific/Auckland' -p 1521:1521 -d oracleinanutshell/oracle-xe-11g
+
+
+-- Stop and remove the container
+docker container stop oracle_container ; docker container rm oracle_container
+
