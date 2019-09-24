@@ -71,21 +71,30 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XEContainerTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$1");
+		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$2");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
-				System.out.println("" + knownString);
+				System.out.println("KNOWN BUT NOT FOUND: " + knownString);
 			}
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
 		}
+		for (String foundString : constr) {
+			if (!knownStrings.contains(foundString)) {
+				System.out.println("FOUND BUT NOT KNOWN: " + foundString);
+			}
+			Assert.assertTrue(knownStrings.contains(foundString));
+			conMap.remove(foundString);
+		}
 //		for (Class<? extends DBDatabase> val : conMap.values()) {
 //			System.out.println(val);
 //		}
-		Assert.assertThat(result.size(), is(11));
+		Assert.assertThat(result.size(), is(12));
 	}
 
 	@Test
@@ -102,6 +111,7 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase()");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XEContainerTestDB(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
@@ -109,20 +119,32 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
+		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
+		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
 				constr.stream().forEachOrdered((t) -> {
-					System.out.println("EXISTING CONSTRUCTOR: "+t);
+					System.out.println("EXISTING CONSTRUCTOR: " + t);
 				});
 			}
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
 		}
+		for (String constrString : constr) {
+			if (!knownStrings.contains(constrString)) {
+				System.out.println("UNKNOWN CONSTRUCTOR: " + constrString + "");
+				constr.stream().forEachOrdered((t) -> {
+					System.out.println("EXPECTED CONSTRUCTOR: " + t);
+				});
+			}
+			Assert.assertTrue(constr.contains(constrString));
+			conMap.remove(constrString);
+		}
 //		for (Constructor<DBDatabase> constructor : conMap.values()) {
 //			System.out.println(constructor);
 //		}
-		Assert.assertThat(result.size(), is(14));
+		Assert.assertThat(result.size(), is(15));
 	}
 
 	@Test
