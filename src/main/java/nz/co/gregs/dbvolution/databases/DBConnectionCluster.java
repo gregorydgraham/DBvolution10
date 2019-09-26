@@ -32,7 +32,6 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
@@ -51,16 +50,17 @@ import java.util.concurrent.Executor;
  *
  * @author greg
  */
-class DBConnectionCluster implements Connection {
+class DBConnectionCluster implements DBConnection {
 
 	private final DBDatabaseCluster databaseCluster;
 	
 	public DBConnectionCluster(DBDatabaseCluster cluster) {
+//		super(cluster);
 		this.databaseCluster = cluster;
 	}
 
 	@Override
-	public Statement createStatement() throws SQLException {
+	public DBStatement createDBStatement() throws SQLException {
 		return databaseCluster.getDBStatement();
 	}
 
@@ -327,6 +327,11 @@ class DBConnectionCluster implements Connection {
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		throw new UnsupportedOperationException("DBConnectionCluster does not support isWrapperFor(Class<?>) yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public Statement getInternalStatement() throws SQLException {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 }

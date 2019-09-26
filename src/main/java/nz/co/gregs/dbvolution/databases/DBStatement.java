@@ -50,16 +50,16 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Gregory Graham
  */
-public class DBStatement implements Statement {
+public class DBStatement implements AutoCloseable/*implements Statement*/ {
 
 	static final private Log LOG = LogFactory.getLog(DBStatement.class);
 
 	private Statement internalStatement;
 	private boolean batchHasEntries;
 	final DBDatabase database;
-	private Connection connection;
+	private DBConnection connection;
 	private boolean isClosed = false;
-	private List<String> localBatchList = new ArrayList<String>();
+	private final List<String> localBatchList = new ArrayList<String>();
 
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
@@ -67,7 +67,7 @@ public class DBStatement implements Statement {
 	 * @param db the target database
 	 * @param connection the connection to the database
 	 */
-	public DBStatement(DBDatabase db, Connection connection) {
+	public DBStatement(DBDatabase db, DBConnection connection) {
 		this.database = db;
 		this.connection = connection;
 	}
@@ -78,12 +78,13 @@ public class DBStatement implements Statement {
 	 * @param sql SQL
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intent
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
 	 */
-	@Override
-	public ResultSet executeQuery(String sql) throws SQLException {
-		return executeQuery(sql, "UNLABELLED");
+//	@Override
+	public ResultSet executeQuery(String sql, QueryIntention intent) throws SQLException {
+		return executeQuery(sql, "UNLABELLED", intent);
 //		final String logSQL = "EXECUTING QUERY: " + sql;
 //		database.printSQLIfRequested(logSQL);
 //		ResultSet executeQuery = null;
@@ -108,10 +109,11 @@ public class DBStatement implements Statement {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @param label an arbitrary label for the query to help with query identification
+	 * @param intent the query or DDL intention when the exception occurred
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
 	 */
-	public ResultSet executeQuery(String sql, String label) throws SQLException {
+	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING QUERY \""+label+"\": " + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
@@ -119,7 +121,7 @@ public class DBStatement implements Statement {
 			executeQuery = getInternalStatement().executeQuery(sql);
 		} catch (SQLException exp) {
 			try {
-				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql);
+				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql, intent);
 			} catch (SQLException ex) {
 				throw ex;
 			} catch (Exception ex) {
@@ -129,16 +131,16 @@ public class DBStatement implements Statement {
 		return executeQuery;
 	}
 
-	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql) throws Exception {
+	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql, QueryIntention intent) throws Exception {
 		ResultSet executeQuery;
 		checkForBrokenConnection(exp, sql);
 		try {
-			handleResponseFromFixingException(exp);
+			handleResponseFromFixingException(exp, intent);
 //			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
-				handleResponseFromFixingException(exp);
+				handleResponseFromFixingException(exp, intent);
 //				database.addFeatureToFixException(ex);
 			}
 			throw new SQLException(ex);
@@ -150,7 +152,7 @@ public class DBStatement implements Statement {
 			if (exp.getMessage().equals(exp2.getMessage())) {
 				throw exp;
 			} else {
-				executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql);
+				executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql, intent);
 				return executeQuery;
 			}
 		}
@@ -169,7 +171,7 @@ public class DBStatement implements Statement {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int executeUpdate(String string) throws SQLException {
 		database.printSQLIfRequested(string);
 		int executeUpdate = getInternalStatement().executeUpdate(string);
@@ -225,7 +227,7 @@ public class DBStatement implements Statement {
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getMaxFieldSize() throws SQLException {
 		return getInternalStatement().getMaxFieldSize();
 	}
@@ -244,7 +246,7 @@ public class DBStatement implements Statement {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setMaxFieldSize(int i) throws SQLException {
 		getInternalStatement().setMaxFieldSize(i);
 	}
@@ -262,7 +264,7 @@ public class DBStatement implements Statement {
 	 * no limit 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getMaxRows() throws SQLException {
 		return getInternalStatement().getMaxRows();
 	}
@@ -278,7 +280,7 @@ public class DBStatement implements Statement {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setMaxRows(int i) throws SQLException {
 		getInternalStatement().setMaxRows(i);
 	}
@@ -296,7 +298,7 @@ public class DBStatement implements Statement {
 	 * @param bln bln
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setEscapeProcessing(boolean bln) throws SQLException {
 		getInternalStatement().setEscapeProcessing(bln);
 	}
@@ -312,7 +314,7 @@ public class DBStatement implements Statement {
 	 * limit 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getQueryTimeout() throws SQLException {
 		return getInternalStatement().getQueryTimeout();
 	}
@@ -330,20 +332,19 @@ public class DBStatement implements Statement {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setQueryTimeout(int i) throws SQLException {
 		getInternalStatement().setQueryTimeout(i);
 	}
 
 	/**
 	 * Cancels this Statement object if both the DBMS and driver support aborting
-	 * an SQL statement. This method can be used by one thread to cancel a
-	 * statement that is being executed by another thread.
+	 * an SQL statement.This method can be used by one thread to cancel a
+ statement that is being executed by another thread. 1 Database exceptions may be thrown
 	 *
-	 * 1 Database exceptions may be thrown
-	 *
+	 * @throws java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public synchronized void cancel() throws SQLException {
 		try {
 			getInternalStatement().cancel();
@@ -402,7 +403,7 @@ public class DBStatement implements Statement {
 	 * there are no warnings 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public SQLWarning getWarnings() throws SQLException {
 		return getInternalStatement().getWarnings();
 	}
@@ -416,7 +417,7 @@ public class DBStatement implements Statement {
 	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void clearWarnings() throws SQLException {
 		getInternalStatement().clearWarnings();
 	}
@@ -439,7 +440,7 @@ public class DBStatement implements Statement {
 	 * @param string string
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setCursorName(String string) throws SQLException {
 		getInternalStatement().setCursorName(string);
 	}
@@ -462,13 +463,14 @@ public class DBStatement implements Statement {
 	 * @param sql	string
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param intent
 	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
 	 * object; <code>FALSE</code> if it is an update count or there are no results
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
-	public boolean execute(String sql) throws SQLException {
+//	@Override
+	public boolean execute(String sql, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING: " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
@@ -476,16 +478,16 @@ public class DBStatement implements Statement {
 		try {
 			execute = getInternalStatement().execute(sql);
 		} catch (SQLException exp) {
-			return addFeatureAndAttemptExecuteAgain(exp, sql);
+			return addFeatureAndAttemptExecuteAgain(exp, sql, intent);
 		}
 		return execute;
 	}
 
-	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String sql) throws SQLException {
+	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String sql, QueryIntention intent) throws SQLException {
 		boolean executeQuery;
 		checkForBrokenConnection(exp, sql);
 		try {
-			if (handleResponseFromFixingException(exp)) {
+			if (handleResponseFromFixingException(exp, intent)) {
 				return true;
 			}
 		} catch (Exception ex) {
@@ -496,7 +498,7 @@ public class DBStatement implements Statement {
 			return executeQuery;
 		} catch (SQLException exp2) {
 			if (!exp.getMessage().equals(exp2.getMessage())) {
-				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, sql);
+				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, sql, intent);
 				return executeQuery;
 			} else {
 				throw new SQLException(exp);
@@ -504,8 +506,8 @@ public class DBStatement implements Statement {
 		}
 	}
 
-	public boolean handleResponseFromFixingException(Exception exp) throws Exception {
-		DBDatabase.ResponseToException response = database.addFeatureToFixException(exp);
+	public boolean handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception {
+		DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent);
 		if (response.equals(DBDatabase.ResponseToException.REPLACECONNECTION)) {
 			replaceBrokenConnection();
 			return true;
@@ -515,10 +517,10 @@ public class DBStatement implements Statement {
 		return false;
 	}
 
-	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string, String[] strings) throws SQLException {
+	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string, String[] strings, QueryIntention intent) throws SQLException {
 		boolean executeQuery;
 		try {
-			if (handleResponseFromFixingException(exp)) {
+			if (handleResponseFromFixingException(exp, intent)) {
 				return true;
 			}
 		} catch (Exception ex) {
@@ -529,7 +531,7 @@ public class DBStatement implements Statement {
 			return executeQuery;
 		} catch (SQLException exp2) {
 			if (!exp.getMessage().equals(exp2.getMessage())) {
-				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string, strings);
+				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string, strings, intent);
 				return executeQuery;
 			} else {
 				throw new SQLException(exp);
@@ -551,7 +553,7 @@ public class DBStatement implements Statement {
 	 * results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public ResultSet getResultSet() throws SQLException {
 		return getInternalStatement().getResultSet();
 	}
@@ -570,7 +572,7 @@ public class DBStatement implements Statement {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getUpdateCount() throws SQLException {
 		return getInternalStatement().getUpdateCount();
 	}
@@ -595,7 +597,7 @@ public class DBStatement implements Statement {
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public boolean getMoreResults() throws SQLException {
 		return getInternalStatement().getMoreResults();
 	}
@@ -612,7 +614,7 @@ public class DBStatement implements Statement {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setFetchDirection(int i) throws SQLException {
 		getInternalStatement().setFetchDirection(i);
 	}
@@ -631,7 +633,7 @@ public class DBStatement implements Statement {
 	 * Statement object 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getFetchDirection() throws SQLException {
 		return getInternalStatement().getFetchDirection();
 	}
@@ -650,7 +652,7 @@ public class DBStatement implements Statement {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setFetchSize(int i) throws SQLException {
 		getInternalStatement().setFetchSize(i);
 	}
@@ -671,7 +673,7 @@ public class DBStatement implements Statement {
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getFetchSize() throws SQLException {
 		return getInternalStatement().getFetchSize();
 	}
@@ -687,7 +689,7 @@ public class DBStatement implements Statement {
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getResultSetConcurrency() throws SQLException {
 		return getInternalStatement().getResultSetConcurrency();
 	}
@@ -704,7 +706,7 @@ public class DBStatement implements Statement {
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getResultSetType() throws SQLException {
 		return getInternalStatement().getResultSetType();
 	}
@@ -720,7 +722,7 @@ public class DBStatement implements Statement {
 	 * @param string string
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void addBatch(String string) throws SQLException {
 		localBatchList.add(string);
 		getInternalStatement().addBatch(string);
@@ -734,7 +736,7 @@ public class DBStatement implements Statement {
 	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void clearBatch() throws SQLException {
 		localBatchList.clear();
 		getInternalStatement().clearBatch();
@@ -781,7 +783,7 @@ public class DBStatement implements Statement {
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int[] executeBatch() throws SQLException {
 		if (database.isPrintSQLBeforeExecuting()) {
 			localBatchList.stream().forEach((t) -> database.printSQLIfRequested(t));
@@ -799,8 +801,8 @@ public class DBStatement implements Statement {
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
-	public Connection getConnection() throws SQLException {
+//	@Override
+	public DBConnection getConnection() throws SQLException {
 		return connection;
 	}
 
@@ -824,7 +826,7 @@ public class DBStatement implements Statement {
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public boolean getMoreResults(int i) throws SQLException {
 		return getInternalStatement().getMoreResults();
 	}
@@ -844,7 +846,7 @@ public class DBStatement implements Statement {
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public ResultSet getGeneratedKeys() throws SQLException {
 		return getInternalStatement().getGeneratedKeys();
 	}
@@ -867,7 +869,7 @@ public class DBStatement implements Statement {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int executeUpdate(String string, int i) throws SQLException {
 		database.printSQLIfRequested(string);
 		return getInternalStatement().executeUpdate(string, i);
@@ -893,7 +895,7 @@ public class DBStatement implements Statement {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int executeUpdate(String string, int[] ints) throws SQLException {
 		database.printSQLIfRequested(string);
 		return getInternalStatement().executeUpdate(string, ints);
@@ -918,7 +920,7 @@ public class DBStatement implements Statement {
 	 * for SQL statements that return nothing 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int executeUpdate(String string, String[] strings) throws SQLException {
 		final String logSQL = "EXECUTING UPDATE: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -952,7 +954,7 @@ public class DBStatement implements Statement {
 	 * update count or there are no results. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public boolean execute(String string, int i) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -988,7 +990,7 @@ public class DBStatement implements Statement {
 	 * update count or there are no results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public boolean execute(String string, int[] ints) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -1025,15 +1027,15 @@ public class DBStatement implements Statement {
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
-	public boolean execute(String string, String[] strings) throws SQLException {
+//	@Override
+	public boolean execute(String string, String[] strings, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		try {
 			return getInternalStatement().execute(string, strings);
 		} catch (SQLException exp) {
-			return addFeatureAndAttemptExecuteAgain(exp, string, strings);
+			return addFeatureAndAttemptExecuteAgain(exp, string, strings, intent);
 		}
 	}
 
@@ -1048,7 +1050,7 @@ public class DBStatement implements Statement {
 	 * ResultSet.CLOSE_CURSORS_AT_COMMIT 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public int getResultSetHoldability() throws SQLException {
 		return getInternalStatement().getResultSetHoldability();
 	}
@@ -1065,7 +1067,7 @@ public class DBStatement implements Statement {
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public boolean isClosed() throws SQLException {
 		if (database.getDefinition().supportsStatementIsClosed()) {
 			return getInternalStatement().isClosed();
@@ -1093,7 +1095,7 @@ public class DBStatement implements Statement {
 	 * @param bln bln
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void setPoolable(boolean bln) throws SQLException {
 		getInternalStatement().setPoolable(bln);
 	}
@@ -1109,7 +1111,7 @@ public class DBStatement implements Statement {
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public boolean isPoolable() throws SQLException {
 		return getInternalStatement().isPoolable();
 	}
@@ -1134,7 +1136,7 @@ public class DBStatement implements Statement {
 	 * actual implementing object. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		return getInternalStatement().unwrap(iface);
 	}
@@ -1160,7 +1162,7 @@ public class DBStatement implements Statement {
 	 * this is a wrapper for an object with the given interface.
 	 * @since 1.6
 	 */
-	@Override
+//	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		return getInternalStatement().isWrapperFor(iface);
 	}
@@ -1199,7 +1201,7 @@ public class DBStatement implements Statement {
 	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public void closeOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("DBStatement does not support closeOnCompletion() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -1213,7 +1215,7 @@ public class DBStatement implements Statement {
 	 * @return unsupported 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@Override
+//	@Override
 	public boolean isCloseOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("DBStatement does not support closeOnCompletion() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -1228,7 +1230,7 @@ public class DBStatement implements Statement {
 	protected synchronized Statement getInternalStatement() throws SQLException {
 		if (this.internalStatement == null) {
 //			System.out.println("OPENING DBSTATEMENT");
-			this.setInternalStatement(connection.createStatement());
+			this.setInternalStatement(connection.getInternalStatement());
 		}
 		return this.internalStatement;
 	}

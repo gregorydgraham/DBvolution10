@@ -15,18 +15,10 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
 import java.util.ArrayList;
-import java.util.List;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
-import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions;
-import nz.co.gregs.dbvolution.internal.query.QueryOptions;
-import nz.co.gregs.dbvolution.internal.query.QueryState;
+import nz.co.gregs.dbvolution.internal.oracle.xe.*;
 
 /**
  * Defines the features of the Oracle 11 database that differ from the standard
@@ -44,58 +36,58 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
 public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	public static final long serialVersionUID = 1L;
-	
-	@Override
-	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-		return " /*+ FIRST_ROWS(" + options.getRowLimit() + ") */ ";
-	}
+//	
+//	@Override
+//	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+//		return " /*+ FIRST_ROWS(" + options.getRowLimit() + ") */ ";
+//	}
+//
+//	@Override
+//	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
+//		return "";
+//	}
+//
+//	@Override
+//	public String getColumnAutoIncrementSuffix() {
+//		return "";
+//	}
 
-	@Override
-	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
-		return "";
-	}
+//	@Override
+//	public boolean prefersTriggerBasedIdentities() {
+//		return true;
+//	}
 
-	@Override
-	public String getColumnAutoIncrementSuffix() {
-		return "";
-	}
-
-	@Override
-	public boolean prefersTriggerBasedIdentities() {
-		return true;
-	}
-
-	@Override
-	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
-
-		List<String> result = new ArrayList<>();
-		String sequenceName = getPrimaryKeySequenceName(table, column);
-		final String primaryKeyTriggerName = getPrimaryKeyTriggerName(table, column);
-		result.add("DROP TRIGGER " + primaryKeyTriggerName + "");
-		result.add("DROP SEQUENCE " + sequenceName + "");
-		result.add("CREATE SEQUENCE " + sequenceName);
-		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + primaryKeyTriggerName + " \n"
-				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
-				+ "    FOR EACH ROW\n"
-				+ "    WHEN (new." + column + " IS NULL)\n"
-				+ "    BEGIN\n"
-				+ "      SELECT " + sequenceName + ".NEXTVAL\n"
-				+ "      INTO   :new." + column + "\n"
-				+ "      FROM   dual;\n"
-				//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
-				+ "    END;\n");
-
-		return result;
-	}
-
-	@Override
-	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
-
-		List<String> result = new ArrayList<>();
-		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column) + "");
-		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
-		return result;
-	}
+//	@Override
+//	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
+//
+//		List<String> result = new ArrayList<>();
+//		String sequenceName = getPrimaryKeySequenceName(table, column);
+//		final String primaryKeyTriggerName = getPrimaryKeyTriggerName(table, column);
+//		result.add("DROP TRIGGER " + primaryKeyTriggerName + "");
+//		result.add("DROP SEQUENCE " + sequenceName + "");
+//		result.add("CREATE SEQUENCE " + sequenceName);
+//		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + primaryKeyTriggerName + " \n"
+//				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
+//				+ "    FOR EACH ROW\n"
+//				+ "    WHEN (new." + column + " IS NULL)\n"
+//				+ "    BEGIN\n"
+//				+ "      SELECT " + sequenceName + ".NEXTVAL\n"
+//				+ "      INTO   :new." + column + "\n"
+//				+ "      FROM   dual;\n"
+//				//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
+//				+ "    END;\n");
+//
+//		return result;
+////	}
+//
+//	@Override
+//	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
+//
+//		List<String> result = new ArrayList<>();
+//		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column) + "");
+//		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
+//		return result;
+//	}
 
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {

@@ -84,10 +84,10 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:mysql://" 
-				+ settings.getHost() + ":" 
-				+ settings.getPort() + "/" 
-				+ settings.getDatabaseName() 
+		return url != null && !url.isEmpty() ? url : "jdbc:mysql://"
+				+ settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName()
 				+ "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true"
 				+ settings.formatExtras("&", "=", "&", "");
 	}
@@ -114,7 +114,6 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 //			return new HashMap<String, String>();
 //		}
 //	}
-
 //	@Override
 //	protected String getHost() {
 //		String jdbcURL = getJdbcURL();
@@ -124,13 +123,11 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 //					.split(":")[0];
 //		
 //	}
-
 //	@Override
 //	protected String getDatabaseInstance() {
 //		String jdbcURL = getJdbcURL();
 //		return getExtras().get("instance");
 //	}
-
 //	@Override
 //	protected String getPort() {
 //		String jdbcURL = getJdbcURL();
@@ -139,21 +136,20 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 //					.split("/",2)[0]
 //					.replaceAll("^[^:]*:+", "");
 //	}
-
 //	@Override
 //	protected String getSchema() {
 //		return "";
 //	}
-@Override
+	@Override
 	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
 		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:+", ""));
 		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
+				.split("/", 2)[0]
+				.split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
@@ -170,19 +166,15 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 
 	private final static Pattern FUNCTION_DOES_NOT_EXISTS = Pattern.compile("FUNCTION [^ ]* does not exist");
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("Table '[^']*' already exists");
+
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
-//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()");
-//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getClass().getCanonicalName());
-//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getMessage());
-//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).lookingAt());
-		if (TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()){
-//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException() TABLE EXISTS WHILE CREATING TABLE: OK.");
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+		if (intent.is(QueryIntention.DROP_TABLE) && TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()) {
 			return ResponseToException.SKIPQUERY;
-		}else if(FUNCTION_DOES_NOT_EXISTS.matcher(exp.getMessage()).matches()){
-			
+		} else if (FUNCTION_DOES_NOT_EXISTS.matcher(exp.getMessage()).matches()) {
+
 		}
-		return super.addFeatureToFixException(exp);
+		return super.addFeatureToFixException(exp, intent);
 	}
 
 	@Override

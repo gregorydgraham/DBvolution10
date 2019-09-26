@@ -39,6 +39,7 @@ import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
@@ -371,7 +372,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		long result = 0L;
 		try (DBStatement dbStatement = db.getDBStatement()) {
 			final String sqlForCount = details.getSQLForCount(db, details);
-			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel())) {
+			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
 				while (resultSet.next()) {
 					result = resultSet.getLong(1);
 				}
@@ -1251,7 +1252,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 			}
 		}
-		final ResultSet queryResults = statement.executeQuery(sql, getLabel());
+		final ResultSet queryResults = statement.executeQuery(sql, getLabel(),QueryIntention.SIMPLE_SELECT_QUERY);
 
 		if (cancelHandle != null) {
 			cancelHandle.cancel(true);

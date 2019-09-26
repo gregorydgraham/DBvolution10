@@ -186,7 +186,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	private final static Pattern FUNCTION_DOES_NOT_EXISTS = Pattern.compile("FUNCTION [^ ]* does not exist");
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("Table '[^']*' already exists");
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 //		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()");
 //		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getClass().getCanonicalName());
 //		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getMessage());
@@ -197,7 +197,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 		}else if(FUNCTION_DOES_NOT_EXISTS.matcher(exp.getMessage()).matches()){
 			
 		}
-		return super.addFeatureToFixException(exp);
+		return super.addFeatureToFixException(exp, intent);
 	}
 
 	@Override

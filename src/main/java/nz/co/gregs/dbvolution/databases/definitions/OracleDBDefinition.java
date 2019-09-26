@@ -16,11 +16,12 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
@@ -650,4 +651,84 @@ public class OracleDBDefinition extends DBDefinition {
 //		}
 //		return " TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER.format(date) + "','" + ORACLE_DATE_FORMAT_STRING + "') ";
 //	}
+
+	@Override
+	public boolean supportsTableCheckingViaMetaData() {
+		return false;
+	}
+
+	@Override
+	public String getTableExistsSQL(DBRow table) {
+		return "SELECT COUNT(*) FROM "+this.formatTableName(table);
+//		final QueryOptions queryOptions = new QueryOptions();
+//		queryOptions.setRowLimit(1);
+//		return beginSelectStatement() + getLimitRowsSubClauseDuringSelectClause(queryOptions)
+//				+ getCountFunctionName() + "(*) c"
+//				+ beginFromClause()
+//				+ this.formatTableName(table)
+//				+ " "
+//				+ getLimitRowsSubClauseAfterWhereClause(new QueryState(new QueryDetails()), queryOptions)
+//				+ "";
+	}
+
+	/**
+	 * Provides the start of the DROP TABLE expression for this database.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return "DROP TABLE " or equivalent for the database.
+	 */
+	@Override
+	public String getDropTableStart() {
+		return "DROP TABLE ";
+	}
+	
+	@Override
+	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+		return " /*+ FIRST_ROWS(" + options.getRowLimit() + ") */ ";
+	}
+
+	@Override
+	public String getColumnAutoIncrementSuffix() {
+		return "";
+	}
+
+	@Override
+	public boolean prefersTriggerBasedIdentities() {
+		return true;
+	}
+	
+	@Override
+	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
+
+		List<String> result = new ArrayList<>();
+		String sequenceName = getPrimaryKeySequenceName(table, column);
+		final String primaryKeyTriggerName = getPrimaryKeyTriggerName(table, column);
+		result.add("DROP TRIGGER " + primaryKeyTriggerName + "");
+		result.add("DROP SEQUENCE " + sequenceName + "");
+		result.add("CREATE SEQUENCE " + sequenceName);
+		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + primaryKeyTriggerName + " \n"
+				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
+				+ "    FOR EACH ROW\n"
+				+ "    WHEN (new." + column + " IS NULL)\n"
+				+ "    BEGIN\n"
+				+ "      SELECT " + sequenceName + ".NEXTVAL\n"
+				+ "      INTO   :new." + column + "\n"
+				+ "      FROM   dual;\n"
+				//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
+				+ "    END;\n");
+
+		return result;
+	}
+
+	@Override
+	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
+
+		List<String> result = new ArrayList<>();
+		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column) + "");
+		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
+		return result;
+	}
+
 }

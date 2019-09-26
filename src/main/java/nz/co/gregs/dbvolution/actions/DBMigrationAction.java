@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBMigration;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -105,10 +106,10 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				try {
-					statement.execute(sql);
+					statement.execute(sql, QueryIntention.BULK_INSERT);
 				} catch (SQLException sqlex) {
 					try {
-						statement.execute(sql);
+						statement.execute(sql, QueryIntention.BULK_INSERT);
 					} catch (SQLException ex) {
 						throw new SQLException(ex.getLocalizedMessage()+":"+sql, ex);
 					}

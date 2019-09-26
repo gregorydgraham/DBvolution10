@@ -21,6 +21,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -196,7 +197,7 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 		DBActionList actions = new DBActionList(new DBUpdateForcedOnSimpleTypesUsingPrimaryKey(table));
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				statement.execute(sql);
+				statement.execute(sql, QueryIntention.UPDATE_ROW);
 			}
 		}
 		return actions;

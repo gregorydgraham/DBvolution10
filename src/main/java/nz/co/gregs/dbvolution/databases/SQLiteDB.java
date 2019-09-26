@@ -253,16 +253,11 @@ public class SQLiteDB extends DBDatabase {
 
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("\\[SQLITE_ERROR\\] SQL error or missing database \\(table [^ ]* already exists\\)");
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
-//		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()");
-//		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()"+exp.getClass().getCanonicalName());
-//		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()"+exp.getMessage());
-//		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()"+TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).lookingAt());
-		if (TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()){
-//		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException() TABLE EXISTS WHILE CREATING TABLE: OK.");
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+		if (intent.is(QueryIntention.CREATE_TABLE)&&TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()){
 			return ResponseToException.SKIPQUERY;
 		}
-		return super.addFeatureToFixException(exp);
+		return super.addFeatureToFixException(exp, intent);
 	}
 
 	@Override

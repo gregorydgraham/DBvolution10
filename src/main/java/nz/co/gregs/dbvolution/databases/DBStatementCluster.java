@@ -57,11 +57,11 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public boolean execute(String string, String[] strings) throws SQLException {
+	public boolean execute(String string, String[] strings, QueryIntention intent) throws SQLException {
 		boolean executed = true;
 		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
 		for (DBStatement next : dbStatements) {
-			executed &= next.execute(string, strings);
+			executed &= next.execute(string, strings, intent);
 		}
 		return executed;
 	}
@@ -134,7 +134,7 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public Connection getConnection() throws SQLException {
+	public DBConnection getConnection() throws SQLException {
 		throw new UnsupportedOperationException("DBStatementCluster.getConnection should not be used.");
 	}
 
@@ -210,11 +210,11 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public boolean execute(String sql) throws SQLException {
+	public boolean execute(String sql, QueryIntention intent) throws SQLException {
 		boolean executed = true;
 		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
 		for (DBStatement next : dbStatements) {
-			executed &= next.execute(sql);
+			executed &= next.execute(sql, intent);
 		}
 		return executed;
 	}
@@ -313,13 +313,13 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public ResultSet executeQuery(String string) throws SQLException {
-		return getRandomStatement().executeQuery(string);
+	public ResultSet executeQuery(String string, QueryIntention intent) throws SQLException {
+		return getRandomStatement().executeQuery(string, intent);
 	}
 
 	@Override
-	public ResultSet executeQuery(String string, String label) throws SQLException {
-		return getRandomStatement().executeQuery(string, label);
+	public ResultSet executeQuery(String string, String label, QueryIntention intent) throws SQLException {
+		return getRandomStatement().executeQuery(string, label, intent);
 	}
 
 }

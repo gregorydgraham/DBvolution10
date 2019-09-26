@@ -91,10 +91,10 @@ public class DBTransactionStatement extends DBStatement {
 			this.replaceBrokenConnection();
 		} else {
 			try {
-				setInternalStatement(getConnection().createStatement());
+				setInternalStatement(getConnection().getInternalStatement());
 			} catch (Exception ex) {
 				try {
-					setInternalStatement(getConnection().createStatement());
+					setInternalStatement(getConnection().getInternalStatement());
 				} catch (Exception ex1) {
 					throw new SQLException(ex);
 				}
@@ -120,10 +120,10 @@ public class DBTransactionStatement extends DBStatement {
 			this.replaceBrokenConnection();
 		} else {
 			try {
-				setInternalStatement(getConnection().createStatement());
+				setInternalStatement(getConnection().getInternalStatement());
 			} catch (Exception ex) {
 				try {
-					setInternalStatement(getConnection().createStatement());
+					setInternalStatement(getConnection().getInternalStatement());
 				} catch (SQLException ex1) {
 					throw new SQLException(ex);
 				}

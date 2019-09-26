@@ -21,6 +21,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
@@ -75,7 +76,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		}
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String str : getSQLStatements(db)) {
-				statement.execute(str);
+				statement.execute(str, QueryIntention.DELETE_ROW);
 			}
 		}
 		return actions;

@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -173,7 +174,7 @@ public class DBInsert extends DBAction {
 						final List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
 						if (primaryKeys == null || primaryKeys.isEmpty()) {
 							// There are no primary keys so execute and move on.
-							statement.execute(sql);
+							statement.execute(sql, QueryIntention.INSERT_ROW);
 						} else {
 							boolean allPKsHaveBeenSet = true;
 							for (QueryableDatatype<?> primaryKey : primaryKeys) {
@@ -181,7 +182,7 @@ public class DBInsert extends DBAction {
 							}
 							if (allPKsHaveBeenSet) {
 								// The primary key has already been sorted for us so execute and move on.
-								statement.execute(sql);
+								statement.execute(sql,QueryIntention.INSERT_ROW);
 							} else {
 								if (primaryKeys.size() == 1) {
 									QueryableDatatype<?> primaryKey = primaryKeys.get(0);
@@ -189,7 +190,7 @@ public class DBInsert extends DBAction {
 									Integer pkIndex = table.getPrimaryKeyIndexes().get(0);
 									if (pkIndex == null || primaryKeyColumnName == null) {
 										// We can't find the PK so just execute and move on.
-										statement.execute(sql);
+										statement.execute(sql, QueryIntention.INSERT_ROW);
 									} else {
 										// There is a PK, it's not set, and we can find it, so we need to get it's value...
 										if (primaryKeyColumnName.isEmpty()) {
@@ -197,7 +198,7 @@ public class DBInsert extends DBAction {
 											statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
 										} else {
 											// execute and ask for the column specifically, also cross fingers.
-											statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)});
+											statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)}, QueryIntention.INSERT_ROW);
 											pkIndex = 1;
 										}
 										if (primaryKey.hasBeenSet() == false) {
@@ -223,19 +224,19 @@ public class DBInsert extends DBAction {
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException sqlex) {
 						try {
-							statement.execute(sql);
+							statement.execute(sql, QueryIntention.INSERT_ROW);
 						} catch (SQLException ex) {
 							throw new DBSQLException(db, sql, sqlex);
 						}
 					}
 				} else {
 					try {
-						statement.execute(sql);
+						statement.execute(sql, QueryIntention.INSERT_ROW);
 						final List<PropertyWrapper> primaryKeyWrappers = table.getPrimaryKeyPropertyWrappers();
 						if (primaryKeyWrappers.size() > 0) {
 							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
-								try (ResultSet rs = statement.executeQuery(retrieveSQL, "RETRIEVE LAST INSERT")) {
+								try (ResultSet rs = statement.executeQuery(retrieveSQL, "RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT)) {
 									for (PropertyWrapper primaryKeyWrapper : primaryKeyWrappers) {
 										PropertyWrapperDefinition definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
@@ -282,7 +283,7 @@ public class DBInsert extends DBAction {
 	private void updateSequenceIfNecessary(final DBDefinition defn, DBDatabase db, String sql, DBRow table, final DBStatement statement) throws SQLException {
 		if (primaryKeyWasGenerated && defn.requiresSequenceUpdateAfterManualInsert()) {
 			final String sequenceUpdateSQL = defn.getSequenceUpdateSQL(table.getTableName(), table.getPrimaryKeyColumnNames().get(0), primaryKeyGenerated);
-			statement.execute(sequenceUpdateSQL);
+			statement.execute(sequenceUpdateSQL, QueryIntention.UPDATE_SEQUENCE);
 		}
 	}
 

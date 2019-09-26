@@ -37,6 +37,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -186,7 +187,7 @@ public class DBBulkInsert extends DBAction {
 		if (allRowsCanBeBulkInserted) {
 			try (DBStatement statement = db.getDBStatement()) {
 				for (String sql : getSQLStatements(db)) {
-					statement.execute(sql);
+					statement.execute(sql, QueryIntention.BULK_INSERT);
 				}
 			}
 			for (DBRow current : rows) {

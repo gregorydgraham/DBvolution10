@@ -196,7 +196,7 @@ public class H2DB extends DBDatabase {
 	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("Table \"[^\"]*\" already exists; SQL statement:");
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		boolean handledException = false;
 		if ((exp instanceof JdbcException)) {
 			String message = exp.getMessage();
@@ -209,14 +209,14 @@ public class H2DB extends DBDatabase {
 				} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
 					return ResponseToException.SKIPQUERY;
 				} else {
-					try (Statement statement = getConnection().createStatement()) {
+					try (DBStatement statement = getConnection().createDBStatement()) {
 						if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
 								|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
 							String[] split = message.split("[\" ]+");
 							String functionName = split[1];
 							DBVFeature functions = FEATURE_MAP.get(functionName);
 							if (functions != null) {
-								functions.add(statement);
+								functions.add(statement.getInternalStatement());
 								handledException = true;
 							}
 						} else if (message.startsWith("Unknown data type: \"DBV_")) {
@@ -224,7 +224,7 @@ public class H2DB extends DBDatabase {
 							String functionName = split[1];
 							DBVFeature datatype = FEATURE_MAP.get(functionName);
 							if (datatype != null) {
-								datatype.add(statement);
+								datatype.add(statement.getInternalStatement());
 								handledException = true;
 							}
 						} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
@@ -234,7 +234,7 @@ public class H2DB extends DBDatabase {
 
 							DBVFeature functions = FEATURE_MAP.get(functionName);
 							if (functions != null) {
-								functions.add(statement);
+								functions.add(statement.getInternalStatement());
 								handledException = true;
 							}
 						} else {
@@ -242,7 +242,7 @@ public class H2DB extends DBDatabase {
 								String key = entrySet.getKey();
 								DBVFeature value = entrySet.getValue();
 								if (message.contains(key)) {
-									value.add(statement);
+									value.add(statement.getInternalStatement());
 									handledException = true;
 								}
 							}

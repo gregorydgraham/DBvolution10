@@ -139,7 +139,7 @@ public class H2MemoryDB extends H2DB {
 	private void jamDatabaseConnectionOpen() {
 		try {
 			this.storedConnection = getConnection();
-			this.storedConnection.createStatement();
+			this.storedConnection.createDBStatement();
 		} catch (UnableToCreateDatabaseConnectionException | UnableToFindJDBCDriver | SQLException ex) {
 			Logger.getLogger(H2DB.class.getName()).log(Level.SEVERE, null, ex);
 		}

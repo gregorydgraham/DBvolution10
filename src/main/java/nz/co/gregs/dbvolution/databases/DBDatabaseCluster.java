@@ -445,7 +445,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		throw new UnsupportedOperationException("DBDatabase.addFeatureToFixException(Exception) should not be called");
 	}
 
@@ -454,15 +454,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		throw new UnsupportedOperationException("DBDatabase.addDatabaseSpecificFeatures(Statement) should not be called");
 	}
 
-	@Override
-	public synchronized void discardConnection(Connection connection) {
-		throw new UnsupportedOperationException("DBDatabase.discardConnection() should not be called");
-	}
-
-	@Override
-	public synchronized void unusedConnection(Connection connection) throws SQLException {
-		throw new UnsupportedOperationException("DBDatabase.unusedConnection() should not be called");
-	}
+//	@Override
+//	public synchronized void discardConnection(DBConnection connection) {
+//		throw new UnsupportedOperationException("DBDatabase.discardConnection() should not be called");
+//	}
+//
+//	@Override
+//	public synchronized void unusedConnection(DBConnection connection) throws SQLException {
+//		throw new UnsupportedOperationException("DBDatabase.unusedConnection() should not be called");
+//	}
 
 	@Override
 	public Connection getConnectionFromDriverManager() throws SQLException {
@@ -1066,7 +1066,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+	public DBConnection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnection should not be used.");
 	}
 

@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.databases.DBConnection;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -282,7 +282,7 @@ public class DBTableClassGenerator {
 			database =((DBDatabaseCluster)db).getReadyDatabase();
 		}
 		try (DBStatement dbStatement = database.getDBStatement()) {
-			Connection connection = dbStatement.getConnection();
+			DBConnection connection = dbStatement.getConnection();
 			String catalog = connection.getCatalog();
 			String schema = null;
 			try {

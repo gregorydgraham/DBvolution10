@@ -235,7 +235,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	public void createDatabase(String databaseName) throws SQLException {
 		String sqlString = "CREATE DATABASE " + databaseName.replaceAll("\\\"", "") + ";";
 		try (DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute(sqlString);
+			dbStatement.execute(sqlString, QueryIntention.CREATE_DATABASE);
 		}
 	}
 
@@ -255,7 +255,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	public void createUser(String username, String password) throws SQLException {
 		String sqlString = "CREATE USER \"" + username.replaceAll("\\\"", "") + "\" WITH PASSWORD '" + password.replaceAll("'", "") + "';";
 		try (DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute(sqlString);
+			dbStatement.execute(sqlString, QueryIntention.CREATE_USER);
 		}
 	}
 
@@ -348,10 +348,10 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		if ((exp instanceof org.postgresql.util.PSQLException)) {
 			String message = exp.getMessage();
-			if (message.matches("ERROR: relation \"[^\"]*\" already exists.*")) {
+			if (intent.is(QueryIntention.CREATE_TABLE)&&message.matches("ERROR: relation \"[^\"]*\" already exists.*")) {
 				return ResponseToException.SKIPQUERY;
 			} else {
 				throw exp;

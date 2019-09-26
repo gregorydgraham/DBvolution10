@@ -63,40 +63,40 @@ public class OracleAWS11DBDefinition extends OracleAWSDBDefinition {
 		return true;
 	}
 
-	@Override
-	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
-//		    CREATE SEQUENCE dept_seq;
+//	@Override
+//	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
+////		    CREATE SEQUENCE dept_seq;
+////
+////Create a trigger to populate the ID column if it's not specified in the insert.
+////
+////    CREATE OR REPLACE TRIGGER dept_bir 
+////    BEFORE INSERT ON departments 
+////    FOR EACH ROW
+////    WHEN (new.id IS NULL)
+////    BEGIN
+////      SELECT dept_seq.NEXTVAL
+////      INTO   :new.id
+////      FROM   dual;
+////    END;
 //
-//Create a trigger to populate the ID column if it's not specified in the insert.
+//		List<String> result = new ArrayList<String>();
+//		String sequenceName = getPrimaryKeySequenceName(table, column);
+//		result.add("CREATE SEQUENCE " + sequenceName);
 //
-//    CREATE OR REPLACE TRIGGER dept_bir 
-//    BEFORE INSERT ON departments 
-//    FOR EACH ROW
-//    WHEN (new.id IS NULL)
-//    BEGIN
-//      SELECT dept_seq.NEXTVAL
-//      INTO   :new.id
-//      FROM   dual;
-//    END;
-
-		List<String> result = new ArrayList<String>();
-		String sequenceName = getPrimaryKeySequenceName(table, column);
-		result.add("CREATE SEQUENCE " + sequenceName);
-
-		String triggerName = getPrimaryKeyTriggerName(table, column);
-		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + triggerName + " \n"
-				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
-				+ "    FOR EACH ROW\n"
-				+ "    WHEN (new." + column + " IS NULL)\n"
-				+ "    BEGIN\n"
-				+ "      SELECT " + sequenceName + ".NEXTVAL\n"
-				+ "      INTO   :new." + column + "\n"
-				+ "      FROM   dual;\n"
-				//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
-				+ "    END;\n");
-
-		return result;
-	}
+//		String triggerName = getPrimaryKeyTriggerName(table, column);
+//		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + triggerName + " \n"
+//				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
+//				+ "    FOR EACH ROW\n"
+//				+ "    WHEN (new." + column + " IS NULL)\n"
+//				+ "    BEGIN\n"
+//				+ "      SELECT " + sequenceName + ".NEXTVAL\n"
+//				+ "      INTO   :new." + column + "\n"
+//				+ "      FROM   dual;\n"
+//				//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
+//				+ "    END;\n");
+//
+//		return result;
+//	}
 
 //	@Override
 //	public String getStringLengthFunctionName() {

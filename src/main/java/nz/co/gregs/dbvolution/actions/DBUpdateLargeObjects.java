@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -140,7 +141,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			prep.execute();
 		}
 
-		statement.execute(sqlString);
+		statement.execute(sqlString, QueryIntention.UPDATE_ROW);
 	}
 
 	private void setToNullUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
@@ -154,7 +155,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		LOG.debug(sqlString);
-		statement.execute(sqlString);
+		statement.execute(sqlString, QueryIntention.UPDATE_ROW);
 	}
 
 	private void setUsingBinaryStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
