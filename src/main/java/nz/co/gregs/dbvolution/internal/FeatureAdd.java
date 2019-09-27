@@ -71,7 +71,10 @@ public interface FeatureAdd {
 				try {
 					stmt.execute(sql);
 				} catch (Exception ex) {
-					throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + featureName(), ex);
+					final ExceptionDuringDatabaseFeatureSetup setupException = new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + featureName(), ex);
+					System.out.println(""+setupException.getMessage());
+					setupException.printStackTrace();
+					throw setupException;
 				}
 			}
 		}
