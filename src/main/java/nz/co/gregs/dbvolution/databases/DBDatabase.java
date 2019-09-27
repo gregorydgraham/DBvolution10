@@ -1596,7 +1596,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
 					try {
-						dbStatement.execute(sql, QueryIntention.CREATE_TRIGGER);
+						dbStatement.execute(sql, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY);
 					} catch (SQLException sqlex) {
 						sqlex.printStackTrace();
 //						ORA-04080: trigger 'MARQUE_UID_MARQUEDTG' does not exist
