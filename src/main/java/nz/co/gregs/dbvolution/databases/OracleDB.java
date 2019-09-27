@@ -21,11 +21,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -135,9 +137,13 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		for (StringFunctions fn : StringFunctions.values()) {
-			fn.add(statement);
+			try {
+				fn.add(statement);
+			} catch (Exception ex) {
+				throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + fn.name(), ex);
+			}
 		}
 	}
 
@@ -167,14 +173,26 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		}
 //		try (DBStatement dbStatement = getDBStatement()) {
 		for (String sql : triggerBasedIdentitySQL) {
-			dbStatement.execute(sql);
+			dbStatement.execute(sql, QueryIntention.DROP_TRIGGER);
 		}
 //		}
 	}
 
+	private final static Pattern SEQUENCE_DOES_NOT_EXIST = Pattern.compile("ORA-02289: sequence does not exist");
+	private final static Pattern TRIGGER_DOES_NOT_EXIST = Pattern.compile("ORA-04080: trigger .* does not exist");
+	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("ORA-00955: name is already used by an existing object");
+
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
-		throw exp;
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+		final String message = exp.getMessage();
+		if (TABLE_ALREADY_EXISTS.matcher(message).lookingAt()
+				|| TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()
+				|| (SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt() && (intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)))
+				) {
+			return ResponseToException.SKIPQUERY;
+		}
+
+		return super.addFeatureToFixException(exp, intent);
 	}
 
 	/**
@@ -193,7 +211,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement statement, TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
-		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
+		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'", QueryIntention.DELETE_ROW);
 	}
 
 	@Override
