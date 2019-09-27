@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
  * DBDatabase tweaked for a MariaDB Database.
@@ -92,7 +93,7 @@ public class MariaDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 

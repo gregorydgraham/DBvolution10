@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
  * A version of DBDatabase tweaked for JavaDB.
@@ -99,7 +100,7 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 

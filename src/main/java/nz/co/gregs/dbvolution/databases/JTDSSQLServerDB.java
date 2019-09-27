@@ -20,6 +20,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
 
 /**
@@ -175,7 +176,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		for (Point2DFunctions fn : Point2DFunctions.values()) {
 			fn.add(statement);
 		}

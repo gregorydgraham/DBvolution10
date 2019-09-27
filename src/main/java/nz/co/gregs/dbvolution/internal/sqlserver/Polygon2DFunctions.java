@@ -15,18 +15,15 @@
  */
 package nz.co.gregs.dbvolution.internal.sqlserver;
 
-import java.sql.SQLException;
-import java.sql.Statement;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
-public enum Polygon2DFunctions {
+public enum Polygon2DFunctions implements FeatureAdd {
 
 	/**
 	 *
@@ -208,24 +205,47 @@ public enum Polygon2DFunctions {
 		return "dbo.DBV_POLYGON2DFN_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
-	public void add(Statement stmt) throws SQLException {
-		try {
-			stmt.execute("DROP FUNCTION " + this + ";");
-		} catch (SQLException sqlex) {
-			;
-		}
+//	/**
+//	 *
+//	 * @param stmt
+//	 * @throws ExceptionDuringDatabaseFeatureSetup database errors
+//	 */
+//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+//		try {
+//			stmt.execute("DROP FUNCTION " + this + ";");
+//		} catch (Exception ex) {
+//			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
+//		}
+//		if (!this.code.isEmpty()) {
+//			final String createFn = "CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
+//					+ "    RETURNS " + this.returnType
+//					+ " AS BEGIN\n" + "\n" + this.code
+//					+ "\n END;";
+//			try {
+//				stmt.execute(createFn);
+//			} catch (Exception ex) {
+//				throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
+//			}
+//		}
+//	}
+	@Override
+	public String[] dropAndCreateSQL() {
 		if (!this.code.isEmpty()) {
-			final String createFn = "CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
-					+ "    RETURNS " + this.returnType
-					+ " AS BEGIN\n" + "\n" + this.code
-					+ "\n END;";
-			stmt.execute(createFn);
+			return new String[]{
+				"CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
+				+ "    RETURNS " + this.returnType
+				+ " AS BEGIN\n" + "\n" + this.code
+				+ "\n END;"
+			};
 		}
+		return new String[]{};
+	}
+
+	@Override
+	public String[] optionalPreparationSQL() {
+		return new String[]{
+			"DROP FUNCTION " + this + ";"
+		};
 	}
 
 }

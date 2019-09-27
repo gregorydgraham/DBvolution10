@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
 
 /**
@@ -180,7 +181,7 @@ public class Oracle11XEDB extends OracleDB {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(statement);
 
 		for (GeometryFunctions fn : GeometryFunctions.values()) {

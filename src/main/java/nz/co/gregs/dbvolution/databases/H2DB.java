@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
 import org.h2.jdbc.JdbcException;
 
@@ -164,7 +165,7 @@ public class H2DB extends DBDatabase {
 	}
 
 	@Override
-	protected synchronized void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
+	protected synchronized void addDatabaseSpecificFeatures(final Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
 		DataTypes.addAll(stmt);
 		if (dataTypesNotProcessed) {
 			for (DataTypes datatype : DataTypes.values()) {

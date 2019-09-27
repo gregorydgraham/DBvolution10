@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
  * Super class for connecting the different versions of the AWS Oracle DB.
@@ -128,7 +129,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(statement);
 
 		for (Line2DFunctions fn : Line2DFunctions.values()) {

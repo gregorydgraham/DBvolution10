@@ -15,11 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.postgres;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
  *
@@ -28,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author gregorygraham
  */
-public enum Line2DFunctions {
+public enum Line2DFunctions implements FeatureAdd {
 
 	/**
 	 *
@@ -238,26 +234,42 @@ public enum Line2DFunctions {
 		return "DBV_LINE2DFN_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt the database statement to add the datatype to.
-	 * @throws SQLException database errors
-	 */
-	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-			justification = "The strings are actually constant but made dynamically")
-	public void add(Statement stmt) throws SQLException {
-		Log LOG = LogFactory.getLog(Line2DFunctions.class);
-		try {
-			final String drop = "DROP FUNCTION " + this + "(" + this.parameters + ");";
-			stmt.execute(drop);
-		} catch (SQLException sqlex) {
+//	/**
+//	 *
+//	 * @param stmt the database statement to add the datatype to.
+//	 * @throws ExceptionDuringDatabaseFeatureSetup database errors
+//	 */
+//	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+//			justification = "The strings are actually constant but made dynamically")
+//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+//		Log LOG = LogFactory.getLog(Line2DFunctions.class);
+//		try {
+//			final String drop = "DROP FUNCTION " + this + "(" + this.parameters + ");";
+//			stmt.execute(drop);
+//		} catch (SQLException sqlex) {
+//		}
+//		try {
+//			final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
+//			stmt.execute(createFunctionStatement);
+//		} catch (Exception ex) {
+//			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
+//		}
+//	}
+	
+	@Override
+	public String featureName() {
+		return name();
+	}
+
+	@Override
+	public String[] dropAndCreateSQL() {
+		if (!this.code.isEmpty()) {
+			return new String[]{
+				"DROP FUNCTION " + this + "(" + this.parameters + ");",
+				"CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;"
+			};
 		}
-		try {
-			final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
-			stmt.execute(createFunctionStatement);
-		} catch (SQLException sqlex) {
-			LOG.warn("" + this + " INSTALL FAILED", sqlex);
-		}
+		return new String[]{};
 	}
 
 }

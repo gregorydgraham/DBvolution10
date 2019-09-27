@@ -15,9 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.postgres;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.sql.SQLException;
-import java.sql.Statement;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
  *
@@ -26,7 +24,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum StringFunctions {
+public enum StringFunctions implements FeatureAdd {
 
 	/**
 	 *
@@ -55,19 +53,37 @@ public enum StringFunctions {
 	public String toString() {
 		return "DBV_STRINGFN_" + name();
 	}
-	
-	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-			justification = "The strings are actually constant but made dynamically")
-	public void add(Statement stmt) throws SQLException {
-		try {
-			final String drop = "DROP FUNCTION " + this + "(" + parameters + ");";
-			stmt.execute(drop);
-		} catch (SQLException sqlex) {
-			;
-		}
-		final String add = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + this.language.name() + "';";
-		stmt.execute(add);
 
+//	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+//			justification = "The strings are actually constant but made dynamically")
+//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+//		try {
+//			final String drop = "DROP FUNCTION " + this + "(" + parameters + ");";
+//			stmt.execute(drop);
+//		} catch (SQLException sqlex) {
+//			;
+//		}
+//		final String add = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + this.language.name() + "';";
+//		try {
+//			stmt.execute(add);
+//		} catch (Exception ex) {
+//			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
+//		}
+//	}
+	
+	@Override
+	public String[] dropAndCreateSQL() {
+		if (!this.code.isEmpty()) {
+			return new String[]{
+				"DROP FUNCTION " + this + "(" + parameters + ");",
+				"CREATE OR REPLACE FUNCTION " 
+					+ this + "(" + this.parameters + ")\n" 
+					+ "    RETURNS " + this.returnType 
+					+ " AS\n" + "'\n" + this.code + "'\n" 
+					+ "LANGUAGE '" + this.language.name() + "';"
+			};
+		}
+		return new String[]{};
 	}
 
 }

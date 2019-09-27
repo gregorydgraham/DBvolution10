@@ -16,8 +16,7 @@
 package nz.co.gregs.dbvolution.internal.oracle.aws;
 
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
-import java.sql.SQLException;
-import java.sql.Statement;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
  *
@@ -26,7 +25,7 @@ import java.sql.Statement;
  *
  * @author gregory.graham
  */
-public enum Line2DFunctions {
+public enum Line2DFunctions implements FeatureAdd{
 
 	/**
 	 *
@@ -753,16 +752,33 @@ public enum Line2DFunctions {
 		return "DBV_LINE2DFN_" + name();
 	}
 
-	public void add(Statement stmt) throws SQLException {
-		try {
-			if (!this.code.isEmpty()) {
-				final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
+//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+//		try {
+//			if (!this.code.isEmpty()) {
+//				final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
+//						+ "    RETURN " + this.returnType
+//						+ " AS \n" + "\n" + this.code;
+//				stmt.execute(createFn);
+//			}
+//		} catch (SQLException ex) {
+//			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: "+name(), ex);
+//		}
+//	}
+	
+	@Override
+	public String featureName() {
+		return name();
+	}
+
+	@Override
+	public String[] dropAndCreateSQL() {
+		if (!this.code.isEmpty()) {
+			return new String[]{
+				"CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
 						+ "    RETURN " + this.returnType
-						+ " AS \n" + "\n" + this.code;
-				stmt.execute(createFn);
-			}
-		} catch (SQLException ex) {
-			;
+						+ " AS \n" + "\n" + this.code
+			};
 		}
+		return new String[]{};
 	}
 }

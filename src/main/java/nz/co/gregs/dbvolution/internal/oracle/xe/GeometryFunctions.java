@@ -15,15 +15,14 @@
  */
 package nz.co.gregs.dbvolution.internal.oracle.xe;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
  *
  *
  * @author gregory.graham
  */
-public enum GeometryFunctions {
+public enum GeometryFunctions implements FeatureAdd {
 
 	/**
 	 *
@@ -188,21 +187,38 @@ public enum GeometryFunctions {
 		return "DBV_GEOM_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt the database
-	 * @throws SQLException database errors
-	 */
-	public void add(Statement stmt) throws SQLException {
-		try {
-			if (!this.code.isEmpty()) {
-				final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
-						+ "    RETURN " + this.returnType
-						+ " AS \n" + "\n" + this.code;
-				stmt.execute(createFn);
-			}
-		} catch (SQLException ex) {
-			;
+//	/**
+//	 *
+//	 * @param stmt the database
+//	 * @throws ExceptionDuringDatabaseFeatureSetup database errors
+//	 */
+//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+//		try {
+//			if (!this.code.isEmpty()) {
+//				final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
+//						+ "    RETURN " + this.returnType
+//						+ " AS \n" + "\n" + this.code;
+//				stmt.execute(createFn);
+//			}
+//		} catch (SQLException ex) {
+//			;
+//		}
+//	}
+	
+	@Override
+	public String featureName() {
+		return name();
+	}
+
+	@Override
+	public String[] dropAndCreateSQL() {
+		if (!this.code.isEmpty()) {
+			return new String[]{
+				"CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
+				+ "    RETURN " + this.returnType
+				+ " AS \n" + "\n" + this.code
+			};
 		}
+		return new String[]{};
 	}
 }

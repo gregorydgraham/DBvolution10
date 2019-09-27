@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
  * DBDatabase tweaked to work best with NuoDB.
@@ -148,7 +149,7 @@ public class NuoDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 

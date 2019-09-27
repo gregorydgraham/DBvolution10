@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
  * DBDatabase tweaked for a Maria Cluster Database.
@@ -139,7 +140,7 @@ public class MariaClusterDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 

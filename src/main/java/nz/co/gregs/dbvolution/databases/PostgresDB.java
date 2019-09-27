@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
@@ -269,7 +270,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement stmnt) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement stmnt) throws ExceptionDuringDatabaseFeatureSetup {
 		setTimeZone(stmnt);
 		createPostGISExtension(stmnt);
 		if (postGISInstalled) {
@@ -290,13 +291,17 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
 			justification = "Escaping over values takes place within this method to protect data integrity")
-	private void setTimeZone(Statement stmnt) throws SQLException {
+	private void setTimeZone(Statement stmnt) throws ExceptionDuringDatabaseFeatureSetup {
 		String tzName = TimeZone.getDefault().getID();
 		final String setTheTimezone = "set time zone '" + tzName.replaceAll("\\\"", "") + "';";
-		stmnt.execute(setTheTimezone);
+		try {
+			stmnt.execute(setTheTimezone);
+		} catch (Exception ex) {
+			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: set timezone", ex);
+		}
 	}
 
-	private void createPostGISTopologyExtension(Statement stmnt) {
+	private void createPostGISTopologyExtension(Statement stmnt) throws ExceptionDuringDatabaseFeatureSetup {
 		try {
 			if (!postGISTopologyAlreadyTried) {
 				postGISTopologyAlreadyTried = true;
@@ -309,11 +314,12 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			}
 		} catch (org.postgresql.util.PSQLException pexc) {
 			LOG.warn("POSTGIS TOPOLOGY Rejected: Spatial operations will NOT function.", pexc);
-		} catch (SQLException sqlex) {
+		} catch (Exception ex) {
+			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: PostGIS Topology", ex);
 		}
 	}
 
-	private void createPostGISExtension(Statement stmnt) {
+	private void createPostGISExtension(Statement stmnt) throws ExceptionDuringDatabaseFeatureSetup {
 		try {
 			if (!postGISAlreadyTried) {
 				postGISAlreadyTried = true;
@@ -328,7 +334,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		} catch (org.postgresql.util.PSQLException pexc) {
 			LOG.warn("POSTGIS Rejected: Spatial operations will NOT function.", pexc);
 			postGISInstalled = false;
-		} catch (SQLException sqlex) {
+		} catch (Exception ex) {
+			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: PostGIS", ex);
 		}
 	}
 
@@ -351,7 +358,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		if ((exp instanceof org.postgresql.util.PSQLException)) {
 			String message = exp.getMessage();
-			if (intent.is(QueryIntention.CREATE_TABLE)&&message.matches("ERROR: relation \"[^\"]*\" already exists.*")) {
+			if (intent.is(QueryIntention.CREATE_TABLE) && message.matches("ERROR: relation \"[^\"]*\" already exists.*")) {
 				return ResponseToException.SKIPQUERY;
 			} else {
 				throw exp;

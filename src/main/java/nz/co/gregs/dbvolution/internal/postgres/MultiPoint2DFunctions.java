@@ -15,16 +15,14 @@
  */
 package nz.co.gregs.dbvolution.internal.postgres;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.sql.SQLException;
-import java.sql.Statement;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
- * 
+ *
  *
  * @author gregorygraham
  */
-public enum MultiPoint2DFunctions {
+public enum MultiPoint2DFunctions implements FeatureAdd {
 	//MULTIPOINT(2 3,3 4)
 	//[ ( 2, 3 ), ( 3 , 4 ) ]
 
@@ -59,22 +57,37 @@ public enum MultiPoint2DFunctions {
 		return "DBV_MPOINT2DFN_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt the database
-	 * @throws SQLException database errors
-	 */
-	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-			justification = "The strings are actually constant but made dynamically")
-	public void add(Statement stmt) throws SQLException {
-		try {
-			final String drop = "DROP FUNCTION " + this + "(" + this.parameters + ");";
-			stmt.execute(drop);
-		} catch (SQLException sqlex) {
-			;
+//	/**
+//	 *
+//	 * @param stmt the database
+//	 * @throws ExceptionDuringDatabaseFeatureSetup database errors
+//	 */
+//	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+//			justification = "The strings are actually constant but made dynamically")
+//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+//		try {
+//			final String drop = "DROP FUNCTION " + this + "(" + this.parameters + ");";
+//			stmt.execute(drop);
+//		} catch (SQLException sqlex) {
+//			;
+//		}
+//		final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
+//		try {
+//			stmt.execute(createFunctionStatement);
+//		} catch (Exception ex) {
+//			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
+//		}
+//	}
+
+	@Override
+	public String[] dropAndCreateSQL() {
+		if (!this.code.isEmpty()) {
+			return new String[]{
+				"DROP FUNCTION " + this + "(" + this.parameters + ");",
+				"CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;"
+			};
 		}
-		final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
-		stmt.execute(createFunctionStatement);
+		return new String[]{};
 	}
 
 }

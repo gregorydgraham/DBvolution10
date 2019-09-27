@@ -37,6 +37,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import org.h2.tools.Server;
 
 public class H2SharedDB extends H2DB {
@@ -71,7 +72,7 @@ public class H2SharedDB extends H2DB {
 	}
 
 	@Override
-	protected synchronized void addDatabaseSpecificFeatures(Statement stmt) throws SQLException {
+	protected synchronized void addDatabaseSpecificFeatures(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(stmt);
 	}
 

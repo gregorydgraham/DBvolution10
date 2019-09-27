@@ -15,8 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.mysql;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
  *
@@ -25,7 +24,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum MigrationFunctions {
+public enum MigrationFunctions implements FeatureAdd {
 
 	/**
 	 *
@@ -110,22 +109,25 @@ public enum MigrationFunctions {
 
 	@Override
 	public String toString() {
-		return "DBV_MIGRATION_" + name();
+		return "DBV_MIGRATION_" + featureName();
 	}
 
-	public void add(Statement stmt) throws SQLException {
-		try {
-			stmt.execute("DROP FUNCTION " + this + ";");
-		} catch (SQLException sqlex) {
-			;
-		}
+	@Override
+	public String featureName() {
+		return name();
+	}
+
+	@Override
+	public String[] dropAndCreateSQL() {
 		if (!this.code.isEmpty()) {
-			final String createFn = "CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
-					+ "    RETURNS " + this.returnType
-					+ "\n  DETERMINISTIC BEGIN\n" + "\n" + this.code
-					+ "\n END;";
-			stmt.execute(createFn);
+			return new String[]{
+			"DROP FUNCTION " + this + ";",
+				"CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
+				+ "    RETURNS " + this.returnType
+				+ "\n  DETERMINISTIC BEGIN\n" + "\n" + this.code
+				+ "\n END;"
+			};
 		}
+		return new String[]{};
 	}
-
 }

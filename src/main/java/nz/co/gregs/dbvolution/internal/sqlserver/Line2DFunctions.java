@@ -15,9 +15,9 @@
  */
 package nz.co.gregs.dbvolution.internal.sqlserver;
 
-import java.sql.SQLException;
-import java.sql.Statement;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.internal.FeatureAdd;
 
 /**
  *
@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
  *
  * @author gregorygraham
  */
-public enum Line2DFunctions {
+public enum Line2DFunctions implements FeatureAdd {
 
 	/**
 	 *
@@ -164,24 +164,52 @@ public enum Line2DFunctions {
 		return "dbo.DBV_LINE2DFN_" + name();
 	}
 
-	/**
-	 *
-	 * @param stmt
-	 * @throws SQLException database errors
-	 */
-	public void add(Statement stmt) throws SQLException {
-		try {
-			stmt.execute("DROP FUNCTION " + this + ";");
-		} catch (SQLException sqlex) {
-			;
-		}
+//	/**
+//	 *
+//	 * @param stmt
+//	 * @throws ExceptionDuringDatabaseFeatureSetup database errors
+//	 */
+//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+//		try {
+//			stmt.execute("DROP FUNCTION " + this + ";");
+//		} catch (Exception ex) {
+//			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
+//		}
+//		if (!this.code.isEmpty()) {
+//			final String createFn = "CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
+//					+ "    RETURNS " + this.returnType
+//					+ " AS BEGIN\n" + "\n" + this.code
+//					+ "\n END;";
+//			try {
+//				stmt.execute(createFn);
+//			} catch (Exception ex) {
+//				throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
+//			}
+//		}
+//	}
+	@Override
+	public String featureName() {
+		return name();
+	}
+
+	@Override
+	public String[] dropAndCreateSQL() {
 		if (!this.code.isEmpty()) {
-			final String createFn = "CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
-					+ "    RETURNS " + this.returnType
-					+ " AS BEGIN\n" + "\n" + this.code
-					+ "\n END;";
-			stmt.execute(createFn);
+			return new String[]{
+				"CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
+				+ "    RETURNS " + this.returnType
+				+ " AS BEGIN\n" + "\n" + this.code
+				+ "\n END;"
+			};
 		}
+		return new String[]{};
+	}
+
+	@Override
+	public String[] optionalPreparationSQL() {
+		return new String[]{
+			"DROP FUNCTION " + this + ";"
+		};
 	}
 
 }

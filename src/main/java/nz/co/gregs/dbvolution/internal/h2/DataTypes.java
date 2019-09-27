@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.internal.h2;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
  *
@@ -81,9 +82,9 @@ public enum DataTypes implements DBVFeature {
 	/**
 	 *
 	 * @param stmt the database statement to add the datatype to.
-	 * @throws SQLException database errors
+	 * @throws ExceptionDuringDatabaseFeatureSetup database errors
 	 */
-	public static void addAll(Statement stmt) throws SQLException {
+	public static void addAll(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
 	}
 
 	/**

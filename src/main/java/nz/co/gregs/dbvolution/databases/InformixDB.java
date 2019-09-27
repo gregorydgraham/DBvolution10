@@ -20,6 +20,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
+import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.
@@ -117,7 +118,7 @@ public class InformixDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		// none implemented so far
 		;
 	}
