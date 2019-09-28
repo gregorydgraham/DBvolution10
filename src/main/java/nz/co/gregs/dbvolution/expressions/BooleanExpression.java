@@ -440,7 +440,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * tests pass.
 	 *
 	 * <p>
-	 * This expression facilties finding partial matches that may need to be
+	 * This expression facilitates finding partial matches that may need to be
 	 * handled separately.
 	 *
 	 * <p>
