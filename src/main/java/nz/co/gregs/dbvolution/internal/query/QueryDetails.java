@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
-import nz.co.gregs.dbvolution.exceptions.DBQueryException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
@@ -44,7 +43,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
