@@ -56,6 +56,7 @@ public class SeparatedString {
 	private String wrapBefore = "";
 	private String wrapAfter = "";
 	private String escapeChar = "";
+	private String useWhenEmpty;
 
 	private SeparatedString() {
 	}
@@ -120,22 +121,27 @@ public class SeparatedString {
 
 	@Override
 	public String toString() {
-		StringBuilder strs = new StringBuilder();
-		String sep = "";
-		Pattern matchBefore = Pattern.compile(getWrapBefore());
-		Pattern matchAfter = Pattern.compile(getWrapAfter());
-		Pattern matchEsc = Pattern.compile(getEscapeChar());
-		for (String element : this.getStrings()) {
-			String str = element;
-			if (!escapeChar.equals("")) {
-				str = matchBefore.matcher(str).replaceAll(getEscapeChar() + getWrapBefore());
-				str = matchAfter.matcher(str).replaceAll(getEscapeChar() + getWrapAfter());
-				str = matchEsc.matcher(str).replaceAll(getEscapeChar() + getEscapeChar());
+		final ArrayList<String> allTheElements = getStrings();
+		if (allTheElements.isEmpty()) {
+			return useWhenEmpty;
+		} else {
+			StringBuilder strs = new StringBuilder();
+			String sep = "";
+			Pattern matchBefore = Pattern.compile(getWrapBefore());
+			Pattern matchAfter = Pattern.compile(getWrapAfter());
+			Pattern matchEsc = Pattern.compile(getEscapeChar());
+			for (String element : allTheElements) {
+				String str = element;
+				if (!escapeChar.equals("")) {
+					str = matchBefore.matcher(str).replaceAll(getEscapeChar() + getWrapBefore());
+					str = matchAfter.matcher(str).replaceAll(getEscapeChar() + getWrapAfter());
+					str = matchEsc.matcher(str).replaceAll(getEscapeChar() + getEscapeChar());
+				}
+				strs.append(sep).append(getWrapBefore()).append(str).append(getWrapAfter());
+				sep = this.getSeparator();
 			}
-			strs.append(sep).append(getWrapBefore()).append(str).append(getWrapAfter());
-			sep = this.getSeparator();
+			return getPrefix() + strs.toString() + getSuffix();
 		}
-		return getPrefix() + strs.toString() + getSuffix();
 	}
 
 	public boolean isNotEmpty() {
@@ -287,5 +293,10 @@ public class SeparatedString {
 
 	public final SeparatedString endsWith(String string) {
 		return withSuffix(string);
+	}
+
+	public final SeparatedString useWhenEmpty(String string) {
+		this.useWhenEmpty = string;
+		return this;
 	}
 }
