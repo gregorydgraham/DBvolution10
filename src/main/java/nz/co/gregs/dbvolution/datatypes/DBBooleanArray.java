@@ -18,8 +18,11 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -63,6 +66,24 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	 *
 	 */
 	public DBBooleanArray() {
+	}
+
+	/**
+	 * Creates a DBBits with the value provided.
+	 *
+	 * <p>
+	 * The resulting DBBits will be set as having the value provided but will not
+	 * be defined in the database.
+	 *
+	 * @param bools	bits
+	 */
+	public DBBooleanArray(boolean[] bools) {
+		super();
+		List<Boolean> bigBools = new ArrayList<>();
+		for (var bool : bools) {
+			bigBools.add(bool);
+		}
+		setValue(bigBools.toArray(new Boolean[]{}));
 	}
 
 	/**
@@ -296,7 +317,10 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
 	 * handled using the
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

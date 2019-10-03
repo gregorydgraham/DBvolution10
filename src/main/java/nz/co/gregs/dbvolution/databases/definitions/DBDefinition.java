@@ -4702,6 +4702,24 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * Transform a datatype not supported by the database into a type that the
+	 * database does support.
+	 *
+	 * <p>
+	 * Used mostly to turn Booleans into numbers.
+	 *
+	 * <p>
+	 * By default this method just returns the input DBExpression.
+	 *
+	 * @param columnExpression a column expression that might need to change type
+	 * for this database
+	 * @return The DBExpression as a DBExpression supported by the database.
+	 */
+	public DBExpression transformToSortableType(DBExpression columnExpression) {
+		return columnExpression;
+	}
+
+	/**
 	 * Provide the SQL to compare 2 Point2Ds
 	 *
 	 * @param firstPoint a point2d value to compare

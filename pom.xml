@@ -799,10 +799,20 @@
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
 								<testMySQL>true</testMySQL>
-								<testMSSQLServer>true</testMSSQLServer>
 								<testPostgresSQL>true</testPostgresSQL>
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
+								<testMSSQLServerContainer>true</testMSSQLServerContainer>
+								<!-- Use the testcontainer instance of MS SQLServer -->
+								<sqlservercontainer.url></sqlservercontainer.url>
+								<!-- host and port are supplied by the container -->
+								<!--<sqlservercontainer.host></sqlservercontainer.host>-->
+								<!--<sqlservercontainer.port></sqlservercontainer.port>-->
+								<sqlservercontainer.instance>MSSQLServer</sqlservercontainer.instance>
+								<sqlservercontainer.database></sqlservercontainer.database>
+								<sqlservercontainer.username>sa</sqlservercontainer.username>
+								<sqlservercontainer.password>Password23</sqlservercontainer.password>
+								<sqlservercontainer.schema></sqlservercontainer.schema>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>

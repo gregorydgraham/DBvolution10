@@ -59,7 +59,7 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	 * @param field the field that represents the column
 	 */
 	public BooleanColumn(RowDefinition row, Boolean field) {
-		this.column = new AbstractColumn(row, field);
+		this.column = new AbstractColumn(row, new DBBoolean(field));
 	}
 
 	/**

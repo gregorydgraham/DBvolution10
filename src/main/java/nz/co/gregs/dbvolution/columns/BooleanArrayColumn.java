@@ -60,7 +60,7 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 	 * @param field the field representing the column
 	 */
 	public BooleanArrayColumn(RowDefinition row, boolean[] field) {
-		this.column = new AbstractColumn(row, field);
+		this.column = new AbstractColumn(row, new DBBooleanArray(field));
 	}
 
 	/**

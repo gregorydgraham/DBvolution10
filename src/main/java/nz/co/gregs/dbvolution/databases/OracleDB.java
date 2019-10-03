@@ -173,7 +173,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		}
 //		try (DBStatement dbStatement = getDBStatement()) {
 		for (String sql : triggerBasedIdentitySQL) {
-			dbStatement.execute(sql, QueryIntention.DROP_TRIGGER);
+			dbStatement.execute(sql, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY);
 		}
 //		}
 	}
@@ -181,15 +181,21 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	private final static Pattern SEQUENCE_DOES_NOT_EXIST = Pattern.compile("ORA-02289: sequence does not exist");
 	private final static Pattern TRIGGER_DOES_NOT_EXIST = Pattern.compile("ORA-04080: trigger .* does not exist");
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("ORA-00955: name is already used by an existing object");
+	private final static Pattern TABLE_DOES_NOT_EXIST = Pattern.compile("ORA-00942: table or view does not exist");
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		final String message = exp.getMessage();
+//		System.out.println("ADD FEATURE TO FIX EXCEPTION: " + intent.name() + " -> " + message);
 		if (TABLE_ALREADY_EXISTS.matcher(message).lookingAt()
 				|| TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()
 				|| (SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt() && (intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)))
-				) {
+				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.CHECK_TABLE_EXISTS))) {
+//			System.out.println("HANDLED: NO RESPONSE REQUIRED");
 			return ResponseToException.SKIPQUERY;
+		} else {
+//			System.out.println("!!! NO RESPONSE CONFIGURED !!!");
+			exp.printStackTrace();
 		}
 
 		return super.addFeatureToFixException(exp, intent);

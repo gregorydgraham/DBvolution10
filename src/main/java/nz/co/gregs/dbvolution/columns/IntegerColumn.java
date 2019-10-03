@@ -27,7 +27,6 @@ import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
-import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Represents a database column storing an integer value.
@@ -69,7 +68,7 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	 */
 	public IntegerColumn(RowDefinition row, Long field) {
 		super();
-		this.column = new AbstractColumn(row, field);
+		this.column = new AbstractColumn(row, new DBInteger(field));
 	}
 
 	/**
@@ -79,7 +78,7 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	 * @param field the field defining the column
 	 */
 	public IntegerColumn(RowDefinition row, Integer field) {
-		this.column = new AbstractColumn(row, field);
+		this.column = new AbstractColumn(row, new DBInteger(field));
 	}
 
 	/**

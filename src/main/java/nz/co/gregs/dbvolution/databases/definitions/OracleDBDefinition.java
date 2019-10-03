@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
@@ -38,6 +39,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
+import nz.co.gregs.dbvolution.results.BooleanResult;
 
 /**
  * Defines the features of the Oracle database that differ from the standard
@@ -78,10 +80,10 @@ public class OracleDBDefinition extends DBDefinition {
 				+ "||'-'||" + days
 				+ "||' '||" + hours
 				+ "||':'||" + minutes
-				+ "||':'||(" + seconds+"+"+subsecond+")"
-//				+ "||' '||" + timeZoneSign
-//				+ "||" + timeZoneHourOffset
-//				+ "||" + timeZoneMinuteOffSet
+				+ "||':'||(" + seconds + "+" + subsecond + ")"
+				//				+ "||' '||" + timeZoneSign
+				//				+ "||" + timeZoneHourOffset
+				//				+ "||" + timeZoneMinuteOffSet
 				+ ", '" + ORACLE_DATE_FORMAT_STRING + "')";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
@@ -525,10 +527,26 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof BooleanExpression) {
-			return ((BooleanExpression) columnExpression).ifThenElse(1, 0);
+			return ((BooleanExpression) columnExpression).ifTrueFalseNull(1, 0, null);
 		} else {
 			return super.transformToStorableType(columnExpression);
 		}
+	}
+
+	@Override
+	public DBExpression transformToSortableType(DBExpression columnExpression) {
+//		QueryableDatatype<?> qdt = columnExpression.getQueryableDatatypeForExpressionValue();
+//		if (qdt instanceof DBBoolean) {
+			if (columnExpression instanceof BooleanExpression) {
+				return ((BooleanExpression) columnExpression).ifTrueFalseNull(1, 0, null);
+//			} else if (columnExpression instanceof AbstractColumn) {
+//				DBExpression expr = ((AbstractColumn) columnExpression).asExpression();
+//				if (expr instanceof BooleanResult) {
+//					return new BooleanExpression((BooleanResult) expr).ifTrueFalseNull(1, 0, null);
+//				}
+//			}
+		}
+		return super.transformToSortableType(columnExpression);
 	}
 
 	@Override
@@ -652,7 +670,6 @@ public class OracleDBDefinition extends DBDefinition {
 //		}
 //		return " TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER.format(date) + "','" + ORACLE_DATE_FORMAT_STRING + "') ";
 //	}
-
 	@Override
 	public boolean supportsTableCheckingViaMetaData() {
 		return false;
@@ -660,7 +677,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String getTableExistsSQL(DBRow table) {
-		return "SELECT COUNT(*) FROM "+this.formatTableName(table);
+		return "SELECT COUNT(*) FROM " + this.formatTableName(table);
 //		final QueryOptions queryOptions = new QueryOptions();
 //		queryOptions.setRowLimit(1);
 //		return beginSelectStatement() + getLimitRowsSubClauseDuringSelectClause(queryOptions)
@@ -684,7 +701,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public String getDropTableStart() {
 		return "DROP TABLE ";
 	}
-	
+
 	@Override
 	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
 		return " /*+ FIRST_ROWS(" + options.getRowLimit() + ") */ ";
@@ -699,7 +716,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean prefersTriggerBasedIdentities() {
 		return true;
 	}
-	
+
 	@Override
 	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
 

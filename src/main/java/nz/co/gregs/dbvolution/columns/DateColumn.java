@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
@@ -63,7 +62,7 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	 * @param field the field defining the column
 	 */
 	public DateColumn(RowDefinition row, Date field) {
-		this.column = new AbstractColumn(row, field);
+		this.column = new AbstractColumn(row, new DBDate(field));
 	}
 
 	/**

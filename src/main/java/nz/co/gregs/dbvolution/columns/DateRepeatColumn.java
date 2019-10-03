@@ -49,7 +49,7 @@ public class DateRepeatColumn extends DateRepeatExpression implements ColumnProv
 	 * @param field the field defining the column
 	 */
 	public DateRepeatColumn(RowDefinition row, Period field) {
-		this.column = new AbstractColumn(row, field);
+		this.column = new AbstractColumn(row, new DBDateRepeat(field));
 	}
 
 	/**

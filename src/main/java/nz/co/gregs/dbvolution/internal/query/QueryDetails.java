@@ -51,6 +51,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
  *
@@ -829,26 +830,28 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			state.setHasBeenOrdered(true);
-			StringBuilder orderByClause = new StringBuilder("");
-			String sortSeparator = defn.getStartingOrderByClauseSeparator();
+			SeparatedString orderByClause = SeparatedString.byCommas();
+//			StringBuilder orderByClause = new StringBuilder("");
+//			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (SortProvider sorter : sortOrderColumns) {
 				if (!sorter.isWindowingFunction() || defn.supportsWindowingFunctionsInTheOrderByClause()) {
 					if (sorter.hasQueryColumn()) {
-						orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
-						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+						orderByClause.add(defn.transformToSortableType(sorter).toSQLString(defn));
+//						orderByClause.append(sortSeparator).append(defn.transformToStorableType(sorter).toSQLString(defn));
+//						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 					} else {
-						PropertyWrapperDefinition propDefn;
-						QueryableDatatype<?> qdt;
-						if (sorter instanceof SortProvider.Column) {
-							PropertyWrapper prop = ((SortProvider.Column) sorter).getPropertyWrapper();
-							propDefn = prop.getPropertyWrapperDefinition();
-							qdt = prop.getQueryableDatatype();
-						} else {
-							propDefn = null;
-							qdt = sorter.asExpressionColumn();
-						}
-
 						if (prefersIndexBasedOrderByClause) {
+							PropertyWrapperDefinition propDefn;
+							QueryableDatatype<?> qdt;
+							if (sorter instanceof SortProvider.Column) {
+								PropertyWrapper prop = ((SortProvider.Column) sorter).getPropertyWrapper();
+								propDefn = prop.getPropertyWrapperDefinition();
+								qdt = prop.getQueryableDatatype();
+							} else {
+								propDefn = null;
+								qdt = sorter.asExpressionColumn();
+							}
+
 							Integer columnIndex = indexesOfSelectedProperties.get(propDefn);
 							if (columnIndex == null) {
 								columnIndex = IndexesOfSelectedExpressions.get(qdt);
@@ -859,21 +862,27 @@ public class QueryDetails implements DBQueryable, Serializable {
 									columnIndex = IndexesOfSelectedExpressions.get(columnExpression);
 								}
 							}
-							orderByClause.append(sortSeparator).append(columnIndex).append(sorter.getSortDirectionSQL(defn));//defn.getOrderByDirectionClause(qdt.getSortOrder()));
-							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+							orderByClause.add(columnIndex + sorter.getSortDirectionSQL(defn));
+//							orderByClause.append(sortSeparator).append(columnIndex).append(sorter.getSortDirectionSQL(defn));//defn.getOrderByDirectionClause(qdt.getSortOrder()));
+//							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 						} else {
-							orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
-							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+							orderByClause.add(sorter.toSQLString(defn));
+//							orderByClause.append(sortSeparator).append(defn.transformToStorableType(sorter).toSQLString(defn));
+//							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 						}
 					}
 				}
 			}
-			if (orderByClause.toString().replaceAll(" ", "").isEmpty()) {
-				return "";
-			} else {
-				orderByClause.insert(0, defn.beginOrderByClause()).append(defn.endOrderByClause());
-				return orderByClause.toString();
-			}
+//			if (orderByClause.toString().replaceAll(" ", "").isEmpty()) {
+//				return "";
+//			} else {
+			orderByClause
+					.withPrefix(defn.beginOrderByClause())
+					.withSuffix(defn.endOrderByClause())
+					.useWhenEmpty("");
+//				orderByClause.insert(0, defn.beginOrderByClause()).append(defn.endOrderByClause());
+			return orderByClause.toString();
+//			}
 		}
 
 		return "";
@@ -1250,7 +1259,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 			}
 		}
-		final ResultSet queryResults = statement.executeQuery(sql, getLabel(),QueryIntention.SIMPLE_SELECT_QUERY);
+		final ResultSet queryResults = statement.executeQuery(sql, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY);
 
 		if (cancelHandle != null) {
 			cancelHandle.cancel(true);

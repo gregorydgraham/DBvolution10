@@ -62,7 +62,7 @@ public class InstantColumn extends InstantExpression implements ColumnProvider {
 	 * @param field the field defining the column
 	 */
 	public InstantColumn(RowDefinition row, Instant field) {
-		this.column = new AbstractColumn(row, field);
+		this.column = new AbstractColumn(row, new DBInstant(field));
 	}
 
 	/**

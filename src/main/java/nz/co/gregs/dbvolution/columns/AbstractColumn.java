@@ -103,6 +103,23 @@ public class AbstractColumn implements DBExpression, Serializable {
 		}
 	}
 
+	public boolean hasExpression() {
+		if (field instanceof QueryableDatatype) {
+			return ((QueryableDatatype) field).hasColumnExpression();
+		}
+		return false;
+	}
+
+	public DBExpression getExpression() {
+		if (field instanceof QueryableDatatype) {
+			final QueryableDatatype qdt = (QueryableDatatype) field;
+			if (qdt.hasColumnExpression()) {
+				return (qdt).getColumnExpression()[0];
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public AbstractColumn copy() {
 		final DBRow row = getInstanceOfRow();

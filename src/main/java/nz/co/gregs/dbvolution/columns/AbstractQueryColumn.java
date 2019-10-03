@@ -39,6 +39,10 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Creates an AbstractColumn representing a column within a query.
+ *
+ */
 public class AbstractQueryColumn extends AbstractColumn {
 
 	private static final long serialVersionUID = 1l;
@@ -79,6 +83,16 @@ public class AbstractQueryColumn extends AbstractColumn {
 	}
 
 	@Override
+	public boolean hasExpression() {
+		return field.hasColumnExpression();
+	}
+
+	@Override
+	public DBExpression getExpression() {
+		return field.getColumnExpression()[0];
+	}
+
+	@Override
 	public AbstractQueryColumn copy() {
 		return new AbstractQueryColumn(query, field.copy());
 //		try {
@@ -116,6 +130,9 @@ public class AbstractQueryColumn extends AbstractColumn {
 	 */
 	@Override
 	public DBExpression asExpression() {
+		if (hasExpression()) {
+			return field.getColumnExpression()[0];
+		}
 		return this;
 	}
 

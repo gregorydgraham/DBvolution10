@@ -114,6 +114,22 @@ public class SeparatedString {
 		return SeparatedString.forSeparator("\n");
 	}
 
+	public static SeparatedString spaceSeparated() {
+		return SeparatedString.bySpaces();
+	}
+
+	public static SeparatedString commaSeparated() {
+		return SeparatedString.byCommas();
+	}
+
+	public static SeparatedString tabSeparated() {
+		return SeparatedString.byTabs();
+	}
+
+	public static SeparatedString lineSeparated() {
+		return SeparatedString.byLines();
+	}
+
 	public SeparatedString withEscapeChar(String esc) {
 		this.escapeChar = esc;
 		return this;

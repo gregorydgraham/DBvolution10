@@ -229,7 +229,11 @@ public class SortProvider implements DBExpression {
 	 * @return the innerExpression
 	 */
 	public AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> getInnerExpression() {
-		return innerExpression;
+		if (innerExpression != null) {
+			return innerExpression;
+		} else {
+			return (AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>>) innerColumn.getExpression();
+		}
 	}
 
 	public boolean hasQueryColumn() {
@@ -267,9 +271,9 @@ public class SortProvider implements DBExpression {
 	@Override
 	public String toSQLString(DBDefinition defn) {
 		String exprSQL = getExpressionSQL(defn);
-		return exprSQL.isEmpty()
+		return (exprSQL.isEmpty()
 				? defn.getTrueOperation()
-				: exprSQL
+				: exprSQL)
 				+ getSortDirectionSQL(defn);
 	}
 
@@ -277,16 +281,16 @@ public class SortProvider implements DBExpression {
 		String exprSQL = "";
 		if (hasQueryColumn()) {
 			exprSQL = getQueryColumn().toSQLString(defn);
-		} else if (hasColumn()) {
-			exprSQL = defn.transformToStorableType(getColumn()).toSQLString(defn);
 		} else if (hasInnerExpression()) {
-			exprSQL = getInnerExpression().toSQLString(defn);
+			exprSQL = defn.transformToSortableType(getInnerExpression()).toSQLString(defn);
+		} else if (hasColumn()) {
+			exprSQL = defn.transformToSortableType(getColumn()).toSQLString(defn);
 		}
 		return exprSQL;
 	}
 
 	public boolean hasInnerExpression() {
-		return getInnerExpression() != null;
+		return getInnerExpression() != null || getColumn().hasExpression();
 	}
 
 	@Override

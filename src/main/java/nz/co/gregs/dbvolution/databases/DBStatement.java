@@ -108,13 +108,14 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param sql SQL
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @param label an arbitrary label for the query to help with query identification
+	 * @param label an arbitrary label for the query to help with query
+	 * identification
 	 * @param intent the query or DDL intention when the exception occurred
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
 	 */
 	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException {
-		final String logSQL = "EXECUTING QUERY \""+label+"\": " + sql;
+		final String logSQL = "EXECUTING QUERY \"" + label + "\": " + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
 		try {
@@ -123,8 +124,18 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			try {
 				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql, intent);
 			} catch (SQLException ex) {
+//				System.out.println("executeQuery: "+ex.getMessage());
+//				System.out.println("INTENT: "+intent.name());
+//				System.out.println("LABEL: "+label);
+//				System.out.println("SQL: "+sql);
+//				ex.printStackTrace();
 				throw ex;
 			} catch (Exception ex) {
+//				System.out.println("executeQuery: "+ex.getMessage());
+//				System.out.println("INTENT: "+intent.name());
+//				System.out.println("LABEL: "+label);
+//				System.out.println("SQL: "+sql);
+//				ex.printStackTrace();
 				throw new SQLException(ex);
 			}
 		}
@@ -136,12 +147,14 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		checkForBrokenConnection(exp, sql);
 		try {
 			handleResponseFromFixingException(exp, intent);
-//			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
+			// Checking the table will generate exceptions
+			if (!intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
+				System.out.println("REPEATED EXCEPTIONS FROM: " + sql);
+			}
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
 				handleResponseFromFixingException(exp, intent);
-//				database.addFeatureToFixException(ex);
 			}
 			throw new SQLException(ex);
 		}
@@ -340,7 +353,8 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Cancels this Statement object if both the DBMS and driver support aborting
 	 * an SQL statement.This method can be used by one thread to cancel a
- statement that is being executed by another thread. 1 Database exceptions may be thrown
+	 * statement that is being executed by another thread. 1 Database exceptions
+	 * may be thrown
 	 *
 	 * @throws java.sql.SQLException
 	 */
