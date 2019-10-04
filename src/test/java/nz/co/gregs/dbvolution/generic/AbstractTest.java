@@ -544,7 +544,7 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static class MSSQLServerLocalTestDB extends MSSQLServer2012DB {
+	private static class MSSQLServerLocalTestDB extends MSSQLServerDB {
 
 		private final static long serialVersionUID = 1l;
 
@@ -567,7 +567,7 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static class MSSQLServerContainerTestDB extends MSSQLServer2012DB {
+	private static class MSSQLServerContainerTestDB extends MSSQLServerDB {
 
 		private final static long serialVersionUID = 1l;
 
