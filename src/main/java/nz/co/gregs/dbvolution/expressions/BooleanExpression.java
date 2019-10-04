@@ -1184,7 +1184,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * @param trueValue expression to use when this expression is TRUE
 	 * @param falseValue expression to use when this expression is FALSE
-	 * @param nullValue  the expression to use if the expression is NULL
+	 * @param nullValue the expression to use if the expression is NULL
 	 * @return an expression that will generate a SQL clause conceptually similar
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
@@ -1258,6 +1258,138 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifTrueFalseNull(NumberExpression trueExpr, NumberExpression falseExpr, NumberExpression nullExpr) {
+		return CaseExpression
+				.when(this, trueExpr)
+				.when(this.isFalse(), falseExpr)
+				.defaultValue(nullExpr);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public InstantExpression ifTrueFalseNull(Instant trueExpr, Instant falseExpr, Instant nullExpr) {
+		return CaseExpression
+				.when(this, value(trueExpr))
+				.when(this.isFalse(), value(falseExpr))
+				.defaultValue(value(nullExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public InstantExpression ifTrueFalseNull(InstantExpression trueExpr, InstantExpression falseExpr, InstantExpression nullExpr) {
+		return CaseExpression
+				.when(this, trueExpr)
+				.when(this.isFalse(), falseExpr)
+				.defaultValue(nullExpr);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public LocalDateExpression ifTrueFalseNull(LocalDate trueExpr, LocalDate falseExpr, LocalDate nullExpr) {
+		return CaseExpression
+				.when(this, value(trueExpr))
+				.when(this.isFalse(), value(falseExpr))
+				.defaultValue(value(nullExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public LocalDateTimeExpression ifTrueFalseNull(LocalDateTime trueExpr, LocalDateTime falseExpr, LocalDateTime nullExpr) {
+		return CaseExpression
+				.when(this, value(trueExpr))
+				.when(this.isFalse(), value(falseExpr))
+				.defaultValue(value(nullExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public LocalDateExpression ifTrueFalseNull(LocalDateExpression trueExpr, LocalDateExpression falseExpr, LocalDateExpression nullExpr) {
+		return CaseExpression
+				.when(this, trueExpr)
+				.when(this.isFalse(), falseExpr)
+				.defaultValue(nullExpr);
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, the second
+	 * result is returned if the expression is false, and the third is returned if
+	 * the expression is NULL.</p>
+	 *
+	 * @param trueExpr expression to use when this expression is TRUE
+	 * @param falseExpr expression to use when this expression is FALSE
+	 * @param nullExpr the expression to use if the expression is NULL
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public LocalDateTimeExpression ifTrueFalseNull(LocalDateTimeExpression trueExpr, LocalDateTimeExpression falseExpr, LocalDateTimeExpression nullExpr) {
 		return CaseExpression
 				.when(this, trueExpr)
 				.when(this.isFalse(), falseExpr)
