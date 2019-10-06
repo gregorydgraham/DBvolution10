@@ -114,7 +114,7 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	 *
 	 * @param columnExpression the expression to use to fill this field during a query
 	 */
-	public DBPoint2D(nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression columnExpression) {
+	public DBPoint2D(Point2DExpression columnExpression) {
 		super(columnExpression);
 	}
 
