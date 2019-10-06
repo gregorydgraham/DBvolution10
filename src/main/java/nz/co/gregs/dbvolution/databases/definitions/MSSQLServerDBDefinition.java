@@ -40,6 +40,7 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
+import nz.co.gregs.dbvolution.results.Spatial2DResult;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -128,19 +129,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
-		if (qdt instanceof DBPolygon2D) {
-			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
-		} else if (qdt instanceof DBPoint2D) {
-			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
-		} else if (qdt instanceof DBLine2D) {
-			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
-		} else if (qdt instanceof DBLineSegment2D) {
-			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
-		} else if (qdt instanceof DBMultiPoint2D) {
-			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
-		} else {
-			return selectableName;
+		if (!qdt.hasColumnExpression()) {
+			if (qdt instanceof Spatial2DResult) {
+				return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
+			}
 		}
+		return selectableName;
 	}
 
 	@Override
@@ -154,7 +148,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		Date parsed;
 		try {
 			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
-//			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S Z").parse(tempString);
 		} catch (ParseException ex) {
 			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
 		}
@@ -162,7 +155,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	//'2019-06-11 23:09:06.1075250 +12:00'
-//	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n ZZZZZ");
 	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
 	DateTimeFormatter DATETIMEFORMATTER_WITHOUT_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
 
@@ -240,13 +232,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-		return " TOP(" + options.getRowLimit() + ") "; //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
 	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
-		return "";
+		int rowLimit = options.getRowLimit();
+		Integer pageNumber = options.getPageIndex();
+		if (rowLimit > 0 && supportsPagingNatively(options)) {
+			long offset = pageNumber * rowLimit;
+			return "OFFSET " + offset + " ROWS FETCH NEXT " + rowLimit + " ROWS ONLY";
+		} else {
+			return "";
+		}
 	}
 
 	@Override
@@ -340,11 +334,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean supportsPagingNatively(QueryOptions options) {
-		return false;
-	}
-
-	@Override
 	public String getColumnAutoIncrementSuffix() {
 		return " IDENTITY ";
 	}
@@ -369,10 +358,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return " case when (" + booleanExpression + ") then 1 when not (" + booleanExpression + ") then 0 else null end ";
 	}
 
-//	@Override
-//	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-//		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
-//	}
 	@Override
 	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
@@ -710,6 +695,75 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
 						if (expr instanceof BooleanExpression) {
 							return ((BooleanExpression) expr).ifTrueFalseNull(1, 0, null).bracket();
+						}
+					}
+				}
+			}
+		}
+		return super.transformToStorableType(columnExpression);
+	}
+
+	@Override
+	public DBExpression transformToSelectableType(DBExpression columnExpression) {
+		if (columnExpression instanceof BooleanExpression) {
+			final BooleanExpression boolExpr = (BooleanExpression) columnExpression;
+			if (boolExpr.isWindowingFunction()) {
+				return columnExpression;
+			} else if (boolExpr.isBooleanStatement()) {
+				return boolExpr.ifTrueFalseNull(1, 0, null).bracket();
+			} else {
+				return columnExpression;
+			}
+		} else if (columnExpression instanceof Spatial2DExpression) {
+			return ((ExpressionHasStandardStringResult) columnExpression).stringResult();
+		}
+		return super.transformToSelectableType(columnExpression);
+	}
+
+	@Override
+	public DBExpression transformToGroupableType(DBExpression expression) {
+		if (expression instanceof BooleanExpression) {
+			final BooleanExpression boolexpr = (BooleanExpression) expression;
+			return boolexpr.ifTrueFalseNull(true, false, null);
+		} else if (expression instanceof Spatial2DExpression) {
+			return ((ExpressionHasStandardStringResult) expression).stringResult();
+		} else {
+			return super.transformToStorableType(expression);
+		}
+	}
+
+	@Override
+	public DBExpression transformToWhenableType(BooleanExpression test) {
+		if (test.isBooleanStatement()) {
+			return test;
+		} else {
+			return new BooleanExpression(test) {
+				@Override
+				public String toSQLString(DBDefinition db) {
+					return "(" + super.toSQLString(db) + "=1)";
+				}
+			};
+		}
+	}
+
+	@Override
+	public DBExpression transformToSortableType(DBExpression columnExpression) {
+		if (columnExpression instanceof BooleanExpression) {
+			final BooleanExpression boolExpr = (BooleanExpression) columnExpression;
+			if (boolExpr.isWindowingFunction()) {
+				return columnExpression;
+			} else {
+				return boolExpr.ifTrueFalseNull(1, 0, null).bracket();
+			}
+		} else if (columnExpression instanceof AbstractColumn) {
+			Object col = ((AbstractColumn) columnExpression).getField();
+			if (col != null && (col instanceof DBBoolean)) {
+				final DBBoolean bool = (DBBoolean) col;
+				final DBExpression[] exprns = bool.getColumnExpression();
+				if (exprns.length > 0) {
+					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
+						if (expr instanceof BooleanExpression) {
+							return ((BooleanExpression) expr).ifTrueFalseNull(1, 0, null).bracket();
 						} else {
 							return super.transformToStorableType(columnExpression);
 						}
@@ -758,7 +812,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
-		return "(" + line2DSQL + ").STAsText()";
+		return "CAST((" + line2DSQL + ").STAsText() as nvarchar(2000))";
 	}
 
 	@Override
@@ -1331,6 +1385,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public boolean requiresOnClauseForAllJoins() {
+		return true;
+	}
+
+	@Override
 	public boolean requiresReversingLineStringsFromDatabase() {
 		return true;
 	}
@@ -1353,16 +1412,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		}
 		return lineString;
 	}
-
+	
 	@Override
-	public DBExpression transformToSelectableType(DBExpression expression) {
-		if (expression instanceof BooleanExpression) {
-			final BooleanExpression boolexpr = (BooleanExpression) expression;
-			return ((BooleanExpression) expression).ifTrueFalseNull(true, false,null);
-		} else if (expression instanceof Spatial2DExpression) {
-			return ((ExpressionHasStandardStringResult) expression).stringResult();
-		} else {
-			return super.transformToStorableType(expression);
-		}
+	public String getDefaultOrderingClause() {
+		return "ORDER BY (SELECT NULL)";
 	}
 }
