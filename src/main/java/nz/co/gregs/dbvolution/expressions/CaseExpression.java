@@ -69,7 +69,7 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
 public class CaseExpression {
 
 	public static WhenExpression<Boolean, BooleanResult, DBBoolean, BooleanExpression> when(BooleanExpression aThis, Boolean i) {
-		return new WhenExpression<>(aThis, AnyExpression.value(i));
+		return when(aThis, AnyExpression.value(i));
 	}
 
 	public static WhenExpression<Instant, InstantResult, DBInstant, InstantExpression> when(BooleanExpression aThis, Instant i) {
@@ -97,14 +97,7 @@ public class CaseExpression {
 	}
 
 	public static WhenExpression<Boolean, BooleanResult, DBBoolean, BooleanExpression> when(BooleanExpression aThis, BooleanExpression i) {
-		return new WhenExpression<>(
-				aThis,
-				new BooleanExpression(i) {
-			@Override
-			public boolean isBooleanStatement() {
-				return false;
-			}
-		});
+		return new WhenExpression<>(	aThis,new BooleanExpressionNonStatement(i));
 	}
 
 	public static <B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> WhenExpression<B, R, D, E> when(BooleanExpression aThis, E i) {
@@ -135,6 +128,11 @@ public class CaseExpression {
 			return this;
 		}
 
+		public E defaultValue(B value) {
+			this.defaultValue = firstValue.expression(value);
+			return this.build();
+		}
+
 		public E defaultValue(R value) {
 			this.defaultValue = value;
 			return this.build();
@@ -142,20 +140,19 @@ public class CaseExpression {
 
 		private E build() {
 			try {
-				@SuppressWarnings("unchecked")
-				Class<?> clazz = clauses.get(0).returnValue.getClass();
-				do {
-					Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-					for (Constructor<?> constructor : constructors) {
-						if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
-							constructor.setAccessible(true);
-							@SuppressWarnings("unchecked")
-							E newInstance = (E) constructor.newInstance((AnyResult) this);
-							return newInstance;
+					Class<?> clazz = firstValue.getClass();
+					do {
+						Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+						for (Constructor<?> constructor : constructors) {
+							if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
+								constructor.setAccessible(true);
+								@SuppressWarnings("unchecked")
+								E newInstance = (E) constructor.newInstance((AnyResult) this);
+								return newInstance;
+							}
 						}
-					}
-					clazz = clazz.getSuperclass();
-				} while (AnyExpression.class.isAssignableFrom(clazz));
+						clazz = clazz.getSuperclass();
+					} while (AnyExpression.class.isAssignableFrom(clazz));
 			} catch (Exception ex) {
 				System.out.println("" + ex.getLocalizedMessage());
 				System.out.println("" + ex.getStackTrace()[0]);
@@ -255,8 +252,20 @@ public class CaseExpression {
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return " WHEN " + test.toSQLString(db) + " THEN " + returnValue.toSQLString(db);
+			return " WHEN " + db.transformToWhenableType(test).toSQLString(db) + " THEN " + returnValue.toSQLString(db);
 		}
 	}
+
+		protected static class BooleanExpressionNonStatement extends BooleanExpression {
+
+			public BooleanExpressionNonStatement(AnyResult<?> booleanResult) {
+				super(booleanResult);
+			}
+
+			@Override
+			public boolean isBooleanStatement() {
+				return false;
+			}
+		}
 
 }
