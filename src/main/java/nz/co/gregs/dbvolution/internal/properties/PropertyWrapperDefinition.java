@@ -626,7 +626,7 @@ public class PropertyWrapperDefinition implements Serializable {
 			for (DBExpression dBExpression : columnExpression1) {
 				if (dBExpression != null) {
 					allColumnAspects.add(new ColumnAspects(
-							defn.transformToStorableType(dBExpression).toSQLString(defn),
+							defn.transformToSelectableType(dBExpression).toSQLString(defn),
 							defn.formatForColumnAlias(String.valueOf(dBExpression.hashCode())),
 							dBExpression)
 					);
