@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -572,15 +573,15 @@ public abstract class AbstractTest {
 		private final static long serialVersionUID = 1l;
 
 		static GenericContainer container = null;
-		private static MSSQLServerContainerTestDB staticDatabase;
+		private static MSSQLServerContainerTestDB staticDatabase = null;
 
 		public static MSSQLServerContainerTestDB getFromSettings(String prefix) throws SQLException {
-			if (container == null) {
+			if (container == null || staticDatabase == null) {
 				String url = System.getProperty("" + prefix + ".url");
-				String instance = System.getProperty("" + prefix + ".instance", "MSSQLServer");
+				String instance = "MSSQLServer";
 				String database = System.getProperty("" + prefix + ".database");
-				String username = System.getProperty("" + prefix + ".username", "sa");
-				String password = System.getProperty("" + prefix + ".password", "Password23");
+				String username = "sa";
+				String password = "Password23";
 				String schema = System.getProperty("" + prefix + ".schema");
 
 				/*
@@ -588,18 +589,19 @@ public abstract class AbstractTest {
 					SA_PASSWORD=Password23 defines the password so we can login
 					'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 				 */
-				container = new GenericContainer<>("microsoft/mssql-server-linux:latest")
+				container = new GenericContainer<>("mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")//microsoft/mssql-server-linux:latest")
 						.withEnv("ACCEPT_EULA", "Y")
 						.withEnv("SA_PASSWORD", password)
-						//						.withEnv("TZ", "Pacific/Auckland")
+						//.withEnv("TZ", "Pacific/Auckland")
 						.withEnv("TZ", ZoneId.systemDefault().getId())
+						.withStartupTimeout(Duration.ofMinutes(5))
 						.withExposedPorts(1433);
 				container.start();
 				String host = container.getContainerIpAddress();
 				Integer port = container.getFirstMappedPort();
 
-				System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerTestDB.getFromSettings()");
-				System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+//				System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerTestDB.getFromSettings()");
+//				System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
 
 				staticDatabase = new MSSQLServerContainerTestDB(host, instance, database, port, username, password);
 			}
