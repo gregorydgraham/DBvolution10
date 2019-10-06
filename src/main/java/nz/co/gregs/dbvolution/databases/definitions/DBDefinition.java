@@ -63,6 +63,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
@@ -6595,6 +6596,10 @@ public abstract class DBDefinition implements Serializable {
 		return transformToStorableType(expression);
 	}
 
+	public DBExpression transformToGroupableType(DBExpression expression) {
+		return transformToStorableType(expression);
+	}
+
 	public boolean supportsBulkInserts() {
 		return true;
 	}
@@ -6685,5 +6690,13 @@ public abstract class DBDefinition implements Serializable {
 
 	public String getLeadFunctionName() {
 		return "LEAD";
+	}
+
+	public DBExpression transformToWhenableType(BooleanExpression test) {
+		return test;
+	}
+
+	public String getDefaultOrderingClause() {
+		return "";
 	}
 }
