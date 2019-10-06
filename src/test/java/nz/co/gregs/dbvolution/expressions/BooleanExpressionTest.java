@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.columns.BooleanColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
@@ -205,12 +206,20 @@ public class BooleanExpressionTest extends AbstractTest {
 	@Test
 	public void testStringIsIgnoreCase() throws SQLException {
 		Marque marque = new Marque();
-		DBQuery dbQuery = database.getDBQuery(marque);
+		DBQuery dbQuery = database.getDBQuery(marque).setBlankQueryAllowed(true);
 
+		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
+		System.out.println(""+dbQuery.getSQLForQuery());
+		dbQuery.printAllRows();
+		Assert.assertThat(dbQuery.getAllRows().size(), is(22));
+		
 		dbQuery.addCondition(marque.column(marque.name).isIgnoreCase("TOYOTA"));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
+		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
+		System.out.println(""+dbQuery.getSQLForQuery());
+		dbQuery.printAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 
 		dbQuery = database.getDBQuery(marque);
@@ -1032,9 +1041,9 @@ public class BooleanExpressionTest extends AbstractTest {
 							marq.column(marq.carCompany).ascending(),
 							marq.column(marq.uidMarque).ascending()
 					);
-			
+
 			List<DBQueryRow> allRows = query.getAllRows();
-			query.printSQLForQuery();
+//			query.printSQLForQuery();
 			Assert.assertThat(allRows.size(), is(22));
 
 			MarqueWithWindowingFunctions got;// = allRows.get(0).get(marq);
@@ -1112,9 +1121,9 @@ public class BooleanExpressionTest extends AbstractTest {
 							marq.column(marq.carCompany).ascending(),
 							marq.column(marq.uidMarque).ascending()
 					);
-			query.printSQLForQuery();
+//			query.printSQLForQuery();
 			List<DBQueryRow> allRows = query.getAllRows();
-			query.printSQLForQuery();
+			
 			Assert.assertThat(allRows.size(), is(22));
 
 			MarqueWithLeadAndLagFunctions got;
@@ -1145,7 +1154,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 			for (int i = 0; i < allRows.size(); i++) {
 				got = allRows.get(i).get(marq);
-				System.out.println("" + got.toString());
+//				System.out.println("" + got.toString());
 				Object[] expect = expectedValues.get(i);
 				Assert.assertThat(got.lag.getValue(), is((Boolean) expect[4]));
 				Assert.assertThat(got.lead.getValue(), is((Boolean) expect[5]));
@@ -1185,10 +1194,6 @@ public class BooleanExpressionTest extends AbstractTest {
 		@DBColumn
 		DBBoolean case1
 				= CaseExpression
-						//						.when(this.column(this.enabled), true)
-						//						.when(this.column(this.enabled).not(), false)
-						//						.when(this.column(this.enabled).not(), BooleanExpression.falseExpression())
-						//						.defaultValue(BooleanExpression.nullBoolean())
 						.when(this.column(this.enabled).isNull(), BooleanExpression.nullBoolean())
 						.defaultValue(this.column(this.enabled))
 						.nextRowValue()
@@ -1199,4 +1204,93 @@ public class BooleanExpressionTest extends AbstractTest {
 						.asExpressionColumn();
 	}
 
+	@Test
+	public void testEquivalentCaseStatementsFunction() throws SQLException {
+		try {
+			MarqueWithEquivalentCaseStatements marq = new MarqueWithEquivalentCaseStatements();
+
+			DBQuery query = database.getDBQuery(marq).setQueryLabel("testLeadAndLagFunctions")
+					.setBlankQueryAllowed(true)
+					.setSortOrder(
+							marq.column(marq.carCompany).ascending(),
+							marq.column(marq.uidMarque).ascending()
+					);
+			List<DBQueryRow> allRows = query.getAllRows();
+			query.printSQLForQuery();
+			Assert.assertThat(allRows.size(), is(22));
+
+			MarqueWithEquivalentCaseStatements got;
+			ArrayList<Object[]> expectedValues = new ArrayList<>();
+
+			expectedValues.add(new Object[]{3, 1, 1, 1, true, null, null});
+			expectedValues.add(new Object[]{3, 2, 1, 1, null, false, false});
+			expectedValues.add(new Object[]{3, 3, 1, 1, false, (null), (null)});
+			expectedValues.add(new Object[]{3, 4, 0, 0, null, (null), (null)});
+			expectedValues.add(new Object[]{3, 5, 0, 0, null, (null), (null)});
+			expectedValues.add(new Object[]{3, 6, 0, 0, null, true, true});
+			expectedValues.add(new Object[]{3, 7, 1, 1, true, (null), (null)});
+			expectedValues.add(new Object[]{3, 8, 1, 1, null, (null), (null)});
+			expectedValues.add(new Object[]{3, 9, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 10, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 11, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 12, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 13, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 14, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 15, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 16, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 17, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 18, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 19, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 20, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 21, 1, 1, (null), (null), (null)});
+			expectedValues.add(new Object[]{3, 22, 1, 1, (null), (null), (null)});
+
+			for (int i = 0; i < allRows.size(); i++) {
+				got = allRows.get(i).get(marq);
+//				System.out.println("" + got.toString());
+				Object[] expect = expectedValues.get(i);
+				Assert.assertThat(got.changeBooleanToNullOrItself.getValue(), is((Boolean) expect[4]));
+				Assert.assertThat(got.changeBooleanToItsValueOrNull.getValue(), is((Boolean) expect[4]));
+			}
+		} catch (Exception e) {
+			System.out.println("" + e.getLocalizedMessage());
+			System.out.println("" + e.getStackTrace()[0]);
+			System.out.println("" + e.getStackTrace()[1]);
+			System.out.println("" + e.getStackTrace()[2]);
+			System.out.println("" + e.getStackTrace()[3]);
+			System.out.println("" + e.getStackTrace()[4]);
+			throw e;
+		}
+	}
+
+	public static class MarqueWithEquivalentCaseStatements extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		BooleanColumn enabledColumn = this.column(this.enabled);
+		
+		@DBColumn
+		DBBoolean changeBooleanToNullOrItself
+				= CaseExpression
+						.when(enabledColumn.isNull(), BooleanExpression.nullBoolean())
+						.defaultValue(enabledColumn)
+						.asExpressionColumn();
+
+		@DBColumn
+		DBBoolean changeBooleanToItsValueOrNull
+				= CaseExpression
+						.when(enabledColumn, true)
+						.when(enabledColumn.not(), false)
+						.defaultValue(BooleanExpression.nullBoolean())
+						.asExpressionColumn();
+		
+//		@DBColumn
+		DBBoolean changeBooleanToItsValueOrNullWithFalseExpression
+				= CaseExpression
+						.when(enabledColumn, true)
+						.when(enabledColumn.not(), false)
+						.when(enabledColumn.not(), BooleanExpression.falseExpression())
+						.defaultValue(BooleanExpression.nullBoolean())
+						.asExpressionColumn();
+	}
 }
