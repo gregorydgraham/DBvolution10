@@ -30,12 +30,7 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
  * <p>
  * Remember to include the MS SQL Server JDBC driver in your classpath.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Malcolm Lett
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  * @author Gregory Graham
  */
 public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype {
