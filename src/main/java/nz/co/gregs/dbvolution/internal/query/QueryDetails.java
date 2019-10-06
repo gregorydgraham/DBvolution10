@@ -549,7 +549,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 							groupByIsRequired = true;
 							groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 							groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-							groupByClause.append(groupByColSep).append(defn.transformToSelectableType(expression).toSQLString(defn));
+							groupByClause.append(groupByColSep).append(defn.transformToGroupableType(expression).toSQLString(defn));
 							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 
 						}
@@ -620,6 +620,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 					if (!orderByClauseFinal.trim().isEmpty()) {
 						orderByClauseFinal += lineSep;
 						queryState.setHasBeenOrdered(true);
+					} else if (options.getPageIndex() > 0 || options.getRowLimit() > 0) {
+						orderByClauseFinal = defn.getDefaultOrderingClause() + lineSep;
 					}
 					havingClause = getHavingClause(database, options);
 					if (!havingClause.trim().isEmpty()) {
