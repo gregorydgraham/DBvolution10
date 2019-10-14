@@ -759,6 +759,23 @@
 			</build>
 		</profile>
 		<profile>
+			<id>Cluster-Full</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M3</version>
+						<configuration>
+							<systemPropertyVariables>
+								<testFullCluster>true</testFullCluster>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>DBs-OpenSource</id>
 			<build>
 				<plugins>
@@ -803,16 +820,6 @@
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
 								<testMSSQLServerContainer>true</testMSSQLServerContainer>
-								<!-- Use the testcontainer instance of MS SQLServer -->
-								<sqlservercontainer.url></sqlservercontainer.url>
-								<!-- host and port are supplied by the container -->
-								<!--<sqlservercontainer.host></sqlservercontainer.host>-->
-								<!--<sqlservercontainer.port></sqlservercontainer.port>-->
-								<sqlservercontainer.instance>MSSQLServer</sqlservercontainer.instance>
-								<sqlservercontainer.database></sqlservercontainer.database>
-								<sqlservercontainer.username>sa</sqlservercontainer.username>
-								<sqlservercontainer.password>Password23</sqlservercontainer.password>
-								<sqlservercontainer.schema></sqlservercontainer.schema>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -995,16 +1002,6 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testMSSQLServerContainer>true</testMSSQLServerContainer>
-								<!-- Use the testcontainer instance of MS SQLServer -->
-								<sqlservercontainer.url></sqlservercontainer.url>
-								<!-- host and port are supplied by the container -->
-								<!--<sqlservercontainer.host></sqlservercontainer.host>-->
-								<!--<sqlservercontainer.port></sqlservercontainer.port>-->
-								<sqlservercontainer.instance>MSSQLServer</sqlservercontainer.instance>
-								<sqlservercontainer.database></sqlservercontainer.database>
-								<sqlservercontainer.username>sa</sqlservercontainer.username>
-								<sqlservercontainer.password>Password23</sqlservercontainer.password>
-								<sqlservercontainer.schema></sqlservercontainer.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -1446,6 +1443,12 @@
 			<version>1.7.28</version>
 			<scope>test</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>org.testcontainers</groupId>
+	  <artifactId>mssqlserver</artifactId>
+	  <version>1.6.0</version>
+	  <scope>test</scope>
+	 </dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>

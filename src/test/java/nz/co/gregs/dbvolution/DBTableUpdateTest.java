@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -39,20 +40,26 @@ public class DBTableUpdateTest extends AbstractTest {
 		Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
 		toyota.uidMarque.setValue(99999);
 		DBActionList updateList = marquesTable.update(toyota);
-		final String standardSQL = "UPDATE MARQUE SET UID_MARQUE = 99999 WHERE (UID_MARQUE = 1);";
-		final String oracleSQL = "update OO1081299805 set uid_marque = 99999 where (uid_marque = 1)";
-		Assert.assertThat(testableSQL(updateList.get(0).getSQLStatements(database).get(0)),
-				anyOf(
-						is(testableSQL(standardSQL)),
-						is(testableSQL(oracleSQL))
-				));
+		if (!(database instanceof DBDatabaseCluster)) {
+			final String standardSQL = "UPDATE MARQUE SET UID_MARQUE = 99999 WHERE (UID_MARQUE = 1);";
+			final String oracleSQL = "update OO1081299805 set uid_marque = 99999 where (uid_marque = 1)";
+			Assert.assertThat(testableSQL(updateList.get(0).getSQLStatements(database).get(0)),
+					anyOf(
+							is(testableSQL(standardSQL)),
+							is(testableSQL(oracleSQL))
+					));
+		}
+
 		marquesTable.update(toyota);
 		toyota.name.setValue("NOTOYOTA");
-		Assert.assertThat(testableSQL(marquesTable.update(toyota).get(0).getSQLStatements(database).get(0)),
-				isIn(new String[]{
-			testableSQL("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE (UID_MARQUE = 99999);"),
-			testableSQL("UPDATE MARQUE SET NAME = N'NOTOYOTA' WHERE (UID_MARQUE = 99999);"),}));
+		updateList = marquesTable.update(toyota);
 
+		if (!(database instanceof DBDatabaseCluster)) {
+			Assert.assertThat(testableSQL(updateList.get(0).getSQLStatements(database).get(0)),
+					isIn(new String[]{
+				testableSQL("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE (UID_MARQUE = 99999);"),
+				testableSQL("UPDATE MARQUE SET NAME = N'NOTOYOTA' WHERE (UID_MARQUE = 99999);"),}));
+		}
 		marqueExample = new Marque();
 		marqueExample.uidMarque.permittedValues(99999);
 		toyota = marquesTable.getOnlyRowByExample(marqueExample);
@@ -72,14 +79,16 @@ public class DBTableUpdateTest extends AbstractTest {
 
 		toyota.name.setValue("NOTTOYOTA");
 		String sqlForUpdate = marquesTable.update(toyota).get(0).getSQLStatements(database).get(0);
-//		Assert.assertEquals("Update statement doesn't look right:", testableSQL("UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE (UID_MARQUE = 1);"), testableSQL(sqlForUpdate));
-		Assert.assertThat(testableSQL(sqlForUpdate),
-				isIn(new String[]{
-			testableSQL("UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE (UID_MARQUE = 1);"),
-			testableSQL("UPDATE MARQUE SET NAME = N'NOTTOYOTA' WHERE (UID_MARQUE = 1);")
-		}
-				));
 
+		if (!(database instanceof DBDatabaseCluster)) {
+			Assert.assertThat(testableSQL(sqlForUpdate),
+					isIn(
+							new String[]{
+								testableSQL("UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE (UID_MARQUE = 1);"),
+								testableSQL("UPDATE MARQUE SET NAME = N'NOTTOYOTA' WHERE (UID_MARQUE = 1);")
+							}
+					));
+		}
 		marquesTable.update(toyota);
 
 		marquesTable.getRowsByExample(myTableRow);

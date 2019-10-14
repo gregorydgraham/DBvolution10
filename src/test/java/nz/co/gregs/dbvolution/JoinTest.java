@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 
@@ -39,54 +40,58 @@ public class JoinTest extends AbstractTest {
 
 	@Test
 	public void testQueryGenerationUsingANSIGivenFkToPk() throws SQLException {
-		DBQuery dbQuery = database.getDBQuery();
-		CompanyWithFkToPk companyExample = new CompanyWithFkToPk();
-		companyExample.uid.permittedValues(234L);
-		dbQuery.add(companyExample);
-		dbQuery.add(new Statistic());
-		dbQuery.setUseANSISyntax(true);
-		final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
+		if (!(database instanceof DBDatabaseCluster)) {
+			DBQuery dbQuery = database.getDBQuery();
+			CompanyWithFkToPk companyExample = new CompanyWithFkToPk();
+			companyExample.uid.permittedValues(234L);
+			dbQuery.add(companyExample);
+			dbQuery.add(new Statistic());
+			dbQuery.setUseANSISyntax(true);
+			final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
-		String expectedResult1
-				= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( ((__296612642.uidcompany = 234)) and (__296612642.fkstatistic2 = __77293264.uidstatistic) ) ;";
-		String expectedResult2
-				= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( __296612642.fkstatistic2 = __77293264.uidstatistic ) where (1=1) and (__296612642.uidcompany = 234) ;";
-		String expectedResult3
-				= "select oo296612642.uidcompany, oo296612642.fkstatistic2, oo77293264.uidstatistic, oo77293264.stat2id from company as oo296612642 inner join statistic as oo77293264 on( oo296612642.fkstatistic2 = oo77293264.uidstatistic ) where (1=1) and (oo296612642.uidcompany = 234) ;";
-		assertThat(dbQuery.isUseANSISyntax(), is(true));
-		assertThat(testableSQLWithoutColumnAliases(generateSQLString),
-				anyOf(
-						is(testableSQLWithoutColumnAliases(expectedResult1)),
-						is(testableSQLWithoutColumnAliases(expectedResult2)),
-						is(testableSQLWithoutColumnAliases(expectedResult3))
-				)
-		);
+			String expectedResult1
+					= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( ((__296612642.uidcompany = 234)) and (__296612642.fkstatistic2 = __77293264.uidstatistic) ) ;";
+			String expectedResult2
+					= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( __296612642.fkstatistic2 = __77293264.uidstatistic ) where (1=1) and (__296612642.uidcompany = 234) ;";
+			String expectedResult3
+					= "select oo296612642.uidcompany, oo296612642.fkstatistic2, oo77293264.uidstatistic, oo77293264.stat2id from company as oo296612642 inner join statistic as oo77293264 on( oo296612642.fkstatistic2 = oo77293264.uidstatistic ) where (1=1) and (oo296612642.uidcompany = 234) ;";
+			assertThat(dbQuery.isUseANSISyntax(), is(true));
+			assertThat(testableSQLWithoutColumnAliases(generateSQLString),
+					anyOf(
+							is(testableSQLWithoutColumnAliases(expectedResult1)),
+							is(testableSQLWithoutColumnAliases(expectedResult2)),
+							is(testableSQLWithoutColumnAliases(expectedResult3))
+					)
+			);
+		}
 	}
 
 	@Test
 	public void testQueryGenerationUsingNonANSIGivenFkToPk() throws SQLException {
-		DBQuery dbQuery = database.getDBQuery();
-		CompanyWithFkToPk companyExample = new CompanyWithFkToPk();
-		companyExample.uid.permittedValues(234L);
-		dbQuery.add(companyExample);
-		dbQuery.add(new Statistic());
-		dbQuery.setUseANSISyntax(false);
-		final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
+		if (!(database instanceof DBDatabaseCluster)) {
+			DBQuery dbQuery = database.getDBQuery();
+			CompanyWithFkToPk companyExample = new CompanyWithFkToPk();
+			companyExample.uid.permittedValues(234L);
+			dbQuery.add(companyExample);
+			dbQuery.add(new Statistic());
+			dbQuery.setUseANSISyntax(false);
+			final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
-		String expectedResult
-				= "select "
-				+ "__296612642.uidcompany, "
-				+ "__296612642.fkstatistic2, "
-				+ "__77293264.uidstatistic, "
-				+ "__77293264.stat2id "
-				+ "from company, statistic "
-				+ "where (1=1) "
-				+ "and (__296612642.uidcompany = 234) "
-				+ "and (__296612642.fkstatistic2 = __77293264.uidstatistic)"
-				+ " ;";
+			String expectedResult
+					= "select "
+					+ "__296612642.uidcompany, "
+					+ "__296612642.fkstatistic2, "
+					+ "__77293264.uidstatistic, "
+					+ "__77293264.stat2id "
+					+ "from company, statistic "
+					+ "where (1=1) "
+					+ "and (__296612642.uidcompany = 234) "
+					+ "and (__296612642.fkstatistic2 = __77293264.uidstatistic)"
+					+ " ;";
 
-		assertThat(testableSQLWithoutColumnAliases(generateSQLString),
-				is(testableSQLWithoutColumnAliases(expectedResult)));
+			assertThat(testableSQLWithoutColumnAliases(generateSQLString),
+					is(testableSQLWithoutColumnAliases(expectedResult)));
+		}
 	}
 
 	@Test

@@ -39,6 +39,10 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	/**
 	 * The Microsoft Driver used to connect to MS SQLServer databases.
+	 *
+	 * <p>
+	 * By default MSSQLServerDB uses the
+	 * ""com.microsoft.sqlserver.jdbc.SQLServerDriver" driver.</p>
 	 */
 	public final static String SQLSERVERDRIVERNAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
@@ -49,9 +53,19 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	/**
 	 * The default port used by MS SQLServer databases.
+	 *
+	 * <p>
+	 * THe default port for MS SQLServer is 1433.</p>
 	 */
 	public final static int DEFAULT_PORT_NUMBER = 1433;
-	private String derivedURL;
+
+	/**
+	 * The default host used by MS SQLServer databases.
+	 *
+	 * <p>
+	 * These isn't a default host defined so this defaults to LOCALHOST.</p>
+	 */
+	public final static String DEFAULT_HOST_NAME = "localhost";
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
@@ -62,6 +76,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	public MSSQLServerDB(DatabaseConnectionSettings settings) throws SQLException {
 		super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, settings);
 	}
+
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
@@ -139,7 +154,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password the password to identify username.
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
+	public MSSQLServerDB(String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(
 				new MSSQLServerDBDefinition(),
 				hostname, instanceName, databaseName, portNumber,
@@ -147,11 +162,15 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		);
 	}
 
-	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
+	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		super(
 				defn,
 				SQLSERVERDRIVERNAME,
-				"jdbc:sqlserver://" + hostname + (instanceName != null ? "\\" + instanceName : "") + ":" + portNumber + ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
+				"jdbc:sqlserver://"
+				+ (hostname != null ? hostname : DEFAULT_HOST_NAME)
+				+ (instanceName != null ? "\\" + instanceName : "")
+				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
+				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
 				username,
 				password
 		);
@@ -182,7 +201,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password the password to identify username.
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
+	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(
 				new MSSQLServerDBDefinition(),
 				driverName,
@@ -191,11 +210,14 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		);
 	}
 
-	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		super(
 				defn,
 				driverName,
-				"jdbc:sqlserver://" + hostname + (instanceName != null ? "\\" + instanceName : "") + ":" + portNumber + ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
+				"jdbc:sqlserver://" + (hostname != null ? hostname : DEFAULT_HOST_NAME)
+				+ (instanceName != null ? "\\" + instanceName : "")
+				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
+				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
 				username,
 				password
 		);
@@ -276,7 +298,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 		return MSSQLServerDB.class;
 	}
 }

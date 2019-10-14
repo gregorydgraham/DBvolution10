@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
@@ -40,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.OracleContainer;
 
 /**
@@ -96,6 +99,16 @@ public abstract class AbstractTest {
 				MySQLTestDatabase.getFromSettings("mysql")
 				)});
 		}
+		if (System.getProperty("testFullCluster") != null) {
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer",
+				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(),
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				SQLiteTestDB.getClusterDBFromSettings("sqlite", "full"),
+				PostgreSQLTestDatabase.getFromSettings("postgres"),
+				MySQLTestDatabase.getFromSettings("mysql"),
+				getMSSQLServerContainerDatabaseForCluster()
+				)});
+		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("MySQL+Cluster", DBDatabaseCluster.Configuration.manual(),
@@ -142,7 +155,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"Oracle11XEContainer", Oracle11XEContainerTestDB.getFromSettings("oraclexecontainer")});
 		}
 		if (System.getProperty("testMSSQLServerContainer") != null) {
-			databases.add(new Object[]{"MSSQLServerContainer", MSSQLServerContainerTestDB.getFromSettings("sqlservercontainer")});
+			databases.add(new Object[]{"MSSQLServerContainer", getMSSQLServerContainerDatabase()});
 		}
 		if (System.getProperty("testMSSQLServerLocal") != null) {
 			databases.add(new Object[]{"MSSQLServerLocal", MSSQLServerLocalTestDB.getFromSettings("sqlserver")});
@@ -159,6 +172,23 @@ public abstract class AbstractTest {
 		}
 
 		return databases;
+	}
+
+	private static MSSQLServerContainerTestDB MSSQLSERVER_CONTAINER_DATABASE = null;
+	private static MSSQLServerContainerTestDB MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = null;
+
+	private static MSSQLServerContainerTestDB getMSSQLServerContainerDatabase() {
+		if (MSSQLSERVER_CONTAINER_DATABASE == null) {
+			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServerContainerTestDB.getInstance();
+		}
+		return MSSQLSERVER_CONTAINER_DATABASE;
+	}
+
+	private static MSSQLServerContainerTestDB getMSSQLServerContainerDatabaseForCluster() {
+		if (MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER == null) {
+			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServerContainerTestDB.getInstance();
+		}
+		return MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 
 	public AbstractTest(Object testIterationName, Object db) {
@@ -568,48 +598,61 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static class MSSQLServerContainerTestDB extends MSSQLServerDB {
+	public static class MSSQLServerContainerTestDB extends MSSQLServerDB {
 
 		private final static long serialVersionUID = 1l;
 
-		static GenericContainer container = null;
-		private static MSSQLServerContainerTestDB staticDatabase = null;
+		protected final GenericContainer mssqlServerContainer;
 
-		public static MSSQLServerContainerTestDB getFromSettings(String prefix) throws SQLException {
-			if (container == null || staticDatabase == null) {
-				String url = System.getProperty("" + prefix + ".url");
-				String instance = "MSSQLServer";
-				String database = System.getProperty("" + prefix + ".database");
-				String username = "sa";
-				String password = "Password23";
-				String schema = System.getProperty("" + prefix + ".schema");
+		public static MSSQLServerContainerTestDB getInstance() {
+			String instance = "MSSQLServer";
+			String database = "";
+			String username = "sa";
+			String password = "Password23";
 
-				/*
+			/*
 					ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
 					SA_PASSWORD=Password23 defines the password so we can login
 					'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
-				 */
-				container = new GenericContainer<>("mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")//microsoft/mssql-server-linux:latest")
-						.withEnv("ACCEPT_EULA", "Y")
-						.withEnv("SA_PASSWORD", password)
-						//.withEnv("TZ", "Pacific/Auckland")
-						.withEnv("TZ", ZoneId.systemDefault().getId())
-						.withStartupTimeout(Duration.ofMinutes(5))
-						.withExposedPorts(1433);
-				container.start();
-				String host = container.getContainerIpAddress();
-				Integer port = container.getFirstMappedPort();
+			 */
+			
+			MSSQLServerContainer container
+					= //new GenericContainer<>("mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")
+					//new GenericContainer<>("microsoft/mssql-server-linux:2017-CU13")
+					new MSSQLServerContainer<>()//"mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")
+//							.withEnv("ACCEPT_EULA", "Y")
+//							.withEnv("SA_PASSWORD", password)
+//							.withEnv("MSSQL_SA_PASSWORD", password)
+//							.withEnv("TZ", ZoneId.systemDefault().getId())
+//							.withStartupTimeout(Duration.ofSeconds(30))
+//							.withExposedPorts(1433)
+//							.withStartupTimeout(Duration.ofMinutes(5))
+					;
+			container.withEnv("TZ", "Pacific/Auckland");
+//			container.withEnv("TZ", ZoneId.systemDefault().getId());
+			container.start();
+			password = container.getPassword();
+			username = container.getUsername();
+			String url = container.getJdbcUrl();
+			String host = container.getContainerIpAddress();
+			Integer port = container.getFirstMappedPort();
 
-//				System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerTestDB.getFromSettings()");
-//				System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
-
-				staticDatabase = new MSSQLServerContainerTestDB(host, instance, database, port, username, password);
+			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerTestDB.getInstance()");
+			System.out.println("URL: "+url);
+			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+			MSSQLServerContainerTestDB staticDatabase;
+			try {
+				staticDatabase = new MSSQLServerContainerTestDB(container, host, instance, database, port, username, password);
+				return staticDatabase;
+			} catch (SQLException ex) {
+				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Unable To Create MSSQLServer Database in Docker Container", ex);
 			}
-			return staticDatabase;
 		}
 
-		private MSSQLServerContainerTestDB(String host, String instance, String database, Integer port, String username, String password) throws SQLException {
+		public MSSQLServerContainerTestDB(GenericContainer container, String host, String instance, String database, Integer port, String username, String password) throws SQLException {
 			super(host, instance, database, port, username, password);
+			this.mssqlServerContainer = container;
 		}
 	}
 

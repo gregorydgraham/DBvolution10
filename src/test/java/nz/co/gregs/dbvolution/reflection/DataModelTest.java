@@ -115,7 +115,8 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
-		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
+//		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB(org.testcontainers.containers.GenericContainer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
@@ -504,16 +505,20 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBDatabaseCreationMethodsStaticWithoutParameters() {
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
+		Assert.assertThat(dbDatabaseCreationMethods.size(), is(3));
 		for (Method creator : dbDatabaseCreationMethods) {
 			creator.setAccessible(true);
+			System.out.println("CREATOR: "+creator.toGenericString());
 			try {
 				DBDatabase db = (DBDatabase) creator.invoke(null);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			} catch (Exception ex) {
+				System.out.println("EXCEPTION: "+ex.getClass().getCanonicalName());
+				System.out.println("EXCEPTION: "+ex.getMessage());
+				System.out.println("EXCEPTION: "+ex.getLocalizedMessage());
 				ex.printStackTrace();
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
-		Assert.assertThat(dbDatabaseCreationMethods.size(), is(2));
 	}
 
 	@Test
