@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
@@ -39,7 +38,6 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
-import nz.co.gregs.dbvolution.results.BooleanResult;
 
 /**
  * Defines the features of the Oracle database that differ from the standard
