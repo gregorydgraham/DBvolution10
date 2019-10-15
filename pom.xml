@@ -1425,6 +1425,12 @@
 			<version>2.3.4</version>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.28</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
 			<version>1.12.1</version>
@@ -1438,17 +1444,17 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.28</version>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mssqlserver</artifactId>
+			<version>1.6.0</version>
 			<scope>test</scope>
 		</dependency>
-	 <dependency>
-	  <groupId>org.testcontainers</groupId>
-	  <artifactId>mssqlserver</artifactId>
-	  <version>1.6.0</version>
-	  <scope>test</scope>
-	 </dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>1.12.2</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>
