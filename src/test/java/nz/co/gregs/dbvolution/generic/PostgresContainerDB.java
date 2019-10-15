@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
+import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
@@ -53,7 +54,7 @@ public class PostgresContainerDB extends PostgresDB{
 		SA_PASSWORD=Password23 defines the password so we can login
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		PostgreSQLContainer container = new PostgreSQLContainer<>();
+		PostgreSQLContainer container = (PostgreSQLContainer)new PostgisContainerProvider().newInstance();
 		container.withEnv("TZ", "Pacific/Auckland");
 		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
@@ -62,11 +63,11 @@ public class PostgresContainerDB extends PostgresDB{
 		String url = container.getJdbcUrl();
 		String host = container.getContainerIpAddress();
 		Integer port = container.getFirstMappedPort();
-		//			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
-		//			System.out.println("URL: " + url);
-		//			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
+		System.out.println("URL: " + url);
+		System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
 		try {
-			PostgresContainerDB dbdatabase = new PostgresContainerDB(container, host, port, instance, database, username, password);
+			PostgresContainerDB dbdatabase = new PostgresContainerDB(container);
 			return dbdatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(PostgresContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -74,8 +75,8 @@ public class PostgresContainerDB extends PostgresDB{
 		}
 	}
 
-	public PostgresContainerDB(PostgreSQLContainer container, String host, Integer port, String instance, String database, String username, String password) throws SQLException {
-		super(host, port, instance, database, username, password);
+	public PostgresContainerDB(PostgreSQLContainer container) throws SQLException {
+		super(container.getJdbcUrl(), container.getUsername(), container.getPassword());
 		this.storedContainer = container;
 	}
 	

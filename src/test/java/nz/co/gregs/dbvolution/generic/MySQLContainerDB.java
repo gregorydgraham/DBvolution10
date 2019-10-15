@@ -33,44 +33,48 @@ package nz.co.gregs.dbvolution.generic;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
-import org.testcontainers.containers.OracleContainer;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
+import org.testcontainers.containers.MySQLContainer;
 
 /**
  *
  * @author gregorygraham
  */
-public class Oracle11XEContainerDB extends Oracle11XEDB {
-
+public class MySQLContainerDB extends MySQLDB{
+	
 	private static final long serialVersionUID = 1l;
-	private OracleContainer container;
+	protected final MySQLContainer storedContainer;
 
-	public static Oracle11XEContainerDB getInstance() {
-		OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
+	public static MySQLContainerDB getInstance() {
+		String instance = "";
+		String database = "";
+		/*
+		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
+		 */
+		MySQLContainer container = new MySQLContainer<>();
+		container.withEnv("TZ", "Pacific/Auckland");
+		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
+		String password = container.getPassword();
+		String username = container.getUsername();
+		String url = container.getJdbcUrl();
+		String host = container.getContainerIpAddress();
+		Integer port = container.getFirstMappedPort();
 		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
-		System.out.println("URL: " + container.getJdbcUrl());
-		System.out.println(
-				"" + container.getContainerIpAddress()
-				+ " : " + container.getOraclePort()
-				+ " : " + container.getSid()
-				+ " : " + container.getOraclePort()
-				+ " : " + container.getUsername()
-				+ " : " + container.getPassword()
-		);
-
+		System.out.println("URL: " + url);
+		System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
 		try {
-			return new Oracle11XEContainerDB(container);
+			MySQLContainerDB dbdatabase = new MySQLContainerDB(container);
+			return dbdatabase;
 		} catch (SQLException ex) {
-			Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.SEVERE, null, ex);
-			throw new RuntimeException("Unable To Create Oracle Database in Docker Container", ex);
+			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
+			throw new RuntimeException("Unable To Create MySQL Database in Docker Container", ex);
 		}
 	}
 
-	public Oracle11XEContainerDB(OracleContainer container) throws SQLException {
-		super(container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
-		this.container = container;
-		System.out.println("ORACLE: " + container.getJdbcUrl());
+	public MySQLContainerDB(MySQLContainer container) throws SQLException {
+		super(container.getJdbcUrl(), container.getUsername(), container.getPassword());
+		this.storedContainer = container;
 	}
-
+	
 }

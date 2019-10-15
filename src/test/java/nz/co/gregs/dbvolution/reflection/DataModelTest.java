@@ -68,15 +68,17 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XEContainerTestDB");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$1");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$2");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.Oracle11XEContainerDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.PostgresContainerDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.MySQLContainerDB");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("KNOWN BUT NOT FOUND: " + knownString);
@@ -94,7 +96,7 @@ public class DataModelTest extends AbstractTest {
 //		for (Class<? extends DBDatabase> val : conMap.values()) {
 //			System.out.println(val);
 //		}
-		Assert.assertThat(result.size(), is(12));
+		Assert.assertThat(result.size(), is(knownStrings.size()));
 	}
 
 	@Test
@@ -111,17 +113,18 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase()");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XEContainerTestDB(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
-//		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerContainerTestDB(org.testcontainers.containers.GenericContainer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.Oracle11XEContainerDB(org.testcontainers.containers.OracleContainer) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.PostgresContainerDB(org.testcontainers.containers.PostgreSQLContainer) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
@@ -145,7 +148,7 @@ public class DataModelTest extends AbstractTest {
 //		for (Constructor<DBDatabase> constructor : conMap.values()) {
 //			System.out.println(constructor);
 //		}
-		Assert.assertThat(result.size(), is(15));
+		Assert.assertThat(result.size(), is(knownStrings.size()));
 	}
 
 	@Test
@@ -505,7 +508,7 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBDatabaseCreationMethodsStaticWithoutParameters() {
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
-		Assert.assertThat(dbDatabaseCreationMethods.size(), is(3));
+		Assert.assertThat(dbDatabaseCreationMethods.size(), is(6));
 		for (Method creator : dbDatabaseCreationMethods) {
 			creator.setAccessible(true);
 			System.out.println("CREATOR: "+creator.toGenericString());

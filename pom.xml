@@ -846,12 +846,12 @@
 			</build>
 			<dependencies>
 				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
-				<dependency>
+				<!--				<dependency>
 					<groupId>com.oracle</groupId>
 					<artifactId>ojdbc6</artifactId>
 					<version>12.1.0.1-atlassian-hosted</version>
 					<scope>test</scope>
-				</dependency>
+				</dependency>-->
 			</dependencies>
 		</profile>
 		<profile>
@@ -881,12 +881,12 @@
 			</build>
 			<dependencies>
 				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
-				<dependency>
+				<!--				<dependency>
 					<groupId>com.oracle</groupId>
 					<artifactId>ojdbc6</artifactId>
 					<version>12.1.0.1-atlassian-hosted</version>
 					<scope>test</scope>
-				</dependency>
+				</dependency>-->
 			</dependencies>
 		</profile>
 		<profile>
@@ -914,11 +914,11 @@
 		<profile>
 			<id>OracleXETest</id>
 			<dependencies>
-				<dependency>
+				<!--				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
 					<artifactId>ojdbc8</artifactId>
 					<version>19.3.0.0</version>
-				</dependency>
+				</dependency>-->
 			</dependencies>
 			<build>
 				<plugins>
@@ -943,11 +943,11 @@
 		<profile>
 			<id>OracleXEContainerTest</id>
 			<dependencies>
-				<dependency>
+				<!--				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
 					<artifactId>ojdbc8</artifactId>
 					<version>19.3.0.0</version>
-				</dependency>
+				</dependency>-->
 			</dependencies>
 			<build>
 				<plugins>
@@ -1431,6 +1431,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.oracle.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.3.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
 			<version>1.12.1</version>
@@ -1452,6 +1457,12 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>1.12.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mysql</artifactId>
 			<version>1.12.2</version>
 			<scope>test</scope>
 		</dependency>
