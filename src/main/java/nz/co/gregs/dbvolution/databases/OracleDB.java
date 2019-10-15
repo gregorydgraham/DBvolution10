@@ -190,7 +190,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		if (TABLE_ALREADY_EXISTS.matcher(message).lookingAt()
 				|| TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()
 				|| (SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt() && (intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)))
-				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.CHECK_TABLE_EXISTS))) {
+				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.CHECK_TABLE_EXISTS))
+				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.DROP_TABLE))
+				) {
 //			System.out.println("HANDLED: NO RESPONSE REQUIRED");
 			return ResponseToException.SKIPQUERY;
 		} else {
