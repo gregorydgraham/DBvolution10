@@ -172,28 +172,28 @@ public abstract class AbstractTest {
 		return databases;
 	}
 
-	private static MSSQLServerContainerTestDB MSSQLSERVER_CONTAINER_DATABASE = null;
-	private static MSSQLServerContainerTestDB MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = null;
+	private static MSSQLServerContainerDB MSSQLSERVER_CONTAINER_DATABASE = null;
+	private static MSSQLServerContainerDB MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = null;
 
-	private static MSSQLServerContainerTestDB getMSSQLServerContainerDatabase() {
+	private static MSSQLServerContainerDB getMSSQLServerContainerDatabase() {
 		if (MSSQLSERVER_CONTAINER_DATABASE == null) {
-			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServerContainerTestDB.getInstance();
+			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServerContainerDB.getInstance();
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE;
 	}
 
-	private static MSSQLServerContainerTestDB getMSSQLServerContainerDatabaseForCluster() {
+	private static MSSQLServerContainerDB getMSSQLServerContainerDatabaseForCluster() {
 		if (MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER == null) {
-			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServerContainerTestDB.getInstance();
+			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServerContainerDB.getInstance();
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 
-	private static Oracle11XEContainerTestDB ORACLE_CONTAINER_DATABASE = null;
+	private static Oracle11XEContainerDB ORACLE_CONTAINER_DATABASE = null;
 
-	private static Oracle11XEContainerTestDB getOracleContainerDatabase() {
+	private static Oracle11XEContainerDB getOracleContainerDatabase() {
 		if (ORACLE_CONTAINER_DATABASE == null) {
-			ORACLE_CONTAINER_DATABASE = Oracle11XEContainerTestDB.getInstance();
+			ORACLE_CONTAINER_DATABASE = Oracle11XEContainerDB.getInstance();
 			ORACLE_CONTAINER_DATABASE.setPrintSQLBeforeExecuting(true);
 		}
 		return ORACLE_CONTAINER_DATABASE;
@@ -553,29 +553,6 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static class Oracle11XEContainerTestDB extends Oracle11XEDB {
-
-		private final static long serialVersionUID = 1l;
-		private OracleContainer container;
-
-		public static Oracle11XEContainerTestDB getInstance() {
-			OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
-			container.start();
-			try {
-				return new Oracle11XEContainerTestDB(container);
-			} catch (SQLException ex) {
-				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Unable To Create Oracle Database in Docker Container", ex);
-			}
-		}
-
-		public Oracle11XEContainerTestDB(OracleContainer container) throws SQLException {
-			super(container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
-			this.container = container;
-			System.out.println("ORACLE: " + container.getJdbcUrl());
-		}
-	}
-
 	private static class MSSQLServerLocalTestDB extends MSSQLServerDB {
 
 		private final static long serialVersionUID = 1l;
@@ -596,63 +573,6 @@ public abstract class AbstractTest {
 
 		public MSSQLServerLocalTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
 			super(host, instance, database, Integer.parseInt(port), username, password);
-		}
-	}
-
-	public static class MSSQLServerContainerTestDB extends MSSQLServerDB {
-
-		private final static long serialVersionUID = 1l;
-
-		protected final GenericContainer mssqlServerContainer;
-
-		public static MSSQLServerContainerTestDB getInstance() {
-			String instance = "MSSQLServer";
-			String database = "";
-//			String username = "sa";
-//			String password = "Password23";
-
-			/*
-					ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
-					SA_PASSWORD=Password23 defines the password so we can login
-					'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
-			 */
-			MSSQLServerContainer container
-					= //new GenericContainer<>("mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")
-					//new GenericContainer<>("microsoft/mssql-server-linux:2017-CU13")
-					new MSSQLServerContainer<>()//"mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")
-					//							.withEnv("ACCEPT_EULA", "Y")
-					//							.withEnv("SA_PASSWORD", password)
-					//							.withEnv("MSSQL_SA_PASSWORD", password)
-					//							.withEnv("TZ", ZoneId.systemDefault().getId())
-					//							.withStartupTimeout(Duration.ofSeconds(30))
-					//							.withExposedPorts(1433)
-					//							.withStartupTimeout(Duration.ofMinutes(5))
-					;
-			container.withEnv("TZ", "Pacific/Auckland");
-//			container.withEnv("TZ", ZoneId.systemDefault().getId());
-			container.start();
-			String password = container.getPassword();
-			String username = container.getUsername();
-			String url = container.getJdbcUrl();
-			String host = container.getContainerIpAddress();
-			Integer port = container.getFirstMappedPort();
-
-			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerTestDB.getInstance()");
-			System.out.println("URL: " + url);
-			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
-			MSSQLServerContainerTestDB staticDatabase;
-			try {
-				staticDatabase = new MSSQLServerContainerTestDB(container, host, instance, database, port, username, password);
-				return staticDatabase;
-			} catch (SQLException ex) {
-				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Unable To Create MSSQLServer Database in Docker Container", ex);
-			}
-		}
-
-		public MSSQLServerContainerTestDB(GenericContainer container, String host, String instance, String database, Integer port, String username, String password) throws SQLException {
-			super(host, instance, database, port, username, password);
-			this.mssqlServerContainer = container;
 		}
 	}
 
