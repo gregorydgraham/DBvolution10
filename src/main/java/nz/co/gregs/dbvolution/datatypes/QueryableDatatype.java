@@ -762,7 +762,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 			T dbValue;
 			try {
 				dbValue = getFromResultSet(defn, resultSet, resultSetColumnName);
-				if (resultSet.wasNull()) {
+				if (checkForNullDuringSetFromResultSet() && resultSet.wasNull()) {
 					dbValue = null;
 				}
 			} catch (SQLException ex) {
@@ -1466,5 +1466,9 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		} else {
 			return false;
 		}
+	}
+
+	protected boolean checkForNullDuringSetFromResultSet() {
+		return true;
 	}
 }

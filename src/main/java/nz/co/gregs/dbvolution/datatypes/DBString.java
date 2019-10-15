@@ -730,12 +730,15 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	@Override
 	protected String getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
-			if (gotString != null && gotString.isEmpty()) {
+		if (resultSet.wasNull()||gotString==null) {
+			if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 				return null;
+			} else {
+				return "";
 			}
+		} else {
+			return gotString;
 		}
-		return gotString;
 	}
 
 	/**
@@ -892,5 +895,10 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	public synchronized DBString setDefaultUpdateValue(StringResult value) {
 		super.setDefaultUpdateValue(value);
 		return this;
+	}
+
+	@Override
+	protected boolean checkForNullDuringSetFromResultSet() {
+		return false;
 	}
 }
