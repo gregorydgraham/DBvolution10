@@ -78,13 +78,21 @@ public enum MultiPoint2DFunctions implements FeatureAdd {
 //			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + name(), ex);
 //		}
 //	}
-
 	@Override
-	public String[] dropAndCreateSQL() {
+	public String[] createSQL() {
 		if (!this.code.isEmpty()) {
 			return new String[]{
-				"DROP FUNCTION " + this + "(" + this.parameters + ");",
 				"CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;"
+			};
+		}
+		return new String[]{};
+	}
+
+	@Override
+	public String[] dropSQL() {
+		if (!this.code.isEmpty()) {
+			return new String[]{
+				"DROP FUNCTION " + this + "(" + this.parameters + ");"
 			};
 		}
 		return new String[]{};

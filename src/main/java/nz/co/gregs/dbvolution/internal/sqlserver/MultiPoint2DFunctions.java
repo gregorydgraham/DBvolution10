@@ -236,7 +236,7 @@ public enum MultiPoint2DFunctions implements FeatureAdd {
 	}
 
 	@Override
-	public String[] dropAndCreateSQL() {
+	public String[] createSQL() {
 		if (!this.code.isEmpty()) {
 			return new String[]{
 				"CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
@@ -249,7 +249,7 @@ public enum MultiPoint2DFunctions implements FeatureAdd {
 	}
 
 	@Override
-	public String[] optionalPreparationSQL() {
+	public String[] dropSQL() {
 		return new String[]{
 			"DROP FUNCTION " + this + ";"
 		};

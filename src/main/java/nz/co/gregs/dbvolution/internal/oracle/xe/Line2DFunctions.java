@@ -228,7 +228,7 @@ public enum Line2DFunctions implements FeatureAdd {
 	}
 
 	@Override
-	public String[] dropAndCreateSQL() {
+	public String[] createSQL() {
 		if (!this.code.isEmpty()) {
 			return new String[]{
 				"CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"

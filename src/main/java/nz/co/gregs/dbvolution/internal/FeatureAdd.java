@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
  */
 public interface FeatureAdd {
 
-	public String[] dropAndCreateSQL();
+	public String[] createSQL();
 
 	public String name();
 
@@ -65,14 +65,28 @@ public interface FeatureAdd {
 		} catch (ExceptionDuringDatabaseFeatureSetup exc) {
 			;// Optional SQL may fail and we'll continue
 		}
-		final String[] requiredSQL = dropAndCreateSQL();
+		try {
+			final String[] optionalSQL = dropSQL();
+			if (optionalSQL != null && optionalSQL.length > 0) {
+				for (String sql : optionalSQL) {
+					try {
+						stmt.execute(sql);
+					} catch (Exception ex) {
+						throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + featureName(), ex);
+					}
+				}
+			}
+		} catch (ExceptionDuringDatabaseFeatureSetup exc) {
+			;// Optional SQL may fail and we'll continue
+		}
+		final String[] requiredSQL = createSQL();
 		if (requiredSQL != null && requiredSQL.length > 0) {
 			for (String sql : requiredSQL) {
 				try {
 					stmt.execute(sql);
 				} catch (Exception ex) {
 					final ExceptionDuringDatabaseFeatureSetup setupException = new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + featureName(), ex);
-					System.out.println(""+setupException.getMessage());
+					System.out.println("" + setupException.getMessage());
 					setupException.printStackTrace();
 					throw setupException;
 				}
@@ -82,5 +96,9 @@ public interface FeatureAdd {
 
 	public default String featureName() {
 		return name();
+	}
+
+	public default String[] dropSQL() {
+		return new String[]{};
 	}
 }

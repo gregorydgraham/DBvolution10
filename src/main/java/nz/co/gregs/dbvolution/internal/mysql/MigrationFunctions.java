@@ -118,14 +118,23 @@ public enum MigrationFunctions implements FeatureAdd {
 	}
 
 	@Override
-	public String[] dropAndCreateSQL() {
+	public String[] createSQL() {
 		if (!this.code.isEmpty()) {
 			return new String[]{
-			"DROP FUNCTION " + this + ";",
 				"CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
 				+ "    RETURNS " + this.returnType
 				+ "\n  DETERMINISTIC BEGIN\n" + "\n" + this.code
 				+ "\n END;"
+			};
+		}
+		return new String[]{};
+	}
+
+	@Override
+	public String[] dropSQL() {
+		if (!this.code.isEmpty()) {
+			return new String[]{
+				"DROP FUNCTION " + this + ";"
 			};
 		}
 		return new String[]{};
