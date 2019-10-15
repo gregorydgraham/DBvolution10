@@ -16,17 +16,13 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
-import org.hamcrest.core.IsNull;
 
 public class SortingTest extends AbstractTest {
 
