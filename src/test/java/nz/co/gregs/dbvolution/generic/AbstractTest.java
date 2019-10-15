@@ -147,10 +147,10 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracleXE") != null) {
-			databases.add(new Object[]{"Oracle11DB", Oracle11XETestDB.getFromSettings("oraclexe")});
+			databases.add(new Object[]{"OracleXEDB", Oracle11XETestDB.getFromSettings("oraclexe")});
 		}
 		if (System.getProperty("testOracleXEContainer") != null) {
-			databases.add(new Object[]{"Oracle11XEContainer", Oracle11XEContainerTestDB.getFromSettings("oraclexecontainer")});
+			databases.add(new Object[]{"Oracle11XEContainer", getOracleContainerDatabase()});
 		}
 		if (System.getProperty("testMSSQLServerContainer") != null) {
 			databases.add(new Object[]{"MSSQLServerContainer", getMSSQLServerContainerDatabase()});
@@ -165,9 +165,9 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
 		}
 
-		for (Object[] database : databases) {
+		databases.forEach((database) -> {
 			System.out.println("Processing: Database " + database[0]);
-		}
+		});
 
 		return databases;
 	}
@@ -187,6 +187,16 @@ public abstract class AbstractTest {
 			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServerContainerTestDB.getInstance();
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER;
+	}
+
+	private static Oracle11XEContainerTestDB ORACLE_CONTAINER_DATABASE = null;
+
+	private static Oracle11XEContainerTestDB getOracleContainerDatabase() {
+		if (ORACLE_CONTAINER_DATABASE == null) {
+			ORACLE_CONTAINER_DATABASE = Oracle11XEContainerTestDB.getInstance();
+			ORACLE_CONTAINER_DATABASE.setPrintSQLBeforeExecuting(true);
+		}
+		return ORACLE_CONTAINER_DATABASE;
 	}
 
 	public AbstractTest(Object testIterationName, Object db) {
@@ -546,30 +556,23 @@ public abstract class AbstractTest {
 	private static class Oracle11XEContainerTestDB extends Oracle11XEDB {
 
 		private final static long serialVersionUID = 1l;
-		private static OracleContainer container = null;
-		private static Oracle11XEContainerTestDB staticDatabase;
+		private OracleContainer container;
 
-		public static Oracle11XEContainerTestDB getFromSettings(String prefix) throws SQLException {
-			if (container == null) {
-				String url = System.getProperty("" + prefix + ".url");
-				String instance = System.getProperty("" + prefix + ".instance", "xe");
-				String database = System.getProperty("" + prefix + ".database");
-				String username = System.getProperty("" + prefix + ".username", "system");
-				String password = System.getProperty("" + prefix + ".password", "oracle");
-				String schema = System.getProperty("" + prefix + ".schema");
-
-				container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
-				container.start();
-				String host = container.getContainerIpAddress();
-				Integer port = container.getMappedPort(1521);
-
-				staticDatabase = new Oracle11XEContainerTestDB(host, port, instance, username, password);
+		public static Oracle11XEContainerTestDB getInstance() {
+			OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
+			container.start();
+			try {
+				return new Oracle11XEContainerTestDB(container);
+			} catch (SQLException ex) {
+				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Unable To Create Oracle Database in Docker Container", ex);
 			}
-			return staticDatabase;
 		}
 
-		private Oracle11XEContainerTestDB(String host, Integer port, String instance, String username, String password) throws SQLException {
-			super(host, port, instance, username, password);
+		public Oracle11XEContainerTestDB(OracleContainer container) throws SQLException {
+			super(container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
+			this.container = container;
+			System.out.println("ORACLE: " + container.getJdbcUrl());
 		}
 	}
 
@@ -605,38 +608,37 @@ public abstract class AbstractTest {
 		public static MSSQLServerContainerTestDB getInstance() {
 			String instance = "MSSQLServer";
 			String database = "";
-			String username = "sa";
-			String password = "Password23";
+//			String username = "sa";
+//			String password = "Password23";
 
 			/*
 					ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
 					SA_PASSWORD=Password23 defines the password so we can login
 					'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 			 */
-			
 			MSSQLServerContainer container
 					= //new GenericContainer<>("mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")
 					//new GenericContainer<>("microsoft/mssql-server-linux:2017-CU13")
 					new MSSQLServerContainer<>()//"mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu")
-//							.withEnv("ACCEPT_EULA", "Y")
-//							.withEnv("SA_PASSWORD", password)
-//							.withEnv("MSSQL_SA_PASSWORD", password)
-//							.withEnv("TZ", ZoneId.systemDefault().getId())
-//							.withStartupTimeout(Duration.ofSeconds(30))
-//							.withExposedPorts(1433)
-//							.withStartupTimeout(Duration.ofMinutes(5))
+					//							.withEnv("ACCEPT_EULA", "Y")
+					//							.withEnv("SA_PASSWORD", password)
+					//							.withEnv("MSSQL_SA_PASSWORD", password)
+					//							.withEnv("TZ", ZoneId.systemDefault().getId())
+					//							.withStartupTimeout(Duration.ofSeconds(30))
+					//							.withExposedPorts(1433)
+					//							.withStartupTimeout(Duration.ofMinutes(5))
 					;
 			container.withEnv("TZ", "Pacific/Auckland");
 //			container.withEnv("TZ", ZoneId.systemDefault().getId());
 			container.start();
-			password = container.getPassword();
-			username = container.getUsername();
+			String password = container.getPassword();
+			String username = container.getUsername();
 			String url = container.getJdbcUrl();
 			String host = container.getContainerIpAddress();
 			Integer port = container.getFirstMappedPort();
 
 			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerTestDB.getInstance()");
-			System.out.println("URL: "+url);
+			System.out.println("URL: " + url);
 			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
 			MSSQLServerContainerTestDB staticDatabase;
 			try {
