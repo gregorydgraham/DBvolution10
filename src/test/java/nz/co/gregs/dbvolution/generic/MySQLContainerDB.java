@@ -35,13 +35,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.utility.MountableFile;
 
 /**
  *
  * @author gregorygraham
  */
-public class MySQLContainerDB extends MySQLDB{
-	
+public class MySQLContainerDB extends MySQLDB {
+
 	private static final long serialVersionUID = 1l;
 	protected final MySQLContainer storedContainer;
 
@@ -51,7 +52,12 @@ public class MySQLContainerDB extends MySQLDB{
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		MySQLContainer container = new MySQLContainer<>();
+//		MySQLContainer container = new MySQLContainer<>();
+		MySQLContainer container = (MySQLContainer) new MySQLContainer().withDatabaseName("some_database")
+				.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/")
+				.withLogConsumer((t) -> {
+					System.out.println("MYSQL CONTAINER: " + t);
+				});
 		container.withEnv("TZ", "Pacific/Auckland");
 		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
@@ -76,5 +82,5 @@ public class MySQLContainerDB extends MySQLDB{
 		super(container.getJdbcUrl(), container.getUsername(), container.getPassword());
 		this.storedContainer = container;
 	}
-	
+
 }
