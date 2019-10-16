@@ -232,7 +232,7 @@ public class SQLiteDB extends DBDatabase {
 		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
 		if (jdbcURL.contains(";")) {
-			String extrasString = jdbcURL.split("?", 2)[1];
+			String extrasString = jdbcURL.split("\\?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
 		set.setDatabaseName(noPrefix.split(":", 3)[2]);
