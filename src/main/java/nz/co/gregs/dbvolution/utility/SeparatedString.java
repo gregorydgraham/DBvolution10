@@ -33,7 +33,11 @@ package nz.co.gregs.dbvolution.utility;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Simple access to creating a string of a variety of strings separated by a
@@ -65,12 +69,26 @@ public class SeparatedString {
 		return new SeparatedString().withPrefix(precedingString);
 	}
 
+	public static SeparatedString of(Map<Object, Object> nameValuePairs, String nameValueSeparator) {
+		ArrayList<String> list = new ArrayList<>();
+		nameValuePairs.entrySet().forEach((entry) -> {
+			Object key = entry.getKey();
+			Object val = entry.getValue();
+			list.add(key.toString() + nameValueSeparator + val.toString());
+		});
+		return new SeparatedString().add(list);
+	}
+
 	public static SeparatedString of(String... allStrings) {
 		return new SeparatedString().add(allStrings);
 	}
 
 	public static SeparatedString of(Object... allStrings) {
 		return new SeparatedString().add(allStrings);
+	}
+
+	public static SeparatedString of(List<Object> allStrings) {
+		return new SeparatedString().add(allStrings.toArray());
 	}
 
 	public static SeparatedString forSeparator(String separator) {
@@ -215,6 +233,17 @@ public class SeparatedString {
 
 	public SeparatedString add(Object string) {
 		getStrings().add(string.toString());
+		return this;
+	}
+
+	public SeparatedString add(Collection<?> string) {
+		List<String> newStrings
+				= string.stream()
+						.map((t) -> {
+							return t.toString();
+						})
+						.collect(Collectors.toList());
+		getStrings().addAll(newStrings);
 		return this;
 	}
 
