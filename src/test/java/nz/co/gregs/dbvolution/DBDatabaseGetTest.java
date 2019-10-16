@@ -150,7 +150,11 @@ public class DBDatabaseGetTest extends AbstractTest {
 		} else {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
 		}
-		Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
+		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
+		} else {
+			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.getValue().isEmpty());
+		}
 	}
 
 	@Test
