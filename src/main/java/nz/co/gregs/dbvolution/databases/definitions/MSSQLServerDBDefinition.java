@@ -86,7 +86,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		SeparatedString sep = SeparatedString.startsWith("(").separatedBy("+").endsWith(")")
 				.add(firstString)
 				.add(secondString)
-				.add(rest);
+				.addAll(rest);
 		return sep.toString();
 	}
 
