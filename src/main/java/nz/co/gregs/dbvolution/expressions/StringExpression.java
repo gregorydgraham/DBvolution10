@@ -2907,7 +2907,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 				return "LPAD_SUBSTITUTE_REQUIRED("
 						+ SeparatedString
 								.startsWith("LPAD_SUBSTITUTE_REQUIRED(")
-								.add(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db))
+								.addAll(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db))
 								.separatedBy(", ")
 								.withSuffix(")")
 								.toString();
