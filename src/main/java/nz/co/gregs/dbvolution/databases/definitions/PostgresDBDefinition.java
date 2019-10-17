@@ -81,8 +81,8 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		return SeparatedString.startsWith("make_timestamp(").separatedBy(", ").endsWith(")")
-				.add(years, months, days)
-				.add(hours, minutes, "(" + seconds + "+" + subsecond + ")")
+				.addAll(years, months, days)
+				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 //				.add(
 //						doConcatTransform(
 //								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
@@ -94,8 +94,8 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		return SeparatedString.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
-				.add(years, months, days)
-				.add(hours, minutes, "(" + seconds + "+" + subsecond + ")")
+				.addAll(years, months, days)
+				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				.add(
 						doConcatTransform(
 								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
