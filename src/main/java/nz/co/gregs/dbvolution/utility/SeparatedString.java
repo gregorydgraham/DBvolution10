@@ -42,10 +42,26 @@ import java.util.regex.Pattern;
  * common character or sequence.
  *
  * <p>
+ * A common pattern is to add string elements to a longer string with a format
+ * similar to: prefix|element1|separator|element2|suffix. For instance a file
+ * path has prefix "/", separator "/", and suffix "". This class allows for
+ * convenient object-oriented processing of this pattern.</p>
+ *
+ * <p>
+ * Advanced features allow for proper CSV formatting including quoting and
+ * escaping.</p>
+ *
+ * <p>
+ * All values are strings, not characters, so complex output can be generated: a
+ * WHEN clause in SQL would be
+ * <p>
+ * <code>SeparatedString.startsWith("WHEN").separatedBy(" AND ").addAll(allWhenClausesList).endsWith(groupByClauseString).toString();</code>
+ *
+ * <p>
  * The default separator is a space (" "). All other defaults are empty.</p>
  *
  * <p>
- * Also supports string prefix and suffix, and is a fluent API.</p>
+ * Supports string separator, prefix, suffix, quoting, before quote, after quote, escaping, maps, and is a fluent API.</p>
  *
  * @author gregorygraham
  */
@@ -229,7 +245,7 @@ public class SeparatedString {
 		getStrings().add(string.toString());
 		return this;
 	}
-	
+
 	public SeparatedString containing(String... strings) {
 		return add(strings);
 	}
