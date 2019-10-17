@@ -34,7 +34,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 
@@ -125,6 +124,11 @@ public class DatabaseConnectionSettings {
 
 	public DatabaseConnectionSettings() {
 		super();
+	}
+
+	public DatabaseConnectionSettings(DatabaseConnectionSettings dcs) {
+		super();
+		this.copy(dcs);
 	}
 
 	@Override
@@ -555,7 +559,7 @@ public class DatabaseConnectionSettings {
 		return settings;
 	}
 
-	public void copy(DatabaseConnectionSettings newSettings) {
+	public final void copy(DatabaseConnectionSettings newSettings) {
 		this.setDataSource(newSettings.getDataSource());
 		this.setDatabaseName(newSettings.getDatabaseName());
 		this.setDbdatabaseClass(newSettings.getDbdatabaseClass());
@@ -575,13 +579,20 @@ public class DatabaseConnectionSettings {
 	 * Create the DBDatabase described by these settings
 	 *
 	 * @return the DBDatabase
-	 * @throws ClassNotFoundException all database need an accessible default constructor
-	 * @throws NoSuchMethodException all database need an accessible default constructor
-	 * @throws SecurityException all database need an accessible default constructor
-	 * @throws InstantiationException all database need an accessible default constructor
-	 * @throws IllegalAccessException all database need an accessible default constructor
-	 * @throws IllegalArgumentException all database need an accessible default constructor
-	 * @throws InvocationTargetException all database need an accessible default constructor
+	 * @throws ClassNotFoundException all database need an accessible default
+	 * constructor
+	 * @throws NoSuchMethodException all database need an accessible default
+	 * constructor
+	 * @throws SecurityException all database need an accessible default
+	 * constructor
+	 * @throws InstantiationException all database need an accessible default
+	 * constructor
+	 * @throws IllegalAccessException all database need an accessible default
+	 * constructor
+	 * @throws IllegalArgumentException all database need an accessible default
+	 * constructor
+	 * @throws InvocationTargetException all database need an accessible default
+	 * constructor
 	 */
 	public final DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> dbDatabaseClass = Class.forName(this.getDbdatabaseClass());
@@ -602,134 +613,129 @@ public class DatabaseConnectionSettings {
 	/**
 	 * @return the url
 	 */
-	public String getUrl() {
+	public final String getUrl() {
 		return url;
 	}
 
 	/**
 	 * @return the host
 	 */
-	public String getHost() {
+	public final String getHost() {
 		return host;
 	}
 
 	/**
 	 * @return the port
 	 */
-	public String getPort() {
+	public final String getPort() {
 		return port;
 	}
 
 	/**
 	 * @return the instance
 	 */
-	public String getInstance() {
+	public final String getInstance() {
 		return instance;
 	}
 
 	/**
 	 * @return the database
 	 */
-	public String getDatabaseName() {
+	public final String getDatabaseName() {
 		return database;
 	}
 
 	/**
 	 * @return the username
 	 */
-	public String getUsername() {
+	public final String getUsername() {
 		return username;
 	}
 
 	/**
 	 * @return the password
 	 */
-	public String getPassword() {
+	public final String getPassword() {
 		return password;
 	}
 
 	/**
 	 * @return the schema
 	 */
-	public String getSchema() {
+	public final String getSchema() {
 		return schema;
 	}
 
 	/**
 	 * @param url the url to set
 	 */
-	public void setUrl(String url) {
+	public final void setUrl(String url) {
 		this.url = url == null ? "" : url;
 	}
 
 	/**
 	 * @param host the host to set
 	 */
-	public void setHost(String host) {
+	public final void setHost(String host) {
 		this.host = host == null ? "" : host;
-//		return this;
 	}
 
 	/**
 	 * @param port the port to set
 	 */
-	public void setPort(String port) {
+	public final void setPort(String port) {
 		this.port = port == null ? "" : port;
-//		return this;
 	}
 
 	/**
 	 * @param instance the instance to set
 	 */
-	public void setInstance(String instance) {
+	public final void setInstance(String instance) {
 		this.instance = instance == null ? "" : instance;
-//		return this;
 	}
 
 	/**
 	 * @param database the database to set
 	 */
-	public void setDatabaseName(String database) {
+	public final void setDatabaseName(String database) {
 		this.database = database == null ? "" : database;
-//		return this;
 	}
 
 	/**
 	 * @param username the username to set
 	 */
-	public void setUsername(String username) {
+	public final void setUsername(String username) {
 		this.username = username == null ? "" : username;
-//		return this;
 	}
 
 	/**
 	 * @param password the password to set
 	 */
-	public void setPassword(String password) {
+	public final void setPassword(String password) {
 		this.password = password == null ? "" : password;
-//		return this;
 	}
 
 	/**
 	 * @param schema the schema to set
 	 */
-	public void setSchema(String schema) {
+	public final void setSchema(String schema) {
 		this.schema = schema == null ? "" : schema;
-//		return this;
 	}
 
 	/**
 	 * @return the extras
 	 */
-	public Map<String, String> getExtras() {
+	public final Map<String, String> getExtras() {
 		return extras;
 	}
 
 	/**
+	 * Removes all existing extras and adds the supplied values.
+	 *
 	 * @param newExtras extra settings for the database
 	 * @return the extras
 	 */
-	public DatabaseConnectionSettings setExtras(Map<String, String> newExtras) {
+	public final DatabaseConnectionSettings setExtras(Map<String, String> newExtras) {
 		extras.clear();
 		if (newExtras != null && !newExtras.isEmpty()) {
 			extras.putAll(newExtras);
@@ -737,18 +743,31 @@ public class DatabaseConnectionSettings {
 		return this;
 	}
 
-	public String formatExtras(String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
+	/**
+	 * Adds or replaces the new values to the existing extras.
+	 *
+	 * @param newExtras extra settings for the database
+	 * @return the extras
+	 */
+	public final DatabaseConnectionSettings addExtras(Map<String, String> newExtras) {
+		if (newExtras != null && !newExtras.isEmpty()) {
+			extras.putAll(newExtras);
+		}
+		return this;
+	}
+
+	public final String formatExtras(String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
 		return encodeExtras(extras, prefix, nameValueSeparator, nameValuePairSeparator, suffix);
 	}
 
 	public static String encodeExtras(Map<String, String> extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
 		StringBuilder str = new StringBuilder();
-		for (Entry<String, String> extra : extras.entrySet()) {
+		extras.entrySet().forEach((extra) -> {
 			if (str.length() > 0) {
 				str.append(nameValuePairSeparator);
 			}
 			str.append(extra.getKey()).append(nameValueSeparator).append(extra.getValue());
-		}
+		});
 		if (str.length() > 0) {
 			return prefix + str.toString() + suffix;
 		} else {
@@ -767,11 +786,11 @@ public class DatabaseConnectionSettings {
 		return map;
 	}
 
-	public void setDbdatabaseClass(String canonicalNameOfADBDatabaseSubclass) {
+	public final void setDbdatabaseClass(String canonicalNameOfADBDatabaseSubclass) {
 		this.dbdatabase = canonicalNameOfADBDatabaseSubclass;
 	}
 
-	public String getDbdatabaseClass() {
+	public final String getDbdatabaseClass() {
 		return this.dbdatabase;
 	}
 
@@ -783,7 +802,7 @@ public class DatabaseConnectionSettings {
 	 *
 	 * @param label an arbitrary name for the database
 	 */
-	public void setLabel(String label) {
+	public final void setLabel(String label) {
 		this.label = label;
 	}
 
@@ -796,23 +815,33 @@ public class DatabaseConnectionSettings {
 	 *
 	 * @return the label set for the database
 	 */
-	public String getLabel() {
+	public final String getLabel() {
 		return this.label;
 	}
 
-	public void setDataSource(DataSource ds) {
+	public final void setDataSource(DataSource ds) {
 		dataSource = ds;
 	}
 
-	public DataSource getDataSource() {
+	public final DataSource getDataSource() {
 		return dataSource;
 	}
 
-	public void setProtocol(String protocol) {
+	public final void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
 
-	public String getProtocol() {
+	public final String getProtocol() {
 		return protocol;
+	}
+
+	public final void setDefaultExtras(Map<String, String> defaultConfigurationExtras) {
+		defaultConfigurationExtras.forEach((t, u) -> {
+			this.extras.putIfAbsent(t, u);
+		});
+	}
+
+	public final void addExtra(String tag, String value) {
+		this.extras.put(tag, value);
 	}
 }
