@@ -6656,7 +6656,7 @@ public abstract class DBDefinition implements Serializable {
 		return SeparatedString
 				.startsWith("LPAD(")
 				.separatedBy(", ")
-				.add(toPad, length, padWith)
+				.addAll(toPad, length, padWith)
 				.endsWith(")").toString();
 	}
 
@@ -6668,7 +6668,7 @@ public abstract class DBDefinition implements Serializable {
 		return SeparatedString
 				.startsWith("RPAD(")
 				.separatedBy(", ")
-				.add(toPad, length, padWith)
+				.addAll(toPad, length, padWith)
 				.endsWith(")").toString();
 	}
 
