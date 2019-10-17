@@ -61,7 +61,8 @@ import java.util.regex.Pattern;
  * The default separator is a space (" "). All other defaults are empty.</p>
  *
  * <p>
- * Supports string separator, prefix, suffix, quoting, before quote, after quote, escaping, maps, and is a fluent API.</p>
+ * Supports string separator, prefix, suffix, quoting, before quote, after
+ * quote, escaping, maps, and is a fluent API.</p>
  *
  * @author gregorygraham
  */
@@ -90,15 +91,15 @@ public class SeparatedString {
 			String val = entry.getValue();
 			list.add(key + nameValueSeparator + val);
 		});
-		return new SeparatedString().add(list);
+		return new SeparatedString().addAll(list);
 	}
 
 	public static SeparatedString of(String... allStrings) {
-		return new SeparatedString().add(allStrings);
+		return new SeparatedString().addAll(allStrings);
 	}
 
 	public static SeparatedString of(List<String> allStrings) {
-		return new SeparatedString().add(allStrings.toArray());
+		return new SeparatedString().addAll(allStrings.toArray(new String[]{}));
 	}
 
 	public static SeparatedString forSeparator(String separator) {
@@ -241,13 +242,8 @@ public class SeparatedString {
 		return this;
 	}
 
-	public SeparatedString add(Object string) {
-		getStrings().add(string.toString());
-		return this;
-	}
-
 	public SeparatedString containing(String... strings) {
-		return add(strings);
+		return addAll(strings);
 	}
 
 	/**
