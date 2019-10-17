@@ -1718,7 +1718,7 @@ public abstract class DBDefinition implements Serializable {
 		SeparatedString sep = SeparatedString.startsWith("CONCAT(").separatedBy(", ").endsWith(")")
 				.add(firstString)
 				.add(secondString)
-				.add(rest);
+				.addAll(rest);
 		return sep.toString();
 	}
 
