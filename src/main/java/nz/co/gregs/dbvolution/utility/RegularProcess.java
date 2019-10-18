@@ -78,6 +78,7 @@ public abstract class RegularProcess implements Serializable {
 	private String lastResult = "Not Processed Yet";
 	private Date lastRunTime = new Date();
 	private String simpleName = null;
+	private boolean stopped = false;
 
 	/**
 	 * Method that does all the processing that needs to be regularly performed.
@@ -187,10 +188,11 @@ public abstract class RegularProcess implements Serializable {
 
 	public final void stop() {
 		this.dbDatabase = null;
+		this.stopped = true;
 	}
 
 	public final boolean canRun() {
-		if (this.dbDatabase == null) {
+		if (!stopped && this.dbDatabase == null) {
 			LOG.warn(this.getClass().getSimpleName() + " has not had setDatabase(DBDatabase) called and can not process.");
 		}
 		return this.dbDatabase != null;
