@@ -79,5 +79,11 @@ public class PostgresContainerDB extends PostgresDB{
 		super(container.getJdbcUrl(), container.getUsername(), container.getPassword());
 		this.storedContainer = container;
 	}
+
+	@Override
+	public synchronized void stop() {
+		super.stop();
+		storedContainer.stop();
+	}
 	
 }
