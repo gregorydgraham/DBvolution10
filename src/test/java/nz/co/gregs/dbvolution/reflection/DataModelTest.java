@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.OracleDB;
+import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
@@ -93,9 +94,6 @@ public class DataModelTest extends AbstractTest {
 			Assert.assertTrue(knownStrings.contains(foundString));
 			conMap.remove(foundString);
 		}
-//		for (Class<? extends DBDatabase> val : conMap.values()) {
-//			System.out.println(val);
-//		}
 		Assert.assertThat(result.size(), is(knownStrings.size()));
 	}
 
@@ -124,7 +122,8 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.Oracle11XEContainerDB(org.testcontainers.containers.OracleContainer) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.PostgresContainerDB(org.testcontainers.containers.PostgreSQLContainer) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer) throws java.sql.SQLException");
+//		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer,nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
@@ -508,20 +507,22 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBDatabaseCreationMethodsStaticWithoutParameters() {
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
-		Assert.assertThat(dbDatabaseCreationMethods.size(), is(6));
 		for (Method creator : dbDatabaseCreationMethods) {
 			creator.setAccessible(true);
-			System.out.println("CREATOR: "+creator.toGenericString());
+			System.out.println("CREATOR: " + creator.toGenericString());
 			try {
-				DBDatabase db = (DBDatabase) creator.invoke(null);
+				if (database instanceof SQLiteDB) {
+					DBDatabase db = (DBDatabase) creator.invoke(null);
+				}
 			} catch (Exception ex) {
-				System.out.println("EXCEPTION: "+ex.getClass().getCanonicalName());
-				System.out.println("EXCEPTION: "+ex.getMessage());
-				System.out.println("EXCEPTION: "+ex.getLocalizedMessage());
+				System.out.println("EXCEPTION: " + ex.getClass().getCanonicalName());
+				System.out.println("EXCEPTION: " + ex.getMessage());
+				System.out.println("EXCEPTION: " + ex.getLocalizedMessage());
 				ex.printStackTrace();
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
+		Assert.assertThat(dbDatabaseCreationMethods.size(), is(6));
 	}
 
 	@Test
