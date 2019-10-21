@@ -18,10 +18,12 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JavaDBMemoryURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Use this class to work with an in-memory JavaDB.
@@ -64,7 +66,12 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDBMemoryDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, jdbcURL, username, password);
+		super(
+				new JavaDBMemoryDBDefinition(), 
+				DRIVER_NAME, 
+				new JavaDBMemoryURLInterpreter().generateSettings(jdbcURL, username, password)
+//				jdbcURL, username, password
+				);
 	}
 
 	/**
@@ -81,14 +88,14 @@ public class JavaDBMemoryDB extends DBDatabase {
 		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:derby://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/memory:"
-				+ settings.getDatabaseName() + ";create=true";
-	}
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:derby://"
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/memory:"
+//				+ settings.getDatabaseName() + ";create=true";
+//	}
 
 	@Override
 	public JavaDBMemoryDB clone() throws CloneNotSupportedException {
@@ -146,32 +153,37 @@ public class JavaDBMemoryDB extends DBDatabase {
 //		return "";
 //	}
 
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:", ""));
-		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setInstance(getExtras().get("instance"));
-		set.setSchema("");
-		return set;
-	}
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
+//		set.setPort(noPrefix
+//					.split("/",2)[0]
+//					.replaceAll("^[^:]*:", ""));
+//		set.setHost(noPrefix
+//					.split("/",2)[0]
+//					.split(":")[0]);
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+//		}
+//		set.setInstance(getExtras().get("instance"));
+//		set.setSchema("");
+//		return set;
+//	}
 
 	@Override
 	public Integer getDefaultPort() {
 		return 1527;
 	}
 
+//	@Override
+//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return JavaDBMemoryDB.class;
+//	}
+
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return JavaDBMemoryDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new JavaDBMemoryURLInterpreter();
 	}
 }

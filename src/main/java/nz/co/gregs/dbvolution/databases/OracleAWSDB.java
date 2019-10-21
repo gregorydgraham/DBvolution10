@@ -23,10 +23,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Super class for connecting the different versions of the AWS Oracle DB.
@@ -150,9 +152,18 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement dbStatement, TR tableRow) throws SQLException {
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return OracleAWSDB.class ;
+//	}
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return OracleAWSDB.class ;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new OracleURLInterpreter() {
+			@Override
+			public Class<? extends DBDatabase> generatesURLForDatabase() {
+				return OracleAWSDB.class;
+			}
+		};
 	}
 
 }

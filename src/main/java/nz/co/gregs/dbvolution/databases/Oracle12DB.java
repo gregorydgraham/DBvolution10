@@ -17,7 +17,9 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Implements support for version 12 of the Oracle database.
@@ -123,9 +125,19 @@ public class Oracle12DB extends OracleDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return Oracle12DB.class;
+//	}	
+	
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return Oracle12DB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new OracleURLInterpreter() {
+			@Override
+			public Class<? extends DBDatabase> generatesURLForDatabase() {
+				return Oracle12DB.class;
+			}
+		};
 	}
 
 }

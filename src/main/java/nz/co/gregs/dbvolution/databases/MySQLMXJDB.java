@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLMXJDBURLInterpreter;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * DBDatabase tweaked for the MySQL MXJ Database.
@@ -39,6 +41,15 @@ public class MySQLMXJDB extends MySQLDB {
 	public MySQLMXJDB(DataSource ds) throws SQLException {
 		super(ds);
 	}
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MySQLMXJDB(DatabaseConnectionSettings ds) throws SQLException {
+		super(ds);
+	}
 
 	/**
 	 * Creates a DBDatabase tweaked for MySQL MXJ.
@@ -49,7 +60,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(String jdbcURL, String username, String password) throws SQLException {
-		super(jdbcURL, username, password);
+		this(new MySQLMXJDBURLInterpreter().generateSettings(jdbcURL, username, password));
 	}
 
 	/**
@@ -64,13 +75,22 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(String server, long port, String databaseName, String databaseDir, String username, String password) throws SQLException {
-		super("jdbc:mysql:mxj://" + server + ":" + port + "/" + databaseName
-				+ "?" + "server.basedir=" + databaseDir
-				+ "&" + "createDatabaseIfNotExist=true"
-				+ "&" + "server.initialize-user=true",
-				username,
-				password);
-		setDatabaseName(databaseName);
+		this(
+				new DatabaseConnectionSettings()
+						.flowHost(server)
+						.flowPort(""+port)
+						.flowDatabaseName(databaseName)
+						.flowExtra("server.basedir", databaseDir)
+						.flowUsername(username)
+						.flowPassword(password)
+//				"jdbc:mysql:mxj://" + server + ":" + port + "/" + databaseName
+//				+ "?" + "server.basedir=" + databaseDir
+//				+ "&" + "createDatabaseIfNotExist=true"
+//				+ "&" + "server.initialize-user=true",
+//				username,
+//				password
+						);
+//		setDatabaseName(databaseName);
 	}
 
 	@Override
@@ -78,8 +98,13 @@ public class MySQLMXJDB extends MySQLDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return MySQLMXJDB.class;
+//	}
+
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return MySQLMXJDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new MySQLMXJDBURLInterpreter();
 	}
 }

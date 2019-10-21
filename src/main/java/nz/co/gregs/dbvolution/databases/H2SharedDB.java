@@ -37,8 +37,10 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2SharedURLInterpreter;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import org.h2.tools.Server;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 public class H2SharedDB extends H2DB {
 
@@ -76,13 +78,13 @@ public class H2SharedDB extends H2DB {
 		super.addDatabaseSpecificFeatures(stmt);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String hostname = settings.getHost() == null || settings.getHost().isEmpty() ? "localhost" : settings.getHost();
-		String port = settings.getPort() == null || settings.getPort().isEmpty() ? "9123" : settings.getPort();
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:h2:tcp://" + hostname + ":" + port + "/" + settings.getDatabaseName();
-	}
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String hostname = settings.getHost() == null || settings.getHost().isEmpty() ? "localhost" : settings.getHost();
+//		String port = settings.getPort() == null || settings.getPort().isEmpty() ? "9123" : settings.getPort();
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:h2:tcp://" + hostname + ":" + port + "/" + settings.getDatabaseName();
+//	}
 
 	@Override
 	protected void startServerIfRequired() {
@@ -149,9 +151,15 @@ public class H2SharedDB extends H2DB {
 		getConnectionFromDriverManager().close();
 	}
 
+//	@Override
+//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return H2SharedDB.class;
+//	}
+
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return H2SharedDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new H2SharedURLInterpreter();
 	}
+	
 
 }

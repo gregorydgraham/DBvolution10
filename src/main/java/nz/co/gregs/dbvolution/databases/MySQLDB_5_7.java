@@ -19,10 +19,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQL_5_7URLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * A DBDatabase tweaked for MySQL databases
@@ -38,6 +40,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	private static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 3306;
 //	private String derivedURL;
+	private final JDBCURLInterpreter urlProcessor = new MySQL_5_7URLInterpreter();
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -50,6 +53,16 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param dcs the settings required to connect to the database
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MySQLDB_5_7(DatabaseConnectionSettings dcs) throws SQLException {
+		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, dcs);
+	}
+
+	/**
 	 * Creates DBDatabase suitable for use with MySQL attached to the supplied
 	 * JDBC URL, username, and password.
 	 *
@@ -59,7 +72,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(String jdbcURL, String username, String password) throws SQLException {
-		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, jdbcURL, username, password);
+		this(new MySQL_5_7URLInterpreter().generateSettings(jdbcURL, username, password));
 	}
 
 	/**
@@ -74,25 +87,32 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(String server, long port, String databaseName, String username, String password) throws SQLException {
-		super(new MySQLDBDefinition_5_7(),
-				MYSQLDRIVERNAME,
-				"jdbc:mysql://" + server + ":" + port + "/" + databaseName + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
-				username,
-				password);
-		this.setDatabaseName(databaseName);
+		this(
+//				new MySQLDBDefinition_5_7(),
+//				MYSQLDRIVERNAME,
+				new MySQL_5_7URLInterpreter().generateSettings()
+						.flowHost(server)
+						.flowPort(port)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
+		//				"jdbc:mysql://" + server + ":" + port + "/" + databaseName + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
+		//				username,
+		//				password
+		);
+//		this.setDatabaseName(databaseName);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:mysql://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName()
-				+ "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true"
-				+ settings.formatExtras("&", "=", "&", "");
-	}
-
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:mysql://"
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getDatabaseName()
+//				+ "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true"
+//				+ settings.formatExtras("&", "=", "&", "");
+//	}
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -141,25 +161,24 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 //	protected String getSchema() {
 //		return "";
 //	}
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
-		set.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setInstance(getExtras().get("instance"));
-		set.setSchema("");
-		return set;
-	}
-
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
+//		set.setPort(noPrefix
+//				.split("/", 2)[0]
+//				.replaceAll("^[^:]*:+", ""));
+//		set.setHost(noPrefix
+//				.split("/", 2)[0]
+//				.split(":")[0]);
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split("\\?", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+//		}
+//		set.setInstance(getExtras().get("instance"));
+//		set.setSchema("");
+//		return set;
+//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 3306;
@@ -178,9 +197,13 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 		return super.addFeatureToFixException(exp, intent);
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return MySQLDB_5_7.class;
+//	}
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return MySQLDB_5_7.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return urlProcessor;
 	}
 
 }

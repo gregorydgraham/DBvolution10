@@ -19,10 +19,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MSSQLServerURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * A DBDatabase object tweaked to work with Microsoft SQL Server.
@@ -84,8 +86,20 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param settings	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MSSQLServerDB(MSSQLServerDBDefinition defn, DatabaseConnectionSettings settings) throws SQLException {
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, DatabaseConnectionSettings settings) throws SQLException {
 		super(defn, SQLSERVERDRIVERNAME, settings);
+	}
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
+	 *
+	 * @param defn the definition to use with this database connection
+	 * @param driverName the name of the JDBC driver to be used by this database
+	 * @param settings	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, DatabaseConnectionSettings settings) throws SQLException {
+		super(defn, driverName, settings);
 	}
 
 	/**
@@ -113,11 +127,17 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
-		this(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
+		this(
+				new MSSQLServerDBDefinition(),
+				driverName,
+				new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password)
+		//				jdbcURL, username, password
+		);
 	}
 
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		super(defn, driverName, jdbcURL, username, password);
+//		super(defn, driverName, jdbcURL, username, password);
+		this(new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password));
 	}
 
 	/**
@@ -133,11 +153,13 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
-		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
+//		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
+		this(new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password));
 	}
 
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String jdbcURL, String username, String password) throws SQLException {
-		super(defn, SQLSERVERDRIVERNAME, jdbcURL, username, password);
+//		this(defn, SQLSERVERDRIVERNAME, jdbcURL, username, password);
+		this(defn, SQLSERVERDRIVERNAME, new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password));
 	}
 
 	/**
@@ -155,37 +177,54 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
+//		this(
+//				new MSSQLServerDBDefinition(),
+//				hostname, instanceName, databaseName, portNumber,
+//				username, password
+//		);
 		this(
-				new MSSQLServerDBDefinition(),
-				hostname, instanceName, databaseName, portNumber,
-				username, password
+				new MSSQLServerURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(portNumber)
+						.flowInstance(instanceName)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
 		);
 	}
 
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
-		super(
+		this(
 				defn,
-				SQLSERVERDRIVERNAME,
-				"jdbc:sqlserver://"
-				+ (hostname != null ? hostname : DEFAULT_HOST_NAME)
-				+ (instanceName != null ? "\\" + instanceName : "")
-				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
-				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
-				username,
-				password
+//				SQLSERVERDRIVERNAME,
+				new MSSQLServerURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(portNumber)
+						.flowInstance(instanceName)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
+		//				"jdbc:sqlserver://"
+		//				+ (hostname != null ? hostname : DEFAULT_HOST_NAME)
+		//				+ (instanceName != null ? "\\" + instanceName : "")
+		//				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
+		//				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
+		//				username,
+		//				password
 		);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		final String urlFromSettings = "jdbc:sqlserver://" + settings.getHost()
-				+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
-				+ settings.getPort() + ";"
-				+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
-		return url != null && !url.isEmpty() ? url : urlFromSettings;
-	}
-
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		final String urlFromSettings = "jdbc:sqlserver://" + settings.getHost()
+//				+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
+//				+ settings.getPort() + ";"
+//				+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
+//		return url != null && !url.isEmpty() ? url : urlFromSettings;
+//	}
 	/**
 	 * Connect to an MS SQLServer database using the connection details specified
 	 * and Microsoft's driver.
@@ -205,8 +244,16 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		this(
 				new MSSQLServerDBDefinition(),
 				driverName,
-				hostname, instanceName, databaseName, portNumber,
-				username, password
+				new MSSQLServerURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(portNumber)
+						.flowInstance(instanceName)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
+//				hostname, instanceName, databaseName, portNumber,
+//				username, password
 		);
 	}
 
@@ -214,12 +261,20 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		super(
 				defn,
 				driverName,
-				"jdbc:sqlserver://" + (hostname != null ? hostname : DEFAULT_HOST_NAME)
-				+ (instanceName != null ? "\\" + instanceName : "")
-				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
-				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
-				username,
-				password
+				new MSSQLServerURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(portNumber)
+						.flowInstance(instanceName)
+						.flowDatabaseName(databaseName)
+						.flowDatabaseName(username)
+						.flowPassword(password)
+		//				"jdbc:sqlserver://" + (hostname != null ? hostname : DEFAULT_HOST_NAME)
+		//				+ (instanceName != null ? "\\" + instanceName : "")
+		//				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
+		//				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
+		//				username,
+		//				password
 		);
 	}
 
@@ -272,33 +327,36 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		return super.addFeatureToFixException(exp, intent);
 	}
 
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-		final String port = noPrefix.split("\\\\", 2)[1].split(":")[1];
-		set.setPort(port);
-		final String host = noPrefix.split("\\\\", 2)[0];
-		set.setHost(host);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		final String instance = noPrefix
-				.split("\\\\", 2)[1]
-				.split(":")[0];
-		set.setInstance(instance);
-		set.setSchema("");
-		return set;
-	}
-
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+//		final String port = noPrefix.split("\\\\", 2)[1].split(":")[1];
+//		set.setPort(port);
+//		final String host = noPrefix.split("\\\\", 2)[0];
+//		set.setHost(host);
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+//		}
+//		final String instance = noPrefix
+//				.split("\\\\", 2)[1]
+//				.split(":")[0];
+//		set.setInstance(instance);
+//		set.setSchema("");
+//		return set;
+//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 1433;
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return MSSQLServerDB.class;
+//	}
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return MSSQLServerDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new MSSQLServerURLInterpreter();
 	}
 }

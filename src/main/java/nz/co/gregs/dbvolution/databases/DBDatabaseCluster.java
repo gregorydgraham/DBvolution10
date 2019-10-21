@@ -54,6 +54,7 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.ClusterURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
@@ -69,6 +70,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Creates a database cluster programmatically.
@@ -109,6 +111,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
+//	private final JDBCURLInterpreter urlProcessor = new ClusterURLInterpreter();
 
 	/**
 	 * Nope.
@@ -119,19 +122,24 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details;
 	}
 
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		throw new UnsupportedOperationException("DBDatabaseCluster does not support getSettingsFromJDBCURL() yet.");
-	}
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		throw new UnsupportedOperationException("DBDatabaseCluster does not support getSettingsFromJDBCURL() yet.");
+//	}
 
 	@Override
 	public Integer getDefaultPort() {
 		throw new UnsupportedOperationException("DBDatabaseCluster does not support getDefaultPort() yet.");
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return DBDatabaseCluster.class;
+//	}
+
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return DBDatabaseCluster.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new ClusterURLInterpreter();
 	}
 
 	public static enum Status {
@@ -1431,10 +1439,10 @@ public class DBDatabaseCluster extends DBDatabase {
 		return result.toString();
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		return "CLUSTER";
-	}
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		return "CLUSTER";
+//	}
 
 	public final boolean getAutoRebuild() {
 		return details.getAutoRebuild();

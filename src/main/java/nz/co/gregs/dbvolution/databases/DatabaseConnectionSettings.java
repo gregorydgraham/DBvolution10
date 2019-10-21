@@ -121,6 +121,7 @@ public class DatabaseConnectionSettings {
 
 	private static final String FIELD_SEPARATOR = "<DCS FIELD>";
 	private static final String TOSTRING_SEPARATOR = ", ";
+	private String filename = "";
 
 	public DatabaseConnectionSettings() {
 		super();
@@ -142,7 +143,8 @@ public class DatabaseConnectionSettings {
 				+ getSchema() + TOSTRING_SEPARATOR
 				+ getUrl() + TOSTRING_SEPARATOR
 				+ getUsername() + TOSTRING_SEPARATOR
-				+ getLabel() + TOSTRING_SEPARATOR;
+				+ getLabel() + TOSTRING_SEPARATOR
+				+ getFilename()+ TOSTRING_SEPARATOR;
 	}
 
 	public String encode() {
@@ -156,7 +158,8 @@ public class DatabaseConnectionSettings {
 				+ getUrl() + FIELD_SEPARATOR
 				+ getUsername() + FIELD_SEPARATOR
 				+ getPassword() + FIELD_SEPARATOR
-				+ getLabel() + FIELD_SEPARATOR;
+				+ getLabel() + FIELD_SEPARATOR
+				+ getFilename() + FIELD_SEPARATOR;
 	}
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
@@ -562,6 +565,7 @@ public class DatabaseConnectionSettings {
 	public final void copy(DatabaseConnectionSettings newSettings) {
 		this.setDataSource(newSettings.getDataSource());
 		this.setDatabaseName(newSettings.getDatabaseName());
+		this.setFilename(newSettings.getFilename());
 		this.setDbdatabaseClass(newSettings.getDbdatabaseClass());
 		this.setHost(newSettings.getHost());
 		this.setExtras(newSettings.getExtras());
@@ -843,5 +847,98 @@ public class DatabaseConnectionSettings {
 
 	public final void addExtra(String tag, String value) {
 		this.extras.put(tag, value);
+	}
+
+	public DatabaseConnectionSettings flowHost(String server) {
+		this.setHost(server);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowPort(int port) {
+		this.setPort(""+port);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowPort(long port) {
+		this.setPort(""+port);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowPort(String port) {
+		this.setPort(port);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowDatasource(DataSource source) {
+		this.setDataSource(source);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowDatabaseName(String databaseName) {
+		this.setDatabaseName(databaseName);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowDbdatabaseClass(String canonicalName) {
+		this.setDbdatabaseClass(canonicalName);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowExtras(Map<String, String> extras) {
+		this.addExtras(extras);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowExtra(String name, String value) {
+		this.addExtra(name, value);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowInstance(String instance) {
+		this.setInstance(instance);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowLabel(String label) {
+		this.setLabel(label);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowPassword(String password) {
+		this.setPassword(password);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowProtocol(String protocol) {
+		this.setProtocol(protocol);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowSchema(String schema) {
+		this.setSchema(schema);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowURL(String url) {
+		this.setUrl(url);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowUsername(String username) {
+		this.setUsername(username);
+		return this;
+	}
+
+	public DatabaseConnectionSettings flowFilename(String filename) {
+		this.setFilename(filename);
+		return this;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getFilename() {
+		return filename;
 	}
 }

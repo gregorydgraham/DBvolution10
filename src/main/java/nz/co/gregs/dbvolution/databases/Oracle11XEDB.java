@@ -21,12 +21,14 @@ import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -195,9 +197,19 @@ public class Oracle11XEDB extends OracleDB {
 		}
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return Oracle11XEDB.class;
+//	}
+
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return Oracle11XEDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new OracleURLInterpreter(){
+			@Override
+			public Class<? extends DBDatabase> generatesURLForDatabase() {
+				return Oracle11XEDB.class;
+			}
+		};
 	}
 
 }

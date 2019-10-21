@@ -18,9 +18,11 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.InformixURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.
@@ -67,7 +69,43 @@ public class InformixDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		super(definition, driverName, jdbcURL, username, password);
+		this(definition, driverName,
+				new InformixURLInterpreter().generateSettings()
+				.flowURL(jdbcURL)
+				.flowUsername(username)
+				.flowPassword(password)
+//				jdbcURL, username, password
+				);
+		// Informix causes problems when using batched statements :(
+		setBatchSQLStatementsWhenPossible(false);
+	}
+
+	/**
+	 * Create a database object for a Informix 7+ database using the supplied
+	 * definition and connection details.
+	 *
+	 * @param definition the DBDefiition that should be used with this database.
+	 * Usually this will be a {@link InformixDBDefinition} but other definitions
+	 * can be supplied.
+	 * @param driverName the name of the driver class to use with this database.
+	 * @param settings
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected InformixDB(DBDefinition definition, String driverName, DatabaseConnectionSettings settings) throws SQLException {
+		super(definition, driverName, settings	);
+		// Informix causes problems when using batched statements :(
+		setBatchSQLStatementsWhenPossible(false);
+	}
+
+	/**
+	 * Create a database object for a Informix 7+ database using the supplied
+	 * definition and connection details.
+	 *
+	 * @param settings
+	 * @throws java.sql.SQLException database errors
+	 */
+	public InformixDB(DatabaseConnectionSettings settings) throws SQLException {
+		this(new InformixDBDefinition(), INFORMIXDRIVERNAME, settings);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
 	}
@@ -123,16 +161,16 @@ public class InformixDB extends DBDatabase {
 		;
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:informix-sqli://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName() + ":INFORMIXSERVER="
-				+ settings.getInstance()
-				+ settings.formatExtras(":", "=", ";", "");
-	}
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:informix-sqli://"
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getDatabaseName() + ":INFORMIXSERVER="
+//				+ settings.getInstance()
+//				+ settings.formatExtras(":", "=", ";", "");
+//	}
 
 //	@Override
 //	protected Map<String, String> getExtras() {
@@ -169,31 +207,38 @@ public class InformixDB extends DBDatabase {
 //	protected String getSchema() {
 //		return "";
 //	}
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
-		set.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:", ""));
-		set.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
-		}
-		set.setInstance(getExtras().get("INFORMIXSERVER"));
-		return set;
-	}
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
+//		set.setPort(noPrefix
+//				.split("/", 2)[0]
+//				.replaceAll("^[^:]*:", ""));
+//		set.setHost(noPrefix
+//				.split("/", 2)[0]
+//				.split(":")[0]);
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
+//		}
+//		set.setInstance(getExtras().get("INFORMIXSERVER"));
+//		return set;
+//	}
 
 	@Override
 	public Integer getDefaultPort() {
 		return 1526;
 	}
 
+//	@Override
+//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return InformixDB.class;
+//	}
+
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return InformixDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new InformixURLInterpreter();
 	}
+	
+	
 }

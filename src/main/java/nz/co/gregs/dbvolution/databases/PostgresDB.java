@@ -20,9 +20,11 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.TimeZone;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.PostgresURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
@@ -34,6 +36,7 @@ import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.
@@ -62,6 +65,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	private boolean postGISTopologyAlreadyTried = false;
 	private boolean postGISAlreadyTried = false;
 	private boolean postGISInstalled = false;
+//	private final PostgresURLInterpreter urlProcessor = new PostgresURLInterpreter();
 
 	/**
 	 *
@@ -118,7 +122,12 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
+		super(
+				new PostgresDBDefinition(), 
+				POSTGRES_DRIVER_NAME, 
+				new PostgresURLInterpreter().generateSettings(jdbcURL, username, password)
+//				jdbcURL, username, password
+		);
 	}
 
 	/**
@@ -133,7 +142,18 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
-		this(hostname, port, databaseName, username, password, null);
+		super(
+				new PostgresDBDefinition(),
+				POSTGRES_DRIVER_NAME,
+				new PostgresURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(port)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
+		//hostname, port, databaseName, username, password 
+		);
 	}
 
 	/**
@@ -152,12 +172,46 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param urlExtras urlExtras
 	 * @throws java.sql.SQLException database errors
 	 */
+	public PostgresDB(String hostname, int port, String databaseName, String username, String password, Map<String, String> urlExtras) throws SQLException {
+		super(
+				new PostgresDBDefinition(),
+				POSTGRES_DRIVER_NAME,
+				new PostgresURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(port)
+						.flowDatabaseName(databaseName)
+						.flowExtras(urlExtras)
+						.flowUsername(username)
+						.flowPassword(password)
+		);
+//		this.setDatabaseName(databaseName);
+	}
+
+	/**
+	 * Creates a PostgreSQL connection to the server on the port supplied, using
+	 * the username and password supplied.
+	 *
+	 * <p>
+	 * Extra parameters to be added to the JDBC URL can be included in the
+	 * urlExtras parameter.
+	 *
+	 * @param hostname hostname
+	 * @param password password
+	 * @param databaseName databaseName
+	 * @param port port
+	 * @param username username
+	 * @param urlExtras urlExtras
+	 * @throws java.sql.SQLException database errors
+	 */
+	@Deprecated
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
 		super(new PostgresDBDefinition(),
 				POSTGRES_DRIVER_NAME,
 				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
-				username, password);
-		this.setDatabaseName(databaseName);
+				username, password
+		);
+//		this.setDatabaseName(databaseName);
 	}
 
 	/**
@@ -174,22 +228,22 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param urlExtras urlExtras
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public PostgresDB(String databaseName, String username, String password, String urlExtras) throws SQLException {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty()
-				? url
-				: "jdbc:postgresql://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName()
-				+ settings.formatExtras("?", "=", "&", "");
-	}
-
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty()
+//				? url
+//				: "jdbc:postgresql://"
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getDatabaseName()
+//				+ settings.formatExtras("?", "=", "&", "");
+//	}
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -368,32 +422,35 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		}
 	}
 
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
-		}
-		set.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		set.setInstance(getExtras().get("instance"));
-		set.setSchema("");
-		return set;
-	}
-
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split("\\?", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
+//		}
+//		set.setPort(noPrefix
+//				.split("/", 2)[0]
+//				.replaceAll("^[^:]*:+", ""));
+//		set.setHost(noPrefix
+//				.split("/", 2)[0]
+//				.split(":")[0]);
+//		set.setInstance(getExtras().get("instance"));
+//		set.setSchema("");
+//		return set;
+//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 5432;
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return PostgresDB.class;
+//	}
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return PostgresDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new PostgresURLInterpreter();
 	}
 }

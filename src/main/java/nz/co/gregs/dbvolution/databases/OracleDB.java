@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -117,7 +119,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		super(definition, driverName, jdbcURL, username, password);
+		super(definition, driverName, new OracleURLInterpreter().generateSettings(jdbcURL, username, password));
 	}
 
 	/**
@@ -191,8 +193,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 				|| TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()
 				|| (SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt() && (intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)))
 				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.CHECK_TABLE_EXISTS))
-				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.DROP_TABLE))
-				) {
+				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.DROP_TABLE))) {
 //			System.out.println("HANDLED: NO RESPONSE REQUIRED");
 			return ResponseToException.SKIPQUERY;
 		} else {
@@ -222,17 +223,16 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'", QueryIntention.DELETE_ROW);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty()
-				? url
-				: "jdbc:oracle:thin:@//"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getInstance();
-	}
-
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty()
+//				? url
+//				: "jdbc:oracle:thin:@//"
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getInstance();
+//	}
 //	@Override
 //	protected Map<String, String> getExtras() {
 //		return new HashMap<String, String>();
@@ -265,29 +265,32 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 //	protected String getSchema() {
 //		return "";
 //	}
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
-		set.setInstance(noPrefix.split("/", 2)[1]);
-		set.setSchema("");
-		return set;
-	}
-
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split("?", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+//		}
+//		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
+//		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
+//		set.setInstance(noPrefix.split("/", 2)[1]);
+//		set.setSchema("");
+//		return set;
+//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 1521;
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return OracleDB.class;
+//	}
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return OracleDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new OracleURLInterpreter();
 	}
 
 }

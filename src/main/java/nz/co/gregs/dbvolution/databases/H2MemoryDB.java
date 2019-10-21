@@ -19,8 +19,10 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2MemoryURLInterpreter;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Stores all the required functionality to use an H2 database in memory.
@@ -125,11 +127,11 @@ public class H2MemoryDB extends H2DB {
 		super(dataSource);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
-	}
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
+//	}
 
 	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {
@@ -150,8 +152,15 @@ public class H2MemoryDB extends H2DB {
 //		return true;
 //	}
 
+//	@Override
+//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return H2MemoryDB.class;
+//	}
+
+	private final static JDBCURLInterpreter URL_PROCESSOR = new H2MemoryURLInterpreter();
+
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return H2MemoryDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return URL_PROCESSOR;
 	}
 }

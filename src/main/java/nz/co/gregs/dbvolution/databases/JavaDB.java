@@ -18,8 +18,10 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JavaDBURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * A version of DBDatabase tweaked for JavaDB.
@@ -66,7 +68,10 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new JavaDBDefinition(), DRIVER_NAME, jdbcURL, username, password);
+		super(new JavaDBDefinition(), DRIVER_NAME, 
+				new JavaDBURLInterpreter().generateSettings(jdbcURL, username, password)
+//				jdbcURL, username, password
+				);
 	}
 
 	/**
@@ -84,15 +89,15 @@ public class JavaDB extends DBDatabase {
 		super(new JavaDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		DatabaseConnectionSettings settings = getSettings();
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url :"jdbc:derby://"
-					+ settings.getHost() + ":"
-					+ settings.getPort() + "/"
-					+ settings.getDatabaseName() + ":create=true";
-	}
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+////		DatabaseConnectionSettings settings = getSettings();
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url :"jdbc:derby://"
+//					+ settings.getHost() + ":"
+//					+ settings.getPort() + "/"
+//					+ settings.getDatabaseName() + ":create=true";
+//	}
 
 	@Override
 	public JavaDB clone() throws CloneNotSupportedException {
@@ -145,32 +150,37 @@ public class JavaDB extends DBDatabase {
 //		return "";
 //	}
 
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:", ""));
-		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setInstance(getExtras().get("instance"));
-		set.setSchema("");
-		return set;
-	}
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
+//		set.setPort(noPrefix
+//					.split("/",2)[0]
+//					.replaceAll("^[^:]*:", ""));
+//		set.setHost(noPrefix
+//					.split("/",2)[0]
+//					.split(":")[0]);
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+//		}
+//		set.setInstance(getExtras().get("instance"));
+//		set.setSchema("");
+//		return set;
+//	}
 
 	@Override
 	public Integer getDefaultPort() {
 		return 1527;
 	}
 
+//	@Override
+//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return JavaDB.class;
+//	}
+
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return JavaDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new JavaDBURLInterpreter();
 	}
 }

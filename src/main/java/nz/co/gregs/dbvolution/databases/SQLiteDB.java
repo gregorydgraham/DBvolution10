@@ -23,11 +23,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.SQLiteURLInterpreter;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Creates a DBDatabase for an SQLite database.
@@ -42,6 +44,7 @@ public class SQLiteDB extends DBDatabase {
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;
 //	private String derivedURL;
+//	private static final JDBCURLInterpreter URL_PROCESSOR = new SQLiteURLInterpreter();
 
 	/**
 	 *
@@ -100,7 +103,8 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
+		this(new SQLiteURLInterpreter().generateSettings(jdbcURL, username, password));
+//		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -116,10 +120,16 @@ public class SQLiteDB extends DBDatabase {
 	public SQLiteDB(File databaseFile, String username, String password) throws IOException, SQLException {
 		super(new SQLiteDefinition(),
 				SQLITE_DRIVER_NAME,
-				"jdbc:sqlite:" + databaseFile.getCanonicalFile(),
-				username,
-				password);
-		setDatabaseName(databaseFile.getCanonicalFile().toString());
+				new SQLiteURLInterpreter().generateSettings()
+						.flowFilename(databaseFile.getCanonicalFile().toString())
+						.flowDatabaseName(databaseFile.getCanonicalFile().toString())
+						.flowUsername(username)
+						.flowPassword(password)
+		//				"jdbc:sqlite:" + databaseFile.getCanonicalFile(),
+		//				username,
+		//				password
+		);
+//		setDatabaseName(databaseFile.getCanonicalFile().toString());
 	}
 
 	/**
@@ -136,19 +146,24 @@ public class SQLiteDB extends DBDatabase {
 	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException, SQLException {
 		super(new SQLiteDefinition(),
 				SQLITE_DRIVER_NAME,
-				"jdbc:sqlite:" + filename,
-				username,
-				password);
-		setDatabaseName(new File(filename).getCanonicalFile().toString());
+				new SQLiteURLInterpreter().generateSettings()
+						.flowFilename(filename)
+						.flowDatabaseName(new File(filename).getCanonicalFile().toString())
+						.flowUsername(username)
+						.flowPassword(password)
+		//				"jdbc:sqlite:" + filename,
+		//				username,
+		//				password
+		);
+//		setDatabaseName(new File(filename).getCanonicalFile().toString());
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:sqlite:"
-				+ settings.getDatabaseName();
-	}
-
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:sqlite:"
+//				+ settings.getDatabaseName();
+//	}
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		SQLiteConfig config = new SQLiteConfig();
@@ -189,7 +204,6 @@ public class SQLiteDB extends DBDatabase {
 //			return new HashMap<String, String>();
 //		}
 //	}
-
 //	@Override
 //	protected String getHost() {
 //		String jdbcURL = getJdbcURL();
@@ -199,13 +213,11 @@ public class SQLiteDB extends DBDatabase {
 //				.split(":")[0];
 //
 //	}
-
 //	@Override
 //	protected String getDatabaseInstance() {
 //		String jdbcURL = getJdbcURL();
 //		return getExtras().get("instance");
 //	}
-
 //	@Override
 //	protected String getPort() {
 //		String jdbcURL = getJdbcURL();
@@ -214,56 +226,57 @@ public class SQLiteDB extends DBDatabase {
 //				.split("/", 2)[0]
 //				.replaceAll("^[^:]*:+", "");
 //	}
-
 //	@Override
 //	protected String getSchema() {
 //		return "";
 //	}
-
 //	private void setDatabasenameFromURL() {
 //		String jdbcURL = getJdbcURL();
 //		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
 //		String name = noPrefix.split(":", 3)[2];
 //		setDatabaseName(name);
 //	}
-	
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-		if (jdbcURL.contains(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setDatabaseName(noPrefix.split(":", 3)[2]);
-		set.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		set.setInstance(getExtras().get("instance"));
-		set.setSchema("");
-		return set;
-	}
-
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+//		if (jdbcURL.contains(";")) {
+//			String extrasString = jdbcURL.split("\\?", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+//		}
+//		set.setDatabaseName(noPrefix.split(":", 3)[2]);
+//		set.setPort(noPrefix
+//				.split("/", 2)[0]
+//				.replaceAll("^[^:]*:+", ""));
+//		set.setHost(noPrefix
+//				.split("/", 2)[0]
+//				.split(":")[0]);
+//		set.setInstance(getExtras().get("instance"));
+//		set.setSchema("");
+//		return set;
+//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 5432;
 	}
 
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("\\[SQLITE_ERROR\\] SQL error or missing database \\(table [^ ]* already exists\\)");
+
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
-		if (intent.is(QueryIntention.CREATE_TABLE)&&TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()){
+		if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()) {
 			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp, intent);
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return SQLiteDB.class;
+//	}
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return SQLiteDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new SQLiteURLInterpreter();
 	}
 
 }

@@ -16,8 +16,11 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
+import java.util.Map;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.PostgresOverSSLURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Extends the PostgreSQL database connection by adding SSL.
@@ -30,7 +33,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class PostgresDBOverSSL extends PostgresDB {
 
 	public static final long serialVersionUID = 1l;
-	private String derivedURL;
 
 	/**
 	 *
@@ -68,6 +70,42 @@ public class PostgresDBOverSSL extends PostgresDB {
 	}
 
 	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
+	public PostgresDBOverSSL(DatabaseConnectionSettings ds) throws SQLException {
+		super(ds);
+	}
+
+	/**
+	 * Creates a DBDatabase for a PostgreSQL database over SSL.
+	 *
+	 * @param hostname host name
+	 * @param databaseName databaseName
+	 * @param port port
+	 * @param username username
+	 * @param password password
+	 * @param extras extra connection configuration settings specific to this
+	 * database
+	 * @throws java.sql.SQLException database errors
+	 */
+	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, Map<String, String> extras) throws SQLException {
+		this(
+				new PostgresOverSSLURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(port)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
+						.flowExtras(extras)
+		);
+		//		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
+	}
+
+	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
 	 * @param hostname host name
@@ -78,21 +116,30 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @param urlExtras urlExtras
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
-		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
+		this(
+				new PostgresOverSSLURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(port)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
+		);
+		//		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:postgresql://"
-					+ settings.getHost() + ":"
-					+ settings.getPort() + "/"
-					+ settings.getDatabaseName()
-					+ "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
-					+ settings.formatExtras("&", "=", "&", "");
-	}
-
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:postgresql://"
+//					+ settings.getHost() + ":"
+//					+ settings.getPort() + "/"
+//					+ settings.getDatabaseName()
+//					+ "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
+//					+ settings.formatExtras("&", "=", "&", "");
+//	}
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
@@ -104,7 +151,16 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) throws SQLException {
-		this(hostname, port, databaseName, username, password, "");
+		this(
+				new PostgresOverSSLURLInterpreter()
+						.generateSettings()
+						.flowHost(hostname)
+						.flowPort(port)
+						.flowDatabaseName(databaseName)
+						.flowUsername(username)
+						.flowPassword(password)
+		);
+//		this(hostname, port, databaseName, username, password, "");
 	}
 
 	@Override
@@ -112,9 +168,13 @@ public class PostgresDBOverSSL extends PostgresDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return PostgresDBOverSSL.class ;
+//	}
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return PostgresDBOverSSL.class ;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new PostgresOverSSLURLInterpreter();
 	}
 
 }

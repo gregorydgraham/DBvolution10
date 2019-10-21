@@ -20,8 +20,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.NuoDBURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * DBDatabase tweaked to work best with NuoDB.
@@ -140,13 +142,13 @@ public class NuoDB extends DBDatabase {
 		setDatabaseName(databaseName);
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : NUODB_URL_PREFIX
-				+ settings.getHost() + "/"
-				+ settings.getDatabaseName() + "?schema=" + getSettings().getSchema();
-	}
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : NUODB_URL_PREFIX
+//				+ settings.getHost() + "/"
+//				+ settings.getDatabaseName() + "?schema=" + getSettings().getSchema();
+//	}
 
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
@@ -194,32 +196,37 @@ public class NuoDB extends DBDatabase {
 //		return "";
 //	}
 
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
-		set.setInstance(getExtras().get("instance"));
-		set.setSchema("");
-		return set;
-	}
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split("?", 2)[1];
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+//		}
+//		set.setPort(noPrefix
+//					.split("/",2)[0]
+//					.replaceAll("^[^:]*:+", ""));
+//		set.setHost(noPrefix
+//					.split("/",2)[0]
+//					.split(":")[0]);
+//		set.setInstance(getExtras().get("instance"));
+//		set.setSchema("");
+//		return set;
+//	}
 
 	@Override
 	public Integer getDefaultPort() {
 		return 8888;
 	}
 
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return NuoDB.class;
+//	}
+
 	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return NuoDB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new NuoDBURLInterpreter();
 	}
 }

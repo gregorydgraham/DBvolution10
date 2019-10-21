@@ -55,6 +55,7 @@ import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.RegularProcess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -294,6 +295,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this.definition = definition;
 		initDriver(driverName);
 		this.settings.copy(dcs);
+		this.setDatabaseName(settings.getDatabaseName());
 		setDBDatabaseClassInSettings();
 		createRequiredTables();
 	}
@@ -325,24 +327,25 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see InformixDB
 	 * @see PostgresDB
 	 */
+	@Deprecated
 	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
-		setDBDatabaseClassInSettings();
-		settings.setUrl(jdbcURL);
+		settings.copy(this.getSettingsFromJDBCURL(jdbcURL));
 		settings.setUsername(username);
 		settings.setPassword(password);
-		DatabaseConnectionSettings set = this.getSettingsFromJDBCURL(jdbcURL);
-		settings.setDatabaseName(set.getDatabaseName());
-		settings.setExtras(set.getExtras());
-		settings.setHost(set.getHost());
-		settings.setInstance(set.getInstance());
-		settings.setLabel(set.getLabel());
-		settings.setPort(set.getPort());
-		settings.setProtocol(set.getProtocol());
-		settings.setSchema(set.getSchema());
-		settings.setPort(set.getPort());
+//		setDBDatabaseClassInSettings();
+//		settings.setUrl(jdbcURL);
+//		settings.setDatabaseName(set.getDatabaseName());
+//		settings.setExtras(set.getExtras());
+//		settings.setHost(set.getHost());
+//		settings.setInstance(set.getInstance());
+//		settings.setLabel(set.getLabel());
+//		settings.setPort(set.getPort());
+//		settings.setProtocol(set.getProtocol());
+//		settings.setSchema(set.getSchema());
+//		settings.setPort(set.getPort());
 		createRequiredTables();
 	}
 	
@@ -2335,6 +2338,16 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		throw exp;
 	}
+	
+	protected abstract JDBCURLInterpreter getURLInterpreter();
+
+	public final String getUrlFromSettings(DatabaseConnectionSettings oldSettings) {
+		return getURLInterpreter().generateJDBCURL(oldSettings);
+	}
+
+	public final DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		return getURLInterpreter().generateSettings(jdbcURL);
+	}
 
 	/**
 	 * Create a DBRecursiveQuery based on the query and foreign key supplied.
@@ -2567,29 +2580,13 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		}
 	}
 	
-	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
-	
-	protected abstract DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL);
+//	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
+//	
+//	protected abstract DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL);
 	
 	public abstract Integer getDefaultPort();
 	
 	public DatabaseConnectionSettings getSettings() {
-//		if (settings == null) {
-//			DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
-//			newSettings.setLabel(getLabel());
-//			newSettings.setDatabaseName(getDatabaseName());
-//			newSettings.setDbdatabaseClass(this.getClass().getCanonicalName());
-//			newSettings.setExtras(getExtras());
-//			newSettings.setHost(getHost());
-//			newSettings.setInstance(getDatabaseInstance());
-//			newSettings.setPassword(getPassword());
-//			newSettings.setPort(getPort());
-//			newSettings.setSchema(getSchema());
-//			newSettings.setUrl(getJdbcURL());
-//			newSettings.setUsername(getUsername());
-//			this.settings = newSettings;
-//		}
-//		setDBDatabaseClassInSettings();
 		return settings;
 	}
 	
@@ -2729,7 +2726,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		getRegularProcessors().remove(processor);
 	}
 	
-	protected abstract Class<? extends DBDatabase> getBaseDBDatabaseClass();
+	protected final Class<? extends DBDatabase> getBaseDBDatabaseClass(){
+		return getURLInterpreter().generatesURLForDatabase();
+	}
 	
 	protected class RunRegularProcessors implements Runnable {
 		

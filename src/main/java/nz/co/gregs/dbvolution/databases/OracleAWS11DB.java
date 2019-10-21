@@ -20,10 +20,12 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWS11DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Implements support for version 11 and prior of the Oracle database as provide
@@ -177,9 +179,18 @@ public class OracleAWS11DB extends OracleAWSDB {
 		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return OracleAWS11DB.class;
+//	@Override
+//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return OracleAWS11DB.class;
+//	}
+	
+		@Override
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new OracleURLInterpreter(){
+			@Override
+			public Class<? extends DBDatabase> generatesURLForDatabase() {
+				return OracleAWS11DB.class;
+			}
+		};
 	}
-
 }

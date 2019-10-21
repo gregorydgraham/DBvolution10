@@ -24,10 +24,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2URLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
 import org.h2.jdbc.JdbcException;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * Stores all the required functionality to use an H2 database.
@@ -100,7 +102,14 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2DB(File file, String username, String password) throws IOException, SQLException {
-		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
+		this(
+				new H2URLInterpreter()
+						.generateSettings()
+						.flowDatabaseName(file.getCanonicalFile().toString())
+						.flowUsername(username)
+						.flowPassword(password)
+		);
+//		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
 	}
 
 	/**
@@ -143,7 +152,13 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
-		super(new H2DBDefinition(), DRIVER_NAME, jdbcURL, username, password);
+		this(
+				new H2URLInterpreter()
+						.generateSettings(jdbcURL)
+						.flowUsername(username)
+						.flowPassword(password)
+		);
+		//super(new H2DBDefinition(), DRIVER_NAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -161,7 +176,13 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2DB(String databaseFilename, String username, String password, boolean dummy) throws SQLException {
-		super(new H2DBDefinition(), DRIVER_NAME, "jdbc:h2:" + databaseFilename, username, password);
+		this(new H2URLInterpreter()
+				.generateSettings()
+				.flowFilename(databaseFilename)
+				.flowUsername(username)
+				.flowPassword(password)
+		);
+//		super(new H2DBDefinition(), DRIVER_NAME, "jdbc:h2:" + databaseFilename, username, password);
 	}
 
 	@Override
@@ -203,7 +224,7 @@ public class H2DB extends DBDatabase {
 			String message = exp.getMessage();
 			if (message != null) {
 				if (BROKEN_CONNECTION_PATTERN.matcher(message).lookingAt()
-						||ALREADY_CLOSED_PATTERN.matcher(message).lookingAt()) {
+						|| ALREADY_CLOSED_PATTERN.matcher(message).lookingAt()) {
 					return ResponseToException.REPLACECONNECTION;
 				} else if (DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt()) {
 					return ResponseToException.SKIPQUERY;
@@ -259,12 +280,11 @@ public class H2DB extends DBDatabase {
 		}
 	}
 
-	@Override
-	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:h2:" + settings.getDatabaseName();
-	}
-
+//	@Override
+//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:h2:" + settings.getDatabaseName();
+//	}
 	@Override
 	public boolean isMemoryDatabase() {
 		return getJdbcURL().contains(":mem:");
@@ -281,58 +301,57 @@ public class H2DB extends DBDatabase {
 			return noPrefix.replaceAll("^file:", "").split(";", 2)[0];
 		}
 	}
-	
-	@Override
-	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-		int protocolIndex = 2;
-		int restIndex = 4;
-		String[] firstSplit = jdbcURL.split(":", restIndex);
-		set.setProtocol(firstSplit[protocolIndex]);
-		if (!set.getProtocol().equals("tcp")
-				&& !set.getProtocol().equals("ssl")
-				&& !set.getProtocol().equals("mem")
-				&& !set.getProtocol().equals("zip")
-				&& !set.getProtocol().equals("file")) {
-			set.setProtocol("file");
-			restIndex -= 1;
-			firstSplit = jdbcURL.split(":", restIndex);
-		}
-		String restString = firstSplit[restIndex - 1];
-//		either
-//      //<server>[:<port>]/[<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
-//      or
-//      [<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
-		if (restString.startsWith("//")) {
-			String[] secondSplit = restString.split("/", 4);
-			String hostAndPort = secondSplit[2];
-			if (hostAndPort.contains(":")) {
-				String[] thirdSplit = hostAndPort.split(":");
-				set.setHost(thirdSplit[0]);
-				set.setPort(thirdSplit[1]);
-			} else {
-				set.setHost(hostAndPort);
-				set.setPort("" + getDefaultPort());
-			}
-			restString = secondSplit[3];
-		}
-		// now
-		// [<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
-		String[] fourthSplit = restString.split(";");
-		set.setDatabaseName(fourthSplit[0]);
-		if (fourthSplit.length > 1) {
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(fourthSplit[1], ";", "=", ";", ""));
-		}
-		return set;
-	}
 
+//	@Override
+//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+//		int protocolIndex = 2;
+//		int restIndex = 4;
+//		String[] firstSplit = jdbcURL.split(":", restIndex);
+//		set.setProtocol(firstSplit[protocolIndex]);
+//		if (!set.getProtocol().equals("tcp")
+//				&& !set.getProtocol().equals("ssl")
+//				&& !set.getProtocol().equals("mem")
+//				&& !set.getProtocol().equals("zip")
+//				&& !set.getProtocol().equals("file")) {
+//			set.setProtocol("file");
+//			restIndex -= 1;
+//			firstSplit = jdbcURL.split(":", restIndex);
+//		}
+//		String restString = firstSplit[restIndex - 1];
+//		if (restString.startsWith("//")) {
+//			String[] secondSplit = restString.split("/", 4);
+//			String hostAndPort = secondSplit[2];
+//			if (hostAndPort.contains(":")) {
+//				String[] thirdSplit = hostAndPort.split(":");
+//				set.setHost(thirdSplit[0]);
+//				set.setPort(thirdSplit[1]);
+//			} else {
+//				set.setHost(hostAndPort);
+//				set.setPort("" + getDefaultPort());
+//			}
+//			restString = secondSplit[3];
+//		}
+//		String[] fourthSplit = restString.split(";");
+//		set.setDatabaseName(fourthSplit[0]);
+//		if (fourthSplit.length > 1) {
+//			set.setExtras(DatabaseConnectionSettings.decodeExtras(fourthSplit[1], ";", "=", ";", ""));
+//		}
+//		return set;
+//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 9123;
 	}
 
+//	@Override
+//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return H2DB.class;
+//	}
+	private final static JDBCURLInterpreter URL_PROCESSOR = new H2URLInterpreter();
+
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return H2DB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return URL_PROCESSOR;
 	}
 }

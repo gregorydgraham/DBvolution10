@@ -17,7 +17,9 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.Informix11URLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * A version of DBDatabase tweaked for Informix 11 and higher.
@@ -52,7 +54,33 @@ public class Informix11DB extends InformixDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Informix11DB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
-		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
+		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME,
+				new Informix11URLInterpreter().generateSettings()
+						.flowURL(jdbcURL)
+						.flowUsername(username)
+						.flowPassword(password)
+		//				jdbcURL, username, password
+		);
+	}
+
+	/**
+	 * Creates a DBDatabase configured for Informix with the given JDBC URL,
+	 * username, and password.
+	 *
+	 * <p>
+	 * Remember to include the Informix JDBC driver in your classpath.
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
+	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
+	 * @throws java.sql.SQLException database errors
+	 */
+	public Informix11DB(DatabaseConnectionSettings settings) throws ClassNotFoundException, SQLException {
+		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, settings);
 	}
 
 	/**
@@ -77,8 +105,13 @@ public class Informix11DB extends InformixDB {
 		return super.clone();
 	}
 
+//	@Override
+//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+//		return Informix11DB.class;
+//	}
 	@Override
-	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-		return Informix11DB.class;
+	protected JDBCURLInterpreter getURLInterpreter() {
+		return new Informix11URLInterpreter();
 	}
+
 }
