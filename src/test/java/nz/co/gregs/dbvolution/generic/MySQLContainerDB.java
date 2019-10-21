@@ -31,10 +31,14 @@
 package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLURLInterpreter;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.utility.MountableFile;
 
 /**
@@ -47,30 +51,45 @@ public class MySQLContainerDB extends MySQLDB {
 	protected final MySQLContainer storedContainer;
 
 	public static MySQLContainerDB getInstance() {
-		String instance = "";
-		String database = "";
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-//		MySQLContainer container = new MySQLContainer<>();
-		MySQLContainer container = (MySQLContainer) new MySQLContainer().withDatabaseName("some_database")
-				.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/")
-				.withLogConsumer((t) -> {
-					System.out.println("MYSQL CONTAINER: " + t);
+		MySQLContainer container = (MySQLContainer) new MySQLContainer()
+				.withDatabaseName("some_database")
+				// there is a problem with the config file in the image so add our own
+				.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/tstMySQL.cnf")
+				// set the log consumer so we see some output
+				.withLogConsumer(new Consumer<OutputFrame>() {
+					// use an anonymous inner class because otherwise we get only an Object no an OutputFrame
+					@Override
+					public void accept(OutputFrame t) {
+						System.out.print("MYSQL CONTAINER: " + t.getUtf8String());
+					}
 				});
 		container.withEnv("TZ", "Pacific/Auckland");
 		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
-		String password = container.getPassword();
-		String username = container.getUsername();
+
 		String url = container.getJdbcUrl();
-		String host = container.getContainerIpAddress();
-		Integer port = container.getFirstMappedPort();
 		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
 		System.out.println("URL: " + url);
-		System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+
+		// The test container doesn't use SSL so we need to turn that off
+		MySQLURLInterpreter interpreter = new MySQLURLInterpreter();
+		DatabaseConnectionSettings settings = interpreter.generateSettings(url);
+		settings.addExtra("useSSL", "false");
+
+		// set the database name because apparently it's not in the URL
+		settings.setDatabaseName(container.getDatabaseName());
+
+		// set the username and password so we can log in.
+		settings.setUsername(container.getUsername());
+		settings.setPassword(container.getPassword());
+
+		System.out.println("FINAL URL: " + interpreter.generateJDBCURL(settings));
 		try {
-			MySQLContainerDB dbdatabase = new MySQLContainerDB(container);
+			// create the actual dbdatabase 
+			MySQLContainerDB dbdatabase = new MySQLContainerDB(container, settings);
 			return dbdatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,9 +97,15 @@ public class MySQLContainerDB extends MySQLDB {
 		}
 	}
 
-	public MySQLContainerDB(MySQLContainer container) throws SQLException {
-		super(container.getJdbcUrl(), container.getUsername(), container.getPassword());
-		this.storedContainer = container;
+	public MySQLContainerDB(MySQLContainer storedContainer, DatabaseConnectionSettings dcs) throws SQLException {
+		super(dcs);
+		this.storedContainer = storedContainer;
+	}
+
+	@Override
+	public synchronized void stop() {
+		super.stop();
+		storedContainer.stop();
 	}
 
 }
