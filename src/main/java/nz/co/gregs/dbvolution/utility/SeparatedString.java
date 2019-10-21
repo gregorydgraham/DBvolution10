@@ -75,7 +75,7 @@ public class SeparatedString {
 	private String wrapBefore = "";
 	private String wrapAfter = "";
 	private String escapeChar = "";
-	private String useWhenEmpty;
+	private String useWhenEmpty = "";
 
 	private SeparatedString() {
 	}
