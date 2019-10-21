@@ -51,6 +51,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabaseClusterWithConfigFile;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2MemoryURLInterpreter;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.SQLiteURLInterpreter;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
