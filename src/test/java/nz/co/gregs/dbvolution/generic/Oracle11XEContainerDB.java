@@ -73,4 +73,10 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 		System.out.println("ORACLE: " + container.getJdbcUrl());
 	}
 
+	@Override
+	public synchronized void stop() {
+		super.stop();
+		container.stop();
+	}
+
 }
