@@ -78,5 +78,12 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		super(host, instance, database, port, username, password);
 		this.mssqlServerContainer = container;
 	}
-	
+
+	@Override
+	public synchronized void stop() {
+		super.stop();
+		final String containerId = mssqlServerContainer.getContainerId();
+		mssqlServerContainer.stop();
+		System.out.println("CONTAINER STOPPED: "+containerId);
+	}
 }
