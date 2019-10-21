@@ -27,8 +27,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
@@ -39,9 +37,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MSSQLServerContainer;
-import org.testcontainers.containers.OracleContainer;
 
 /**
  *
@@ -479,7 +474,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, instance, username, password, schema);
+			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, database, username, password, schema);
 		}
 
 		public static PostgresDB getClusterDBFromSettings(String prefix) throws SQLException {
