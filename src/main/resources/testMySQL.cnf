@@ -27,3 +27,6 @@
 
 sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES 
 
+# Implied within to the docs and according to the internet the scan depth is too high
+# particularly when the database is rapidly changing as it is during testing
+# innodb_lru_scan_depth=256
