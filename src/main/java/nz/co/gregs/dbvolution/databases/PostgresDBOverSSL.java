@@ -173,7 +173,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 //		return PostgresDBOverSSL.class ;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected PostgresOverSSLURLInterpreter getURLInterpreter() {
 		return new PostgresOverSSLURLInterpreter();
 	}
 

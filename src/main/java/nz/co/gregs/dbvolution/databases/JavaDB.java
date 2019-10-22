@@ -20,6 +20,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JavaDBURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractJavaDBURLInterpreter;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
@@ -126,7 +127,7 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected AbstractJavaDBURLInterpreter<?> getURLInterpreter() {
 		return new JavaDBURLInterpreter();
 	}
 }

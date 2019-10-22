@@ -57,6 +57,16 @@ public class JavaDBMemoryDB extends DBDatabase {
 	}
 
 	/**
+	 * Creates a new JavaDB instance that will connect to the DataSource.
+	 *
+	 * @param dataSource	dataSource
+	 * @throws java.sql.SQLException database errors
+	 */
+	public JavaDBMemoryDB(JavaDBMemoryURLInterpreter dataSource) throws SQLException {
+		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, dataSource);
+	}
+
+	/**
 	 * Creates a new JavaDB instance that will connect to the JDBC URL using the
 	 * username and password supplied..
 	 *
@@ -67,11 +77,11 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 */
 	public JavaDBMemoryDB(String jdbcURL, String username, String password) throws SQLException {
 		super(
-				new JavaDBMemoryDBDefinition(), 
-				DRIVER_NAME, 
+				new JavaDBMemoryDBDefinition(),
+				DRIVER_NAME,
 				new JavaDBMemoryURLInterpreter().fromJDBCURL(jdbcURL, username, password)
-//				jdbcURL, username, password
-				);
+		//				jdbcURL, username, password
+		);
 	}
 
 	/**
@@ -85,7 +95,15 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
-		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
+//		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
+		this(
+				new JavaDBMemoryURLInterpreter()
+						.setHost(host)
+						.setPort(port)
+						.setDatabaseName(database)
+						.setUsername(username)
+						.setPassword(password)
+		);
 	}
 
 //	@Override
@@ -96,7 +114,6 @@ public class JavaDBMemoryDB extends DBDatabase {
 //				+ settings.getPort() + "/memory:"
 //				+ settings.getDatabaseName() + ";create=true";
 //	}
-
 	@Override
 	public JavaDBMemoryDB clone() throws CloneNotSupportedException {
 		return (JavaDBMemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -152,7 +169,6 @@ public class JavaDBMemoryDB extends DBDatabase {
 //	protected String getSchema() {
 //		return "";
 //	}
-
 //	@Override
 //	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 //		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
@@ -171,7 +187,6 @@ public class JavaDBMemoryDB extends DBDatabase {
 //		set.setSchema("");
 //		return set;
 //	}
-
 	@Override
 	public Integer getDefaultPort() {
 		return 1527;
@@ -181,9 +196,8 @@ public class JavaDBMemoryDB extends DBDatabase {
 //	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return JavaDBMemoryDB.class;
 //	}
-
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected JavaDBMemoryURLInterpreter getURLInterpreter() {
 		return new JavaDBMemoryURLInterpreter();
 	}
 }

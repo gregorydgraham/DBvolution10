@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.PostgresURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractPostgresURLInterpreter;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
@@ -454,7 +455,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 //		return PostgresDB.class;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected AbstractPostgresURLInterpreter<?> getURLInterpreter() {
 		return new PostgresURLInterpreter();
 	}
 }

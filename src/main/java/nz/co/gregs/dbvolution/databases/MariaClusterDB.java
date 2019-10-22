@@ -166,7 +166,7 @@ public class MariaClusterDB extends DBDatabase {
 	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected MariaClusterDBURLInterpreter getURLInterpreter() {
 		return new MariaClusterDBURLInterpreter();
 	}
 }
