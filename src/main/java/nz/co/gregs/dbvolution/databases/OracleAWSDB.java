@@ -178,7 +178,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 //		return OracleAWSDB.class ;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected OracleURLInterpreter getURLInterpreter() {
 		return new OracleURLInterpreter() {
 			@Override
 			public Class<? extends DBDatabase> generatesURLForDatabase() {
