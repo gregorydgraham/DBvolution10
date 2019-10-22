@@ -68,7 +68,7 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 						.setPassword(container.getPassword())
 		);
 		this.container = container;
-		System.out.println("ORACLE: " + container.getJdbcUrl());
+		Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.INFO, "ORACLE: {0}", container.getJdbcUrl());
 	}
 
 	@Override
