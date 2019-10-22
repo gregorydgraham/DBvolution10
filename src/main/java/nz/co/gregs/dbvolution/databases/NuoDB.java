@@ -226,7 +226,7 @@ public class NuoDB extends DBDatabase {
 //	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected NuoDBURLInterpreter getURLInterpreter() {
 		return new NuoDBURLInterpreter();
 	}
 }
