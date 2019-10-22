@@ -131,7 +131,7 @@ public class Oracle12DB extends OracleDB {
 //	}	
 	
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected OracleURLInterpreter getURLInterpreter() {
 		return new OracleURLInterpreter() {
 			@Override
 			public Class<? extends DBDatabase> generatesURLForDatabase() {

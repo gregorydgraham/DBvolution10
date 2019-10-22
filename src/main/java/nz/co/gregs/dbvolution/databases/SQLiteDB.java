@@ -288,7 +288,7 @@ public class SQLiteDB extends DBDatabase {
 //		return SQLiteDB.class;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected SQLiteURLInterpreter getURLInterpreter() {
 		return new SQLiteURLInterpreter();
 	}
 
