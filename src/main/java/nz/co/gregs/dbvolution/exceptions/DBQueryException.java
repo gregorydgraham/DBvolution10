@@ -37,6 +37,8 @@ package nz.co.gregs.dbvolution.exceptions;
 @Deprecated
 public class DBQueryException extends DBRuntimeException {
 
+	private static final long serialVersionUID = 1l;
+
 	public DBQueryException(Throwable e) {
 		super("Exception Occured During Query Creation: "+e.getLocalizedMessage(), e);
 		StackTraceElement[] trace = e.getStackTrace();
