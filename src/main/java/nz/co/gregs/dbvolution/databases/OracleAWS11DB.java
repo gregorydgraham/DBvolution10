@@ -185,7 +185,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 //	}
 	
 		@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected OracleURLInterpreter getURLInterpreter() {
 		return new OracleURLInterpreter(){
 			@Override
 			public Class<? extends DBDatabase> generatesURLForDatabase() {
