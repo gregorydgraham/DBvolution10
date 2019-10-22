@@ -49,16 +49,6 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 	public static Oracle11XEContainerDB getInstance() {
 		OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
 		container.start();
-//		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
-//		System.out.println("URL: " + container.getJdbcUrl());
-//		System.out.println(
-//				"" + container.getContainerIpAddress()
-//				+ " : " + container.getOraclePort()
-//				+ " : " + container.getSid()
-//				+ " : " + container.getOraclePort()
-//				+ " : " + container.getUsername()
-//				+ " : " + container.getPassword()
-//		);
 
 		try {
 			return new Oracle11XEContainerDB(container);
