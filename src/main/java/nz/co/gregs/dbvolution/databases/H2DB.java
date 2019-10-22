@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2URLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractH2URLInterpreter;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
 import org.h2.jdbc.JdbcException;
@@ -141,6 +142,19 @@ public class H2DB extends DBDatabase {
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
+	 * <p>
+	 * Database exceptions may be thrown
+	 *
+	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected H2DB(AbstractH2URLInterpreter dataSource) throws SQLException {
+		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
+	}
+
+	/**
+	 * Creates a DBDatabase for a H2 database.
+	 *
 	 *
 	 *
 	 *
@@ -154,11 +168,11 @@ public class H2DB extends DBDatabase {
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		this(
 				new H2URLInterpreter()
+						.fromJDBCURL(jdbcURL)
 						.setUsername(username)
 						.setPassword(password)
 						.toSettings()
 		);
-		//super(new H2DBDefinition(), DRIVER_NAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -182,7 +196,6 @@ public class H2DB extends DBDatabase {
 				.setPassword(password)
 				.toSettings()
 		);
-//		super(new H2DBDefinition(), DRIVER_NAME, "jdbc:h2:" + databaseFilename, username, password);
 	}
 
 	/**
@@ -195,7 +208,6 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(H2URLInterpreter settings) throws SQLException {
 		this(settings.toSettings());
-//		super(new H2DBDefinition(), DRIVER_NAME, "jdbc:h2:" + databaseFilename, username, password);
 	}
 
 	@Override

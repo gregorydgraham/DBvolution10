@@ -53,6 +53,21 @@ public class H2MemoryDB extends H2DB {
 	 * URL, user and password.
 	 *
 	 *
+	 * 1 Database exceptions may be thrown
+	 *
+	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public H2MemoryDB(H2MemoryURLInterpreter dataSource) throws SQLException {
+		super(dataSource);
+		jamDatabaseConnectionOpen();
+	}
+
+	/**
+	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC
+	 * URL, user and password.
+	 *
+	 *
 	 *
 	 *
 	 * 1 Database exceptions may be thrown
@@ -63,8 +78,7 @@ public class H2MemoryDB extends H2DB {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
-		super(jdbcURL, username, password);
-		jamDatabaseConnectionOpen();
+		this(new H2MemoryURLInterpreter().fromJDBCURL(jdbcURL, username, password));
 
 	}
 
@@ -103,10 +117,9 @@ public class H2MemoryDB extends H2DB {
 	 * @param dummy dummy
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
-		super("jdbc:h2:mem:" + databaseName, username, password);
-		setDatabaseName(databaseName);
-		jamDatabaseConnectionOpen();
+		this(new H2MemoryURLInterpreter().setDatabaseName(databaseName).setUsername(username).setPassword(password));
 	}
 	
 	public static H2MemoryDB randomDatabase() throws SQLException{
