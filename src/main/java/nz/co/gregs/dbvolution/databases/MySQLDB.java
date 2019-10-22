@@ -115,11 +115,11 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 						.setUsername(username)
 						.setPassword(password)
 		);
-		this.setDatabaseName(databaseName);
+//		this.setDatabaseName(databaseName);
 	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected MySQLURLInterpreter getURLInterpreter() {
 		return new MySQLURLInterpreter();
 	}
 
