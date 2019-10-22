@@ -34,14 +34,14 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2SharedDB;
 
-
 public class H2SharedURLInterpreter extends AbstractH2URLInterpreter<H2SharedURLInterpreter> {
 
 	@Override
 	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String hostname = settings.getHost() == null || settings.getHost().isEmpty() ? "localhost" : settings.getHost();
-		String port = settings.getPort() == null || settings.getPort().isEmpty() ? ""+getDefaultPort() : settings.getPort();
-		return "jdbc:h2:"+settings.getProtocol()+"://" + hostname + ":" + port + "/" + settings.getDatabaseName();
+		String hostname = defaultString(settings.getHost(), "localhost");
+		String port = defaultString(settings.getPort(), "" + getDefaultPort());
+		String protocol = defaultString(settings.getProtocol(), "tcp");
+		return "jdbc:h2:" + protocol + "://" + hostname + ":" + port + "/" + settings.getDatabaseName();
 	}
 
 	@Override
@@ -54,5 +54,9 @@ public class H2SharedURLInterpreter extends AbstractH2URLInterpreter<H2SharedURL
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return H2SharedDB.class;
+	}
+
+	private String defaultString(String initialValue, String defaultValue) {
+		return initialValue == null || initialValue.isEmpty() ? defaultValue : initialValue;
 	}
 }
