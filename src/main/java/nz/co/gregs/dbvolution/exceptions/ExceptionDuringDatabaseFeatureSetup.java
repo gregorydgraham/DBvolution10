@@ -38,6 +38,8 @@ package nz.co.gregs.dbvolution.exceptions;
  */
 public class ExceptionDuringDatabaseFeatureSetup extends Exception {
 
+	public static final long serialVersionUID = 1l;
+	
 	public ExceptionDuringDatabaseFeatureSetup(String message, Exception cause) {
 		super(message, cause);
 //		System.out.println("" + message);
