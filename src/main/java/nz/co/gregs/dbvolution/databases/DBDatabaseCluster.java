@@ -138,7 +138,7 @@ public class DBDatabaseCluster extends DBDatabase {
 //	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected ClusterURLInterpreter getURLInterpreter() {
 		return new ClusterURLInterpreter();
 	}
 
