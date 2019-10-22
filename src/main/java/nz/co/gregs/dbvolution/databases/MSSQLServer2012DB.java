@@ -68,7 +68,7 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 //	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected MSSQLServer2012URLInterpreter getURLInterpreter() {
 		return new MSSQLServer2012URLInterpreter();
 	}
 	

@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MSSQLServerURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractMSSQLServerURLInterpreter;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
@@ -385,7 +386,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 //		return MSSQLServerDB.class;
 //	}
 	@Override
-	protected MSSQLServerURLInterpreter getURLInterpreter() {
+	protected AbstractMSSQLServerURLInterpreter getURLInterpreter() {
 		return new MSSQLServerURLInterpreter();
 	}
 }
