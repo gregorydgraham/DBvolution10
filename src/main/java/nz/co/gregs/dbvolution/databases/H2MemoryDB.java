@@ -170,10 +170,10 @@ public class H2MemoryDB extends H2DB {
 //		return H2MemoryDB.class;
 //	}
 
-	private final static JDBCURLInterpreter URL_PROCESSOR = new H2MemoryURLInterpreter();
+	private final static H2MemoryURLInterpreter URL_PROCESSOR = new H2MemoryURLInterpreter();
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected H2MemoryURLInterpreter getURLInterpreter() {
 		return URL_PROCESSOR;
 	}
 }

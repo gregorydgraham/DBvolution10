@@ -157,7 +157,7 @@ public class H2SharedDB extends H2DB {
 //	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected H2SharedURLInterpreter getURLInterpreter() {
 		return new H2SharedURLInterpreter();
 	}
 	

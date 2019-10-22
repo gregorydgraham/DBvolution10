@@ -373,10 +373,10 @@ public class H2DB extends DBDatabase {
 //	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return H2DB.class;
 //	}
-	private final static JDBCURLInterpreter URL_PROCESSOR = new H2URLInterpreter();
+	private final static H2URLInterpreter URL_PROCESSOR = new H2URLInterpreter();
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected AbstractH2URLInterpreter<?> getURLInterpreter() {
 		return URL_PROCESSOR;
 	}
 }
