@@ -111,7 +111,7 @@ public class Informix11DB extends InformixDB {
 //		return Informix11DB.class;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected Informix11URLInterpreter getURLInterpreter() {
 		return new Informix11URLInterpreter();
 	}
 

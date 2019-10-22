@@ -40,7 +40,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	private static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 3306;
 //	private String derivedURL;
-	private final JDBCURLInterpreter urlProcessor = new MySQL_5_7URLInterpreter();
+	private final MySQL_5_7URLInterpreter urlProcessor = new MySQL_5_7URLInterpreter();
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -212,7 +212,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 //		return MySQLDB_5_7.class;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected MySQL_5_7URLInterpreter getURLInterpreter() {
 		return urlProcessor;
 	}
 

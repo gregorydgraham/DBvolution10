@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.InformixURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractInformixURLinterpreter;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
@@ -237,7 +238,7 @@ public class InformixDB extends DBDatabase {
 //	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected AbstractInformixURLinterpreter<?> getURLInterpreter() {
 		return new InformixURLInterpreter();
 	}
 	
