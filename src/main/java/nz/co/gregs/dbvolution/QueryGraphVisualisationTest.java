@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2MemoryURLInterpreter;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
@@ -43,7 +44,12 @@ public class QueryGraphVisualisationTest {
 	 */
 	public static void main(String[] args) throws Exception {
 		DBDatabase database;
-		database = new H2MemoryDB("dbvolutionTest", "", "", false);
+		database = new H2MemoryDB(
+				new H2MemoryURLInterpreter()
+						.setDatabaseName("dbvolutionTest")
+						.setUsername("")
+						.setPassword("")
+		);
 
 		//QueryGraphVisualisationTest myObject = new QueryGraphVisualisationTest();
 		QueryGraphVisualisationTest.setup(database);
