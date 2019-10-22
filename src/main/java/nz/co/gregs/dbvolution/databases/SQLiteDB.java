@@ -94,6 +94,17 @@ public class SQLiteDB extends DBDatabase {
 	}
 
 	/**
+	 * Creates a DBDatabase tweaked for a SQLite database on the DataSource
+	 * provided.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
+	public SQLiteDB(SQLiteURLInterpreter ds) throws SQLException {
+		this(ds.toSettings());
+	}
+
+	/**
 	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
 	 * provided.
 	 *
@@ -103,7 +114,7 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
-		this(new SQLiteURLInterpreter().generateSettings(jdbcURL, username, password));
+		this(new SQLiteURLInterpreter().fromJDBCURL(jdbcURL, username, password));
 //		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
 
@@ -120,11 +131,12 @@ public class SQLiteDB extends DBDatabase {
 	public SQLiteDB(File databaseFile, String username, String password) throws IOException, SQLException {
 		super(new SQLiteDefinition(),
 				SQLITE_DRIVER_NAME,
-				new SQLiteURLInterpreter().generateSettings()
-						.flowFilename(databaseFile.getCanonicalFile().toString())
-						.flowDatabaseName(databaseFile.getCanonicalFile().toString())
-						.flowUsername(username)
-						.flowPassword(password)
+				new SQLiteURLInterpreter()
+						.setFilename(databaseFile.getCanonicalFile().toString())
+						.setDatabaseName(databaseFile.getCanonicalFile().toString())
+						.setUsername(username)
+						.setPassword(password)
+						.toSettings()
 		//				"jdbc:sqlite:" + databaseFile.getCanonicalFile(),
 		//				username,
 		//				password
@@ -146,11 +158,12 @@ public class SQLiteDB extends DBDatabase {
 	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException, SQLException {
 		super(new SQLiteDefinition(),
 				SQLITE_DRIVER_NAME,
-				new SQLiteURLInterpreter().generateSettings()
-						.flowFilename(filename)
-						.flowDatabaseName(new File(filename).getCanonicalFile().toString())
-						.flowUsername(username)
-						.flowPassword(password)
+				new SQLiteURLInterpreter()
+						.setFilename(filename)
+						.setDatabaseName(new File(filename).getCanonicalFile().toString())
+						.setUsername(username)
+						.setPassword(password)
+						.toSettings()
 		//				"jdbc:sqlite:" + filename,
 		//				username,
 		//				password

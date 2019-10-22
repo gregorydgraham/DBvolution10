@@ -51,6 +51,16 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	public MySQLDB_5_7(DataSource ds) throws SQLException {
 		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, ds);
 	}
+	
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MySQLDB_5_7(MySQL_5_7URLInterpreter ds) throws SQLException {
+		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, ds.toSettings());
+	}
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -72,7 +82,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(String jdbcURL, String username, String password) throws SQLException {
-		this(new MySQL_5_7URLInterpreter().generateSettings(jdbcURL, username, password));
+		this(new MySQL_5_7URLInterpreter().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -90,12 +100,12 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 		this(
 //				new MySQLDBDefinition_5_7(),
 //				MYSQLDRIVERNAME,
-				new MySQL_5_7URLInterpreter().generateSettings()
-						.flowHost(server)
-						.flowPort(port)
-						.flowDatabaseName(databaseName)
-						.flowUsername(username)
-						.flowPassword(password)
+				new MySQL_5_7URLInterpreter()
+						.setHost(server)
+						.setPort(port)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
 		//				"jdbc:mysql://" + server + ":" + port + "/" + databaseName + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
 		//				username,
 		//				password

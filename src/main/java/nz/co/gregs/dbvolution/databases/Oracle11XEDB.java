@@ -97,6 +97,16 @@ public class Oracle11XEDB extends OracleDB {
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
 	 * @param dcs	dcs
+	 * @throws java.sql.SQLException database errors
+	 */
+	public Oracle11XEDB(OracleURLInterpreter dcs) throws SQLException {
+		this(new Oracle11XEDBDefinition(), dcs.toSettings());
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */

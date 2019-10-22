@@ -112,6 +112,39 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		this(new MSSQLServerDBDefinition(), ds);
 	}
 
+	/**
+	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
+	 *
+	 * @param ds	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected MSSQLServerDB(MSSQLServerURLInterpreter ds) throws SQLException {
+		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, ds.toSettings());
+	}
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
+	 *
+	 * @param defn
+	 * @param ds	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, MSSQLServerURLInterpreter ds) throws SQLException {
+		this(defn, SQLSERVERDRIVERNAME, ds.toSettings());
+	}
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
+	 *
+	 * @param defn
+	 * @param driverName
+	 * @param ds	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, MSSQLServerURLInterpreter ds) throws SQLException {
+		this(defn, driverName, ds.toSettings());
+	}
+
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, DataSource ds) throws SQLException {
 		super(defn, SQLSERVERDRIVERNAME, ds);
 	}
@@ -130,14 +163,14 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		this(
 				new MSSQLServerDBDefinition(),
 				driverName,
-				new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password)
+				new MSSQLServerURLInterpreter().fromJDBCURL(jdbcURL, username, password)
 		//				jdbcURL, username, password
 		);
 	}
 
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String jdbcURL, String username, String password) throws SQLException {
 //		super(defn, driverName, jdbcURL, username, password);
-		this(new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password));
+		this(new MSSQLServerURLInterpreter().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -154,12 +187,12 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 */
 	public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
 //		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
-		this(new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password));
+		this(new MSSQLServerURLInterpreter().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String jdbcURL, String username, String password) throws SQLException {
 //		this(defn, SQLSERVERDRIVERNAME, jdbcURL, username, password);
-		this(defn, SQLSERVERDRIVERNAME, new MSSQLServerURLInterpreter().generateSettings(jdbcURL, username, password));
+		this(defn, SQLSERVERDRIVERNAME, new MSSQLServerURLInterpreter().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -184,28 +217,26 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 //		);
 		this(
 				new MSSQLServerURLInterpreter()
-						.generateSettings()
-						.flowHost(hostname)
-						.flowPort(portNumber)
-						.flowInstance(instanceName)
-						.flowDatabaseName(databaseName)
-						.flowUsername(username)
-						.flowPassword(password)
+						.setHost(hostname)
+						.setPort(portNumber)
+						.setInstance(instanceName)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
 		);
 	}
 
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(
 				defn,
-//				SQLSERVERDRIVERNAME,
+				//				SQLSERVERDRIVERNAME,
 				new MSSQLServerURLInterpreter()
-						.generateSettings()
-						.flowHost(hostname)
-						.flowPort(portNumber)
-						.flowInstance(instanceName)
-						.flowDatabaseName(databaseName)
-						.flowUsername(username)
-						.flowPassword(password)
+						.setHost(hostname)
+						.setPort(portNumber)
+						.setInstance(instanceName)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
 		//				"jdbc:sqlserver://"
 		//				+ (hostname != null ? hostname : DEFAULT_HOST_NAME)
 		//				+ (instanceName != null ? "\\" + instanceName : "")
@@ -245,30 +276,28 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 				new MSSQLServerDBDefinition(),
 				driverName,
 				new MSSQLServerURLInterpreter()
-						.generateSettings()
-						.flowHost(hostname)
-						.flowPort(portNumber)
-						.flowInstance(instanceName)
-						.flowDatabaseName(databaseName)
-						.flowUsername(username)
-						.flowPassword(password)
-//				hostname, instanceName, databaseName, portNumber,
-//				username, password
+						.setHost(hostname)
+						.setPort(portNumber)
+						.setInstance(instanceName)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
+		//				hostname, instanceName, databaseName, portNumber,
+		//				username, password
 		);
 	}
 
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
-		super(
+		this(
 				defn,
 				driverName,
 				new MSSQLServerURLInterpreter()
-						.generateSettings()
-						.flowHost(hostname)
-						.flowPort(portNumber)
-						.flowInstance(instanceName)
-						.flowDatabaseName(databaseName)
-						.flowDatabaseName(username)
-						.flowPassword(password)
+						.setHost(hostname)
+						.setPort(portNumber)
+						.setInstance(instanceName)
+						.setDatabaseName(databaseName)
+						.setDatabaseName(username)
+						.setPassword(password)
 		//				"jdbc:sqlserver://" + (hostname != null ? hostname : DEFAULT_HOST_NAME)
 		//				+ (instanceName != null ? "\\" + instanceName : "")
 		//				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)

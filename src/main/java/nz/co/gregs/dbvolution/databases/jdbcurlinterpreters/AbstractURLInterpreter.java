@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
 import java.util.Map;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
@@ -38,8 +39,13 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
  */
-public abstract class AbstractURLInterpreter implements JDBCURLInterpreter {
+public abstract class AbstractURLInterpreter<SELF extends AbstractURLInterpreter<SELF>> implements JDBCURLInterpreter<SELF> {
+
+	private DatabaseConnectionSettings storedSettingsInAbstractURLInterpreter;
+
+	protected abstract Map<String, String> getDefaultConfigurationExtras();
 
 	protected abstract DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings);
 
@@ -47,37 +53,31 @@ public abstract class AbstractURLInterpreter implements JDBCURLInterpreter {
 
 	protected abstract DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings);
 
-	@Override
-	public final DatabaseConnectionSettings generateSettings() {
-		DatabaseConnectionSettings settings = getEmptySettings();
-		return settings;
-	}
-	
-	@Override
-	public final DatabaseConnectionSettings generateSettings(String jdbcURL) {
-		DatabaseConnectionSettings settings = getEmptySettings();
-		settings.setUrl(jdbcURL);
+//	@Override
+//	public final DatabaseConnectionSettings generateSettings(String jdbcURL) {
+//		DatabaseConnectionSettings settings = getDefaultSettings();
+//		settings.setUrl(jdbcURL);
+//		return generateSettingsInternal(jdbcURL, settings);
+//	}
+
+	public final DatabaseConnectionSettings parseURL(String jdbcURL) {
+		DatabaseConnectionSettings settings = getDefaultSettings();
 		return generateSettingsInternal(jdbcURL, settings);
 	}
-	
-	@Override
-	public final DatabaseConnectionSettings generateSettings(String jdbcURL, String username, String password) {
-		DatabaseConnectionSettings settings = generateSettings(jdbcURL);
-		settings.setUsername(username);
-		settings.setPassword(password);
-		settings = generateSettingsInternal(jdbcURL, settings);
-		return settings;
-	}
+
+//	@Override
+//	public final DatabaseConnectionSettings generateSettings(String jdbcURL, String username, String password) {
+//		DatabaseConnectionSettings settings = generateSettings(jdbcURL);
+//		settings.setUsername(username);
+//		settings.setPassword(password);
+//		settings = generateSettingsInternal(jdbcURL, settings);
+//		return settings;
+//	}
 
 	@Override
 	public final String generateJDBCURL(DatabaseConnectionSettings settings) {
 		String url = settings.getUrl();
 		return url != null && !url.isEmpty() ? url : generateJDBCURLInternal(settings);
-	}
-
-	private DatabaseConnectionSettings setPortAndDefaults(DatabaseConnectionSettings settings) {
-		settings.setPort("" + getDefaultPort());
-		return setDefaultsInternal(settings);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public abstract class AbstractURLInterpreter implements JDBCURLInterpreter {
 		return db.isAssignableFrom(otherdb.getClass());
 	}
 
-	public String encodeExtras(DatabaseConnectionSettings settings, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
+	protected final String encodeExtras(DatabaseConnectionSettings settings, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
 		Map<String, String> extras = settings.getExtras();
 		SeparatedString sep = SeparatedString
 				.of(extras, nameValueSeparator)
@@ -96,16 +96,149 @@ public abstract class AbstractURLInterpreter implements JDBCURLInterpreter {
 		return sep.toString();
 	}
 
-	private DatabaseConnectionSettings setCommonDefaults(DatabaseConnectionSettings settings) {
+	private DatabaseConnectionSettings getDefaultSettings() {
+		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
 		settings.setDbdatabaseClass(generatesURLForDatabase().getCanonicalName());
+		settings.setPort("" + getDefaultPort());
 		settings.setDefaultExtras(getDefaultConfigurationExtras());
-		setPortAndDefaults(settings);
+		setDefaultsInternal(settings);
 		return settings;
 	}
 
-	private DatabaseConnectionSettings getEmptySettings() {
-		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
-		setCommonDefaults(settings);
-		return settings;
+	@Override
+	@SuppressWarnings("unchecked")
+	public final SELF fromJDBCURL(String jdbcURL) {
+		this.storedSettingsInAbstractURLInterpreter = parseURL(jdbcURL);
+		return (SELF) this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public final SELF fromJDBCURL(String jdbcURL, String username, String password) {
+		fromJDBCURL(jdbcURL);
+		setUsername(username);
+		setPassword(password);
+		return (SELF) this;
+	}
+
+	@Override
+	public final DatabaseConnectionSettings toSettings() {
+		DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
+		newSettings.copy(storedSettingsInAbstractURLInterpreter);
+		return newSettings;
+	}
+
+	@Override
+	public final String toJDBCURL() {
+		return generateJDBCURL(getStoredSettings());
+	}
+
+	protected final DatabaseConnectionSettings getStoredSettings() {
+		if (storedSettingsInAbstractURLInterpreter == null) {
+			storedSettingsInAbstractURLInterpreter = getDefaultSettings();
+		}
+		return storedSettingsInAbstractURLInterpreter;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setDataSource(DataSource dataSource) {
+		getStoredSettings().setDataSource(dataSource);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setDatabaseName(String databaseName) {
+		getStoredSettings().setDatabaseName(databaseName);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setDBDatabaseName(String dbDatabaseName) {
+		getStoredSettings().setDbdatabaseClass(dbDatabaseName);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setExtras(Map<String, String> extras) {
+		getStoredSettings().setExtras(extras);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF addExtra(String key, String value) {
+		getStoredSettings().addExtra(key, value);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF addExtras(Map<String, String> extras) {
+		getStoredSettings().addExtras(extras);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setFilename(String filename) {
+		getStoredSettings().setFilename(filename);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setHost(String host) {
+		getStoredSettings().setHost(host);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setInstance(String instance) {
+		getStoredSettings().setInstance(instance);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setLabel(String label) {
+		getStoredSettings().setLabel(label);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setPassword(String password) {
+		getStoredSettings().setPassword(password);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setPort(int port) {
+		getStoredSettings().setPort("" + port);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setPort(long port) {
+		getStoredSettings().setPort("" + port);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setProtocol(String protocol) {
+		getStoredSettings().setProtocol(protocol);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setSchema(String schema) {
+		getStoredSettings().setSchema(schema);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setUrl(String url) {
+		getStoredSettings().setUrl(url);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SELF setUsername(String username) {
+		getStoredSettings().setUsername(username);
+		return (SELF) this;
 	}
 }

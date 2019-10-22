@@ -30,71 +30,9 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
-import java.util.HashMap;
-import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
-
 /**
  *
  * @author gregorygraham
  */
-public class PostgresURLInterpreter extends AbstractURLInterpreter {
-
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
-
-	@Override
-	public Map<String, String> getDefaultConfigurationExtras() {
-		return DEFAULT_EXTRAS_MAP;
-	}
-
-	@Override
-	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
-		}
-		settings.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", ""));
-		settings.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		settings.setDatabaseName(noPrefix
-				.split("/", 2)[1]);
-		settings.setInstance(settings.getExtras().get("instance"));
-		settings.setSchema("");
-		return settings;
-	}
-
-	@Override
-	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		return "jdbc:postgresql://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName()
-				+ encodeExtras(settings, "?", "=", "&", "");
-		
-		/*"jdbc:postgresql://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName()
-				+ settings.formatExtras("?", "=", "&", "");*/
-	}
-
-	@Override
-	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		return settings;
-	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return PostgresDB.class;
-	}
-	@Override
-	public Integer getDefaultPort() {
-		return 5432;
-	}
+public class PostgresURLInterpreter extends AbstractPostgresURLInterpreter<PostgresURLInterpreter> {
 }

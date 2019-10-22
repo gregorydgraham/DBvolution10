@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 
-public class H2MemoryURLInterpreter extends H2URLInterpreter {
+public class H2MemoryURLInterpreter extends AbstractH2URLInterpreter<H2MemoryURLInterpreter> {
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {

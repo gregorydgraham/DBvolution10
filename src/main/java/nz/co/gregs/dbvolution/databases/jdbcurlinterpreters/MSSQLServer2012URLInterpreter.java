@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.databases.MSSQLServer2012DB;
  *
  * @author gregorygraham
  */
-public class MSSQLServer2012URLInterpreter extends MSSQLServerURLInterpreter {
+public class MSSQLServer2012URLInterpreter extends AbstractMSSQLServerURLInterpreter<MSSQLServer2012URLInterpreter> {
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {

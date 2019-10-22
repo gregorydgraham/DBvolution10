@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  *
  * @author gregorygraham
  */
-public class ClusterURLInterpreter extends AbstractURLInterpreter {
+public class ClusterURLInterpreter extends AbstractURLInterpreter<ClusterURLInterpreter> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

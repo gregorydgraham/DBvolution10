@@ -35,13 +35,12 @@ import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
 
 /**
  *
  * @author gregorygraham
  */
-public class MySQLMXJDBURLInterpreter extends AbstractURLInterpreter {
+public class MySQLMXJDBURLInterpreter extends AbstractMySQLURLInterpreter<MySQLMXJDBURLInterpreter> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -93,5 +92,9 @@ public class MySQLMXJDBURLInterpreter extends AbstractURLInterpreter {
 	@Override
 	public Integer getDefaultPort() {
 		return 3306;
+	}
+	
+	public MySQLMXJDBURLInterpreter setBanana(boolean bool){
+		return this;
 	}
 }

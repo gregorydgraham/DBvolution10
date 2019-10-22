@@ -30,64 +30,9 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
-import java.util.HashMap;
-import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.InformixDB;
-
 /**
  *
  * @author gregorygraham
  */
-public class InformixURLInterpreter extends AbstractURLInterpreter {
-
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
-
-	@Override
-	public Map<String, String> getDefaultConfigurationExtras() {
-		return DEFAULT_EXTRAS_MAP;
-	}
-
-	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
-		set.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:", ""));
-		set.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
-		}
-		set.setInstance(set.getExtras().get("INFORMIXSERVER"));
-		return set;
-	}
-
-	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		return "jdbc:informix-sqli://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName() + ":INFORMIXSERVER="
-				+ settings.getInstance()
-				+ settings.formatExtras(":", "=", ";", "");
-	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return InformixDB.class;
-	}
-
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		return settings;
-	}
-
-	@Override
-	public Integer getDefaultPort() {
-		return 1526;
-	}
+public class InformixURLInterpreter extends AbstractInformixURLinterpreter<InformixURLInterpreter> {
 }

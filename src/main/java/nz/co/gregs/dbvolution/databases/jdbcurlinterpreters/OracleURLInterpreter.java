@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.databases.OracleDB;
  *
  * @author gregorygraham
  */
-public class OracleURLInterpreter extends AbstractURLInterpreter {
+public class OracleURLInterpreter extends AbstractURLInterpreter<OracleURLInterpreter> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

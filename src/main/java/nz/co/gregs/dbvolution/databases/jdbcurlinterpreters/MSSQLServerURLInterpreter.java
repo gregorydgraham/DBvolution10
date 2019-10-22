@@ -30,67 +30,9 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
-import java.util.HashMap;
-import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
-
 /**
  *
  * @author gregorygraham
  */
-public class MSSQLServerURLInterpreter extends AbstractURLInterpreter {
-
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
-
-	@Override
-	public Map<String, String> getDefaultConfigurationExtras() {
-		return DEFAULT_EXTRAS_MAP;
-	}
-
-	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-//		DatabaseConnectionSettings set = getEmptySettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-		final String port = noPrefix.split("\\\\", 2)[1].split(":")[1];
-		set.setPort(port);
-		final String host = noPrefix.split("\\\\", 2)[0];
-		set.setHost(host);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		final String instance = noPrefix
-				.split("\\\\", 2)[1]
-				.split(":")[0];
-		set.setInstance(instance);
-		set.setSchema("");
-		return set;
-	}
-
-	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		final String urlFromSettings = "jdbc:sqlserver://" + settings.getHost()
-				+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
-				+ settings.getPort() + ";"
-				+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
-		return url != null && !url.isEmpty() ? url : urlFromSettings;
-	}
-
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		return settings;
-	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return MSSQLServerDB.class;
-	}
-
-	@Override
-	public Integer getDefaultPort() {
-		return 1433;
-	}
+public class MSSQLServerURLInterpreter extends AbstractMSSQLServerURLInterpreter<MSSQLServerURLInterpreter> {
 }

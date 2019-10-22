@@ -34,9 +34,10 @@ import java.sql.SQLException;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLURLInterpreter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.utility.MountableFile;
@@ -46,6 +47,8 @@ import org.testcontainers.utility.MountableFile;
  * @author gregorygraham
  */
 public class MySQLContainerDB extends MySQLDB {
+	
+	static final Log LOG = LogFactory.getLog(MSSQLServerContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
 	protected final MySQLContainer storedContainer;
@@ -63,33 +66,16 @@ public class MySQLContainerDB extends MySQLDB {
 					// use an anonymous inner class because otherwise we get only an Object no an OutputFrame
 					@Override
 					public void accept(OutputFrame t) {
-						System.out.print("MYSQL CONTAINER: " + t.getUtf8String());
+						LOG.info("MYSQL CONTAINER: " + t.getUtf8String().replaceAll("\n$", ""));
 					}
 				});
 		container.withEnv("TZ", "Pacific/Auckland");
 		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
-
-		String url = container.getJdbcUrl();
-		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
-		System.out.println("URL: " + url);
-
-		// The test container doesn't use SSL so we need to turn that off
-		MySQLURLInterpreter interpreter = new MySQLURLInterpreter();
-		DatabaseConnectionSettings settings = interpreter.generateSettings(url);
-		settings.addExtra("useSSL", "false");
-
-		// set the database name because apparently it's not in the URL
-		settings.setDatabaseName(container.getDatabaseName());
-
-		// set the username and password so we can log in.
-		settings.setUsername(container.getUsername());
-		settings.setPassword(container.getPassword());
-
-		System.out.println("FINAL URL: " + interpreter.generateJDBCURL(settings));
+		
 		try {
 			// create the actual dbdatabase 
-			MySQLContainerDB dbdatabase = new MySQLContainerDB(container, settings);
+			MySQLContainerDB dbdatabase = new MySQLContainerDB(container);
 			return dbdatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,9 +83,21 @@ public class MySQLContainerDB extends MySQLDB {
 		}
 	}
 
-	public MySQLContainerDB(MySQLContainer storedContainer, DatabaseConnectionSettings dcs) throws SQLException {
+	public MySQLContainerDB(MySQLContainer storedContainer, MySQLURLInterpreter dcs) throws SQLException {
 		super(dcs);
 		this.storedContainer = storedContainer;
+	}
+
+	public MySQLContainerDB(MySQLContainer container) throws SQLException {
+		this(
+				container,
+				new MySQLURLInterpreter()
+						.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
+						// set the database name because apparently it's not in the URL
+						.setDatabaseName(container.getDatabaseName())
+						// The test container doesn't use SSL so we need to turn that off
+						.setUseSSL(false)
+		);
 	}
 
 	@Override

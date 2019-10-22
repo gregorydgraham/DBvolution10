@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.databases.MariaClusterDB;
  *
  * @author gregorygraham
  */
-public class MariaClusterDBURLInterpreter extends AbstractURLInterpreter {
+public class MariaClusterDBURLInterpreter extends AbstractURLInterpreter<MariaClusterDBURLInterpreter> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

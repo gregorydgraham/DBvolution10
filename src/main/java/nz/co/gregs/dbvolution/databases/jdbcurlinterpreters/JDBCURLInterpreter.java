@@ -30,29 +30,52 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
-import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 
 /**
  *
  * @author gregorygraham
+ * @param <SELF> the implement class of this interface
  */
-public interface JDBCURLInterpreter {
+public interface JDBCURLInterpreter<SELF extends JDBCURLInterpreter<SELF>> {
 
 	public String generateJDBCURL(DatabaseConnectionSettings settings);
 
-	public DatabaseConnectionSettings generateSettings();
-
-	public DatabaseConnectionSettings generateSettings(String jdbcURL);
-
-	public DatabaseConnectionSettings generateSettings(String jdbcURL, String username, String password);
-	
 	public Class<? extends DBDatabase> generatesURLForDatabase();
 
-	public Map<String, String> getDefaultConfigurationExtras();
-
-	public boolean canProcessesURLsFor(DBDatabase otherdb) ;
+	public boolean canProcessesURLsFor(DBDatabase otherdb);
 
 	public Integer getDefaultPort();
+
+	/**
+	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
+	 * 
+	 * 
+	 * @see #toSettings() 
+	 * @see #toJDBCURL() 
+	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
+	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
+	 * @param jdbcURL
+	 * @return 
+	 */
+	public SELF fromJDBCURL(String jdbcURL);
+
+	/**
+	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
+	 * 
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 * @see #toSettings() 
+	 * @see #toJDBCURL() 
+	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
+	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
+	 * @return 
+	 */
+	public SELF fromJDBCURL(String jdbcURL, String username, String password);
+
+	public DatabaseConnectionSettings toSettings();
+
+	public String toJDBCURL();
 }

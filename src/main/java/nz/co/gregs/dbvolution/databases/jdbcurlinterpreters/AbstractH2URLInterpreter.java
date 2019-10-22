@@ -34,68 +34,87 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.databases.H2DB;
 
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
  */
-public class SQLiteURLInterpreter extends AbstractURLInterpreter<SQLiteURLInterpreter> {
+public abstract class AbstractH2URLInterpreter<SELF extends AbstractH2URLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
 
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+
+	public AbstractH2URLInterpreter() {
+	}
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;
 	}
 
-	public SQLiteURLInterpreter() {
-	}
-
 	@Override
-	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-		if (jdbcURL.contains(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
+		int protocolIndex = 2;
+		int restIndex = 4;
+		String[] firstSplit = jdbcURL.split(":", restIndex);
+		settings.setProtocol(firstSplit[protocolIndex]);
+		if (!settings.getProtocol().equals("tcp") && !settings.getProtocol().equals("ssl") && !settings.getProtocol().equals("mem") && !settings.getProtocol().equals("zip") && !settings.getProtocol().equals("file")) {
+			settings.setProtocol("");
+			restIndex -= 1;
+			firstSplit = jdbcURL.split(":", restIndex);
 		}
-		final String name = noPrefix.split(":", 3)[2];
-		set.setDatabaseName(name);
-		set.setFilename(name);
-		if (noPrefix.contains("/")) {
-			set.setPort(noPrefix
-					.split("/", 2)[0]
-					.replaceAll("^[^:]*:+", ""));
-			set.setHost(noPrefix
-					.split("/", 2)[0]
-					.split(":")[0]);
+		String restString = firstSplit[restIndex - 1];
+		//		either
+		//      //<server>[:<port>]/[<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
+		//      or
+		//      [<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
+		if (restString.startsWith("//")) {
+			String[] secondSplit = restString.split("/", 4);
+			String hostAndPort = secondSplit[2];
+			if (hostAndPort.contains(":")) {
+				String[] thirdSplit = hostAndPort.split(":");
+				settings.setHost(thirdSplit[0]);
+				settings.setPort(thirdSplit[1]);
+			} else {
+				settings.setHost(hostAndPort);
+				settings.setPort("9123");
+			}
+			restString = secondSplit[3];
 		}
-		set.setInstance(set.getExtras().get("instance"));
-		set.setSchema("");
-		return set;
+		// now
+		// [<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
+		String[] fourthSplit = restString.split(";");
+		settings.setDatabaseName(fourthSplit[0]);
+		settings.setFilename(fourthSplit[0]);
+		if (fourthSplit.length > 1) {
+			settings.setExtras(DatabaseConnectionSettings.decodeExtras(fourthSplit[1], ";", "=", ";", ""));
+		}
+		return settings;
 	}
 
 	@Override
 	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		final String url = "jdbc:sqlite:"
-				+ (settings.getFilename() == null || settings.getFilename().isEmpty()
-				? settings.getDatabaseName()
-				: settings.getFilename());
+		final boolean hasNoProtocol = settings.getProtocol() == null || "".equals(settings.getProtocol());
+		final String url = "jdbc:h2:" + (hasNoProtocol ? "" : settings.getProtocol() + "://") + (settings.getFilename() == null || settings.getFilename().isEmpty() ? settings.getDatabaseName() : settings.getFilename());
 		return url;
 	}
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return SQLiteDB.class;
+		return H2DB.class;
 	}
 
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
+		settings.setHost("localhost");
+		//		settings.setProtocol("file");
 		return settings;
 	}
 
 	@Override
 	public Integer getDefaultPort() {
-		return -1;// SQLite doesn't use ports
+		return 9123;
 	}
+
 }

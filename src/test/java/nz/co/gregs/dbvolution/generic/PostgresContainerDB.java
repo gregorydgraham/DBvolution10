@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.PostgresURLInterpreter;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -41,31 +42,21 @@ import org.testcontainers.containers.PostgreSQLContainer;
  *
  * @author gregorygraham
  */
-public class PostgresContainerDB extends PostgresDB{
-	
+public class PostgresContainerDB extends PostgresDB {
+
 	private static final long serialVersionUID = 1l;
 	protected final PostgreSQLContainer storedContainer;
 
 	public static PostgresContainerDB getInstance() {
-		String instance = "";
-		String database = "";
 		/*
 		ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
 		SA_PASSWORD=Password23 defines the password so we can login
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		PostgreSQLContainer container = (PostgreSQLContainer)new PostgisContainerProvider().newInstance();
+		PostgreSQLContainer container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance();
 		container.withEnv("TZ", "Pacific/Auckland");
 		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
-		String password = container.getPassword();
-		String username = container.getUsername();
-		String url = container.getJdbcUrl();
-		String host = container.getContainerIpAddress();
-		Integer port = container.getFirstMappedPort();
-		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
-		System.out.println("URL: " + url);
-		System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
 		try {
 			PostgresContainerDB dbdatabase = new PostgresContainerDB(container);
 			return dbdatabase;
@@ -76,7 +67,9 @@ public class PostgresContainerDB extends PostgresDB{
 	}
 
 	public PostgresContainerDB(PostgreSQLContainer container) throws SQLException {
-		super(container.getJdbcUrl(), container.getUsername(), container.getPassword());
+		super(new PostgresURLInterpreter()
+				.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
+		);
 		this.storedContainer = container;
 	}
 
@@ -85,5 +78,5 @@ public class PostgresContainerDB extends PostgresDB{
 		super.stop();
 		storedContainer.stop();
 	}
-	
+
 }

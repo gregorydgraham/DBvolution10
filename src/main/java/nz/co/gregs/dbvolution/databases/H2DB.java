@@ -104,10 +104,10 @@ public class H2DB extends DBDatabase {
 	public H2DB(File file, String username, String password) throws IOException, SQLException {
 		this(
 				new H2URLInterpreter()
-						.generateSettings()
-						.flowDatabaseName(file.getCanonicalFile().toString())
-						.flowUsername(username)
-						.flowPassword(password)
+						.setDatabaseName(file.getCanonicalFile().toString())
+						.setUsername(username)
+						.setPassword(password)
+						.toSettings()
 		);
 //		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
 	}
@@ -154,9 +154,9 @@ public class H2DB extends DBDatabase {
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		this(
 				new H2URLInterpreter()
-						.generateSettings(jdbcURL)
-						.flowUsername(username)
-						.flowPassword(password)
+						.setUsername(username)
+						.setPassword(password)
+						.toSettings()
 		);
 		//super(new H2DBDefinition(), DRIVER_NAME, jdbcURL, username, password);
 	}
@@ -177,11 +177,24 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(String databaseFilename, String username, String password, boolean dummy) throws SQLException {
 		this(new H2URLInterpreter()
-				.generateSettings()
-				.flowFilename(databaseFilename)
-				.flowUsername(username)
-				.flowPassword(password)
+				.setFilename(databaseFilename)
+				.setUsername(username)
+				.setPassword(password)
+				.toSettings()
 		);
+//		super(new H2DBDefinition(), DRIVER_NAME, "jdbc:h2:" + databaseFilename, username, password);
+	}
+
+	/**
+	 * Creates a DBDatabase for a H2 database.
+	 * 
+	 * <p>Database exceptions may be thrown</p>
+	 *
+	 * @param settings
+	 * @throws java.sql.SQLException database errors
+	 */
+	public H2DB(H2URLInterpreter settings) throws SQLException {
+		this(settings.toSettings());
 //		super(new H2DBDefinition(), DRIVER_NAME, "jdbc:h2:" + databaseFilename, username, password);
 	}
 

@@ -30,15 +30,57 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
+import java.util.HashMap;
+import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.Informix11DB;
+import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.InformixDB;
 
+/**
+ *
+ * @author gregorygraham
+ * @param <SELF>
+ */
+public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInformixURLinterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
+	
+	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
-public class Informix11URLInterpreter extends AbstractInformixURLinterpreter<Informix11URLInterpreter> {
+	@Override
+	public Map<String, String> getDefaultConfigurationExtras() {
+		return DEFAULT_EXTRAS_MAP;
+	}
+
+	@Override
+	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
+		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
+		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:", ""));
+		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split(";", 2)[1];
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
+		}
+		set.setInstance(set.getExtras().get("INFORMIXSERVER"));
+		return set;
+	}
+
+	@Override
+	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+		return "jdbc:informix-sqli://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + ":INFORMIXSERVER=" + settings.getInstance() + settings.formatExtras(":", "=", ";", "");
+	}
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return Informix11DB.class;
+		return InformixDB.class;
+	}
+
+	@Override
+	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
+		return settings;
+	}
+
+	@Override
+	public Integer getDefaultPort() {
+		return 1526;
 	}
 	
 }

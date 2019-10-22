@@ -34,15 +34,20 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.NuoDB;
+import nz.co.gregs.dbvolution.databases.JavaDB;
 
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
  */
-public class NuoDBURLInterpreter extends AbstractURLInterpreter<NuoDBURLInterpreter> {
-
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+public abstract class AbstractJavaDBURLInterpreter<SELF extends AbstractJavaDBURLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
+	
+	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
+		{
+			put("create", "true");
+		}
+	};
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -50,31 +55,42 @@ public class NuoDBURLInterpreter extends AbstractURLInterpreter<NuoDBURLInterpre
 	}
 
 	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
+	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
+		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
+		settings.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:", ""));
+		settings.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
 		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+			String extrasString = jdbcURL.split(";", 2)[1];
+			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
-		set.setInstance(set.getExtras().get("instance"));
-		set.setSchema("");
-		return set;
+		settings.setInstance(settings.getExtras().get("instance"));
+		settings.setSchema("");
+		return settings;
+		//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+		//		if (jdbcURL.matches(";")) {
+		//			String extrasString = jdbcURL.split("\\?", 2)[1];
+		//			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
+		//		}
+		//		settings.setPort(noPrefix
+		//				.split("/", 2)[0]
+		//				.replaceAll("^[^:]*:+", ""));
+		//		settings.setHost(noPrefix
+		//				.split("/", 2)[0]
+		//				.split(":")[0]);
+		//		settings.setInstance(settings.getExtras().get("instance"));
+		//		settings.setSchema("");
+		//		return settings;
 	}
-	
-private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
-	
+
 	@Override
 	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : NUODB_URL_PREFIX
-				+ settings.getHost() + "/"
-				+ settings.getDatabaseName() + "?schema=" + settings.getSchema();
+		return "jdbc:derby://" + settings.getHost() + ":" + settings.getPort() + "/" + ("".equals(settings.getProtocol()) ? "" : settings.getProtocol() + ":") + settings.getDatabaseName() //+ ";create=true";
+		 + encodeExtras(settings, "?", "=", "&", "");
+	}
+
+	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return JavaDB.class;
 	}
 
 	@Override
@@ -83,12 +99,8 @@ private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return NuoDB.class;
-	}
-
-	@Override
 	public Integer getDefaultPort() {
-		return 8888;// possibly 48004???
+		return 1527;
 	}
+	
 }

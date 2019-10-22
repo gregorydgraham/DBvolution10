@@ -34,14 +34,13 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.MariaClusterDB;
 import nz.co.gregs.dbvolution.databases.MariaDB;
 
 /**
  *
  * @author gregorygraham
  */
-public class MariaDBURLInterpreter extends AbstractURLInterpreter {
+public class MariaDBURLInterpreter extends AbstractURLInterpreter<MariaDBURLInterpreter> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

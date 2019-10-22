@@ -119,11 +119,12 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer,java.lang.String,java.lang.String,java.lang.String,java.lang.Integer,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.Oracle11XEContainerDB(org.testcontainers.containers.OracleContainer) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.PostgresContainerDB(org.testcontainers.containers.PostgreSQLContainer) throws java.sql.SQLException");
-//		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer,nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer,nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MSSQLServerURLInterpreter) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer,nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLURLInterpreter) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");

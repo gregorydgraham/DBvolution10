@@ -68,6 +68,16 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	/**
+	 * Creates a MySQL connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MySQLDB(MySQLURLInterpreter dcs) throws SQLException {
+		this(dcs.toSettings());
+	}
+
+	/**
 	 * Creates DBDatabase suitable for use with MySQL attached to the supplied
 	 * JDBC URL, username, and password.
 	 *
@@ -77,11 +87,11 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB(String jdbcURL, String username, String password) throws SQLException {
-		super(
-				new MySQLDBDefinition(), 
-				MYSQLDRIVERNAME, 
-				new MySQLURLInterpreter().generateSettings(jdbcURL)
-//				jdbcURL, username, password
+		this(
+				new MySQLURLInterpreter()
+						.fromJDBCURL(jdbcURL)
+						.setUsername(username)
+						.setPassword(password)
 		);
 	}
 
@@ -97,23 +107,19 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB(String server, int port, String databaseName, String username, String password) throws SQLException {
-		super(new MySQLDBDefinition(),
-				MYSQLDRIVERNAME,
-				new MySQLURLInterpreter().generateSettings()
-						.flowHost(server)
-						.flowPort(port)
-				.flowDatabaseName(databaseName)
-				.flowUsername(username)
-				.flowPassword(password)
-//				"jdbc:mysql://" + server + ":" + port + "/" + databaseName + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
-//				username,
-//				password
+		this(
+				new MySQLURLInterpreter()
+						.setHost(server)
+						.setPort(port)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
 		);
 		this.setDatabaseName(databaseName);
 	}
-	
+
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter(){
+	protected JDBCURLInterpreter getURLInterpreter() {
 		return new MySQLURLInterpreter();
 	}
 

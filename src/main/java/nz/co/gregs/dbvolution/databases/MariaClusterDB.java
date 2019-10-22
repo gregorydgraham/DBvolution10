@@ -51,6 +51,24 @@ public class MariaClusterDB extends DBDatabase {
 	public MariaClusterDB(DataSource ds) throws SQLException {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MariaClusterDB(DatabaseConnectionSettings ds) throws SQLException {
+		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
+	}
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MariaClusterDB(MariaClusterDBURLInterpreter ds) throws SQLException {
+		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
+	}
 
 	/**
 	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the JDBC URL
@@ -63,11 +81,8 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(String jdbcURL, String username, String password) throws SQLException {
-//		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
-		super(
-				new MariaDBDefinition(), 
-				MARIADBDRIVERNAME, 
-				new MariaClusterDBURLInterpreter().generateSettings(jdbcURL, username, password)
+		this(
+				new MariaClusterDBURLInterpreter().fromJDBCURL(jdbcURL, username, password)
 		);
 	}
 
@@ -90,29 +105,16 @@ public class MariaClusterDB extends DBDatabase {
 		super(
 				new MariaDBDefinition(), 
 				MARIADBDRIVERNAME, 
-				new MariaClusterDBURLInterpreter().generateSettings()
-				.flowHost(server)
-				.flowPort(port)
-				.flowDatabaseName(databaseName)
-				.flowUsername(username)
-				.flowPassword(password)
+				new MariaClusterDBURLInterpreter()
+				.setHost(server)
+				.setPort(port)
+				.setDatabaseName(databaseName)
+				.setUsername(username)
+				.setPassword(password)
+				.toSettings()
 		);
-//		super(new MariaDBDefinition(),
-//				MARIADBDRIVERNAME,
-//				"jdbc:mariadb://" + server + ":" + port + "/" + databaseName,
-//				username,
-//				password);
-//		this.setDatabaseName(databaseName);
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:mariadb://"
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getDatabaseName();
-//	}
 	/**
 	 * Creates a DBDatabase for a MariaDB cluster.
 	 *
@@ -158,65 +160,11 @@ public class MariaClusterDB extends DBDatabase {
 		;
 	}
 
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-//			return noPrefix
-//					.split("/",2)[0];
-//		
-//	}
-//
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		return getExtras().get("instance");
-//	}
-//
-//	@Override
-//	protected String getPort() {
-//		return null;
-//	}
-//
-//	@Override
-//	protected String getSchema() {
-//		return null;
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-//		set.setHost(noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0]);
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return -1;
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return MariaClusterDB.class;
-//	}
 	@Override
 	protected JDBCURLInterpreter getURLInterpreter() {
 		return new MariaClusterDBURLInterpreter();

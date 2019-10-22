@@ -34,6 +34,9 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MSSQLServerURLInterpreter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.MSSQLServerContainer;
 
 /**
@@ -42,31 +45,21 @@ import org.testcontainers.containers.MSSQLServerContainer;
  */
 public class MSSQLServerContainerDB extends MSSQLServerDB {
 	
+	static final Log LOG = LogFactory.getLog(MSSQLServerContainerDB.class);
+
 	private static final long serialVersionUID = 1l;
 	protected final MSSQLServerContainer mssqlServerContainer;
 
 	public static MSSQLServerContainerDB getInstance() {
-		String instance = "MSSQLServer";
-		String database = "";
 		/*
-		ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
-		SA_PASSWORD=Password23 defines the password so we can login
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
 		MSSQLServerContainer container = new MSSQLServerContainer<>();
 		container.withEnv("TZ", "Pacific/Auckland");
-		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
+		//container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
-		String password = container.getPassword();
-		String username = container.getUsername();
-		String url = container.getJdbcUrl();
-		String host = container.getContainerIpAddress();
-		Integer port = container.getFirstMappedPort();
-		//			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
-		//			System.out.println("URL: " + url);
-		//			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
 		try {
-			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB(container, host, instance, database, port, username, password);
+			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB(container);
 			return staticDatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MSSQLServerContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -74,9 +67,23 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		}
 	}
 
-	public MSSQLServerContainerDB(MSSQLServerContainer container, String host, String instance, String database, Integer port, String username, String password) throws SQLException {
-		super(host, instance, database, port, username, password);
+	public MSSQLServerContainerDB(MSSQLServerContainer container, MSSQLServerURLInterpreter interpreter) throws SQLException {
+		super(interpreter);
 		this.mssqlServerContainer = container;
+	}
+
+	public MSSQLServerContainerDB(MSSQLServerContainer container) throws SQLException {
+		this(
+				container,
+				new MSSQLServerURLInterpreter()
+						.fromJDBCURL(
+								container.getJdbcUrl(),
+								container.getUsername(),
+								container.getPassword()
+						)
+						.setHost(container.getContainerIpAddress())
+						.setPort(container.getFirstMappedPort())
+		);
 	}
 
 	@Override
@@ -84,6 +91,6 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		super.stop();
 		final String containerId = mssqlServerContainer.getContainerId();
 		mssqlServerContainer.stop();
-		System.out.println("CONTAINER STOPPED: "+containerId);
+		LOG.info("CONTAINER STOPPED: " + containerId);
 	}
 }

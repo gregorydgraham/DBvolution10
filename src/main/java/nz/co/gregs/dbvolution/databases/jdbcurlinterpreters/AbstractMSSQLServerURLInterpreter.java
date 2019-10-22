@@ -34,15 +34,16 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.NuoDB;
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
  */
-public class NuoDBURLInterpreter extends AbstractURLInterpreter<NuoDBURLInterpreter> {
+public abstract class AbstractMSSQLServerURLInterpreter<SELF extends AbstractMSSQLServerURLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
 
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -51,30 +52,40 @@ public class NuoDBURLInterpreter extends AbstractURLInterpreter<NuoDBURLInterpre
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
+		//		DatabaseConnectionSettings set = getEmptySettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+		final String[] splitOnBackslash = noPrefix.split("\\\\", 2);
+		final String host = splitOnBackslash[0];
+		set.setHost(host);
+		if (splitOnBackslash.length > 1) {
+			final String[] splitOnColon = splitOnBackslash[1].split(":");
+			if (splitOnColon.length > 1) {
+				final String port = splitOnColon[1];
+				set.setPort(port);
+			}
+			final String instance = splitOnColon[0];
+			set.setInstance(instance);
+		}
 		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("?", 2)[1];
+			String extrasString = jdbcURL.split(";", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
-		set.setInstance(set.getExtras().get("instance"));
 		set.setSchema("");
 		return set;
 	}
-	
-private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
-	
+
 	@Override
 	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
 		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : NUODB_URL_PREFIX
-				+ settings.getHost() + "/"
-				+ settings.getDatabaseName() + "?schema=" + settings.getSchema();
+		final String databaseName = settings.getDatabaseName();
+		final String instance = settings.getInstance();
+		final String urlFromSettings
+				= "jdbc:sqlserver://"
+				+ settings.getHost()
+				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
+				+ ":" + settings.getPort() + ";"
+				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
+		return url != null && !url.isEmpty() ? url : urlFromSettings;
 	}
 
 	@Override
@@ -84,11 +95,12 @@ private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return NuoDB.class;
+		return MSSQLServerDB.class;
 	}
 
 	@Override
 	public Integer getDefaultPort() {
-		return 8888;// possibly 48004???
+		return 1433;
 	}
+
 }

@@ -70,10 +70,11 @@ public class InformixDB extends DBDatabase {
 	 */
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(definition, driverName,
-				new InformixURLInterpreter().generateSettings()
-				.flowURL(jdbcURL)
-				.flowUsername(username)
-				.flowPassword(password)
+				new InformixURLInterpreter()
+				.setUrl(jdbcURL)
+				.setUsername(username)
+				.setPassword(password)
+				.toSettings()
 //				jdbcURL, username, password
 				);
 		// Informix causes problems when using batched statements :(

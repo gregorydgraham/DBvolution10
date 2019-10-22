@@ -30,83 +30,9 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
-import java.util.HashMap;
-import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.JavaDB;
-
 /**
  *
  * @author gregorygraham
  */
-public class JavaDBURLInterpreter extends AbstractURLInterpreter {
-
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
-		{
-			put("create", "true");
-		}
-	};
-
-	@Override
-	public Map<String, String> getDefaultConfigurationExtras() {
-		return DEFAULT_EXTRAS_MAP;
-	}
-
-	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-		settings.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:", ""));
-		settings.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		settings.setInstance(settings.getExtras().get("instance"));
-		settings.setSchema("");
-		return settings;
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("\\?", 2)[1];
-//			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
-//		}
-//		settings.setPort(noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:+", ""));
-//		settings.setHost(noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0]);
-//		settings.setInstance(settings.getExtras().get("instance"));
-//		settings.setSchema("");
-//		return settings;
-	}
-
-	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		return "jdbc:derby://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ ("".equals(settings.getProtocol()) ? "" : settings.getProtocol() + ":")
-				+ settings.getDatabaseName() //+ ";create=true";
-				+ encodeExtras(settings, "?", "=", "&", "");
-	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return JavaDB.class;
-	}
-
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		return settings;
-	}
-
-	@Override
-	public Integer getDefaultPort() {
-		return 1527;
-	}
+public class JavaDBURLInterpreter extends AbstractJavaDBURLInterpreter <JavaDBURLInterpreter>{
 }

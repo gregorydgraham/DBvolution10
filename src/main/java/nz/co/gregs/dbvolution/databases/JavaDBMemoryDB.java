@@ -69,7 +69,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 		super(
 				new JavaDBMemoryDBDefinition(), 
 				DRIVER_NAME, 
-				new JavaDBMemoryURLInterpreter().generateSettings(jdbcURL, username, password)
+				new JavaDBMemoryURLInterpreter().fromJDBCURL(jdbcURL, username, password)
 //				jdbcURL, username, password
 				);
 	}

@@ -88,10 +88,31 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
 	 * @param dcs	dcs
+	 * @throws java.sql.SQLException database errors
+	 */
+	public OracleAWSDB(OracleURLInterpreter dcs) throws SQLException {
+		this(new OracleAWSDBDefinition(), dcs);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWSDB(OracleAWSDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
+		super(defn, dcs);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @param defn the oracle database definition
+	 * @throws java.sql.SQLException database errors
+	 */
+	public OracleAWSDB(OracleAWSDBDefinition defn, OracleURLInterpreter dcs) throws SQLException {
 		super(defn, dcs);
 	}
 

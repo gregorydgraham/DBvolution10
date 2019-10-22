@@ -849,90 +849,90 @@ public class DatabaseConnectionSettings {
 		this.extras.put(tag, value);
 	}
 
-	public DatabaseConnectionSettings flowHost(String server) {
-		this.setHost(server);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowPort(int port) {
-		this.setPort(""+port);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowPort(long port) {
-		this.setPort(""+port);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowPort(String port) {
-		this.setPort(port);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowDatasource(DataSource source) {
-		this.setDataSource(source);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowDatabaseName(String databaseName) {
-		this.setDatabaseName(databaseName);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowDbdatabaseClass(String canonicalName) {
-		this.setDbdatabaseClass(canonicalName);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowExtras(Map<String, String> extras) {
-		this.addExtras(extras);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowExtra(String name, String value) {
-		this.addExtra(name, value);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowInstance(String instance) {
-		this.setInstance(instance);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowLabel(String label) {
-		this.setLabel(label);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowPassword(String password) {
-		this.setPassword(password);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowProtocol(String protocol) {
-		this.setProtocol(protocol);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowSchema(String schema) {
-		this.setSchema(schema);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowURL(String url) {
-		this.setUrl(url);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowUsername(String username) {
-		this.setUsername(username);
-		return this;
-	}
-
-	public DatabaseConnectionSettings flowFilename(String filename) {
-		this.setFilename(filename);
-		return this;
-	}
+//	public DatabaseConnectionSettings flowHost(String server) {
+//		this.setHost(server);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowPort(int port) {
+//		this.setPort(""+port);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowPort(long port) {
+//		this.setPort(""+port);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowPort(String port) {
+//		this.setPort(port);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowDatasource(DataSource source) {
+//		this.setDataSource(source);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowDatabaseName(String databaseName) {
+//		this.setDatabaseName(databaseName);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowDbdatabaseClass(String canonicalName) {
+//		this.setDbdatabaseClass(canonicalName);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowExtras(Map<String, String> extras) {
+//		this.addExtras(extras);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowExtra(String name, String value) {
+//		this.addExtra(name, value);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowInstance(String instance) {
+//		this.setInstance(instance);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowLabel(String label) {
+//		this.setLabel(label);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowPassword(String password) {
+//		this.setPassword(password);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowProtocol(String protocol) {
+//		this.setProtocol(protocol);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowSchema(String schema) {
+//		this.setSchema(schema);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowURL(String url) {
+//		this.setUrl(url);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowUsername(String username) {
+//		this.setUsername(username);
+//		return this;
+//	}
+//
+//	public DatabaseConnectionSettings flowFilename(String filename) {
+//		this.setFilename(filename);
+//		return this;
+//	}
 
 	public void setFilename(String filename) {
 		this.filename = filename;

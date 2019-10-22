@@ -59,6 +59,26 @@ public class JavaDB extends DBDatabase {
 	}
 
 	/**
+	 * Creates a new JavaDB instance that will connect to the DataSource.
+	 *
+	 * @param dataSource	dataSource
+	 * @throws java.sql.SQLException database errors
+	 */
+	public JavaDB(DatabaseConnectionSettings dataSource) throws SQLException {
+		super(new JavaDBDefinition(), DRIVER_NAME, dataSource);
+	}
+
+	/**
+	 * Creates a new JavaDB instance that will connect to the DataSource.
+	 *
+	 * @param dataSource	dataSource
+	 * @throws java.sql.SQLException database errors
+	 */
+	public JavaDB(JavaDBURLInterpreter dataSource) throws SQLException {
+		this(dataSource.toSettings());
+	}
+
+	/**
 	 * Creates a new JavaDB instance that will connect to the JDBC URL using the
 	 * username and password supplied..
 	 *
@@ -68,10 +88,9 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new JavaDBDefinition(), DRIVER_NAME, 
-				new JavaDBURLInterpreter().generateSettings(jdbcURL, username, password)
-//				jdbcURL, username, password
-				);
+		this(
+				new JavaDBURLInterpreter().fromJDBCURL(jdbcURL, username, password)
+		);
 	}
 
 	/**
@@ -86,18 +105,10 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(String host, int port, String database, String username, String password) throws SQLException {
-		super(new JavaDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
+		this(
+				new JavaDBURLInterpreter().setHost(host).setPort(port).setUsername(username).setPassword(password)
+		);
 	}
-
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-////		DatabaseConnectionSettings settings = getSettings();
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url :"jdbc:derby://"
-//					+ settings.getHost() + ":"
-//					+ settings.getPort() + "/"
-//					+ settings.getDatabaseName() + ":create=true";
-//	}
 
 	@Override
 	public JavaDB clone() throws CloneNotSupportedException {
@@ -109,75 +120,10 @@ public class JavaDB extends DBDatabase {
 		;
 	}
 
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0];
-//		
-//	}
-
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		return getExtras().get("instance");
-//	}
-
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:", "");
-//	}
-
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-//		set.setPort(noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:", ""));
-//		set.setHost(noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0]);
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
-
 	@Override
 	public Integer getDefaultPort() {
 		return 1527;
 	}
-
-//	@Override
-//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return JavaDB.class;
-//	}
 
 	@Override
 	protected JDBCURLInterpreter getURLInterpreter() {

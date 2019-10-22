@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.MySQLDB_5_7;
 
 
-public class MySQL_5_7URLInterpreter extends MySQLURLInterpreter {
+public class MySQL_5_7URLInterpreter extends AbstractMySQLURLInterpreter<MySQL_5_7URLInterpreter> {
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {

@@ -112,14 +112,14 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)}
 	 *
 	 * @param definition definition
+	 * @param driverName
 	 * @param password password
 	 * @param jdbcURL jdbcURL
-	 * @param driverName driverName
 	 * @param username username
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		super(definition, driverName, new OracleURLInterpreter().generateSettings(jdbcURL, username, password));
+		this(definition, driverName, new OracleURLInterpreter().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -131,6 +131,29 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 */
 	public OracleDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
 		super(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
+	}
+
+	/**
+	 * Creates a DBDatabase instance.
+	 *
+	 * @param dbDefinition an oracle database definition instance
+	 * @param dataSource a data source to an Oracle database
+	 * @throws java.sql.SQLException database errors
+	 */
+	public OracleDB(DBDefinition dbDefinition, OracleURLInterpreter dataSource) throws SQLException {
+		this(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
+	}
+
+	/**
+	 * Creates a DBDatabase instance.
+	 *
+	 * @param dbDefinition an oracle database definition instance
+	 * @param driverName
+	 * @param dataSource a data source to an Oracle database
+	 * @throws java.sql.SQLException database errors
+	 */
+	public OracleDB(DBDefinition dbDefinition, String driverName, OracleURLInterpreter dataSource) throws SQLException {
+		super(dbDefinition, driverName, dataSource.toSettings());
 	}
 
 	@Override

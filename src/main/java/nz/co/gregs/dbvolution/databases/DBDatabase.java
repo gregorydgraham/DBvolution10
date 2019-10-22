@@ -308,6 +308,45 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
 	 *
 	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
+	 *
+	 * @param definition - the subclass of DBDefinition that provides the syntax
+	 * for your database.
+	 * @param driverName the class name of the database driver
+	 * @param dcs - a DatabaseConnectionSettings for the required database.
+	 * @throws java.sql.SQLException database errors
+	 * @see DBDefinition
+	 * @see OracleDB
+	 * @see MSSQLServerDB
+	 * @see MySQLDB
+	 * @see PostgresDB
+	 * @see H2DB
+	 * @see H2MemoryDB
+	 * @see InformixDB
+	 * @see MariaDB
+	 * @see MariaClusterDB
+	 * @see NuoDB
+	 */
+	public DBDatabase(DBDefinition definition, String driverName, JDBCURLInterpreter dcs) throws SQLException {
+		this();
+		this.definition = definition;
+		initDriver(driverName);
+		this.settings.copy(dcs.toSettings());
+		this.setDatabaseName(settings.getDatabaseName());
+		setDBDatabaseClassInSettings();
+		createRequiredTables();
+	}
+
+	/**
+	 * Define a new DBDatabase.
+	 *
+	 * <p>
+	 * Most programmers should not call this constructor directly. Check the
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
+	 *
+	 * <p>
 	 * Create a new DBDatabase by providing the connection details
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
@@ -2346,7 +2385,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	public final DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-		return getURLInterpreter().generateSettings(jdbcURL);
+		return getURLInterpreter().fromJDBCURL(jdbcURL).toSettings();
 	}
 
 	/**

@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2SharedDB;
 
 
-public class H2SharedURLInterpreter extends H2URLInterpreter {
+public class H2SharedURLInterpreter extends AbstractH2URLInterpreter<H2SharedURLInterpreter> {
 
 	@Override
 	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {

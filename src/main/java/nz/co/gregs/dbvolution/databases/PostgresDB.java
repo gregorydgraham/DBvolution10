@@ -114,6 +114,16 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	/**
+	 * Creates a PostgreSQL connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException database errors
+	 */
+	public PostgresDB(PostgresURLInterpreter dcs) throws SQLException {
+		this(dcs.toSettings());
+	}
+
+	/**
 	 * Creates a PostgreSQL connection for the JDBC URL, username, and password.
 	 *
 	 * @param jdbcURL jdbcURL
@@ -123,10 +133,10 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
 		super(
-				new PostgresDBDefinition(), 
-				POSTGRES_DRIVER_NAME, 
-				new PostgresURLInterpreter().generateSettings(jdbcURL, username, password)
-//				jdbcURL, username, password
+				new PostgresDBDefinition(),
+				POSTGRES_DRIVER_NAME,
+				new PostgresURLInterpreter().fromJDBCURL(jdbcURL, username, password)
+		//				jdbcURL, username, password
 		);
 	}
 
@@ -142,16 +152,13 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
-		super(
-				new PostgresDBDefinition(),
-				POSTGRES_DRIVER_NAME,
+		this(
 				new PostgresURLInterpreter()
-						.generateSettings()
-						.flowHost(hostname)
-						.flowPort(port)
-						.flowDatabaseName(databaseName)
-						.flowUsername(username)
-						.flowPassword(password)
+						.setHost(hostname)
+						.setPort(port)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
 		//hostname, port, databaseName, username, password 
 		);
 	}
@@ -173,17 +180,14 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, Map<String, String> urlExtras) throws SQLException {
-		super(
-				new PostgresDBDefinition(),
-				POSTGRES_DRIVER_NAME,
+		this(
 				new PostgresURLInterpreter()
-						.generateSettings()
-						.flowHost(hostname)
-						.flowPort(port)
-						.flowDatabaseName(databaseName)
-						.flowExtras(urlExtras)
-						.flowUsername(username)
-						.flowPassword(password)
+						.setHost(hostname)
+						.setPort(port)
+						.setDatabaseName(databaseName)
+						.setExtras(urlExtras)
+						.setUsername(username)
+						.setPassword(password)
 		);
 //		this.setDatabaseName(databaseName);
 	}

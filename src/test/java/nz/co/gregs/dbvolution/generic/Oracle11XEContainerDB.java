@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
 import org.testcontainers.containers.OracleContainer;
 
 /**
@@ -48,16 +49,16 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 	public static Oracle11XEContainerDB getInstance() {
 		OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
 		container.start();
-		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
-		System.out.println("URL: " + container.getJdbcUrl());
-		System.out.println(
-				"" + container.getContainerIpAddress()
-				+ " : " + container.getOraclePort()
-				+ " : " + container.getSid()
-				+ " : " + container.getOraclePort()
-				+ " : " + container.getUsername()
-				+ " : " + container.getPassword()
-		);
+//		System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerContainerDB.getInstance()");
+//		System.out.println("URL: " + container.getJdbcUrl());
+//		System.out.println(
+//				"" + container.getContainerIpAddress()
+//				+ " : " + container.getOraclePort()
+//				+ " : " + container.getSid()
+//				+ " : " + container.getOraclePort()
+//				+ " : " + container.getUsername()
+//				+ " : " + container.getPassword()
+//		);
 
 		try {
 			return new Oracle11XEContainerDB(container);
@@ -68,7 +69,14 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 	}
 
 	public Oracle11XEContainerDB(OracleContainer container) throws SQLException {
-		super(container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
+		super(
+				new OracleURLInterpreter()
+						.setHost(container.getContainerIpAddress())
+						.setPort(container.getOraclePort())
+						.setInstance(container.getSid())
+						.setUsername(container.getUsername())
+						.setPassword(container.getPassword())
+		);
 		this.container = container;
 		System.out.println("ORACLE: " + container.getJdbcUrl());
 	}

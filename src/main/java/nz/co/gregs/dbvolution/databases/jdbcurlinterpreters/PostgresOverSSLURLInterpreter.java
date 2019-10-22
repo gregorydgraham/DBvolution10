@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
  *
  * @author gregorygraham
  */
-public class PostgresOverSSLURLInterpreter extends PostgresURLInterpreter {
+public class PostgresOverSSLURLInterpreter extends AbstractPostgresURLInterpreter<PostgresOverSSLURLInterpreter> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{

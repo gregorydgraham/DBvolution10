@@ -30,75 +30,19 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
-import java.util.HashMap;
-import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 
 /**
  *
  * @author gregorygraham
  */
-public class MySQLURLInterpreter extends AbstractURLInterpreter {
+public class MySQLURLInterpreter extends AbstractMySQLURLInterpreter<MySQLURLInterpreter> {
 
-	private static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
-		{
-			put("createDatabaseIfNotExist", "true");
-			put("useUnicode", "yes");
-			put("characterEncoding", "utf8");
-			put("characterSetResults", "utf8");
-			put("verifyServerCertificate", "false");
-			put("useSSL", "true");
-		}
-	};
-
-	@Override
-	public Map<String, String> getDefaultConfigurationExtras() {
-		return DEFAULT_EXTRAS_MAP;
-	}
-
-	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
-		settings.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", ""));
-		settings.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			settings.addExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		settings.setInstance(settings.getExtras().get("instance"));
-		settings.setSchema("");
-		return settings;
-	}
-
-	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		final String url = "jdbc:mysql://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName()
-				+ encodeExtras(settings, "?", "=", "&", "");
-		return url;
-	}
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return MySQLDB.class;
 	}
 
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		settings.setPort("3306");
-		return settings;
-	}
-
-	@Override
-	public Integer getDefaultPort() {
-		return 3306;
-	}
 }

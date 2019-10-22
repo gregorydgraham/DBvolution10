@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.JavaDBMemoryDB;
 
 
-public class JavaDBMemoryURLInterpreter extends JavaDBURLInterpreter {
+public class JavaDBMemoryURLInterpreter extends AbstractJavaDBURLInterpreter<JavaDBMemoryURLInterpreter> {
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {

@@ -47,6 +47,15 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException database errors
 	 */
+	public MySQLMXJDB(MySQLMXJDBURLInterpreter ds) throws SQLException {
+		this(ds.toSettings());
+	}
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
 	public MySQLMXJDB(DatabaseConnectionSettings ds) throws SQLException {
 		super(ds);
 	}
@@ -60,7 +69,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(String jdbcURL, String username, String password) throws SQLException {
-		this(new MySQLMXJDBURLInterpreter().generateSettings(jdbcURL, username, password));
+		this(new MySQLMXJDBURLInterpreter().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -76,13 +85,13 @@ public class MySQLMXJDB extends MySQLDB {
 	 */
 	public MySQLMXJDB(String server, long port, String databaseName, String databaseDir, String username, String password) throws SQLException {
 		this(
-				new DatabaseConnectionSettings()
-						.flowHost(server)
-						.flowPort(""+port)
-						.flowDatabaseName(databaseName)
-						.flowExtra("server.basedir", databaseDir)
-						.flowUsername(username)
-						.flowPassword(password)
+				new MySQLMXJDBURLInterpreter()
+						.setHost(server)
+						.setPort(port)
+						.setDatabaseName(databaseName)
+						.addExtra("server.basedir", databaseDir)
+						.setUsername(username)
+						.setPassword(password)
 //				"jdbc:mysql:mxj://" + server + ":" + port + "/" + databaseName
 //				+ "?" + "server.basedir=" + databaseDir
 //				+ "&" + "createDatabaseIfNotExist=true"
@@ -104,7 +113,7 @@ public class MySQLMXJDB extends MySQLDB {
 //	}
 
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected MySQLMXJDBURLInterpreter getURLInterpreter() {
 		return new MySQLMXJDBURLInterpreter();
 	}
 }

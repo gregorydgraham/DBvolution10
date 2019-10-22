@@ -48,6 +48,16 @@ public class MariaDB extends DBDatabase {
 	}
 
 	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MariaDB(MariaDBURLInterpreter ds) throws SQLException {
+		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds.toSettings());
+	}
+
+	/**
 	 * Create a MariaDB instance of DBDatabase for the database with the supplied
 	 * JDBC URL, using the username and password to login.
 	 *
@@ -57,10 +67,11 @@ public class MariaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(String jdbcURL, String username, String password) throws SQLException {
-		super(
-				new MariaDBDefinition(),
-				MARIADBDRIVERNAME,
-				new MariaDBURLInterpreter().generateSettings(jdbcURL, username, password)
+		this(
+				new MariaDBURLInterpreter()
+						.fromJDBCURL(jdbcURL)
+						.setUsername(username)
+						.setPassword(password)
 		);
 //		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
 	}
@@ -77,32 +88,16 @@ public class MariaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(String server, long port, String databaseName, String username, String password) throws SQLException {
-		super(
-				new MariaDBDefinition(),
-				MARIADBDRIVERNAME,
-				new MariaDBURLInterpreter().generateSettings()
-						.flowHost(server)
-						.flowPort(port)
-						.flowDatabaseName(databaseName)
-						.flowUsername(username)
-						.flowPassword(password)
+		this(
+				new MariaDBURLInterpreter()
+						.setHost(server)
+						.setPort(port)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
 		);
-//		super(new MariaDBDefinition(),
-//				MARIADBDRIVERNAME,
-//				"jdbc:mariadb://" + server + ":" + port + "/" + databaseName,
-//				username,
-//				password);
-//		this.setDatabaseName(databaseName);
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:mariadb://"
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getDatabaseName();
-//	}
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -113,75 +108,13 @@ public class MariaDB extends DBDatabase {
 		;
 	}
 
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0];
-//		
-//	}
-//
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		return getExtras().get("instance");
-//	}
-//
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:", "");
-//	}
-//
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-//@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-//		set.setPort(noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:+", ""));
-//		set.setHost(noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0]);
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 3306;
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return MariaDB.class;
-//	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected MariaDBURLInterpreter getURLInterpreter() {
 		return new MariaDBURLInterpreter();
 	}
 
