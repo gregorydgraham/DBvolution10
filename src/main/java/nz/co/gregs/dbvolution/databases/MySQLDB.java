@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLURLInterpreter;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
+import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractMySQLURLInterpreter;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
@@ -119,7 +120,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected MySQLURLInterpreter getURLInterpreter() {
+	protected AbstractMySQLURLInterpreter<?> getURLInterpreter() {
 		return new MySQLURLInterpreter();
 	}
 

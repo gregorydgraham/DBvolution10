@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLMXJDBURLInterpreter;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * DBDatabase tweaked for the MySQL MXJ Database.
