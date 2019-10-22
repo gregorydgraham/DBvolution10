@@ -385,7 +385,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 //		return MSSQLServerDB.class;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected MSSQLServerURLInterpreter getURLInterpreter() {
 		return new MSSQLServerURLInterpreter();
 	}
 }
