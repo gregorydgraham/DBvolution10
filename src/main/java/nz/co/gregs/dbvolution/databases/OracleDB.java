@@ -312,7 +312,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 //		return OracleDB.class;
 //	}
 	@Override
-	protected JDBCURLInterpreter getURLInterpreter() {
+	protected OracleURLInterpreter getURLInterpreter() {
 		return new OracleURLInterpreter();
 	}
 
