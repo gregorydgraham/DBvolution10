@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
@@ -55,8 +56,8 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
 		MSSQLServerContainer container = new MSSQLServerContainer<>();
-		container.withEnv("TZ", "Pacific/Auckland");
-		//container.withEnv("TZ", ZoneId.systemDefault().getId());
+//		container.withEnv("TZ", "Pacific/Auckland");
+		container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
 		try {
 			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB(container);
