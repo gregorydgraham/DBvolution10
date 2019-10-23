@@ -30,46 +30,34 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import java.util.List;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.H2SharedDB;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 
-public class H2SharedURLInterpreter extends AbstractH2URLInterpreter<H2SharedURLInterpreter> {
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String hostname = defaultString(settings.getHost(), "localhost");
-//		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-//		String protocol = defaultString(settings.getProtocol(), "tcp");
-//		return "jdbc:h2:" + protocol + "://" + hostname + ":" + port + "/" + settings.getDatabaseName();
-//	}
+public abstract class AbstractClusterCapableURLInterpreter<SELF extends AbstractClusterCapableURLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
 
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		String hostname = defaultString(settings.getHost(), "localhost");
-		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-		return  hostname + ":" + port + "/" + settings.getDatabaseName();
+	protected String encodeClusterHosts(List<DatabaseConnectionSettings> hosts){
+		SeparatedString sep = SeparatedString.forSeparator(",");
+		sep.addAll(
+				hosts.stream()
+						.map((t) -> {
+							return encodeHost(t); //To change body of generated lambdas, choose Tools | Templates.
+						})
+						.collect(Collectors.toList())
+		);
+		return sep.toString();
 	}
 
 	@Override
-	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		String protocol = defaultString(settings.getProtocol(), "tcp");
-		return  "jdbc:h2:"+protocol + "://";
+	protected String encodeHostAbstract(DatabaseConnectionSettings settings) {
+		List<DatabaseConnectionSettings> hosts = settings.getClusterHosts();
+		if (hosts.isEmpty()) {
+			return encodeHost(settings);
+		} else {
+			return encodeClusterHosts(settings.getClusterHosts());
+		}
 	}
-
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		super.setDefaultsInternal(settings);
-		settings.setProtocol("tcp");
-		return settings;
-	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return H2SharedDB.class;
-	}
-
-	private String defaultString(String initialValue, String defaultValue) {
-		return initialValue == null || initialValue.isEmpty() ? defaultValue : initialValue;
-	}
+	
 }

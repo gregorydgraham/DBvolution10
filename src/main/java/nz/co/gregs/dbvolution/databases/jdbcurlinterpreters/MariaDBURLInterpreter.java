@@ -51,13 +51,13 @@ public class MariaDBURLInterpreter extends AbstractURLInterpreter<MariaDBURLInte
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:+", ""));
 		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
+				.split("/", 2)[0]
+				.split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
@@ -68,13 +68,21 @@ public class MariaDBURLInterpreter extends AbstractURLInterpreter<MariaDBURLInte
 	}
 
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		return "jdbc:mariadb://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName();
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
 	}
 
+	protected String getJDBCURLPreamble() {
+		return "jdbc:mariadb://";
+	}
+
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		return getJDBCURLPreamble()
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getDatabaseName();
+//	}
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
@@ -88,5 +96,12 @@ public class MariaDBURLInterpreter extends AbstractURLInterpreter<MariaDBURLInte
 	@Override
 	public Integer getDefaultPort() {
 		return 3306;
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName();
 	}
 }

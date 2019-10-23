@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @author gregorygraham
  * @param <SELF> the type returned by all SELF methods
  */
-public abstract class AbstractMySQLURLInterpreter<SELF extends AbstractMySQLURLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
+public abstract class AbstractMySQLURLInterpreter<SELF extends AbstractMySQLURLInterpreter<SELF>> extends AbstractClusterCapableURLInterpreter<SELF> {
 	
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -59,7 +59,7 @@ public abstract class AbstractMySQLURLInterpreter<SELF extends AbstractMySQLURLI
 
 	@Override
 	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
+		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
 		settings.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
 		settings.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
 		if (jdbcURL.matches(";")) {
@@ -71,11 +71,25 @@ public abstract class AbstractMySQLURLInterpreter<SELF extends AbstractMySQLURLI
 		return settings;
 	}
 
-	@Override
-	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		final String url = "jdbc:mysql://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
-		return url;
+	protected String getJDBCURLPreamble() {
+		return "jdbc:mysql://";
 	}
+
+	@Override
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
+	}
+
+//	@Override
+//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		final String url = getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
+//		return url;
+//	}
 
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {

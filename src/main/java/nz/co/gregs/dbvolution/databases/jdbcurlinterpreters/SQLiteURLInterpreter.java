@@ -54,7 +54,7 @@ public class SQLiteURLInterpreter extends AbstractURLInterpreter<SQLiteURLInterp
 
 	@Override
 	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
 		if (jdbcURL.contains(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
@@ -76,13 +76,30 @@ public class SQLiteURLInterpreter extends AbstractURLInterpreter<SQLiteURLInterp
 	}
 
 	@Override
-	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		final String url = "jdbc:sqlite:"
-				+ (settings.getFilename() == null || settings.getFilename().isEmpty()
-				? settings.getDatabaseName()
-				: settings.getFilename());
+				+ encodeHost(settings);
 		return url;
 	}
+
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getFilename() == null || settings.getFilename().isEmpty()
+				? settings.getDatabaseName()
+				: settings.getFilename();
+	}
+	
+	protected String getJDBCURLPreamble() {
+		return "jdbc:sqlite://";
+	}
+
+//	@Override
+//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		final String url = "jdbc:sqlite:"
+//				+ (settings.getFilename() == null || settings.getFilename().isEmpty()
+//				? settings.getDatabaseName()
+//				: settings.getFilename());
+//		return url;
+//	}
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {

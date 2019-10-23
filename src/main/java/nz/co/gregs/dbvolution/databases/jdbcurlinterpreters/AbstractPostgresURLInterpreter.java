@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.databases.PostgresDB;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractPostgresURLInterpreter<SELF extends AbstractPostgresURLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
+public abstract class AbstractPostgresURLInterpreter<SELF extends AbstractPostgresURLInterpreter<SELF>> extends AbstractClusterCapableURLInterpreter<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -52,7 +52,7 @@ public abstract class AbstractPostgresURLInterpreter<SELF extends AbstractPostgr
 
 	@Override
 	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
@@ -65,16 +65,29 @@ public abstract class AbstractPostgresURLInterpreter<SELF extends AbstractPostgr
 		return settings;
 	}
 
-	@Override
-	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		return "jdbc:postgresql://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
-		/*"jdbc:postgresql://"
-		+ settings.getHost() + ":"
-		+ settings.getPort() + "/"
-		+ settings.getDatabaseName()
-		+ settings.formatExtras("?", "=", "&", "");*/
+	protected String getJDBCURLPreamble() {
+		return "jdbc:postgresql://";
 	}
 
+	@Override
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
+	}
+
+//	@Override
+//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
+//		/*"jdbc:postgresql://"
+//		+ settings.getHost() + ":"
+//		+ settings.getPort() + "/"
+//		+ settings.getDatabaseName()
+//		+ settings.formatExtras("?", "=", "&", "");*/
+//	}
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
@@ -204,240 +217,240 @@ public abstract class AbstractPostgresURLInterpreter<SELF extends AbstractPostgr
 		getStoredSettings().addExtra("loggerFile", "" + loggerFilename);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setAllowEncodingChanges(boolean allow) {
 		getStoredSettings().addExtra("allowEncodingChanges", "" + allow);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setLogUnclosedConnections(boolean allow) {
 		getStoredSettings().addExtra("logUnclosedConnections", "" + allow);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setAutosaveALWAYS() {
 		getStoredSettings().addExtra("autosave", "always");
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setAutosaveCONSERVATIVE() {
 		getStoredSettings().addExtra("autosave", "conservative");
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setAutosaveNEVER() {
 		getStoredSettings().addExtra("autosave", "never");
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setCleanupSavePoints(boolean cleanup) {
 		getStoredSettings().addExtra("cleanupSavePoints", "" + cleanup);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setBinaryTransferEnable(boolean binaryTransfer) {
 		getStoredSettings().addExtra("binaryTransferEnable", "" + binaryTransfer);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setBinaryTransferDisable(boolean binaryTransfer) {
 		getStoredSettings().addExtra("binaryTransferDisable", "" + binaryTransfer);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setPrepareThreshold(int threshold) {
 		getStoredSettings().addExtra("prepareThreshold", "" + threshold);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setPreparedStatementCacheQueries(int numberOfQueries) {
 		getStoredSettings().addExtra("cleanupSavePoints", "" + numberOfQueries);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setPreparedStatementCacheSizeMiB(int sizeInMB) {
 		getStoredSettings().addExtra("cleanupSavePoints", "" + sizeInMB);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setPreferQueryMode(QueryMode mode) {
 		getStoredSettings().addExtra("preferQueryMode", "" + mode);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setDefaultRowFetchSize(int fetchSize) {
 		getStoredSettings().addExtra("defaultRowFetchSize", "" + fetchSize);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setLoginTimeout(int timeoutInSeconds) {
 		getStoredSettings().addExtra("loginTimeout", "" + timeoutInSeconds);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setConnectTimeout(int timeoutInSeconds) {
 		getStoredSettings().addExtra("connectTimeout", "" + timeoutInSeconds);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setSocketTimeout(int timeoutInSeconds) {
 		getStoredSettings().addExtra("socketTimeout", "" + timeoutInSeconds);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setCancelSignalTimeout(int timeoutInSeconds) {
 		getStoredSettings().addExtra("cancelSignalTimeout", "" + timeoutInSeconds);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setTCPKeepAlive(boolean keepAlive) {
 		getStoredSettings().addExtra("tcpKeepAlive", "" + keepAlive);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setUnknownLength(int length) {
 		getStoredSettings().addExtra("unknownLength", "" + length);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setStringtype(String stringtype) {
 		getStoredSettings().addExtra("stringtype", "" + stringtype);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setKerberosServerName(String name) {
 		getStoredSettings().addExtra("kerberosServerName", "" + name);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setJAASApplicationName(String name) {
 		getStoredSettings().addExtra("jaasApplicationName", "" + name);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setJAASLogin(boolean login) {
 		getStoredSettings().addExtra("jaasLogin", "" + login);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setApplicationName(String name) {
 		getStoredSettings().addExtra("ApplicationName", "" + name);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setGSSlib(String name) {
 		getStoredSettings().addExtra("gsslib", "" + name);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setSSPIServiceClass(String name) {
 		getStoredSettings().addExtra("sspiServiceClass", "" + name);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setUseSpnego(boolean spnego) {
 		getStoredSettings().addExtra("useSpnego", "" + spnego);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setReceiveBufferSize(int size) {
 		getStoredSettings().addExtra("receiveBufferSize", "" + size);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setReadOnly(boolean readonly) {
 		getStoredSettings().addExtra("readonly", "" + readonly);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setDisableColumnSanitiser(boolean sanitiser) {
 		getStoredSettings().addExtra("disableColumnSanitiser", "" + sanitiser);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setAssumeMinServerVersion(String version) {
 		getStoredSettings().addExtra("assumeMinServerVersion", "" + version);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setCurrentSchema(String schema) {
 		getStoredSettings().addExtra("currentSchema", "" + schema);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setTargetServerType(String serverType) {
 		getStoredSettings().addExtra("targetServerType", "" + serverType);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setHostRecheckSeconds(int recheckInSeconds) {
 		getStoredSettings().addExtra("hostRecheckSeconds", "" + recheckInSeconds);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setLoadBalanceHosts(boolean loadBalance) {
 		getStoredSettings().addExtra("loadBalanceHosts", "" + loadBalance);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setSocketFactory(String socketFactory) {
 		getStoredSettings().addExtra("socketFactory", "" + socketFactory);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setReWriteBatchedInserts(boolean rewrite) {
 		getStoredSettings().addExtra("reWriteBatchedInserts", "" + rewrite);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setReplicationTRUE() {
 		getStoredSettings().addExtra("replication", "true");
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public SELF setReplicationDATABASE() {
 		getStoredSettings().addExtra("replication", "database");
 		return (SELF) this;
-	}	
+	}
 
 	public static enum SSLMode {
 
@@ -457,7 +470,6 @@ public abstract class AbstractPostgresURLInterpreter<SELF extends AbstractPostgr
 			return super.toString().toLowerCase().replaceAll("_", "-");
 		}
 	}
-	
 
 	public static enum QueryMode {
 

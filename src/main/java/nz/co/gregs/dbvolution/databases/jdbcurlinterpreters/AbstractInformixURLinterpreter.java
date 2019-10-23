@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.databases.InformixDB;
  * @param <SELF>
  */
 public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInformixURLinterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
-	
+
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
 	@Override
@@ -52,7 +52,7 @@ public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInform
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:", ""));
 		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
 		if (jdbcURL.matches(";")) {
@@ -63,10 +63,29 @@ public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInform
 		return set;
 	}
 
-	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		return "jdbc:informix-sqli://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + ":INFORMIXSERVER=" + settings.getInstance() + settings.formatExtras(":", "=", ";", "");
+	protected String getJDBCURLPreamble() {
+		return "jdbc:informix-sqli://";
 	}
+
+	@Override
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() 
+				+ ":" + settings.getPort() 
+				+ "/" + settings.getDatabaseName() 
+				+ ":INFORMIXSERVER=" 
+				+ settings.getInstance() 
+				+ settings.formatExtras(":", "=", ";", "");
+	}
+
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + ":INFORMIXSERVER=" + settings.getInstance() + settings.formatExtras(":", "=", ";", "");
+//	}
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
@@ -82,5 +101,5 @@ public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInform
 	public Integer getDefaultPort() {
 		return 1526;
 	}
-	
+
 }

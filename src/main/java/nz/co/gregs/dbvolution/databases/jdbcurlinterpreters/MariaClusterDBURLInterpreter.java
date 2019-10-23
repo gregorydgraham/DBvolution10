@@ -52,7 +52,7 @@ public class MariaClusterDBURLInterpreter extends AbstractURLInterpreter<MariaCl
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
 //		DatabaseConnectionSettings set = getEmptySettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		set.setHost(noPrefix
 				.split("/", 2)[0]
 				.split(":")[0]);
@@ -66,13 +66,22 @@ public class MariaClusterDBURLInterpreter extends AbstractURLInterpreter<MariaCl
 	}
 
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:mariadb://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName();
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
 	}
+
+	protected String getJDBCURLPreamble() {
+		return "jdbc:mariadb://";
+	}
+
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : getJDBCURLPreamble()
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getDatabaseName();
+//	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
@@ -87,5 +96,12 @@ public class MariaClusterDBURLInterpreter extends AbstractURLInterpreter<MariaCl
 	@Override
 	public Integer getDefaultPort() {
 		return 3306;
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName();
 	}
 }

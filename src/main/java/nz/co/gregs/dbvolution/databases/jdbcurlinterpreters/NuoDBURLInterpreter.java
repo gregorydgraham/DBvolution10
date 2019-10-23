@@ -51,7 +51,7 @@ public class NuoDBURLInterpreter extends AbstractURLInterpreter<NuoDBURLInterpre
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
+		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
@@ -66,16 +66,23 @@ public class NuoDBURLInterpreter extends AbstractURLInterpreter<NuoDBURLInterpre
 		set.setSchema("");
 		return set;
 	}
-	
-private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
-	
+
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : NUODB_URL_PREFIX
-				+ settings.getHost() + "/"
-				+ settings.getDatabaseName() + "?schema=" + settings.getSchema();
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
 	}
+	
+	protected String getJDBCURLPreamble() {
+		return "jdbc:com.nuodb://";
+	}
+	
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : getJDBCURLPreamble()
+//				+ settings.getHost() + "/"
+//				+ settings.getDatabaseName() + "?schema=" + settings.getSchema();
+//	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
@@ -90,5 +97,12 @@ private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
 	@Override
 	public Integer getDefaultPort() {
 		return 8888;// possibly 48004???
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + "/"
+				+ settings.getDatabaseName() 
+				+ "?schema=" + settings.getSchema();
 	}
 }

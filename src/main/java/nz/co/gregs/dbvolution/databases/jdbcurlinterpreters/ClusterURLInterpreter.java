@@ -51,7 +51,7 @@ public class ClusterURLInterpreter extends AbstractURLInterpreter<ClusterURLInte
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:dbvolution-cluster://", "");
+		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
@@ -68,13 +68,22 @@ public class ClusterURLInterpreter extends AbstractURLInterpreter<ClusterURLInte
 	}
 
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		return "jdbc:dbvolution-cluster://"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getDatabaseName()
-				+ encodeExtras(settings, "?", "=", "&", "");
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
 	}
+	
+	protected String getJDBCURLPreamble() {
+		return "jdbc:dbvolution-cluster://";
+	}
+
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		return getJDBCURLPreamble()
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getDatabaseName()
+//				+ encodeExtras(settings, "?", "=", "&", "");
+//	}
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
@@ -89,5 +98,13 @@ public class ClusterURLInterpreter extends AbstractURLInterpreter<ClusterURLInte
 	@Override
 	public Integer getDefaultPort() {
 		return 1; //cluster doesn't use a port
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName()
+				+ encodeExtras(settings, "?", "=", "&", "");
 	}
 }

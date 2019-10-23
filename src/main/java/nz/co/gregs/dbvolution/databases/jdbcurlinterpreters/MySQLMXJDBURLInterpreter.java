@@ -72,11 +72,24 @@ public class MySQLMXJDBURLInterpreter extends AbstractMySQLURLInterpreter<MySQLM
 		return settings;
 	}
 
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:mysql:mxj://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName()
+//				+encodeExtras(settings, "?", "=", "&", "");
+//	}
+
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:mysql:mxj://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName()
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() 
+				+ ":" + settings.getPort() 
+				+ "/" + settings.getDatabaseName()
 				+encodeExtras(settings, "?", "=", "&", "");
+	}
+
+	@Override
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return "jdbc:mysql:mxj://";
 	}
 
 	@Override

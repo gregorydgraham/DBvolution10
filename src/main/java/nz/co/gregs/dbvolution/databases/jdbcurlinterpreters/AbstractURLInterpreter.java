@@ -50,10 +50,20 @@ public abstract class AbstractURLInterpreter<SELF extends AbstractURLInterpreter
 
 	protected abstract DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings);
 
-	protected abstract String generateJDBCURLInternal(DatabaseConnectionSettings settings);
+	protected abstract String getJDBCURLPreamble(DatabaseConnectionSettings settings);
 
 	protected abstract DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings);
 
+	protected abstract String encodeHost(DatabaseConnectionSettings settings) ;
+
+	protected final String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+		return this.getJDBCURLPreamble(settings) + encodeHostAbstract(settings);
+	}
+	
+	protected String encodeHostAbstract(DatabaseConnectionSettings settings){
+		return encodeHost(settings);
+	}
+	
 	public final DatabaseConnectionSettings parseURL(String jdbcURL) {
 		DatabaseConnectionSettings settings = getDefaultSettings();
 		return generateSettingsInternal(jdbcURL, settings);
@@ -226,21 +236,21 @@ public abstract class AbstractURLInterpreter<SELF extends AbstractURLInterpreter
 		getStoredSettings().setUsername(username);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public final SELF addClusterHost(DatabaseConnectionSettings clusterHost){
+	public final SELF addClusterHost(DatabaseConnectionSettings clusterHost) {
 		getStoredSettings().addClusterHost(clusterHost);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public final SELF addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts){
+	public final SELF addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		getStoredSettings().addAllClusterHosts(clusterHosts);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public final SELF setClusterHosts(List<DatabaseConnectionSettings> clusterHosts){
+	public final SELF setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		getStoredSettings().setClusterHosts(clusterHosts);
 		return (SELF) this;
 	}

@@ -41,10 +41,20 @@ public class H2MemoryURLInterpreter extends AbstractH2URLInterpreter<H2MemoryURL
 		return H2MemoryDB.class;
 	}
 
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
+//	}
+
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getDatabaseName();
+	}
+
+	@Override
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return "jdbc:h2:mem:";
 	}
 
 	@Override

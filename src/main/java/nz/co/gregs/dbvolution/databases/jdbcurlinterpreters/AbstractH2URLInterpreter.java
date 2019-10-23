@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.databases.H2DB;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractH2URLInterpreter<SELF extends AbstractH2URLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
+public abstract class AbstractH2URLInterpreter<SELF extends AbstractH2URLInterpreter<SELF>> extends AbstractClusterCapableURLInterpreter<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -93,11 +93,20 @@ public abstract class AbstractH2URLInterpreter<SELF extends AbstractH2URLInterpr
 		return settings;
 	}
 
+//	@Override
+//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		final String url = getJDBCURLPreamble(settings) + (settings.getFilename() == null || settings.getFilename().isEmpty() ? settings.getDatabaseName() : settings.getFilename());
+//		return url;
+//	}
 	@Override
-	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		final boolean hasNoProtocol = settings.getProtocol() == null || "".equals(settings.getProtocol());
-		final String url = "jdbc:h2:" + (hasNoProtocol ? "" : settings.getProtocol() + "://") + (settings.getFilename() == null || settings.getFilename().isEmpty() ? settings.getDatabaseName() : settings.getFilename());
-		return url;
+		return "jdbc:h2:" + (hasNoProtocol ? "" : settings.getProtocol() + "://");
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return (settings.getFilename() == null || settings.getFilename().isEmpty() ? settings.getDatabaseName() : settings.getFilename());
 	}
 
 	@Override

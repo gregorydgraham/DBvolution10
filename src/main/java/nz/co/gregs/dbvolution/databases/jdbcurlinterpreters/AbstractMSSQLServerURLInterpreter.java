@@ -53,7 +53,7 @@ public abstract class AbstractMSSQLServerURLInterpreter<SELF extends AbstractMSS
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
 		//		DatabaseConnectionSettings set = getEmptySettings();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		final String[] splitOnBackslash = noPrefix.split("\\\\", 2);
 		final String host = splitOnBackslash[0];
 		set.setHost(host);
@@ -74,19 +74,40 @@ public abstract class AbstractMSSQLServerURLInterpreter<SELF extends AbstractMSS
 		return set;
 	}
 
+	protected String getJDBCURLPreamble() {
+		return "jdbc:sqlserver://";
+	}
+
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
 		final String databaseName = settings.getDatabaseName();
 		final String instance = settings.getInstance();
 		final String urlFromSettings
-				= "jdbc:sqlserver://"
-				+ settings.getHost()
+				= settings.getHost()
 				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
 				+ ":" + settings.getPort() + ";"
 				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
-		return url != null && !url.isEmpty() ? url : urlFromSettings;
+		return urlFromSettings;
 	}
+
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		final String databaseName = settings.getDatabaseName();
+//		final String instance = settings.getInstance();
+//		final String urlFromSettings
+//				= getJDBCURLPreamble()
+//				+ settings.getHost()
+//				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
+//				+ ":" + settings.getPort() + ";"
+//				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
+//		return url != null && !url.isEmpty() ? url : urlFromSettings;
+//	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {

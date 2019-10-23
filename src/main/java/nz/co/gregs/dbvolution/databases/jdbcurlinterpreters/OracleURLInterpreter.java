@@ -51,7 +51,7 @@ public class OracleURLInterpreter extends AbstractURLInterpreter<OracleURLInterp
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+		String noPrefix = jdbcURL.replaceAll("^" + "jdbc:oracle:[^:]*:@//", "");
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
@@ -63,15 +63,24 @@ public class OracleURLInterpreter extends AbstractURLInterpreter<OracleURLInterp
 		return set;
 	}
 
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty()
+//				? url
+//				: getJDBCURLPreamble()
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getInstance();
+//	}
+
 	@Override
-	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-		String url = settings.getUrl();
-		return url != null && !url.isEmpty()
-				? url
-				: "jdbc:oracle:thin:@//"
-				+ settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getInstance();
+	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
+		return getJDBCURLPreamble();
+	}
+
+	protected String getJDBCURLPreamble() {
+		return "jdbc:oracle:thin:@//";
 	}
 
 	@Override
@@ -83,8 +92,16 @@ public class OracleURLInterpreter extends AbstractURLInterpreter<OracleURLInterp
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return OracleDB.class;
 	}
+
 	@Override
 	public Integer getDefaultPort() {
 		return 1521;
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getInstance();
 	}
 }
