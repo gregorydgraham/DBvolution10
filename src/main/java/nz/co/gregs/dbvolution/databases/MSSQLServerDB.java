@@ -25,7 +25,6 @@ import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractMSSQLServerU
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
 
 /**
  * A DBDatabase object tweaked to work with Microsoft SQL Server.
