@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
 
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -53,26 +54,10 @@ public abstract class AbstractURLInterpreter<SELF extends AbstractURLInterpreter
 
 	protected abstract DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings);
 
-//	@Override
-//	public final DatabaseConnectionSettings generateSettings(String jdbcURL) {
-//		DatabaseConnectionSettings settings = getDefaultSettings();
-//		settings.setUrl(jdbcURL);
-//		return generateSettingsInternal(jdbcURL, settings);
-//	}
-
 	public final DatabaseConnectionSettings parseURL(String jdbcURL) {
 		DatabaseConnectionSettings settings = getDefaultSettings();
 		return generateSettingsInternal(jdbcURL, settings);
 	}
-
-//	@Override
-//	public final DatabaseConnectionSettings generateSettings(String jdbcURL, String username, String password) {
-//		DatabaseConnectionSettings settings = generateSettings(jdbcURL);
-//		settings.setUsername(username);
-//		settings.setPassword(password);
-//		settings = generateSettingsInternal(jdbcURL, settings);
-//		return settings;
-//	}
 
 	@Override
 	public final String generateJDBCURL(DatabaseConnectionSettings settings) {
@@ -239,6 +224,24 @@ public abstract class AbstractURLInterpreter<SELF extends AbstractURLInterpreter
 	@SuppressWarnings("unchecked")
 	public final SELF setUsername(String username) {
 		getStoredSettings().setUsername(username);
+		return (SELF) this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final SELF addClusterHost(DatabaseConnectionSettings clusterHost){
+		getStoredSettings().addClusterHost(clusterHost);
+		return (SELF) this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final SELF addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts){
+		getStoredSettings().addAllClusterHosts(clusterHosts);
+		return (SELF) this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final SELF setClusterHosts(List<DatabaseConnectionSettings> clusterHosts){
+		getStoredSettings().setClusterHosts(clusterHosts);
 		return (SELF) this;
 	}
 }

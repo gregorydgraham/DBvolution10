@@ -33,6 +33,7 @@ package nz.co.gregs.dbvolution.utility;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -76,6 +77,7 @@ public class SeparatedString {
 	private String wrapAfter = "";
 	private String escapeChar = "";
 	private String useWhenEmpty = "";
+	private String keyValueSeparator = "";
 
 	private SeparatedString() {
 	}
@@ -161,6 +163,11 @@ public class SeparatedString {
 
 	public SeparatedString withEscapeChar(String esc) {
 		this.escapeChar = esc;
+		return this;
+	}
+
+	public SeparatedString withKeyValueSeparator(String probablyEquals) {
+		this.keyValueSeparator = probablyEquals;
 		return this;
 	}
 
@@ -328,5 +335,45 @@ public class SeparatedString {
 	public final SeparatedString useWhenEmpty(String string) {
 		this.useWhenEmpty = string;
 		return this;
+	}
+
+	public List<String> parseToList(String input) {
+		List<String> list = new ArrayList<>(0);
+		String str = input;
+		if (hasValue(getWrapBefore())) {
+			str = str.replaceFirst("^" + getWrapBefore(), "");
+		}
+		if (hasValue(getWrapAfter())) {
+			str = str.replaceAll(getWrapAfter() + "$", "");
+		}
+		String[] split = str.split(getSeparator());
+		list.addAll(Arrays.asList(split));
+		return list;
+	}
+
+	public Map<String, String> parseToMap(String input) {
+		Map<String, String> map = new HashMap<>(0);
+		String[] split = input.split(getSeparator());
+		for (String string : split) {
+			String[] split2 = string.split(getKeyValueSeparator());
+			if (split2.length == 2) {
+				map.put(split2[0], split[1]);
+			} else if (split2.length == 1) {
+				map.put(split2[0], "");
+			}
+		}
+		return map;
+	}
+
+	private String getKeyValueSeparator() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	private boolean hasValue(String value) {
+		return value != null && !value.isEmpty();
+	}
+
+	private boolean hasWrapAfter() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

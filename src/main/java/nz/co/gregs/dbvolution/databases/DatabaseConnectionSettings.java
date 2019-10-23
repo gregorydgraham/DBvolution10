@@ -32,10 +32,14 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
  * A standardized collection of the database connection settings.
@@ -114,6 +118,7 @@ public class DatabaseConnectionSettings {
 	private String password = "";
 	private String schema = "";
 	private final Map<String, String> extras = new HashMap<>();
+	private final List<DatabaseConnectionSettings> clusterHosts = new ArrayList<>();
 	private String dbdatabase = "";
 	private String label = "";
 	private DataSource dataSource = null;
@@ -144,7 +149,8 @@ public class DatabaseConnectionSettings {
 				+ getUrl() + TOSTRING_SEPARATOR
 				+ getUsername() + TOSTRING_SEPARATOR
 				+ getLabel() + TOSTRING_SEPARATOR
-				+ getFilename()+ TOSTRING_SEPARATOR;
+				+ getFilename() + TOSTRING_SEPARATOR
+				+ encodeClusterHosts(getClusterHosts()) + TOSTRING_SEPARATOR;
 	}
 
 	public String encode() {
@@ -159,7 +165,8 @@ public class DatabaseConnectionSettings {
 				+ getUsername() + FIELD_SEPARATOR
 				+ getPassword() + FIELD_SEPARATOR
 				+ getLabel() + FIELD_SEPARATOR
-				+ getFilename() + FIELD_SEPARATOR;
+				+ getFilename() + FIELD_SEPARATOR
+				+ encodeClusterHosts(getClusterHosts()) + FIELD_SEPARATOR;
 	}
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
@@ -578,6 +585,7 @@ public class DatabaseConnectionSettings {
 		this.setSchema(newSettings.getSchema());
 		this.setUrl(newSettings.getUrl());
 		this.setUsername(newSettings.getUsername());
+		this.setClusterHosts(newSettings.getClusterHosts());
 	}
 
 	/**
@@ -791,6 +799,34 @@ public class DatabaseConnectionSettings {
 		return map;
 	}
 
+	public static String encodeClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+		SeparatedString csv
+				= SeparatedString
+						.forSeparator("|")
+						.withPrefix("<")
+						.withSuffix(">");
+		clusterHosts.forEach((each) -> {
+			csv.add(each.encode());
+		});
+		return csv.toString();
+	}
+
+	public static List<DatabaseConnectionSettings> decodeClusterHosts(String clusterHosts) {
+		List<String> hosts = SeparatedString
+				.forSeparator("|")
+				.withPrefix("<")
+				.withSuffix(">")
+				.parseToList(clusterHosts);
+		List<DatabaseConnectionSettings> collected
+				= hosts
+						.stream()
+						.map((t) -> {
+							return decode(t);
+						})
+						.collect(Collectors.toList());
+		return collected;
+	}
+
 	public final void setDbdatabaseClass(String canonicalNameOfADBDatabaseSubclass) {
 		this.dbdatabase = canonicalNameOfADBDatabaseSubclass;
 	}
@@ -850,96 +886,28 @@ public class DatabaseConnectionSettings {
 		this.extras.put(tag, value);
 	}
 
-//	public DatabaseConnectionSettings flowHost(String server) {
-//		this.setHost(server);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowPort(int port) {
-//		this.setPort(""+port);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowPort(long port) {
-//		this.setPort(""+port);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowPort(String port) {
-//		this.setPort(port);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowDatasource(DataSource source) {
-//		this.setDataSource(source);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowDatabaseName(String databaseName) {
-//		this.setDatabaseName(databaseName);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowDbdatabaseClass(String canonicalName) {
-//		this.setDbdatabaseClass(canonicalName);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowExtras(Map<String, String> extras) {
-//		this.addExtras(extras);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowExtra(String name, String value) {
-//		this.addExtra(name, value);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowInstance(String instance) {
-//		this.setInstance(instance);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowLabel(String label) {
-//		this.setLabel(label);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowPassword(String password) {
-//		this.setPassword(password);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowProtocol(String protocol) {
-//		this.setProtocol(protocol);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowSchema(String schema) {
-//		this.setSchema(schema);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowURL(String url) {
-//		this.setUrl(url);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowUsername(String username) {
-//		this.setUsername(username);
-//		return this;
-//	}
-//
-//	public DatabaseConnectionSettings flowFilename(String filename) {
-//		this.setFilename(filename);
-//		return this;
-//	}
-
-	public void setFilename(String filename) {
+	public final void setFilename(String filename) {
 		this.filename = filename;
 	}
 
-	public String getFilename() {
+	public final String getFilename() {
 		return filename;
+	}
+
+	public final List<DatabaseConnectionSettings> getClusterHosts() {
+		return this.clusterHosts;
+	}
+
+	public final void setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+		this.clusterHosts.clear();
+		this.clusterHosts.addAll(clusterHosts);
+	}
+
+	public final void addClusterHost(DatabaseConnectionSettings clusterHost) {
+		this.clusterHosts.add(clusterHost);
+	}
+
+	public final void addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+		this.clusterHosts.addAll(clusterHosts);
 	}
 }
