@@ -77,29 +77,21 @@ public class SQLiteURLInterpreter extends AbstractURLInterpreter<SQLiteURLInterp
 
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		final String url = "jdbc:sqlite:"
-				+ encodeHost(settings);
+		final String url = "jdbc:sqlite:";
 		return url;
 	}
 
+	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getFilename() == null || settings.getFilename().isEmpty()
+		final String filename = settings.getFilename();
+		return filename == null || filename.isEmpty()
 				? settings.getDatabaseName()
-				: settings.getFilename();
+				: filename;
 	}
 	
 	protected String getJDBCURLPreamble() {
 		return "jdbc:sqlite://";
 	}
-
-//	@Override
-//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		final String url = "jdbc:sqlite:"
-//				+ (settings.getFilename() == null || settings.getFilename().isEmpty()
-//				? settings.getDatabaseName()
-//				: settings.getFilename());
-//		return url;
-//	}
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
