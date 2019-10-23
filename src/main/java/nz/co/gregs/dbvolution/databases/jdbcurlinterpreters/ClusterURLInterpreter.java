@@ -76,15 +76,6 @@ public class ClusterURLInterpreter extends AbstractURLInterpreter<ClusterURLInte
 		return "jdbc:dbvolution-cluster://";
 	}
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		return getJDBCURLPreamble()
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getDatabaseName()
-//				+ encodeExtras(settings, "?", "=", "&", "");
-//	}
-
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return DBDatabaseCluster.class;
