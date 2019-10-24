@@ -75,6 +75,8 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 	 */
 	public SELF fromJDBCURL(String jdbcURL, String username, String password);
 
+	public SELF fromSettings(DatabaseConnectionSettings settingsfromSystemUsingPrefix);
+	
 	public DatabaseConnectionSettings toSettings();
 
 	public String toJDBCURL();
