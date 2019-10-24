@@ -54,16 +54,16 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 
 	protected abstract DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings);
 
-	protected abstract String encodeHost(DatabaseConnectionSettings settings) ;
+	protected abstract String encodeHost(DatabaseConnectionSettings settings);
 
 	protected final String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
 		return this.getJDBCURLPreamble(settings) + encodeHostAbstract(settings);
 	}
-	
-	protected String encodeHostAbstract(DatabaseConnectionSettings settings){
+
+	protected String encodeHostAbstract(DatabaseConnectionSettings settings) {
 		return encodeHost(settings);
 	}
-	
+
 	public final DatabaseConnectionSettings parseURL(String jdbcURL) {
 		DatabaseConnectionSettings settings = getDefaultSettings();
 		return generateSettingsInternal(jdbcURL, settings);
@@ -113,6 +113,13 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		fromJDBCURL(jdbcURL);
 		setUsername(username);
 		setPassword(password);
+		return (SELF) this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public final SELF fromSettings(DatabaseConnectionSettings settingsfromSystemUsingPrefix) {
+		getStoredSettings().copy(settingsfromSystemUsingPrefix);
 		return (SELF) this;
 	}
 
@@ -174,6 +181,10 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	@SuppressWarnings("unchecked")
 	public final SELF setFilename(String filename) {
 		getStoredSettings().setFilename(filename);
+		final String databaseName = getStoredSettings().getDatabaseName();
+		if (databaseName == null || databaseName.isEmpty()) {
+			getStoredSettings().setDatabaseName(filename);
+		}
 		return (SELF) this;
 	}
 
@@ -253,5 +264,80 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	public final SELF setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		getStoredSettings().setClusterHosts(clusterHosts);
 		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final DataSource getDataSource() {
+		return getStoredSettings().getDataSource();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getDatabaseName() {
+		return getStoredSettings().getDatabaseName();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getDBDatabaseName() {
+		return getStoredSettings().getDbdatabaseClass();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final Map<String, String> getExtras() {
+		return getStoredSettings().getExtras();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getFilename() {
+		return getStoredSettings().getFilename();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getHost(String host) {
+		return getStoredSettings().getHost();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getInstance() {
+		return getStoredSettings().getInstance();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getLabel() {
+		return getStoredSettings().getLabel();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getPassword() {
+		return getStoredSettings().getPassword();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getPort() {
+		return getStoredSettings().getPort();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getProtocol() {
+		return getStoredSettings().getProtocol();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getSchema() {
+		return getStoredSettings().getSchema();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getUrl() {
+		return getStoredSettings().getUrl();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final String getUsername() {
+		return getStoredSettings().getUsername();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final List<DatabaseConnectionSettings> getClusterHosts() {
+		return getStoredSettings().getClusterHosts();
 	}
 }
