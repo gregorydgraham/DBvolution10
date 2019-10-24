@@ -39,7 +39,8 @@ public class H2MemoryDB extends H2DB {
 	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC
 	 * URL, user and password.
 	 *
-	 * <p>- Database exceptions may be thrown</p>
+	 * <p>
+	 * - Database exceptions may be thrown</p>
 	 *
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -120,10 +121,10 @@ public class H2MemoryDB extends H2DB {
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
 		this(new H2MemorySettingsBuilder().setDatabaseName(databaseName).setUsername(username).setPassword(password));
 	}
-	
-	public static H2MemoryDB randomDatabase() throws SQLException{
-		final String dbName = ("RandomH2MemoryDB-"+Math.random()).replaceFirst("0\\.", "");
-		return new H2MemoryDB(dbName, "", "", true);
+
+	public static H2MemoryDB randomDatabase() throws SQLException {
+		final String dbName = ("RandomH2MemoryDB-" + Math.random()).replaceFirst("0\\.", "");
+		return new H2MemoryDB(new H2MemorySettingsBuilder().setDatabaseName(dbName));
 	}
 
 	/**
@@ -144,7 +145,6 @@ public class H2MemoryDB extends H2DB {
 //		String url = settings.getUrl();
 //		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
 //	}
-
 	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {
 		return (H2MemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -163,16 +163,19 @@ public class H2MemoryDB extends H2DB {
 //	public boolean isMemoryDatabase() {
 //		return true;
 //	}
-
 //	@Override
 //	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return H2MemoryDB.class;
 //	}
-
-	private final static H2MemorySettingsBuilder URL_PROCESSOR = new H2MemorySettingsBuilder();
+//	private final static H2MemorySettingsBuilder URL_PROCESSOR = new H2MemorySettingsBuilder();
 
 	@Override
 	protected H2MemorySettingsBuilder getURLInterpreter() {
-		return URL_PROCESSOR;
+		return new H2MemorySettingsBuilder();
+	}
+
+	@Override
+	public boolean isMemoryDatabase() {
+		return true;
 	}
 }
