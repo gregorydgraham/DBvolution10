@@ -35,6 +35,7 @@ import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.utility.DefaultString;
 
 /**
  *
@@ -93,20 +94,18 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 		return settings;
 	}
 
-//	@Override
-//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		final String url = getJDBCURLPreamble(settings) + (settings.getFilename() == null || settings.getFilename().isEmpty() ? settings.getDatabaseName() : settings.getFilename());
-//		return url;
-//	}
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		final boolean hasNoProtocol = settings.getProtocol() == null || "".equals(settings.getProtocol());
-		return "jdbc:h2:" + (hasNoProtocol ? "" : settings.getProtocol() + "://");
+		final String url = "jdbc:h2:" + (hasNoProtocol ? "" : settings.getProtocol() + "://");
+		return url;
 	}
 
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return (settings.getFilename() == null || settings.getFilename().isEmpty() ? settings.getDatabaseName() : settings.getFilename());
+		final String filename = settings.getFilename();
+		final String encoded = DefaultString.check(filename, settings.getInstance(), settings.getDatabaseName());
+		return encoded;
 	}
 
 	@Override
@@ -117,7 +116,6 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		settings.setHost("localhost");
-		//		settings.setProtocol("file");
 		return settings;
 	}
 
