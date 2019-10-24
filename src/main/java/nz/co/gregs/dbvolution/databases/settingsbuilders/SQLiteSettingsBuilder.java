@@ -30,6 +30,8 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -106,5 +108,12 @@ public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSetting
 	@Override
 	public Integer getDefaultPort() {
 		return -1;// SQLite doesn't use ports
+	}
+
+	@SuppressWarnings("unchecked")
+	public final SQLiteSettingsBuilder setFilename(File databaseFile) throws IOException {
+		setFilename(databaseFile.getCanonicalFile().toString());
+		setDatabaseName(databaseFile.getCanonicalFile().toString());
+		return this;
 	}
 }
