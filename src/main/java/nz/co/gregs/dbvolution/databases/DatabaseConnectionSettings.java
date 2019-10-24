@@ -556,17 +556,17 @@ public class DatabaseConnectionSettings {
 
 	public static DatabaseConnectionSettings getSettingsfromSystemUsingPrefix(String prefix) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
-		settings.setLabel(System.getProperty(prefix + "label"));
-		settings.setDbdatabaseClass(System.getProperty(prefix + "dbdatabase"));
-		settings.setUsername(System.getProperty(prefix + "username"));
-		settings.setPassword(System.getProperty(prefix + "password"));
-		settings.setProtocol(System.getProperty(prefix + "protocol"));
-		settings.setUrl(System.getProperty(prefix + "url"));
-		settings.setHost(System.getProperty(prefix + "host"));
-		settings.setPort(System.getProperty(prefix + "port"));
-		settings.setInstance(System.getProperty(prefix + "instance"));
-		settings.setDatabaseName(System.getProperty(prefix + "database"));
-		settings.setSchema(System.getProperty(prefix + "schema"));
+		settings.setLabel(System.getProperty(prefix + ".label"));
+		settings.setDbdatabaseClass(System.getProperty(prefix + ".dbdatabase"));
+		settings.setUsername(System.getProperty(prefix + ".username"));
+		settings.setPassword(System.getProperty(prefix + ".password"));
+		settings.setProtocol(System.getProperty(prefix + ".protocol"));
+		settings.setUrl(System.getProperty(prefix + ".url"));
+		settings.setHost(System.getProperty(prefix + ".host"));
+		settings.setPort(System.getProperty(prefix + ".port"));
+		settings.setInstance(System.getProperty(prefix + ".instance"));
+		settings.setDatabaseName(System.getProperty(prefix + ".database"));
+		settings.setSchema(System.getProperty(prefix + ".schema"));
 		return settings;
 	}
 
