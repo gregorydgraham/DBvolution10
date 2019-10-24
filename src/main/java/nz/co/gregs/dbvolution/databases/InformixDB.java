@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractInformixSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.

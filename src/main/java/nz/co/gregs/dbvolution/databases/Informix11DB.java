@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Informix11SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for Informix 11 and higher.

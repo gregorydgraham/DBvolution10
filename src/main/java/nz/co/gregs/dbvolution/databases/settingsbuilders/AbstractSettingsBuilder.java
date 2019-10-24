@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuilder<SELF>> implements JDBCSettingsBuilder<SELF> {
+public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuilder<SELF>> implements SettingsBuilder<SELF> {
 
 	private DatabaseConnectionSettings storedSettingsInAbstractURLInterpreter;
 

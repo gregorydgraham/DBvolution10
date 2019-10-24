@@ -70,7 +70,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Creates a database cluster programmatically.
@@ -111,7 +111,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
-//	private final JDBCSettingsBuilder urlProcessor = new ClusterSettingsBuilder();
+//	private final SettingsBuilder urlProcessor = new ClusterSettingsBuilder();
 
 	/**
 	 * Nope.

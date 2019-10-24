@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Creates a DBDatabase for an SQLite database.
@@ -44,7 +44,7 @@ public class SQLiteDB extends DBDatabase {
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;
 //	private String derivedURL;
-//	private static final JDBCSettingsBuilder URL_PROCESSOR = new SQLiteSettingsBuilder();
+//	private static final SettingsBuilder URL_PROCESSOR = new SQLiteSettingsBuilder();
 
 	/**
 	 *

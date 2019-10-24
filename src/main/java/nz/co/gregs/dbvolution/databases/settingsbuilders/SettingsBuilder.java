@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @author gregorygraham
  * @param <SELF> the implement class of this interface
  */
-public interface JDBCSettingsBuilder<SELF extends JDBCSettingsBuilder<SELF>> {
+public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
 	public String generateJDBCURL(DatabaseConnectionSettings settings);
 

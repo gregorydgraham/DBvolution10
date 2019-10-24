@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.JavaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractJavaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for JavaDB.

@@ -20,7 +20,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresOverSSLSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Extends the PostgreSQL database connection by adding SSL.

@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServer2012SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServer2012DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 public class MSSQLServer2012DB extends MSSQLServerDB {
 

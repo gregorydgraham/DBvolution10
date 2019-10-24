@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.

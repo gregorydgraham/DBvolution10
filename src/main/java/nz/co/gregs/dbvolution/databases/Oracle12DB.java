@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Implements support for version 12 of the Oracle database.
