@@ -28,54 +28,33 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.HashMap;
+import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 
 /**
  *
  * @author gregorygraham
- * @param <SELF> the implement class of this interface
  */
-public interface JDBCURLInterpreter<SELF extends JDBCURLInterpreter<SELF>> {
+public class PostgresOverSSLSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresOverSSLSettingsBuilder> {
 
-	public String generateJDBCURL(DatabaseConnectionSettings settings);
+	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
+		{
+			put("ssl", "true");
+			put("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+		}
+	};
 
-	public Class<? extends DBDatabase> generatesURLForDatabase();
+	@Override
+	public Map<String, String> getDefaultConfigurationExtras() {
+		return DEFAULT_EXTRAS_MAP;
+	}
 
-	public boolean canProcessesURLsFor(DBDatabase otherdb);
-
-	public Integer getDefaultPort();
-
-	/**
-	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
-	 * 
-	 * 
-	 * @see #toSettings() 
-	 * @see #toJDBCURL() 
-	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
-	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
-	 * @param jdbcURL
-	 * @return 
-	 */
-	public SELF fromJDBCURL(String jdbcURL);
-
-	/**
-	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
-	 * 
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
-	 * @see #toSettings() 
-	 * @see #toJDBCURL() 
-	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
-	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
-	 * @return 
-	 */
-	public SELF fromJDBCURL(String jdbcURL, String username, String password);
-
-	public DatabaseConnectionSettings toSettings();
-
-	public String toJDBCURL();
+	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return PostgresDBOverSSL.class;
+	}
 }

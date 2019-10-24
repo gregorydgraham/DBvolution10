@@ -28,17 +28,11 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.Informix11DB;
-
-
-public class Informix11URLInterpreter extends AbstractInformixURLinterpreter<Informix11URLInterpreter> {
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return Informix11DB.class;
-	}
-	
+/**
+ *
+ * @author gregorygraham
+ */
+public class PostgresSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresSettingsBuilder> {
 }

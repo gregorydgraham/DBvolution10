@@ -30,9 +30,9 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MSSQLServer2012URLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServer2012SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServer2012DBDefinition;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 public class MSSQLServer2012DB extends MSSQLServerDB {
 
@@ -68,8 +68,8 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 //	}
 
 	@Override
-	protected MSSQLServer2012URLInterpreter getURLInterpreter() {
-		return new MSSQLServer2012URLInterpreter();
+	protected MSSQLServer2012SettingsBuilder getURLInterpreter() {
+		return new MSSQLServer2012SettingsBuilder();
 	}
 	
 	

@@ -35,7 +35,7 @@ import java.time.ZoneId;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MSSQLServerURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.MSSQLServerContainer;
@@ -68,15 +68,14 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		}
 	}
 
-	public MSSQLServerContainerDB(MSSQLServerContainer container, MSSQLServerURLInterpreter interpreter) throws SQLException {
+	public MSSQLServerContainerDB(MSSQLServerContainer container, MSSQLServerSettingsBuilder interpreter) throws SQLException {
 		super(interpreter);
 		this.mssqlServerContainer = container;
 	}
 
 	public MSSQLServerContainerDB(MSSQLServerContainer container) throws SQLException {
-		this(
-				container,
-				new MSSQLServerURLInterpreter()
+		this(container,
+				new MSSQLServerSettingsBuilder()
 						.fromJDBCURL(
 								container.getJdbcUrl(),
 								container.getUsername(),

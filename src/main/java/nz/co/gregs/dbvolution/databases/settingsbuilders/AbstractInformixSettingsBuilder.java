@@ -28,21 +28,22 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.OracleDB;
+import nz.co.gregs.dbvolution.databases.InformixDB;
 
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
  */
-public class OracleURLInterpreter extends AbstractURLInterpreter<OracleURLInterpreter> {
+public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF> {
 
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -51,36 +52,44 @@ public class OracleURLInterpreter extends AbstractURLInterpreter<OracleURLInterp
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^" + "jdbc:oracle:[^:]*:@//", "");
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
+		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:", ""));
 		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
-		set.setInstance(noPrefix.split("/", 2)[1]);
-		set.setSchema("");
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split(";", 2)[1];
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
+		}
+		set.setInstance(set.getExtras().get("INFORMIXSERVER"));
 		return set;
 	}
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty()
-//				? url
-//				: getJDBCURLPreamble()
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getInstance();
-//	}
+	protected String getJDBCURLPreamble() {
+		return "jdbc:informix-sqli://";
+	}
 
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		return getJDBCURLPreamble();
 	}
 
-	protected String getJDBCURLPreamble() {
-		return "jdbc:oracle:thin:@//";
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() 
+				+ ":" + settings.getPort() 
+				+ "/" + settings.getDatabaseName() 
+				+ ":INFORMIXSERVER=" 
+				+ settings.getInstance() 
+				+ settings.formatExtras(":", "=", ";", "");
+	}
+
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + ":INFORMIXSERVER=" + settings.getInstance() + settings.formatExtras(":", "=", ";", "");
+//	}
+
+	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return InformixDB.class;
 	}
 
 	@Override
@@ -89,19 +98,8 @@ public class OracleURLInterpreter extends AbstractURLInterpreter<OracleURLInterp
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return OracleDB.class;
-	}
-
-	@Override
 	public Integer getDefaultPort() {
-		return 1521;
+		return 1526;
 	}
 
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getHost() + ":"
-				+ settings.getPort() + "/"
-				+ settings.getInstance();
-	}
 }

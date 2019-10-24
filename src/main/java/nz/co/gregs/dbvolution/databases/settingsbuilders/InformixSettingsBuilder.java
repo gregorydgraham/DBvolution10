@@ -28,11 +28,11 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 /**
  *
  * @author gregorygraham
  */
-public class JavaDBURLInterpreter extends AbstractJavaDBURLInterpreter <JavaDBURLInterpreter>{
+public class InformixSettingsBuilder extends AbstractInformixSettingsBuilder<InformixSettingsBuilder> {
 }

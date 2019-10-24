@@ -18,12 +18,12 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JavaDBMemoryURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JavaDBMemorySettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * Use this class to work with an in-memory JavaDB.
@@ -62,7 +62,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @param dataSource	dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	public JavaDBMemoryDB(JavaDBMemoryURLInterpreter dataSource) throws SQLException {
+	public JavaDBMemoryDB(JavaDBMemorySettingsBuilder dataSource) throws SQLException {
 		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, dataSource);
 	}
 
@@ -76,10 +76,9 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDBMemoryDB(String jdbcURL, String username, String password) throws SQLException {
-		super(
-				new JavaDBMemoryDBDefinition(),
+		super(new JavaDBMemoryDBDefinition(),
 				DRIVER_NAME,
-				new JavaDBMemoryURLInterpreter().fromJDBCURL(jdbcURL, username, password)
+				new JavaDBMemorySettingsBuilder().fromJDBCURL(jdbcURL, username, password)
 		//				jdbcURL, username, password
 		);
 	}
@@ -96,8 +95,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 //		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
-		this(
-				new JavaDBMemoryURLInterpreter()
+		this(new JavaDBMemorySettingsBuilder()
 						.setHost(host)
 						.setPort(port)
 						.setDatabaseName(database)
@@ -197,7 +195,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 //		return JavaDBMemoryDB.class;
 //	}
 	@Override
-	protected JavaDBMemoryURLInterpreter getURLInterpreter() {
-		return new JavaDBMemoryURLInterpreter();
+	protected JavaDBMemorySettingsBuilder getURLInterpreter() {
+		return new JavaDBMemorySettingsBuilder();
 	}
 }

@@ -28,20 +28,20 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.InformixDB;
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInformixURLinterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
+public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -52,19 +52,30 @@ public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInform
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
+		//		DatabaseConnectionSettings set = getEmptySettings();
 		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
-		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:", ""));
-		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
+		final String[] splitOnBackslash = noPrefix.split("\\\\", 2);
+		final String host = splitOnBackslash[0];
+		set.setHost(host);
+		if (splitOnBackslash.length > 1) {
+			final String[] splitOnColon = splitOnBackslash[1].split(":");
+			if (splitOnColon.length > 1) {
+				final String port = splitOnColon[1];
+				set.setPort(port);
+			}
+			final String instance = splitOnColon[0];
+			set.setInstance(instance);
+		}
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-		set.setInstance(set.getExtras().get("INFORMIXSERVER"));
+		set.setSchema("");
 		return set;
 	}
 
 	protected String getJDBCURLPreamble() {
-		return "jdbc:informix-sqli://";
+		return "jdbc:sqlserver://";
 	}
 
 	@Override
@@ -74,23 +85,29 @@ public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInform
 
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getHost() 
-				+ ":" + settings.getPort() 
-				+ "/" + settings.getDatabaseName() 
-				+ ":INFORMIXSERVER=" 
-				+ settings.getInstance() 
-				+ settings.formatExtras(":", "=", ";", "");
+		final String databaseName = settings.getDatabaseName();
+		final String instance = settings.getInstance();
+		final String urlFromSettings
+				= settings.getHost()
+				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
+				+ ":" + settings.getPort() + ";"
+				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
+		return urlFromSettings;
 	}
 
 //	@Override
 //	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + ":INFORMIXSERVER=" + settings.getInstance() + settings.formatExtras(":", "=", ";", "");
+//		String url = settings.getUrl();
+//		final String databaseName = settings.getDatabaseName();
+//		final String instance = settings.getInstance();
+//		final String urlFromSettings
+//				= getJDBCURLPreamble()
+//				+ settings.getHost()
+//				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
+//				+ ":" + settings.getPort() + ";"
+//				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
+//		return url != null && !url.isEmpty() ? url : urlFromSettings;
 //	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return InformixDB.class;
-	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
@@ -98,8 +115,13 @@ public abstract class AbstractInformixURLinterpreter<SELF extends AbstractInform
 	}
 
 	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return MSSQLServerDB.class;
+	}
+
+	@Override
 	public Integer getDefaultPort() {
-		return 1526;
+		return 1433;
 	}
 
 }

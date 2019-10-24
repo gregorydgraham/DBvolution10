@@ -28,81 +28,39 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import java.util.HashMap;
-import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.NuoDB;
+import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 
-/**
- *
- * @author gregorygraham
- */
-public class NuoDBURLInterpreter extends AbstractURLInterpreter<NuoDBURLInterpreter> {
-
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder> {
 
 	@Override
-	public Map<String, String> getDefaultConfigurationExtras() {
-		return DEFAULT_EXTRAS_MAP;
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return H2MemoryDB.class;
 	}
 
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
+//	}
+
 	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("?", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
-		set.setInstance(set.getExtras().get("instance"));
-		set.setSchema("");
-		return set;
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getDatabaseName();
 	}
 
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		return getJDBCURLPreamble();
+		return "jdbc:h2:mem:";
 	}
-	
-	protected String getJDBCURLPreamble() {
-		return "jdbc:com.nuodb://";
-	}
-	
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : getJDBCURLPreamble()
-//				+ settings.getHost() + "/"
-//				+ settings.getDatabaseName() + "?schema=" + settings.getSchema();
-//	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
+		super.setDefaultsInternal(settings);
+		settings.setProtocol("mem");
 		return settings;
-	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return NuoDB.class;
-	}
-
-	@Override
-	public Integer getDefaultPort() {
-		return 8888;// possibly 48004???
-	}
-
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getHost() + "/"
-				+ settings.getDatabaseName() 
-				+ "?schema=" + settings.getSchema();
 	}
 }

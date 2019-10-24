@@ -23,12 +23,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * Super class for connecting the different versions of the AWS Oracle DB.
@@ -90,7 +90,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleAWSDB(OracleURLInterpreter dcs) throws SQLException {
+	public OracleAWSDB(OracleSettingsBuilder dcs) throws SQLException {
 		this(new OracleAWSDBDefinition(), dcs);
 	}
 
@@ -112,7 +112,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleAWSDB(OracleAWSDBDefinition defn, OracleURLInterpreter dcs) throws SQLException {
+	public OracleAWSDB(OracleAWSDBDefinition defn, OracleSettingsBuilder dcs) throws SQLException {
 		super(defn, dcs);
 	}
 
@@ -178,8 +178,8 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 //		return OracleAWSDB.class ;
 //	}
 	@Override
-	protected OracleURLInterpreter getURLInterpreter() {
-		return new OracleURLInterpreter() {
+	protected OracleSettingsBuilder getURLInterpreter() {
+		return new OracleSettingsBuilder() {
 			@Override
 			public Class<? extends DBDatabase> generatesURLForDatabase() {
 				return OracleAWSDB.class;

@@ -19,10 +19,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MariaClusterDBURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MariaClusterDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * DBDatabase tweaked for a Maria Cluster Database.
@@ -66,7 +66,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MariaClusterDB(MariaClusterDBURLInterpreter ds) throws SQLException {
+	public MariaClusterDB(MariaClusterDBSettingsBuilder ds) throws SQLException {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
 
@@ -81,8 +81,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(String jdbcURL, String username, String password) throws SQLException {
-		this(
-				new MariaClusterDBURLInterpreter().fromJDBCURL(jdbcURL, username, password)
+		this(new MariaClusterDBSettingsBuilder().fromJDBCURL(jdbcURL, username, password)
 		);
 	}
 
@@ -102,10 +101,9 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(String server, long port, String databaseName, String username, String password) throws SQLException {
-		super(
-				new MariaDBDefinition(), 
+		super(new MariaDBDefinition(), 
 				MARIADBDRIVERNAME, 
-				new MariaClusterDBURLInterpreter()
+				new MariaClusterDBSettingsBuilder()
 				.setHost(server)
 				.setPort(port)
 				.setDatabaseName(databaseName)
@@ -166,7 +164,7 @@ public class MariaClusterDB extends DBDatabase {
 	}
 
 	@Override
-	protected MariaClusterDBURLInterpreter getURLInterpreter() {
-		return new MariaClusterDBURLInterpreter();
+	protected MariaClusterDBSettingsBuilder getURLInterpreter() {
+		return new MariaClusterDBSettingsBuilder();
 	}
 }

@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @author gregorygraham
  * @param <SELF> the type returned by all SELF methods
  */
-public abstract class AbstractMySQLURLInterpreter<SELF extends AbstractMySQLURLInterpreter<SELF>> extends AbstractClusterCapableURLInterpreter<SELF> {
+public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF> {
 	
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{

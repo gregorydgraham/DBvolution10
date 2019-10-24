@@ -20,10 +20,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.NuoDBURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.NuoDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * DBDatabase tweaked to work best with NuoDB.
@@ -226,7 +226,7 @@ public class NuoDB extends DBDatabase {
 //	}
 
 	@Override
-	protected NuoDBURLInterpreter getURLInterpreter() {
-		return new NuoDBURLInterpreter();
+	protected NuoDBSettingsBuilder getURLInterpreter() {
+		return new NuoDBSettingsBuilder();
 	}
 }

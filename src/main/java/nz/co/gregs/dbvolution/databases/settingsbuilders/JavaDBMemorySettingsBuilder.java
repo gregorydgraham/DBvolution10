@@ -28,14 +28,14 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.JavaDBMemoryDB;
 
 
-public class JavaDBMemoryURLInterpreter extends AbstractJavaDBURLInterpreter<JavaDBMemoryURLInterpreter> {
+public class JavaDBMemorySettingsBuilder extends AbstractJavaDBSettingsBuilder<JavaDBMemorySettingsBuilder> {
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {

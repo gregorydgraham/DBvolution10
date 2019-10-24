@@ -28,48 +28,17 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.H2SharedDB;
+import nz.co.gregs.dbvolution.databases.MySQLDB_5_7;
 
-public class H2SharedURLInterpreter extends AbstractH2URLInterpreter<H2SharedURLInterpreter> {
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String hostname = defaultString(settings.getHost(), "localhost");
-//		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-//		String protocol = defaultString(settings.getProtocol(), "tcp");
-//		return "jdbc:h2:" + protocol + "://" + hostname + ":" + port + "/" + settings.getDatabaseName();
-//	}
-
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		String hostname = defaultString(settings.getHost(), "localhost");
-		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-		return  hostname + ":" + port + "/" + settings.getDatabaseName();
-	}
-
-	@Override
-	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		String protocol = defaultString(settings.getProtocol(), "tcp");
-		return  "jdbc:h2:"+protocol + "://";
-	}
-
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		super.setDefaultsInternal(settings);
-		settings.setProtocol("tcp");
-		return settings;
-	}
+public class MySQL_5_7SettingsBuilder extends AbstractMySQLSettingsBuilder<MySQL_5_7SettingsBuilder> {
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return H2SharedDB.class;
+		return MySQLDB_5_7.class;
 	}
-
-	private String defaultString(String initialValue, String defaultValue) {
-		return initialValue == null || initialValue.isEmpty() ? defaultValue : initialValue;
-	}
+	
 }

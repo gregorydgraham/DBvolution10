@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.MySQLContainer;
@@ -83,15 +83,14 @@ public class MySQLContainerDB extends MySQLDB {
 		}
 	}
 
-	public MySQLContainerDB(MySQLContainer storedContainer, MySQLURLInterpreter dcs) throws SQLException {
+	public MySQLContainerDB(MySQLContainer storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
 		super(dcs);
 		this.storedContainer = storedContainer;
 	}
 
 	public MySQLContainerDB(MySQLContainer container) throws SQLException {
-		this(
-				container,
-				new MySQLURLInterpreter()
+		this(container,
+				new MySQLSettingsBuilder()
 						.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
 						// set the database name because apparently it's not in the URL
 						.setDatabaseName(container.getDatabaseName())

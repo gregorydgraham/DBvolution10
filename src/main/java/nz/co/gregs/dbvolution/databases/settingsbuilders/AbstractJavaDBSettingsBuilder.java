@@ -28,22 +28,26 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
+import nz.co.gregs.dbvolution.databases.JavaDB;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractMSSQLServerURLInterpreter<SELF extends AbstractMSSQLServerURLInterpreter<SELF>> extends AbstractURLInterpreter<SELF> {
+public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF> {
 
-	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
+		{
+			put("create", "true");
+		}
+	};
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -51,31 +55,35 @@ public abstract class AbstractMSSQLServerURLInterpreter<SELF extends AbstractMSS
 	}
 
 	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		//		DatabaseConnectionSettings set = getEmptySettings();
+	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
 		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
-		final String[] splitOnBackslash = noPrefix.split("\\\\", 2);
-		final String host = splitOnBackslash[0];
-		set.setHost(host);
-		if (splitOnBackslash.length > 1) {
-			final String[] splitOnColon = splitOnBackslash[1].split(":");
-			if (splitOnColon.length > 1) {
-				final String port = splitOnColon[1];
-				set.setPort(port);
-			}
-			final String instance = splitOnColon[0];
-			set.setInstance(instance);
-		}
+		settings.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:", ""));
+		settings.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-		set.setSchema("");
-		return set;
+		settings.setInstance(settings.getExtras().get("instance"));
+		settings.setSchema("");
+		return settings;
+		//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+		//		if (jdbcURL.matches(";")) {
+		//			String extrasString = jdbcURL.split("\\?", 2)[1];
+		//			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
+		//		}
+		//		settings.setPort(noPrefix
+		//				.split("/", 2)[0]
+		//				.replaceAll("^[^:]*:+", ""));
+		//		settings.setHost(noPrefix
+		//				.split("/", 2)[0]
+		//				.split(":")[0]);
+		//		settings.setInstance(settings.getExtras().get("instance"));
+		//		settings.setSchema("");
+		//		return settings;
 	}
 
 	protected String getJDBCURLPreamble() {
-		return "jdbc:sqlserver://";
+		return "jdbc:derby://";
 	}
 
 	@Override
@@ -85,29 +93,23 @@ public abstract class AbstractMSSQLServerURLInterpreter<SELF extends AbstractMSS
 
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		final String databaseName = settings.getDatabaseName();
-		final String instance = settings.getInstance();
-		final String urlFromSettings
-				= settings.getHost()
-				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
-				+ ":" + settings.getPort() + ";"
-				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
-		return urlFromSettings;
+		return settings.getHost()
+				+ ":" + settings.getPort()
+				+ "/" + ("".equals(settings.getProtocol()) ? "" : settings.getProtocol() + ":")
+				+ settings.getDatabaseName()
+				+ encodeExtras(settings, "?", "=", "&", "");
 	}
 
 //	@Override
 //	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		final String databaseName = settings.getDatabaseName();
-//		final String instance = settings.getInstance();
-//		final String urlFromSettings
-//				= getJDBCURLPreamble()
-//				+ settings.getHost()
-//				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
-//				+ ":" + settings.getPort() + ";"
-//				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
-//		return url != null && !url.isEmpty() ? url : urlFromSettings;
+//		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + ("".equals(settings.getProtocol()) ? "" : settings.getProtocol() + ":") + settings.getDatabaseName() //+ ";create=true";
+//				+ encodeExtras(settings, "?", "=", "&", "");
 //	}
+
+	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return JavaDB.class;
+	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
@@ -115,13 +117,7 @@ public abstract class AbstractMSSQLServerURLInterpreter<SELF extends AbstractMSS
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return MSSQLServerDB.class;
-	}
-
-	@Override
 	public Integer getDefaultPort() {
-		return 1433;
+		return 1527;
 	}
-
 }

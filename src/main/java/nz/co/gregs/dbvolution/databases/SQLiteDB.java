@@ -23,13 +23,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.SQLiteURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * Creates a DBDatabase for an SQLite database.
@@ -44,7 +44,7 @@ public class SQLiteDB extends DBDatabase {
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;
 //	private String derivedURL;
-//	private static final JDBCURLInterpreter URL_PROCESSOR = new SQLiteURLInterpreter();
+//	private static final JDBCSettingsBuilder URL_PROCESSOR = new SQLiteSettingsBuilder();
 
 	/**
 	 *
@@ -100,7 +100,7 @@ public class SQLiteDB extends DBDatabase {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException database errors
 	 */
-	public SQLiteDB(SQLiteURLInterpreter ds) throws SQLException {
+	public SQLiteDB(SQLiteSettingsBuilder ds) throws SQLException {
 		this(ds.toSettings());
 	}
 
@@ -114,7 +114,7 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
-		this(new SQLiteURLInterpreter().fromJDBCURL(jdbcURL, username, password));
+		this(new SQLiteSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 //		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
 
@@ -131,7 +131,7 @@ public class SQLiteDB extends DBDatabase {
 	public SQLiteDB(File databaseFile, String username, String password) throws IOException, SQLException {
 		super(new SQLiteDefinition(),
 				SQLITE_DRIVER_NAME,
-				new SQLiteURLInterpreter()
+				new SQLiteSettingsBuilder()
 						.setFilename(databaseFile.getCanonicalFile().toString())
 						.setDatabaseName(databaseFile.getCanonicalFile().toString())
 						.setUsername(username)
@@ -158,7 +158,7 @@ public class SQLiteDB extends DBDatabase {
 	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException, SQLException {
 		super(new SQLiteDefinition(),
 				SQLITE_DRIVER_NAME,
-				new SQLiteURLInterpreter()
+				new SQLiteSettingsBuilder()
 						.setFilename(filename)
 						.setDatabaseName(new File(filename).getCanonicalFile().toString())
 						.setUsername(username)
@@ -288,8 +288,8 @@ public class SQLiteDB extends DBDatabase {
 //		return SQLiteDB.class;
 //	}
 	@Override
-	protected SQLiteURLInterpreter getURLInterpreter() {
-		return new SQLiteURLInterpreter();
+	protected SQLiteSettingsBuilder getURLInterpreter() {
+		return new SQLiteSettingsBuilder();
 	}
 
 }

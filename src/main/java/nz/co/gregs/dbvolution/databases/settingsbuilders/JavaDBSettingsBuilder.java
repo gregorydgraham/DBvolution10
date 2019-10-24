@@ -28,21 +28,11 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
-
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 /**
  *
  * @author gregorygraham
  */
-public class MySQLURLInterpreter extends AbstractMySQLURLInterpreter<MySQLURLInterpreter> {
-
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return MySQLDB.class;
-	}
-
+public class JavaDBSettingsBuilder extends AbstractJavaDBSettingsBuilder <JavaDBSettingsBuilder>{
 }

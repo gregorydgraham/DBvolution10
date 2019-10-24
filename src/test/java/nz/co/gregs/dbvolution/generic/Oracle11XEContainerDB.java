@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
 import org.testcontainers.containers.OracleContainer;
 
 /**
@@ -59,8 +59,7 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 	}
 
 	public Oracle11XEContainerDB(OracleContainer container) throws SQLException {
-		super(
-				new OracleURLInterpreter()
+		super(new OracleSettingsBuilder()
 						.setHost(container.getContainerIpAddress())
 						.setPort(container.getOraclePort())
 						.setInstance(container.getSid())

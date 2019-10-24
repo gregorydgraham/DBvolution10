@@ -28,11 +28,54 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
+
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 
 /**
  *
  * @author gregorygraham
+ * @param <SELF> the implement class of this interface
  */
-public class InformixURLInterpreter extends AbstractInformixURLinterpreter<InformixURLInterpreter> {
+public interface JDBCSettingsBuilder<SELF extends JDBCSettingsBuilder<SELF>> {
+
+	public String generateJDBCURL(DatabaseConnectionSettings settings);
+
+	public Class<? extends DBDatabase> generatesURLForDatabase();
+
+	public boolean canProcessesURLsFor(DBDatabase otherdb);
+
+	public Integer getDefaultPort();
+
+	/**
+	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
+	 * 
+	 * 
+	 * @see #toSettings() 
+	 * @see #toJDBCURL() 
+	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
+	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
+	 * @param jdbcURL
+	 * @return 
+	 */
+	public SELF fromJDBCURL(String jdbcURL);
+
+	/**
+	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
+	 * 
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 * @see #toSettings() 
+	 * @see #toJDBCURL() 
+	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
+	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
+	 * @return 
+	 */
+	public SELF fromJDBCURL(String jdbcURL, String username, String password);
+
+	public DatabaseConnectionSettings toSettings();
+
+	public String toJDBCURL();
 }

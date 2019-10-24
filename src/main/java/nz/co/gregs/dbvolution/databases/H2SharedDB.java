@@ -37,10 +37,10 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2SharedURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SharedSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import org.h2.tools.Server;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 public class H2SharedDB extends H2DB {
 
@@ -157,8 +157,8 @@ public class H2SharedDB extends H2DB {
 //	}
 
 	@Override
-	protected H2SharedURLInterpreter getURLInterpreter() {
-		return new H2SharedURLInterpreter();
+	protected H2SharedSettingsBuilder getURLInterpreter() {
+		return new H2SharedSettingsBuilder();
 	}
 	
 

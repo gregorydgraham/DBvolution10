@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2MemoryURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 
@@ -57,7 +57,7 @@ public class H2MemoryDB extends H2DB {
 	 * @param dataSource dataSource
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public H2MemoryDB(H2MemoryURLInterpreter dataSource) throws SQLException {
+	public H2MemoryDB(H2MemorySettingsBuilder dataSource) throws SQLException {
 		super(dataSource);
 		jamDatabaseConnectionOpen();
 	}
@@ -77,7 +77,7 @@ public class H2MemoryDB extends H2DB {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
-		this(new H2MemoryURLInterpreter().fromJDBCURL(jdbcURL, username, password));
+		this(new H2MemorySettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 
 	}
 
@@ -118,7 +118,7 @@ public class H2MemoryDB extends H2DB {
 	 */
 	@Deprecated
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
-		this(new H2MemoryURLInterpreter().setDatabaseName(databaseName).setUsername(username).setPassword(password));
+		this(new H2MemorySettingsBuilder().setDatabaseName(databaseName).setUsername(username).setPassword(password));
 	}
 	
 	public static H2MemoryDB randomDatabase() throws SQLException{
@@ -169,10 +169,10 @@ public class H2MemoryDB extends H2DB {
 //		return H2MemoryDB.class;
 //	}
 
-	private final static H2MemoryURLInterpreter URL_PROCESSOR = new H2MemoryURLInterpreter();
+	private final static H2MemorySettingsBuilder URL_PROCESSOR = new H2MemorySettingsBuilder();
 
 	@Override
-	protected H2MemoryURLInterpreter getURLInterpreter() {
+	protected H2MemorySettingsBuilder getURLInterpreter() {
 		return URL_PROCESSOR;
 	}
 }

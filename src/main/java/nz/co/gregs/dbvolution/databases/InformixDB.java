@@ -18,12 +18,12 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.InformixURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.InformixSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractInformixURLinterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractInformixSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.
@@ -71,7 +71,7 @@ public class InformixDB extends DBDatabase {
 	 */
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(definition, driverName,
-				new InformixURLInterpreter()
+				new InformixSettingsBuilder()
 				.setUrl(jdbcURL)
 				.setUsername(username)
 				.setPassword(password)
@@ -238,8 +238,8 @@ public class InformixDB extends DBDatabase {
 //	}
 
 	@Override
-	protected AbstractInformixURLinterpreter<?> getURLInterpreter() {
-		return new InformixURLInterpreter();
+	protected AbstractInformixSettingsBuilder<?> getURLInterpreter() {
+		return new InformixSettingsBuilder();
 	}
 	
 	

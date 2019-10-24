@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractURLInterpreter<SELF extends AbstractURLInterpreter<SELF>> implements JDBCURLInterpreter<SELF> {
+public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuilder<SELF>> implements JDBCSettingsBuilder<SELF> {
 
 	private DatabaseConnectionSettings storedSettingsInAbstractURLInterpreter;
 

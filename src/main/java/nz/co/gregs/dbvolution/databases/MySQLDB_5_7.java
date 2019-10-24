@@ -19,12 +19,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQL_5_7URLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQL_5_7SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * A DBDatabase tweaked for MySQL databases
@@ -40,7 +40,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	private static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 3306;
 //	private String derivedURL;
-	private final MySQL_5_7URLInterpreter urlProcessor = new MySQL_5_7URLInterpreter();
+	private final MySQL_5_7SettingsBuilder urlProcessor = new MySQL_5_7SettingsBuilder();
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -58,7 +58,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MySQLDB_5_7(MySQL_5_7URLInterpreter ds) throws SQLException {
+	public MySQLDB_5_7(MySQL_5_7SettingsBuilder ds) throws SQLException {
 		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, ds.toSettings());
 	}
 
@@ -82,7 +82,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(String jdbcURL, String username, String password) throws SQLException {
-		this(new MySQL_5_7URLInterpreter().fromJDBCURL(jdbcURL, username, password));
+		this(new MySQL_5_7SettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -97,10 +97,9 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(String server, long port, String databaseName, String username, String password) throws SQLException {
-		this(
-//				new MySQLDBDefinition_5_7(),
+		this(//				new MySQLDBDefinition_5_7(),
 //				MYSQLDRIVERNAME,
-				new MySQL_5_7URLInterpreter()
+new MySQL_5_7SettingsBuilder()
 						.setHost(server)
 						.setPort(port)
 						.setDatabaseName(databaseName)
@@ -212,7 +211,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 //		return MySQLDB_5_7.class;
 //	}
 	@Override
-	protected MySQL_5_7URLInterpreter getURLInterpreter() {
+	protected MySQL_5_7SettingsBuilder getURLInterpreter() {
 		return urlProcessor;
 	}
 

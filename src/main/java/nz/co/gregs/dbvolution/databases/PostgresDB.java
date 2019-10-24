@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.TimeZone;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.PostgresURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractPostgresURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractPostgresSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.
@@ -66,7 +66,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	private boolean postGISTopologyAlreadyTried = false;
 	private boolean postGISAlreadyTried = false;
 	private boolean postGISInstalled = false;
-//	private final PostgresURLInterpreter urlProcessor = new PostgresURLInterpreter();
+//	private final PostgresSettingsBuilder urlProcessor = new PostgresSettingsBuilder();
 
 	/**
 	 *
@@ -120,7 +120,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
-	public PostgresDB(PostgresURLInterpreter dcs) throws SQLException {
+	public PostgresDB(PostgresSettingsBuilder dcs) throws SQLException {
 		this(dcs.toSettings());
 	}
 
@@ -133,10 +133,9 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
-		super(
-				new PostgresDBDefinition(),
+		super(new PostgresDBDefinition(),
 				POSTGRES_DRIVER_NAME,
-				new PostgresURLInterpreter().fromJDBCURL(jdbcURL, username, password)
+				new PostgresSettingsBuilder().fromJDBCURL(jdbcURL, username, password)
 		//				jdbcURL, username, password
 		);
 	}
@@ -153,8 +152,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
-		this(
-				new PostgresURLInterpreter()
+		this(new PostgresSettingsBuilder()
 						.setHost(hostname)
 						.setPort(port)
 						.setDatabaseName(databaseName)
@@ -181,8 +179,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, Map<String, String> urlExtras) throws SQLException {
-		this(
-				new PostgresURLInterpreter()
+		this(new PostgresSettingsBuilder()
 						.setHost(hostname)
 						.setPort(port)
 						.setDatabaseName(databaseName)
@@ -455,7 +452,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 //		return PostgresDB.class;
 //	}
 	@Override
-	protected AbstractPostgresURLInterpreter<?> getURLInterpreter() {
-		return new PostgresURLInterpreter();
+	protected AbstractPostgresSettingsBuilder<?> getURLInterpreter() {
+		return new PostgresSettingsBuilder();
 	}
 }

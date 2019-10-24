@@ -28,19 +28,19 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.MariaDB;
 
 /**
  *
  * @author gregorygraham
  */
-public class MariaDBURLInterpreter extends AbstractURLInterpreter<MariaDBURLInterpreter> {
+public class ClusterSettingsBuilder extends AbstractSettingsBuilder<ClusterSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -50,58 +50,52 @@ public class MariaDBURLInterpreter extends AbstractURLInterpreter<MariaDBURLInte
 	}
 
 	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
-		set.setPort(noPrefix
+	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
+		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split("\\?", 2)[1];
+			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
+		}
+		settings.setPort(noPrefix
 				.split("/", 2)[0]
 				.replaceAll("^[^:]*:+", ""));
-		set.setHost(noPrefix
+		settings.setHost(noPrefix
 				.split("/", 2)[0]
 				.split(":")[0]);
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-		}
-		set.setInstance(set.getExtras().get("instance"));
-		set.setSchema("");
-		return set;
+		settings.setInstance(settings.getExtras().get("instance"));
+		settings.setSchema("");
+		return settings;
 	}
 
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		return getJDBCURLPreamble();
 	}
-
+	
 	protected String getJDBCURLPreamble() {
-		return "jdbc:mariadb://";
+		return "jdbc:dbvolution-cluster://";
 	}
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		return getJDBCURLPreamble()
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getDatabaseName();
-//	}
+	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return DBDatabaseCluster.class;
+	}
+
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return MariaDB.class;
-	}
-
-	@Override
 	public Integer getDefaultPort() {
-		return 3306;
+		return 1; //cluster doesn't use a port
 	}
 
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + ":"
 				+ settings.getPort() + "/"
-				+ settings.getDatabaseName();
+				+ settings.getDatabaseName()
+				+ encodeExtras(settings, "?", "=", "&", "");
 	}
 }

@@ -28,39 +28,86 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.HashMap;
+import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
 
-public class H2MemoryURLInterpreter extends AbstractH2URLInterpreter<H2MemoryURLInterpreter> {
+/**
+ *
+ * @author gregorygraham
+ */
+public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQLMXJDBSettingsBuilder> {
+
+	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
+		{
+			put("createDatabaseIfNotExist", "true");
+			put("server.initialize-user", "true");
+		}
+	};
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return H2MemoryDB.class;
+	public Map<String, String> getDefaultConfigurationExtras() {
+		return DEFAULT_EXTRAS_MAP;
+	}
+
+	@Override
+	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
+		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split("\\?", 2)[1];
+			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
+		}
+		settings.setPort(noPrefix
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:+", ""));
+		settings.setHost(noPrefix
+				.split("/", 2)[0]
+				.split(":")[0]);
+		settings.setInstance(settings.getExtras().get("instance"));
+		settings.setSchema("");
+		return settings;
 	}
 
 //	@Override
 //	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
 //		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
+//		return url != null && !url.isEmpty() ? url : "jdbc:mysql:mxj://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName()
+//				+encodeExtras(settings, "?", "=", "&", "");
 //	}
 
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getDatabaseName();
+		return settings.getHost() 
+				+ ":" + settings.getPort() 
+				+ "/" + settings.getDatabaseName()
+				+encodeExtras(settings, "?", "=", "&", "");
 	}
 
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		return "jdbc:h2:mem:";
+		return "jdbc:mysql:mxj://";
 	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		super.setDefaultsInternal(settings);
-		settings.setProtocol("mem");
 		return settings;
+	}
+
+	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return MySQLMXJDB.class;
+	}
+
+	@Override
+	public Integer getDefaultPort() {
+		return 3306;
+	}
+	
+	public MySQLMXJDBSettingsBuilder setBanana(boolean bool){
+		return this;
 	}
 }

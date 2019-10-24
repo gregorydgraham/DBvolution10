@@ -24,13 +24,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.H2URLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractH2URLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
 import org.h2.jdbc.JdbcException;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * Stores all the required functionality to use an H2 database.
@@ -103,8 +103,7 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2DB(File file, String username, String password) throws IOException, SQLException {
-		this(
-				new H2URLInterpreter()
+		this(new H2SettingsBuilder()
 						.setDatabaseName(file.getCanonicalFile().toString())
 						.setUsername(username)
 						.setPassword(password)
@@ -148,7 +147,7 @@ public class H2DB extends DBDatabase {
 	 * @param dataSource dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	protected H2DB(AbstractH2URLInterpreter dataSource) throws SQLException {
+	protected H2DB(AbstractH2SettingsBuilder dataSource) throws SQLException {
 		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
 	}
 
@@ -166,8 +165,7 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
-		this(
-				new H2URLInterpreter()
+		this(new H2SettingsBuilder()
 						.fromJDBCURL(jdbcURL)
 						.setUsername(username)
 						.setPassword(password)
@@ -190,7 +188,7 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2DB(String databaseFilename, String username, String password, boolean dummy) throws SQLException {
-		this(new H2URLInterpreter()
+		this(new H2SettingsBuilder()
 				.setFilename(databaseFilename)
 				.setUsername(username)
 				.setPassword(password)
@@ -206,7 +204,7 @@ public class H2DB extends DBDatabase {
 	 * @param settings
 	 * @throws java.sql.SQLException database errors
 	 */
-	public H2DB(H2URLInterpreter settings) throws SQLException {
+	public H2DB(H2SettingsBuilder settings) throws SQLException {
 		this(settings.toSettings());
 	}
 
@@ -373,10 +371,10 @@ public class H2DB extends DBDatabase {
 //	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return H2DB.class;
 //	}
-	private final static H2URLInterpreter URL_PROCESSOR = new H2URLInterpreter();
+	private final static H2SettingsBuilder URL_PROCESSOR = new H2SettingsBuilder();
 
 	@Override
-	protected AbstractH2URLInterpreter<?> getURLInterpreter() {
+	protected AbstractH2SettingsBuilder<?> getURLInterpreter() {
 		return URL_PROCESSOR;
 	}
 }

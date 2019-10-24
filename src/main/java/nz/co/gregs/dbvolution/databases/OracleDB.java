@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -119,7 +119,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		this(definition, driverName, new OracleURLInterpreter().fromJDBCURL(jdbcURL, username, password));
+		this(definition, driverName, new OracleSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -140,7 +140,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, OracleURLInterpreter dataSource) throws SQLException {
+	public OracleDB(DBDefinition dbDefinition, OracleSettingsBuilder dataSource) throws SQLException {
 		this(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
 	}
 
@@ -152,7 +152,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, String driverName, OracleURLInterpreter dataSource) throws SQLException {
+	public OracleDB(DBDefinition dbDefinition, String driverName, OracleSettingsBuilder dataSource) throws SQLException {
 		super(dbDefinition, driverName, dataSource.toSettings());
 	}
 
@@ -312,8 +312,8 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 //		return OracleDB.class;
 //	}
 	@Override
-	protected OracleURLInterpreter getURLInterpreter() {
-		return new OracleURLInterpreter();
+	protected OracleSettingsBuilder getURLInterpreter() {
+		return new OracleSettingsBuilder();
 	}
 
 }

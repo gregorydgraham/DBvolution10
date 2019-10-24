@@ -17,9 +17,9 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.Informix11URLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.Informix11SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for Informix 11 and higher.
@@ -55,7 +55,7 @@ public class Informix11DB extends InformixDB {
 	 */
 	public Informix11DB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
 		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME,
-				new Informix11URLInterpreter()
+				new Informix11SettingsBuilder()
 						.setUrl(jdbcURL)
 						.setUsername(username)
 						.setPassword(password)
@@ -111,8 +111,8 @@ public class Informix11DB extends InformixDB {
 //		return Informix11DB.class;
 //	}
 	@Override
-	protected Informix11URLInterpreter getURLInterpreter() {
-		return new Informix11URLInterpreter();
+	protected Informix11SettingsBuilder getURLInterpreter() {
+		return new Informix11SettingsBuilder();
 	}
 
 }

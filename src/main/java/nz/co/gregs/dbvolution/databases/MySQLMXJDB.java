@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLMXJDBURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLMXJDBSettingsBuilder;
 
 /**
  * DBDatabase tweaked for the MySQL MXJ Database.
@@ -46,7 +46,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MySQLMXJDB(MySQLMXJDBURLInterpreter ds) throws SQLException {
+	public MySQLMXJDB(MySQLMXJDBSettingsBuilder ds) throws SQLException {
 		this(ds.toSettings());
 	}
 	/**
@@ -68,7 +68,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(String jdbcURL, String username, String password) throws SQLException {
-		this(new MySQLMXJDBURLInterpreter().fromJDBCURL(jdbcURL, username, password));
+		this(new MySQLMXJDBSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -83,8 +83,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(String server, long port, String databaseName, String databaseDir, String username, String password) throws SQLException {
-		this(
-				new MySQLMXJDBURLInterpreter()
+		this(new MySQLMXJDBSettingsBuilder()
 						.setHost(server)
 						.setPort(port)
 						.setDatabaseName(databaseName)
@@ -112,7 +111,7 @@ public class MySQLMXJDB extends MySQLDB {
 //	}
 
 	@Override
-	protected MySQLMXJDBURLInterpreter getURLInterpreter() {
-		return new MySQLMXJDBURLInterpreter();
+	protected MySQLMXJDBSettingsBuilder getURLInterpreter() {
+		return new MySQLMXJDBSettingsBuilder();
 	}
 }

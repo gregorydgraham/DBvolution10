@@ -18,10 +18,10 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MariaDBURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MariaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * DBDatabase tweaked for a MariaDB Database.
@@ -53,7 +53,7 @@ public class MariaDB extends DBDatabase {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MariaDB(MariaDBURLInterpreter ds) throws SQLException {
+	public MariaDB(MariaDBSettingsBuilder ds) throws SQLException {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds.toSettings());
 	}
 
@@ -67,8 +67,7 @@ public class MariaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(String jdbcURL, String username, String password) throws SQLException {
-		this(
-				new MariaDBURLInterpreter()
+		this(new MariaDBSettingsBuilder()
 						.fromJDBCURL(jdbcURL)
 						.setUsername(username)
 						.setPassword(password)
@@ -88,8 +87,7 @@ public class MariaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(String server, long port, String databaseName, String username, String password) throws SQLException {
-		this(
-				new MariaDBURLInterpreter()
+		this(new MariaDBSettingsBuilder()
 						.setHost(server)
 						.setPort(port)
 						.setDatabaseName(databaseName)
@@ -114,8 +112,8 @@ public class MariaDB extends DBDatabase {
 	}
 
 	@Override
-	protected MariaDBURLInterpreter getURLInterpreter() {
-		return new MariaDBURLInterpreter();
+	protected MariaDBSettingsBuilder getURLInterpreter() {
+		return new MariaDBSettingsBuilder();
 	}
 
 }

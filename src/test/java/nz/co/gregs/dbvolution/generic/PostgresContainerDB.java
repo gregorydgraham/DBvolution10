@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.PostgresURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -67,7 +67,7 @@ public class PostgresContainerDB extends PostgresDB {
 	}
 
 	public PostgresContainerDB(PostgreSQLContainer container) throws SQLException {
-		super(new PostgresURLInterpreter()
+		super(new PostgresSettingsBuilder()
 				.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
 		);
 		this.storedContainer = container;

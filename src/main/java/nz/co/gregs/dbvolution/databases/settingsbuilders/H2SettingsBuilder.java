@@ -28,33 +28,16 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
-
-import java.util.HashMap;
-import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 /**
  *
  * @author gregorygraham
  */
-public class PostgresOverSSLURLInterpreter extends AbstractPostgresURLInterpreter<PostgresOverSSLURLInterpreter> {
+public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuilder> {
 
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
-		{
-			put("ssl", "true");
-			put("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
-		}
-	};
 
-	@Override
-	public Map<String, String> getDefaultConfigurationExtras() {
-		return DEFAULT_EXTRAS_MAP;
+	public H2SettingsBuilder() {
 	}
 
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return PostgresDBOverSSL.class;
-	}
 }

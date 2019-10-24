@@ -21,14 +21,14 @@ import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.OracleURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -99,7 +99,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
-	public Oracle11XEDB(OracleURLInterpreter dcs) throws SQLException {
+	public Oracle11XEDB(OracleSettingsBuilder dcs) throws SQLException {
 		this(new Oracle11XEDBDefinition(), dcs.toSettings());
 	}
 
@@ -213,8 +213,8 @@ public class Oracle11XEDB extends OracleDB {
 //	}
 
 	@Override
-	protected OracleURLInterpreter getURLInterpreter() {
-		return new OracleURLInterpreter(){
+	protected OracleSettingsBuilder getURLInterpreter() {
+		return new OracleSettingsBuilder(){
 			@Override
 			public Class<? extends DBDatabase> generatesURLForDatabase() {
 				return Oracle11XEDB.class;

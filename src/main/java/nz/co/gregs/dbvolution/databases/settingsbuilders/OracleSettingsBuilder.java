@@ -28,19 +28,19 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.databases.OracleDB;
 
 /**
  *
  * @author gregorygraham
  */
-public class SQLiteURLInterpreter extends AbstractURLInterpreter<SQLiteURLInterpreter> {
+public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -49,62 +49,59 @@ public class SQLiteURLInterpreter extends AbstractURLInterpreter<SQLiteURLInterp
 		return DEFAULT_EXTRAS_MAP;
 	}
 
-	public SQLiteURLInterpreter() {
-	}
-
 	@Override
-	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
-		if (jdbcURL.contains(";")) {
+	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
+		String noPrefix = jdbcURL.replaceAll("^" + "jdbc:oracle:[^:]*:@//", "");
+		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-		final String name = noPrefix.split(":", 3)[2];
-		set.setDatabaseName(name);
-		set.setFilename(name);
-		if (noPrefix.contains("/")) {
-			set.setPort(noPrefix
-					.split("/", 2)[0]
-					.replaceAll("^[^:]*:+", ""));
-			set.setHost(noPrefix
-					.split("/", 2)[0]
-					.split(":")[0]);
-		}
-		set.setInstance(set.getExtras().get("instance"));
+		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
+		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
+		set.setInstance(noPrefix.split("/", 2)[1]);
 		set.setSchema("");
 		return set;
 	}
 
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty()
+//				? url
+//				: getJDBCURLPreamble()
+//				+ settings.getHost() + ":"
+//				+ settings.getPort() + "/"
+//				+ settings.getInstance();
+//	}
+
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		final String url = "jdbc:sqlite:";
-		return url;
+		return getJDBCURLPreamble();
 	}
 
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		final String filename = settings.getFilename();
-		return filename == null || filename.isEmpty()
-				? settings.getDatabaseName()
-				: filename;
-	}
-	
 	protected String getJDBCURLPreamble() {
-		return "jdbc:sqlite://";
+		return "jdbc:oracle:thin:@//";
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return SQLiteDB.class;
-	}
-
-	@Override
-	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
+	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
 	}
 
 	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return OracleDB.class;
+	}
+
+	@Override
 	public Integer getDefaultPort() {
-		return -1;// SQLite doesn't use ports
+		return 1521;
+	}
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getInstance();
 	}
 }

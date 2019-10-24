@@ -54,7 +54,7 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.ClusterURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.ClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
@@ -70,7 +70,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * Creates a database cluster programmatically.
@@ -111,7 +111,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
-//	private final JDBCURLInterpreter urlProcessor = new ClusterURLInterpreter();
+//	private final JDBCSettingsBuilder urlProcessor = new ClusterSettingsBuilder();
 
 	/**
 	 * Nope.
@@ -138,8 +138,8 @@ public class DBDatabaseCluster extends DBDatabase {
 //	}
 
 	@Override
-	protected ClusterURLInterpreter getURLInterpreter() {
-		return new ClusterURLInterpreter();
+	protected ClusterSettingsBuilder getURLInterpreter() {
+		return new ClusterSettingsBuilder();
 	}
 
 	public static enum Status {

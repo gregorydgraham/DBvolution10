@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.databases.MariaClusterDB;
  *
  * @author gregorygraham
  */
-public class MariaClusterDBURLInterpreter extends AbstractURLInterpreter<MariaClusterDBURLInterpreter> {
+public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,11 +41,11 @@ import nz.co.gregs.dbvolution.databases.H2DB;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractH2URLInterpreter<SELF extends AbstractH2URLInterpreter<SELF>> extends AbstractClusterCapableURLInterpreter<SELF> {
+public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
-	public AbstractH2URLInterpreter() {
+	public AbstractH2SettingsBuilder() {
 	}
 
 	@Override

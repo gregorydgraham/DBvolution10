@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.databases.PostgresDB;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractPostgresURLInterpreter<SELF extends AbstractPostgresURLInterpreter<SELF>> extends AbstractClusterCapableURLInterpreter<SELF> {
+public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostgresSettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

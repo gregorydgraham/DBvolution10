@@ -18,11 +18,11 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JavaDBURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JavaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.AbstractJavaDBURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractJavaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.JDBCURLInterpreter;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.JDBCSettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for JavaDB.
@@ -75,7 +75,7 @@ public class JavaDB extends DBDatabase {
 	 * @param dataSource	dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	public JavaDB(JavaDBURLInterpreter dataSource) throws SQLException {
+	public JavaDB(JavaDBSettingsBuilder dataSource) throws SQLException {
 		this(dataSource.toSettings());
 	}
 
@@ -89,8 +89,7 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(String jdbcURL, String username, String password) throws SQLException {
-		this(
-				new JavaDBURLInterpreter().fromJDBCURL(jdbcURL, username, password)
+		this(new JavaDBSettingsBuilder().fromJDBCURL(jdbcURL, username, password)
 		);
 	}
 
@@ -106,8 +105,7 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(String host, int port, String database, String username, String password) throws SQLException {
-		this(
-				new JavaDBURLInterpreter().setHost(host).setPort(port).setUsername(username).setPassword(password)
+		this(new JavaDBSettingsBuilder().setHost(host).setPort(port).setUsername(username).setPassword(password)
 		);
 	}
 
@@ -127,7 +125,7 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	protected AbstractJavaDBURLInterpreter<?> getURLInterpreter() {
-		return new JavaDBURLInterpreter();
+	protected AbstractJavaDBSettingsBuilder<?> getURLInterpreter() {
+		return new JavaDBSettingsBuilder();
 	}
 }

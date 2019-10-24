@@ -28,26 +28,21 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
+import nz.co.gregs.dbvolution.databases.NuoDB;
 
 /**
  *
  * @author gregorygraham
  */
-public class MySQLMXJDBURLInterpreter extends AbstractMySQLURLInterpreter<MySQLMXJDBURLInterpreter> {
+public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsBuilder> {
 
-	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
-		{
-			put("createDatabaseIfNotExist", "true");
-			put("server.initialize-user", "true");
-		}
-	};
+	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -55,42 +50,39 @@ public class MySQLMXJDBURLInterpreter extends AbstractMySQLURLInterpreter<MySQLM
 	}
 
 	@Override
-	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
+		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
 		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
-			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
+			String extrasString = jdbcURL.split("?", 2)[1];
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-		settings.setPort(noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", ""));
-		settings.setHost(noPrefix
-				.split("/", 2)[0]
-				.split(":")[0]);
-		settings.setInstance(settings.getExtras().get("instance"));
-		settings.setSchema("");
-		return settings;
-	}
-
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:mysql:mxj://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName()
-//				+encodeExtras(settings, "?", "=", "&", "");
-//	}
-
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getHost() 
-				+ ":" + settings.getPort() 
-				+ "/" + settings.getDatabaseName()
-				+encodeExtras(settings, "?", "=", "&", "");
+		set.setPort(noPrefix
+					.split("/",2)[0]
+					.replaceAll("^[^:]*:+", ""));
+		set.setHost(noPrefix
+					.split("/",2)[0]
+					.split(":")[0]);
+		set.setInstance(set.getExtras().get("instance"));
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		return "jdbc:mysql:mxj://";
+		return getJDBCURLPreamble();
 	}
+	
+	protected String getJDBCURLPreamble() {
+		return "jdbc:com.nuodb://";
+	}
+	
+//	@Override
+//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
+//		String url = settings.getUrl();
+//		return url != null && !url.isEmpty() ? url : getJDBCURLPreamble()
+//				+ settings.getHost() + "/"
+//				+ settings.getDatabaseName() + "?schema=" + settings.getSchema();
+//	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
@@ -99,15 +91,18 @@ public class MySQLMXJDBURLInterpreter extends AbstractMySQLURLInterpreter<MySQLM
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return MySQLMXJDB.class;
+		return NuoDB.class;
 	}
 
 	@Override
 	public Integer getDefaultPort() {
-		return 3306;
+		return 8888;// possibly 48004???
 	}
-	
-	public MySQLMXJDBURLInterpreter setBanana(boolean bool){
-		return this;
+
+	@Override
+	protected String encodeHost(DatabaseConnectionSettings settings) {
+		return settings.getHost() + "/"
+				+ settings.getDatabaseName() 
+				+ "?schema=" + settings.getSchema();
 	}
 }

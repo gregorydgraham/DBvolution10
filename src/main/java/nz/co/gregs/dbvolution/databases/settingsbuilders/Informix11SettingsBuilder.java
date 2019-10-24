@@ -28,19 +28,17 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.MSSQLServer2012DB;
+import nz.co.gregs.dbvolution.databases.Informix11DB;
 
-/**
- *
- * @author gregorygraham
- */
-public class MSSQLServer2012URLInterpreter extends AbstractMSSQLServerURLInterpreter<MSSQLServer2012URLInterpreter> {
+
+public class Informix11SettingsBuilder extends AbstractInformixSettingsBuilder<Informix11SettingsBuilder> {
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return MSSQLServer2012DB.class;
+		return Informix11DB.class;
 	}
+	
 }

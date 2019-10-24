@@ -28,16 +28,19 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.jdbcurlinterpreters;
+package nz.co.gregs.dbvolution.databases.settingsbuilders;
+
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.MSSQLServer2012DB;
 
 /**
  *
  * @author gregorygraham
  */
-public class H2URLInterpreter extends AbstractH2URLInterpreter<H2URLInterpreter> {
+public class MSSQLServer2012SettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServer2012SettingsBuilder> {
 
-
-	public H2URLInterpreter() {
+	@Override
+	public Class<? extends DBDatabase> generatesURLForDatabase() {
+		return MSSQLServer2012DB.class;
 	}
-
 }
