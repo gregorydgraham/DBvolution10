@@ -49,7 +49,12 @@ public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemoryS
 //	}
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		final String encoded = DefaultString.check(settings.getInstance(), settings.getDatabaseName());
+		final String encoded
+				= DefaultString.check(
+						settings.getFilename(),
+						settings.getDatabaseName(),
+						settings.getFilename()
+				);
 		return encoded;
 	}
 
