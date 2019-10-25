@@ -35,8 +35,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
-public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder>
-		implements InstanceCapableSettingsBuilder<H2MemorySettingsBuilder> {
+public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder> {
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
