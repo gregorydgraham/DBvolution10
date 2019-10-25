@@ -37,7 +37,8 @@ import nz.co.gregs.dbvolution.databases.MSSQLServer2012DB;
  *
  * @author gregorygraham
  */
-public class MSSQLServer2012SettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServer2012SettingsBuilder> {
+public class MSSQLServer2012SettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServer2012SettingsBuilder>
+implements InstanceCapableSettingsBuilder<MSSQLServer2012SettingsBuilder>{
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
