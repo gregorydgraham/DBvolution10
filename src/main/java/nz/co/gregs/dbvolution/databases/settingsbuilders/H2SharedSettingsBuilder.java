@@ -33,6 +33,7 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2SharedDB;
+import nz.co.gregs.dbvolution.utility.DefaultString;
 
 public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedSettingsBuilder>{
 
@@ -46,9 +47,10 @@ public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedS
 
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		String hostname = defaultString(settings.getHost(), "localhost");
-		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-		return  hostname + ":" + port + "/" + settings.getDatabaseName();
+		String hostname = DefaultString.check(settings.getHost(), "localhost");
+		String port = DefaultString.check(settings.getPort(), "" + getDefaultPort());
+		final String databaseName = DefaultString.check(settings.getDatabaseName(), settings.getInstance(),settings.getFilename());
+		return  hostname + ":" + port + "/" + databaseName;
 	}
 
 	@Override
