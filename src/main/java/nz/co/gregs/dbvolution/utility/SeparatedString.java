@@ -93,7 +93,11 @@ public class SeparatedString {
 			String val = entry.getValue();
 			list.add(key + nameValueSeparator + val);
 		});
-		return new SeparatedString().addAll(list);
+		if (list != null) {
+			return new SeparatedString().addAll(list);
+		} else {
+			return new SeparatedString();
+		}
 	}
 
 	public static SeparatedString of(String... allStrings) {
@@ -101,7 +105,12 @@ public class SeparatedString {
 	}
 
 	public static SeparatedString of(List<String> allStrings) {
-		return new SeparatedString().addAll(allStrings.toArray(new String[]{}));
+		final SeparatedString separatedString = new SeparatedString();
+		if (allStrings != null) {
+			final String[] toArray = allStrings.toArray(new String[]{});
+			return separatedString.addAll(toArray);
+		}
+		return separatedString;
 	}
 
 	public static SeparatedString forSeparator(String separator) {
@@ -109,7 +118,9 @@ public class SeparatedString {
 	}
 
 	public SeparatedString separatedBy(String separator) {
-		this.separator = separator;
+		if (separator != null && !separator.isEmpty()) {
+			this.separator = separator;
+		}
 		return this;
 	}
 
@@ -210,17 +221,39 @@ public class SeparatedString {
 	}
 
 	public SeparatedString addAll(int index, Collection<String> c) {
-		getStrings().addAll(index, c);
+		if (c != null) {
+			getStrings().addAll(index, c);
+		}
 		return this;
 	}
 
 	public SeparatedString addAll(Collection<String> c) {
-		getStrings().addAll(c);
+		if (c != null && !c.isEmpty()) {
+			getStrings().addAll(c);
+		}
+		return this;
+	}
+
+	public SeparatedString addAll(Map<String, String> c) {
+		if (c != null && !c.isEmpty()) {
+			c.forEach((key, value) -> {
+				getStrings().add(key + getKeyValueSeparator() + value);
+			});
+		}
+		return this;
+	}
+
+	public SeparatedString addAll(Map<String, String> c, String keyValueSeparator) {
+		withKeyValueSeparator(keyValueSeparator);
+		addAll(c);
 		return this;
 	}
 
 	public SeparatedString addAll(String... strs) {
-		getStrings().addAll(Arrays.asList(strs));
+		final List<String> asList = Arrays.asList(strs);
+		if (asList != null) {
+			getStrings().addAll(asList);
+		}
 		return this;
 	}
 
@@ -339,20 +372,30 @@ public class SeparatedString {
 
 	public List<String> parseToList(String input) {
 		List<String> list = new ArrayList<>(0);
-		String str = input;
-		if (hasValue(getWrapBefore())) {
-			str = str.replaceFirst("^" + getWrapBefore(), "");
+		if (input != null) {
+			String str = input;
+			if (hasValue(getWrapBefore())) {
+				str = str.replaceFirst("^" + getWrapBefore(), "");
+			}
+			if (hasValue(getWrapAfter())) {
+				str = str.replaceAll(getWrapAfter() + "$", "");
+			}
+			if (str != null && !str.isEmpty()) {
+				String[] split = str.split(getSeparator());
+				final List<String> asList = Arrays.asList(split);
+				if (asList != null) {
+					list.addAll(asList);
+				}
+			}
 		}
-		if (hasValue(getWrapAfter())) {
-			str = str.replaceAll(getWrapAfter() + "$", "");
-		}
-		String[] split = str.split(getSeparator());
-		list.addAll(Arrays.asList(split));
 		return list;
 	}
 
 	public Map<String, String> parseToMap(String input) {
 		Map<String, String> map = new HashMap<>(0);
+		if (input == null || input.isEmpty()) {
+			return map;
+		}
 		String[] split = input.split(getSeparator());
 		for (String string : split) {
 			String[] split2 = string.split(getKeyValueSeparator());
@@ -365,15 +408,11 @@ public class SeparatedString {
 		return map;
 	}
 
-	private String getKeyValueSeparator() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public String getKeyValueSeparator() {
+		return keyValueSeparator;
 	}
 
 	private boolean hasValue(String value) {
 		return value != null && !value.isEmpty();
-	}
-
-	private boolean hasWrapAfter() {
-		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }
