@@ -40,7 +40,8 @@ import nz.co.gregs.dbvolution.databases.OracleDB;
  *
  * @author gregorygraham
  */
-public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSettingsBuilder> {
+public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSettingsBuilder>
+		implements InstanceCapableSettingsBuilder<OracleSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -73,7 +74,6 @@ public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSetting
 //				+ settings.getPort() + "/"
 //				+ settings.getInstance();
 //	}
-
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		return getJDBCURLPreamble();
@@ -98,6 +98,19 @@ public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSetting
 		return 1521;
 	}
 
+	/**
+	 * Apparently you can do this
+	 *
+	 * jdbc:oracle:thin:@(DESCRIPTION=(LOAD_BALANCE=on)
+	 * (ADDRESS=(PROTOCOL=TCP)(HOST=host1) (PORT=1521))
+	 * (ADDRESS=(PROTOCOL=TCP)(HOST=host2) (PORT=1521))
+	 * (CONNECT_DATA=(SERVICE_NAME=service)))
+	 *
+	 * I have too much self-respect to do so worth being paid.
+	 *
+	 * @param settings
+	 * @return
+	 */
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + ":"

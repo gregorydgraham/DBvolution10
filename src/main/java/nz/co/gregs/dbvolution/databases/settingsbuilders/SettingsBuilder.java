@@ -30,6 +30,8 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.Map;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 
@@ -40,6 +42,9 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  */
 public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
+
+	DatabaseConnectionSettings getStoredSettings();
+	
 	public String generateJDBCURL(DatabaseConnectionSettings settings);
 
 	public Class<? extends DBDatabase> generatesURLForDatabase();
@@ -80,4 +85,58 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 	public DatabaseConnectionSettings toSettings();
 
 	public String toJDBCURL();
+
+	String getDBDatabaseName();
+
+	DataSource getDataSource();
+
+	String getDatabaseName();
+
+	Map<String, String> getExtras();
+
+	String getHost(String host);
+
+//	String getInstance();
+
+	String getLabel();
+
+	String getPassword();
+
+	String getPort();
+
+	String getProtocol();
+
+	String getSchema();
+
+	String getUrl();
+
+	String getUsername();
+	
+	SELF setDBDatabaseName(String dbDatabaseName);
+
+	SELF setDataSource(DataSource dataSource);
+
+	SELF setDatabaseName(String databaseName);
+
+	SELF setExtras(Map<String, String> extras);
+
+	SELF setHost(String host);
+
+//	SELF setInstance(String instance);
+
+	SELF setLabel(String label);
+
+	SELF setPassword(String password);
+
+	SELF setPort(int port);
+
+	SELF setPort(long port);
+
+	SELF setProtocol(String protocol);
+
+	SELF setSchema(String schema);
+
+	SELF setUrl(String url);
+
+	SELF setUsername(String username);
 }

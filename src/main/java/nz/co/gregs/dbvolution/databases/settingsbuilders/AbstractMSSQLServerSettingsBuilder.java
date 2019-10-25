@@ -41,7 +41,8 @@ import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF> {
+public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
+implements InstanceCapableSettingsBuilder<SELF>{
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

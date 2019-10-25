@@ -30,46 +30,35 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.H2SharedDB;
+import java.io.File;
+import java.io.IOException;
 
-public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedSettingsBuilder>{
+/**
+ *
+ * @author gregorygraham
+ * @param <SELF>
+ */
+public interface FileBasedSettingsBuilder<SELF extends FileBasedSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String hostname = defaultString(settings.getHost(), "localhost");
-//		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-//		String protocol = defaultString(settings.getProtocol(), "tcp");
-//		return "jdbc:h2:" + protocol + "://" + hostname + ":" + port + "/" + settings.getDatabaseName();
-//	}
-
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		String hostname = defaultString(settings.getHost(), "localhost");
-		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-		return  hostname + ":" + port + "/" + settings.getDatabaseName();
+	public default String getFilename(){
+		return getStoredSettings().getFilename();
 	}
 
-	@Override
-	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		String protocol = defaultString(settings.getProtocol(), "tcp");
-		return  "jdbc:h2:"+protocol + "://";
+	@SuppressWarnings("unchecked")
+	public default SELF setFilename(String filename) {
+		getStoredSettings().setFilename(filename);
+		final String databaseName = getStoredSettings().getDatabaseName();
+		if (databaseName == null || databaseName.isEmpty()) {
+			getStoredSettings().setDatabaseName(filename);
+		}
+		return (SELF) this;
 	}
-
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		super.setDefaultsInternal(settings);
-		settings.setProtocol("tcp");
-		return settings;
+	
+	@SuppressWarnings(value = "unchecked")
+	default SELF setFilename(File databaseFile) throws IOException{
+		setFilename(databaseFile.getCanonicalFile().toString());
+		setDatabaseName(databaseFile.getCanonicalFile().toString());
+		return (SELF) this;
 	}
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return H2SharedDB.class;
-	}
-
-	private String defaultString(String initialValue, String defaultValue) {
-		return initialValue == null || initialValue.isEmpty() ? defaultValue : initialValue;
-	}
+	
 }

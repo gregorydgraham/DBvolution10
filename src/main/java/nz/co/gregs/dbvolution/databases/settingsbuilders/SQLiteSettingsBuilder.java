@@ -30,8 +30,6 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -42,7 +40,7 @@ import nz.co.gregs.dbvolution.databases.SQLiteDB;
  *
  * @author gregorygraham
  */
-public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSettingsBuilder> {
+public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSettingsBuilder> implements FileBasedSettingsBuilder<SQLiteSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -110,10 +108,11 @@ public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSetting
 		return -1;// SQLite doesn't use ports
 	}
 
-	@SuppressWarnings("unchecked")
-	public final SQLiteSettingsBuilder setFilename(File databaseFile) throws IOException {
-		setFilename(databaseFile.getCanonicalFile().toString());
-		setDatabaseName(databaseFile.getCanonicalFile().toString());
-		return this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SQLiteSettingsBuilder setFilename(File databaseFile) throws IOException {
+//		setFilename(databaseFile.getCanonicalFile().toString());
+//		setDatabaseName(databaseFile.getCanonicalFile().toString());
+//		return this;
+//	}
 }

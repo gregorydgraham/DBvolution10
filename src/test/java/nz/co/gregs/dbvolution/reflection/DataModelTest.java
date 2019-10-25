@@ -112,18 +112,21 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+//		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
+//		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder) throws java.sql.SQLException");
+//		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
+//		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.Oracle11XEContainerDB(org.testcontainers.containers.OracleContainer) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.PostgresContainerDB(org.testcontainers.containers.PostgreSQLContainer) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer,nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MSSQLServerURLInterpreter) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer,nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.MSSQLServerContainerDB(org.testcontainers.containers.MSSQLServerContainer) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer,nz.co.gregs.dbvolution.databases.jdbcurlinterpreters.MySQLURLInterpreter) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer,nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.MySQLContainerDB(org.testcontainers.containers.MySQLContainer) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
@@ -157,6 +160,7 @@ public class DataModelTest extends AbstractTest {
 		for (Constructor<DBDatabase> constr : result) {
 			try {
 				constr.setAccessible(true);
+				System.out.println("PARAMETERLESS CONSTRUCTOR: "+constr.toString());
 				DBDatabase newInstance = constr.newInstance();
 				Assert.assertThat(newInstance, instanceOf(DBDatabase.class));
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {

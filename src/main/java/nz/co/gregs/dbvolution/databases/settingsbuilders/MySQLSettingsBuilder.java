@@ -39,7 +39,6 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
  */
 public class MySQLSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQLSettingsBuilder> {
 
-
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return MySQLDB.class;

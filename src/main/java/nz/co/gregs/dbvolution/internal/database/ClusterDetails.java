@@ -315,13 +315,15 @@ public class ClusterDetails implements Serializable {
 		if (useAutoRebuild) {
 			String encodedSettings = "";
 			final String rawPrefsValue = prefs.get(getClusterName(), null);
-			try {
-				encodedSettings = Encryption.decrypt(rawPrefsValue);
-			} catch (Encryption.UnableToDecryptInput ex) {
-				Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
-				encodedSettings = rawPrefsValue;
+			if (rawPrefsValue != null) {
+				try {
+					encodedSettings = Encryption.decrypt(rawPrefsValue);
+				} catch (Encryption.UnableToDecryptInput ex) {
+					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+					encodedSettings = rawPrefsValue;
+				}
 			}
-			if (encodedSettings != null) {
+			if (encodedSettings != null && !encodedSettings.isEmpty()) {
 				DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
 				return settings;
 			} else {
@@ -397,6 +399,6 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public boolean hasAuthoritativeDatabase() {
-		return this.getAuthoritativeDatabaseConnectionSettings()!=null;
+		return this.getAuthoritativeDatabaseConnectionSettings() != null;
 	}
 }

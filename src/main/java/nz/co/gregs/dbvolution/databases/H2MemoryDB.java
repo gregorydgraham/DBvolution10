@@ -119,12 +119,12 @@ public class H2MemoryDB extends H2DB {
 	 */
 	@Deprecated
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
-		this(new H2MemorySettingsBuilder().setDatabaseName(databaseName).setUsername(username).setPassword(password));
+		this(new H2MemorySettingsBuilder().setInstance(databaseName).setUsername(username).setPassword(password));
 	}
 
 	public static H2MemoryDB randomDatabase() throws SQLException {
 		final String dbName = ("RandomH2MemoryDB-" + Math.random()).replaceFirst("0\\.", "");
-		return new H2MemoryDB(new H2MemorySettingsBuilder().setDatabaseName(dbName));
+		return new H2MemoryDB(new H2MemorySettingsBuilder().setInstance(dbName));
 	}
 
 	/**

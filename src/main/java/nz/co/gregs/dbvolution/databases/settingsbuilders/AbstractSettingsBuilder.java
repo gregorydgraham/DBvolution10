@@ -30,7 +30,6 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -135,7 +134,8 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return generateJDBCURL(getStoredSettings());
 	}
 
-	protected final DatabaseConnectionSettings getStoredSettings() {
+	@Override
+	public final DatabaseConnectionSettings getStoredSettings() {
 		if (storedSettingsInAbstractURLInterpreter == null) {
 			storedSettingsInAbstractURLInterpreter = getDefaultSettings();
 		}
@@ -143,24 +143,28 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setDataSource(DataSource dataSource) {
 		getStoredSettings().setDataSource(dataSource);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setDatabaseName(String databaseName) {
 		getStoredSettings().setDatabaseName(databaseName);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setDBDatabaseName(String dbDatabaseName) {
 		getStoredSettings().setDbdatabaseClass(dbDatabaseName);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setExtras(Map<String, String> extras) {
 		getStoredSettings().setExtras(extras);
 		return (SELF) this;
@@ -178,166 +182,193 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return (SELF) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final SELF setFilename(String filename) {
-		getStoredSettings().setFilename(filename);
-		final String databaseName = getStoredSettings().getDatabaseName();
-		if (databaseName == null || databaseName.isEmpty()) {
-			getStoredSettings().setDatabaseName(filename);
-		}
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setFilename(String filename) {
+//		getStoredSettings().setFilename(filename);
+//		final String databaseName = getStoredSettings().getDatabaseName();
+//		if (databaseName == null || databaseName.isEmpty()) {
+//			getStoredSettings().setDatabaseName(filename);
+//		}
+//		return (SELF) this;
+//	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setHost(String host) {
 		getStoredSettings().setHost(host);
 		return (SELF) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final SELF setInstance(String instance) {
-		getStoredSettings().setInstance(instance);
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setInstance(String instance) {
+//		getStoredSettings().setInstance(instance);
+//		return (SELF) this;
+//	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setLabel(String label) {
 		getStoredSettings().setLabel(label);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setPassword(String password) {
 		getStoredSettings().setPassword(password);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setPort(int port) {
 		getStoredSettings().setPort("" + port);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setPort(long port) {
 		getStoredSettings().setPort("" + port);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setProtocol(String protocol) {
 		getStoredSettings().setProtocol(protocol);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setSchema(String schema) {
 		getStoredSettings().setSchema(schema);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setUrl(String url) {
 		getStoredSettings().setUrl(url);
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final SELF setUsername(String username) {
 		getStoredSettings().setUsername(username);
 		return (SELF) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final SELF addClusterHost(DatabaseConnectionSettings clusterHost) {
-		getStoredSettings().addClusterHost(clusterHost);
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	public final SELF addClusterHost(DatabaseConnectionSettings clusterHost) {
+//		getStoredSettings().addClusterHost(clusterHost);
+//		return (SELF) this;
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	public final SELF addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+//		getStoredSettings().addAllClusterHosts(clusterHosts);
+//		return (SELF) this;
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+//		getStoredSettings().setClusterHosts(clusterHosts);
+//		return (SELF) this;
+//	}
 
 	@SuppressWarnings("unchecked")
-	public final SELF addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
-		getStoredSettings().addAllClusterHosts(clusterHosts);
-		return (SELF) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	public final SELF setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
-		getStoredSettings().setClusterHosts(clusterHosts);
-		return (SELF) this;
-	}
-
-	@SuppressWarnings("unchecked")
+	@Override
 	public final DataSource getDataSource() {
 		return getStoredSettings().getDataSource();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getDatabaseName() {
 		return getStoredSettings().getDatabaseName();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getDBDatabaseName() {
 		return getStoredSettings().getDbdatabaseClass();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final Map<String, String> getExtras() {
 		return getStoredSettings().getExtras();
 	}
 
-	@SuppressWarnings("unchecked")
-	public final String getFilename() {
-		return getStoredSettings().getFilename();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final String getFilename() {
+//		return getStoredSettings().getFilename();
+//	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getHost(String host) {
 		return getStoredSettings().getHost();
 	}
 
-	@SuppressWarnings("unchecked")
-	public final String getInstance() {
-		return getStoredSettings().getInstance();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final String getInstance() {
+//		return getStoredSettings().getInstance();
+//	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getLabel() {
 		return getStoredSettings().getLabel();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getPassword() {
 		return getStoredSettings().getPassword();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getPort() {
 		return getStoredSettings().getPort();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getProtocol() {
 		return getStoredSettings().getProtocol();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getSchema() {
 		return getStoredSettings().getSchema();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getUrl() {
 		return getStoredSettings().getUrl();
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public final String getUsername() {
 		return getStoredSettings().getUsername();
 	}
 
-	@SuppressWarnings("unchecked")
-	public final List<DatabaseConnectionSettings> getClusterHosts() {
-		return getStoredSettings().getClusterHosts();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final List<DatabaseConnectionSettings> getClusterHosts() {
+//		return getStoredSettings().getClusterHosts();
+//	}
 }

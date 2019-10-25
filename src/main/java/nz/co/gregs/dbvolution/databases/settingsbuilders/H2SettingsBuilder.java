@@ -34,10 +34,7 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
  *
  * @author gregorygraham
  */
-public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuilder> {
-
-
-	public H2SettingsBuilder() {
-	}
+public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuilder>
+		implements FileBasedSettingsBuilder<H2SettingsBuilder> {
 
 }

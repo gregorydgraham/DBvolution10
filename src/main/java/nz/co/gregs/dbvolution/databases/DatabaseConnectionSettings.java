@@ -166,7 +166,8 @@ public class DatabaseConnectionSettings {
 				+ getPassword() + FIELD_SEPARATOR
 				+ getLabel() + FIELD_SEPARATOR
 				+ getFilename() + FIELD_SEPARATOR
-				+ encodeClusterHosts(getClusterHosts()) + FIELD_SEPARATOR;
+				+ encodeClusterHosts(getClusterHosts()) + FIELD_SEPARATOR
+				+ encodeExtras(getExtras()) + FIELD_SEPARATOR;
 	}
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
@@ -193,6 +194,15 @@ public class DatabaseConnectionSettings {
 											settings.setPassword(data[8]);
 											if (data.length > 9) {
 												settings.setLabel(data[9]);
+												if (data.length > 10) {
+													settings.setFilename(data[10]);
+													if (data.length > 11) {
+														settings.setClusterHosts(decodeClusterHosts(data[11]));
+														if (data.length > 12) {
+															settings.setExtras(decodeExtras(data[12], "", "=", ";", ""));
+														}
+													}
+												}
 											}
 										}
 									}
@@ -567,6 +577,9 @@ public class DatabaseConnectionSettings {
 		settings.setInstance(System.getProperty(prefix + ".instance"));
 		settings.setDatabaseName(System.getProperty(prefix + ".database"));
 		settings.setSchema(System.getProperty(prefix + ".schema"));
+		settings.setFilename(System.getProperty(prefix + ".filename"));
+		settings.setClusterHosts(decodeClusterHosts(System.getProperty(prefix + ".clusterhosts")));
+		settings.setExtras(decodeExtras(System.getProperty(prefix + ".extras")));
 		return settings;
 	}
 
@@ -774,27 +787,39 @@ public class DatabaseConnectionSettings {
 	}
 
 	public static String encodeExtras(Map<String, String> extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
-		StringBuilder str = new StringBuilder();
-		extras.entrySet().forEach((extra) -> {
-			if (str.length() > 0) {
-				str.append(nameValuePairSeparator);
-			}
-			str.append(extra.getKey()).append(nameValueSeparator).append(extra.getValue());
-		});
-		if (str.length() > 0) {
-			return prefix + str.toString() + suffix;
-		} else {
-			return "";
-		}
+		return SeparatedString
+				.forSeparator(nameValuePairSeparator)
+				.withKeyValueSeparator(nameValueSeparator)
+				.withPrefix(prefix)
+				.withSuffix(suffix)
+				.addAll(extras)
+				.toString();
+//		if (extras == null || extras.isEmpty()) {
+//			return "";
+//		}
+//		StringBuilder str = new StringBuilder();
+//		extras.entrySet().forEach((extra) -> {
+//			if (str.length() > 0) {
+//				str.append(nameValuePairSeparator);
+//			}
+//			str.append(extra.getKey()).append(nameValueSeparator).append(extra.getValue());
+//		});
+//		if (str.length() > 0) {
+//			return prefix + str.toString() + suffix;
+//		} else {
+//			return "";
+//		}
 	}
 
 	public static Map<String, String> decodeExtras(String extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
 		Map<String, String> map = new HashMap<String, String>();
-		String onlyValues = extras.replaceAll("$" + prefix, "");
-		String[] split = onlyValues.split(nameValuePairSeparator);
-		for (String string : split) {
-			String[] nameAndValue = string.split(nameValueSeparator);
-			map.put(nameAndValue[0], nameAndValue[1]);
+		if (extras != null && !extras.isEmpty()) {
+			String onlyValues = extras.replaceAll("$" + prefix, "");
+			String[] split = onlyValues.split(nameValuePairSeparator);
+			for (String string : split) {
+				String[] nameAndValue = string.split(nameValueSeparator);
+				map.put(nameAndValue[0], nameAndValue[1]);
+			}
 		}
 		return map;
 	}
@@ -900,7 +925,7 @@ public class DatabaseConnectionSettings {
 
 	public final void setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		this.clusterHosts.clear();
-		this.clusterHosts.addAll(clusterHosts);
+		addAllClusterHosts(clusterHosts);
 	}
 
 	public final void addClusterHost(DatabaseConnectionSettings clusterHost) {
@@ -908,6 +933,21 @@ public class DatabaseConnectionSettings {
 	}
 
 	public final void addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
-		this.clusterHosts.addAll(clusterHosts);
+		if (clusterHosts != null) {
+			this.clusterHosts.addAll(clusterHosts);
+		}
+	}
+
+	public static String encodeExtras(Map<String, String> extras) {
+		return encodeExtras(extras, "", "=", ";", "");
+	}
+
+	public static Map<String, String> decodeExtras(String extras) {
+		return SeparatedString
+				.forSeparator(";")
+				.withPrefix("")
+				.withSuffix("")
+				.withKeyValueSeparator("=")
+				.parseToMap(extras);
 	}
 }

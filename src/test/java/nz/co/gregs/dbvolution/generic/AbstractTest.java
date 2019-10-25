@@ -30,6 +30,9 @@ import java.util.Locale;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import nz.co.gregs.dbvolution.example.*;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
@@ -160,9 +163,9 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
 		}
 
-		databases.forEach((database) -> {
+		for (Object[] database : databases) {
 			System.out.println("Processing: Database " + database[0]);
-		});
+		}
 
 		return databases;
 	}
@@ -503,27 +506,21 @@ public abstract class AbstractTest {
 		}
 
 		public static SQLiteTestDB getFromSettings(String prefix) throws IOException, SQLException {
-			String url = System.getProperty(prefix + ".url");
-//			String filename = System.getProperty(prefix + ".filename");
-			String username = System.getProperty(prefix + ".username");
-			String password = System.getProperty(prefix + ".password");
-			return new SQLiteTestDB(url, username, password);
+			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSettings(settings);
+			return new SQLiteTestDB(builder);
 		}
 
 		public static SQLiteTestDB getClusterDBFromSettings(String prefix, String name) throws IOException, SQLException {
-//			String url = System.getProperty(prefix + ".url");
-			String filename = System.getProperty(prefix + ".filename") + "-" + name + "cluster.sqlite";
-			String username = System.getProperty(prefix + ".username");
-			String password = System.getProperty(prefix + ".password");
-			return new SQLiteTestDB(new File(filename), username, password);
+			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSettings(settings);
+			builder.setFilename(builder.getFilename() + "-" + name + "cluster.sqlite");
+			return new SQLiteTestDB(builder);
+
 		}
 
-		public SQLiteTestDB(String jdbcurl, String username, String password) throws IOException, SQLException {
-			super(jdbcurl, username, password);
-		}
-
-		private SQLiteTestDB(File file, String username, String password) throws IOException, SQLException {
-			super(file, username, password);
+		public SQLiteTestDB(SQLiteSettingsBuilder builder) throws IOException, SQLException {
+			super(builder);
 		}
 	}
 
@@ -553,21 +550,28 @@ public abstract class AbstractTest {
 		private final static long serialVersionUID = 1l;
 
 		public static MSSQLServerLocalTestDB getFromSettings(String prefix) throws SQLException {
-			String url = System.getProperty("" + prefix + ".url");
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerLocalTestDB.getFromSettings()");
-			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
-			return new MSSQLServerLocalTestDB(host, instance, database, port, username, password);
+//			String url = System.getProperty("" + prefix + ".url");
+//			String host = System.getProperty("" + prefix + ".host");
+//			String port = System.getProperty("" + prefix + ".port");
+//			String instance = System.getProperty("" + prefix + ".instance");
+//			String database = System.getProperty("" + prefix + ".database");
+//			String username = System.getProperty("" + prefix + ".username");
+//			String password = System.getProperty("" + prefix + ".password");
+//			String schema = System.getProperty("" + prefix + ".schema");
+//			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerLocalTestDB.getFromSettings()");
+//			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
+//			return new MSSQLServerLocalTestDB(host, instance, database, port, username, password);
+			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+			MSSQLServerSettingsBuilder builder = new MSSQLServerSettingsBuilder().fromSettings(settings);
+			return new MSSQLServerLocalTestDB(builder);
 		}
 
-		public MSSQLServerLocalTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
-			super(host, instance, database, Integer.parseInt(port), username, password);
+//		public MSSQLServerLocalTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
+//			super(host, instance, database, Integer.parseInt(port), username, password);
+//		}
+
+		private MSSQLServerLocalTestDB(MSSQLServerSettingsBuilder builder) throws SQLException {
+			super(builder);
 		}
 	}
 
@@ -576,44 +580,36 @@ public abstract class AbstractTest {
 		public static final long serialVersionUID = 1l;
 
 		public static H2MemoryTestDB getFromSettings(String prefix) throws SQLException {
-			String url = System.getProperty("" + prefix + ".url");
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			return new H2MemoryTestDB(instance, username, password);
+			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+			H2MemorySettingsBuilder builder = new H2MemorySettingsBuilder().fromSettings(settings);
+			return new H2MemoryTestDB(builder);
 		}
 
 		public static H2MemoryTestDB getClusterDBFromSettings(String prefix) throws SQLException {
-			String url = System.getProperty(prefix + ".url");
-			String host = System.getProperty(prefix + ".host");
-			String port = System.getProperty(prefix + ".port");
-			String instance = System.getProperty(prefix + ".instance");
-			String database = System.getProperty(prefix + ".database");
-			String username = System.getProperty(prefix + ".username");
-			String password = System.getProperty(prefix + ".password");
-			String schema = System.getProperty(prefix + ".schema");
-			String file = System.getProperty(prefix + ".file");
+			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+			H2MemorySettingsBuilder builder = new H2MemorySettingsBuilder().fromSettings(settings);
+			String file = builder.getInstance();
 			if (file != null && !file.equals("")) {
-				return new H2MemoryTestDB(file + "-cluster.h2db", username, password);
+				builder.setInstance(file + "-cluster.h2db");
 			} else {
-				return new H2MemoryTestDB("cluster.h2db", username, password);
+				builder.setInstance("cluster.h2db");
 			}
+			return new H2MemoryTestDB(builder);
 		}
 
 		public static H2MemoryTestDB blankDB() throws SQLException {
-			return new H2MemoryTestDB("Blank", "", "");
+			return new H2MemoryTestDB();
 		}
 
 		public H2MemoryTestDB() throws SQLException {
-			this("memoryTest.h2db", "", "");
+			this(
+					new H2MemorySettingsBuilder()
+							.setDatabaseName("Blank")
+			);
 		}
 
-		public H2MemoryTestDB(String instance, String username, String password) throws SQLException {
-			super(instance, username, password, false);
+		public H2MemoryTestDB(H2MemorySettingsBuilder builder) throws SQLException {
+			super(builder);
 		}
 	}
 }

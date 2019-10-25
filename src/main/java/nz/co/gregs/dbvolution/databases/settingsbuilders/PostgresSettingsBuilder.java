@@ -34,5 +34,5 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
  *
  * @author gregorygraham
  */
-public class PostgresSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresSettingsBuilder> {
+public class PostgresSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresSettingsBuilder>{
 }

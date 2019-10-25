@@ -33,8 +33,10 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.utility.DefaultString;
 
-public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder> {
+public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder>
+		implements InstanceCapableSettingsBuilder<H2MemorySettingsBuilder> {
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
@@ -46,10 +48,10 @@ public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemoryS
 //		String url = settings.getUrl();
 //		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
 //	}
-
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getDatabaseName();
+		final String encoded = DefaultString.check(settings.getInstance(), settings.getDatabaseName());
+		return encoded;
 	}
 
 	@Override
@@ -60,6 +62,8 @@ public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemoryS
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		super.setDefaultsInternal(settings);
+		settings.setInstance("unknown");
+		settings.setDatabaseName("unknown");
 		settings.setProtocol("mem");
 		return settings;
 	}
