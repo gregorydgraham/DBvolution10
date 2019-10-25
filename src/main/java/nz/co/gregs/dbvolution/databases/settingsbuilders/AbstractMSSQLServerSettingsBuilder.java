@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
  * @param <SELF>
  */
 public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
-implements InstanceCapableSettingsBuilder<SELF>{
+		implements InstanceCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -92,7 +92,8 @@ implements InstanceCapableSettingsBuilder<SELF>{
 				= settings.getHost()
 				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
 				+ ":" + settings.getPort() + ";"
-				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
+				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";")
+				+ encodeExtras(settings, ";", "=", ";", "");
 		return urlFromSettings;
 	}
 
@@ -109,7 +110,6 @@ implements InstanceCapableSettingsBuilder<SELF>{
 //				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
 //		return url != null && !url.isEmpty() ? url : urlFromSettings;
 //	}
-
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
