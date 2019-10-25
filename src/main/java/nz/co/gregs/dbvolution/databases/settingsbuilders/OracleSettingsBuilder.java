@@ -117,4 +117,12 @@ public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSetting
 				+ settings.getPort() + "/"
 				+ settings.getInstance();
 	}
+	
+	public OracleSettingsBuilder setSID(String sid){
+		return this.setInstance(sid);
+	}
+	
+	public String getSID(){
+		return this.getInstance();
+	}
 }
