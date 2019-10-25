@@ -30,7 +30,6 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuild
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
 import org.h2.jdbc.JdbcException;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Stores all the required functionality to use an H2 database.
