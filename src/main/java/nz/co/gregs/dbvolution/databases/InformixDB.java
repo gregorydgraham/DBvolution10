@@ -72,7 +72,7 @@ public class InformixDB extends DBDatabase {
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(definition, driverName,
 				new InformixSettingsBuilder()
-				.setUrl(jdbcURL)
+				.fromJDBCURL(jdbcURL)
 				.setUsername(username)
 				.setPassword(password)
 				.toSettings()
