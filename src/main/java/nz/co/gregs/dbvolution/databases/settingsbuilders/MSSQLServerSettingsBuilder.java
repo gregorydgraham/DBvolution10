@@ -34,5 +34,6 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
  *
  * @author gregorygraham
  */
-public class MSSQLServerSettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServerSettingsBuilder> {
+public class MSSQLServerSettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServerSettingsBuilder>
+implements InstanceCapableSettingsBuilder<MSSQLServerSettingsBuilder>{
 }
