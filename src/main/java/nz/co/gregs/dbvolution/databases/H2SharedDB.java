@@ -40,7 +40,6 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SharedSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import org.h2.tools.Server;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 public class H2SharedDB extends H2DB {
 
