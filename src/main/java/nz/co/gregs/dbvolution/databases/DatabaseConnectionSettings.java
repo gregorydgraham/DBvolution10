@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.utility.DefaultString;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
@@ -577,7 +578,13 @@ public class DatabaseConnectionSettings {
 		settings.setInstance(System.getProperty(prefix + ".instance"));
 		settings.setDatabaseName(System.getProperty(prefix + ".database"));
 		settings.setSchema(System.getProperty(prefix + ".schema"));
-		settings.setFilename(System.getProperty(prefix + ".filename"));
+		settings.setFilename(
+				DefaultString.check(
+						System.getProperty(prefix + ".filename"),
+						System.getProperty(prefix + ".file"),
+						System.getProperty(prefix + ".filepath")
+				)
+		);
 		settings.setClusterHosts(decodeClusterHosts(System.getProperty(prefix + ".clusterhosts")));
 		settings.setExtras(decodeExtras(System.getProperty(prefix + ".extras")));
 		return settings;
