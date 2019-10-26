@@ -141,26 +141,12 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return storedSettingsInAbstractURLInterpreter;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SELF setDataSource(DataSource dataSource) {
-//		getStoredSettings().setDataSource(dataSource);
-//		return (SELF) this;
-//	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public final SELF setDatabaseName(String databaseName) {
 		getStoredSettings().setDatabaseName(databaseName);
 		return (SELF) this;
 	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SELF setDBDatabaseClass(String dbDatabaseName) {
-//		getStoredSettings().setDbdatabaseClass(dbDatabaseName);
-//		return (SELF) this;
-//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -181,24 +167,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return (SELF) this;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SELF setFilename(String filename) {
-//		getStoredSettings().setFilename(filename);
-//		final String databaseName = getStoredSettings().getDatabaseName();
-//		if (databaseName == null || databaseName.isEmpty()) {
-//			getStoredSettings().setDatabaseName(filename);
-//		}
-//		return (SELF) this;
-//	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SELF setInstance(String instance) {
-//		getStoredSettings().setInstance(instance);
-//		return (SELF) this;
-//	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public final SELF setLabel(String label) {
@@ -213,20 +181,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return (SELF) this;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SELF setSchema(String schema) {
-//		getStoredSettings().setSchema(schema);
-//		return (SELF) this;
-//	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SELF setUrl(String url) {
-//		getStoredSettings().setUrl(url);
-//		return (SELF) this;
-//	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public final SELF setUsername(String username) {
@@ -234,60 +188,17 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return (SELF) this;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public final SELF addClusterHost(DatabaseConnectionSettings clusterHost) {
-//		getStoredSettings().addClusterHost(clusterHost);
-//		return (SELF) this;
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	public final SELF addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
-//		getStoredSettings().addAllClusterHosts(clusterHosts);
-//		return (SELF) this;
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SELF setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
-//		getStoredSettings().setClusterHosts(clusterHosts);
-//		return (SELF) this;
-//	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final DataSource getDataSource() {
-//		return getStoredSettings().getDataSource();
-//	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public final String getDatabaseName() {
 		return getStoredSettings().getDatabaseName();
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final String getDBDatabaseClass() {
-//		return getStoredSettings().getDbdatabaseClass();
-//	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public final Map<String, String> getExtras() {
 		return getStoredSettings().getExtras();
 	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final String getFilename() {
-//		return getStoredSettings().getFilename();
-//	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final String getInstance() {
-//		return getStoredSettings().getInstance();
-//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -301,27 +212,9 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return getStoredSettings().getPassword();
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final String getSchema() {
-//		return getStoredSettings().getSchema();
-//	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final String getUrl() {
-//		return getStoredSettings().getUrl();
-//	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public final String getUsername() {
 		return getStoredSettings().getUsername();
 	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final List<DatabaseConnectionSettings> getClusterHosts() {
-//		return getStoredSettings().getClusterHosts();
-//	}
 }
