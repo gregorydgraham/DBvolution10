@@ -42,17 +42,12 @@ public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemoryS
 		return H2MemoryDB.class;
 	}
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
-//	}
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
 		final String encoded
 				= DefaultString.check(
-						settings.getFilename(),
 						settings.getDatabaseName(),
+						settings.getFilename(),
 						settings.getInstance()
 				);
 		return encoded;
