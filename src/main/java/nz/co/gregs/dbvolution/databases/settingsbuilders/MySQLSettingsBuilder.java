@@ -43,5 +43,4 @@ public class MySQLSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQLSett
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return MySQLDB.class;
 	}
-
 }

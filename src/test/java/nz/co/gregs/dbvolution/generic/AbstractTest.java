@@ -124,6 +124,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testMySQL") != null) {
 			databases.add(new Object[]{"MySQLDB", MySQLTestDatabase.getFromSettings("mysql")});
 		}
+		if (System.getProperty("testMySQLContainer") != null) {
+			databases.add(new Object[]{"MySQLDBContainer", getMySQLContainerDatabase()});
+		}
 		if (System.getProperty("testMySQL56") != null) {
 			databases.add(new Object[]{"MySQLDB-5.6", MySQL56TestDatabase.getFromSettings("mysql56")});
 		}
@@ -150,6 +153,9 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
 			databases.add(new Object[]{"PostgresSQL", PostgreSQLTestDatabase.getFromSettings("postgres")});
+		}
+		if (System.getProperty("testPostgresContainer") != null) {
+			databases.add(new Object[]{"PostgresContainer", getPostgresContainerDatabase()});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
@@ -178,6 +184,31 @@ public abstract class AbstractTest {
 		}
 
 		return databases;
+	}
+
+	private static PostgresContainerDB POSTGRES_CONTAINER_DATABASE = null;
+
+	private static PostgresContainerDB getPostgresContainerDatabase() {
+		if (POSTGRES_CONTAINER_DATABASE == null) {
+			POSTGRES_CONTAINER_DATABASE = PostgresContainerDB.getInstance();
+		}
+		return POSTGRES_CONTAINER_DATABASE;
+	}
+	private static MySQLContainerDB MySQL_CONTAINER_DATABASE = null;
+	private static MySQLContainerDB MySQL_CONTAINER_DATABASE_FOR_CLUSTER = null;
+
+	private static MySQLContainerDB getMySQLContainerDatabase() {
+		if (MySQL_CONTAINER_DATABASE == null) {
+			MySQL_CONTAINER_DATABASE = MySQLContainerDB.getInstance();
+		}
+		return MySQL_CONTAINER_DATABASE;
+	}
+	
+	private static MySQLContainerDB getMySQLContainerDatabaseForCluster() {
+		if (MySQL_CONTAINER_DATABASE_FOR_CLUSTER == null) {
+			MySQL_CONTAINER_DATABASE_FOR_CLUSTER = MySQLContainerDB.getInstance();
+		}
+		return MySQL_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 
 	private static MSSQLServerContainerDB MSSQLSERVER_CONTAINER_DATABASE = null;

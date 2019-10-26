@@ -108,6 +108,12 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 	}
 
 	@SuppressWarnings("unchecked")
+	public SELF setAllowPublicKeyRetrieval(boolean b) {
+		getStoredSettings().addExtra("allowPublicKeyRetrieval", "" + b);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
 	public SELF setCreateDatabaseIfNotExist(boolean b) {
 		getStoredSettings().addExtra("createDatabaseIfNotExist", "" + b);
 		return (SELF) this;

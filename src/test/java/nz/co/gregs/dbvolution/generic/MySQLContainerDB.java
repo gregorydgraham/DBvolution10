@@ -31,6 +31,8 @@
 package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,17 +49,19 @@ import org.testcontainers.utility.MountableFile;
  * @author gregorygraham
  */
 public class MySQLContainerDB extends MySQLDB {
-	
+
 	static final Log LOG = LogFactory.getLog(MSSQLServerContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
 	protected final MySQLContainer storedContainer;
 
 	public static MySQLContainerDB getInstance() {
+		final String username = "dbvuser";
+		final String password = "dbvtest";
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		MySQLContainer container = (MySQLContainer) new MySQLContainer()
+		MySQLContainer container = (MySQLContainer) new MySQLContainer("mysql:latest")
 				.withDatabaseName("some_database")
 				// there is a problem with the config file in the image so add our own
 				.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/tstMySQL.cnf")
@@ -69,10 +73,12 @@ public class MySQLContainerDB extends MySQLDB {
 						LOG.info("MYSQL CONTAINER: " + t.getUtf8String().replaceAll("\n$", ""));
 					}
 				});
+		container.withEnv("MYSQL_USER", username);
+		container.withEnv("MYSQL_PASSWORD", password);
 		container.withEnv("TZ", "Pacific/Auckland");
-		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
+//		container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
-		
+
 		try {
 			// create the actual dbdatabase 
 			MySQLContainerDB dbdatabase = new MySQLContainerDB(container);
@@ -91,11 +97,13 @@ public class MySQLContainerDB extends MySQLDB {
 	public MySQLContainerDB(MySQLContainer container) throws SQLException {
 		this(container,
 				new MySQLSettingsBuilder()
-						.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
+						.fromJDBCURL(container.getJdbcUrl(), "root", "test")
 						// set the database name because apparently it's not in the URL
 						.setDatabaseName(container.getDatabaseName())
 						// The test container doesn't use SSL so we need to turn that off
 						.setUseSSL(false)
+						// allowPublicKeyRetrieval=true
+						.setAllowPublicKeyRetrieval(true)
 		);
 	}
 

@@ -89,9 +89,9 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public MySQLDB(String jdbcURL, String username, String password) throws SQLException {
 		this(new MySQLSettingsBuilder()
-						.fromJDBCURL(jdbcURL)
-						.setUsername(username)
-						.setPassword(password)
+				.fromJDBCURL(jdbcURL)
+				.setUsername(username)
+				.setPassword(password)
 		);
 	}
 
@@ -108,11 +108,11 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public MySQLDB(String server, int port, String databaseName, String username, String password) throws SQLException {
 		this(new MySQLSettingsBuilder()
-						.setHost(server)
-						.setPort(port)
-						.setDatabaseName(databaseName)
-						.setUsername(username)
-						.setPassword(password)
+				.setHost(server)
+				.setPort(port)
+				.setDatabaseName(databaseName)
+				.setUsername(username)
+				.setPassword(password)
 		);
 //		this.setDatabaseName(databaseName);
 	}
@@ -155,7 +155,9 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	@Override
 	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		try {
-			if (metaData.getDatabaseMajorVersion() < 8) {
+			if (metaData.getDatabaseMajorVersion() < 4
+					|| (metaData.getDatabaseMajorVersion() == 5 && metaData.getDatabaseMinorVersion() < 8)
+					) {
 				setDefinition(new MySQLDBDefinition_5_7());
 			} else {
 				setDefinition(new MySQLDBDefinition());
