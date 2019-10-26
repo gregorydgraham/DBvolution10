@@ -101,23 +101,23 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 	String getDatabaseName();
 
 	Map<String, String> getExtras();
-
-	String getHost(String host);
-
-	String getPort();
-
-	String getProtocol();
-
 	SELF setDatabaseName(String databaseName);
 
 	SELF setExtras(Map<String, String> extras);
 
-	SELF setHost(String host);
+//	String getHost(String host);
+//
+//	String getPort();
+//
+//	String getProtocol();
+//
+//	SELF setHost(String host);
+//
+//	SELF setPort(int port);
+//
+//	SELF setPort(long port);
+//
+//	SELF setProtocol(String protocol);
 
-	SELF setPort(int port);
-
-	SELF setPort(long port);
-
-	SELF setProtocol(String protocol);
 
 }

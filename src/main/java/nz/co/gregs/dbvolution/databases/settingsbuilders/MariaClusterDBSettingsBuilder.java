@@ -41,7 +41,8 @@ import nz.co.gregs.dbvolution.databases.MariaClusterDB;
  * @author gregorygraham
  */
 public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder>
-		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder> {
+		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder>,
+		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

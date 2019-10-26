@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.utility.DefaultString;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF>> 
+public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF>>
 		extends AbstractClusterCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();

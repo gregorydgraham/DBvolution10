@@ -42,7 +42,8 @@ import nz.co.gregs.dbvolution.databases.JavaDB;
  * @param <SELF>
  */
 public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
-		implements InstanceCapableSettingsBuilder<SELF> {
+		implements InstanceCapableSettingsBuilder<SELF>,
+		RemoteCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{

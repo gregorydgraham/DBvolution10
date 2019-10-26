@@ -192,13 +192,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 //		return (SELF) this;
 //	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setHost(String host) {
-		getStoredSettings().setHost(host);
-		return (SELF) this;
-	}
-
 //	@SuppressWarnings("unchecked")
 //	@Override
 //	public final SELF setInstance(String instance) {
@@ -217,27 +210,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	@Override
 	public final SELF setPassword(String password) {
 		getStoredSettings().setPassword(password);
-		return (SELF) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setPort(int port) {
-		getStoredSettings().setPort("" + port);
-		return (SELF) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setPort(long port) {
-		getStoredSettings().setPort("" + port);
-		return (SELF) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setProtocol(String protocol) {
-		getStoredSettings().setProtocol(protocol);
 		return (SELF) this;
 	}
 
@@ -311,12 +283,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 //		return getStoredSettings().getFilename();
 //	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final String getHost(String host) {
-		return getStoredSettings().getHost();
-	}
-
 //	@SuppressWarnings("unchecked")
 //	@Override
 //	public final String getInstance() {
@@ -333,18 +299,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	@Override
 	public final String getPassword() {
 		return getStoredSettings().getPassword();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final String getPort() {
-		return getStoredSettings().getPort();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final String getProtocol() {
-		return getStoredSettings().getProtocol();
 	}
 
 //	@SuppressWarnings("unchecked")

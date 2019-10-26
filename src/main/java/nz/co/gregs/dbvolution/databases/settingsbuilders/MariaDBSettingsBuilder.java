@@ -41,7 +41,8 @@ import nz.co.gregs.dbvolution.databases.MariaDB;
  * @author gregorygraham
  */
 public class MariaDBSettingsBuilder extends AbstractSettingsBuilder<MariaDBSettingsBuilder>
-implements InstanceCapableSettingsBuilder<MariaDBSettingsBuilder>{
+		implements InstanceCapableSettingsBuilder<MariaDBSettingsBuilder>,
+		RemoteCapableSettingsBuilder<MariaDBSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

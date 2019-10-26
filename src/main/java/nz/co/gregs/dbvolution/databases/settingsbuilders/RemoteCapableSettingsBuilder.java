@@ -33,10 +33,35 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
  */
-public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuilder>
-		implements FileBasedSettingsBuilder<H2SettingsBuilder>,
-		RemoteCapableSettingsBuilder<H2SettingsBuilder> ,
-		ProtocolCapableSettingsBuilder<H2SettingsBuilder>{
+public interface RemoteCapableSettingsBuilder<SELF extends RemoteCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF> {
 
+	@SuppressWarnings("unchecked")
+	public default SELF setHost(String host) {
+		getStoredSettings().setHost(host);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public default SELF setPort(int port) {
+		getStoredSettings().setPort("" + port);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public default SELF setPort(long port) {
+		getStoredSettings().setPort("" + port);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public default String getHost(String host) {
+		return getStoredSettings().getHost();
+	}
+
+	@SuppressWarnings("unchecked")
+	public default String getPort() {
+		return getStoredSettings().getPort();
+	}
 }

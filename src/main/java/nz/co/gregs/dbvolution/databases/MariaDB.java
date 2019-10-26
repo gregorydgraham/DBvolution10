@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MariaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * DBDatabase tweaked for a MariaDB Database.

@@ -33,10 +33,8 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
  */
-public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuilder>
-		implements FileBasedSettingsBuilder<H2SettingsBuilder>,
-		RemoteCapableSettingsBuilder<H2SettingsBuilder> ,
-		ProtocolCapableSettingsBuilder<H2SettingsBuilder>{
-
+public interface ProtocolCapableSettingsBuilder<SELF extends ProtocolCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
+	
 }

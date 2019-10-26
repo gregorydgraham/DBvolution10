@@ -42,7 +42,8 @@ import nz.co.gregs.dbvolution.databases.PostgresDB;
  * @param <SELF>
  */
 public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostgresSettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF>
-		implements InstanceCapableSettingsBuilder<SELF> {
+		implements InstanceCapableSettingsBuilder<SELF>,
+		RemoteCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

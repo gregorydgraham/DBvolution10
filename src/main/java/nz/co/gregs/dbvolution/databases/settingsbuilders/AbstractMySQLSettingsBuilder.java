@@ -40,7 +40,8 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @param <SELF> the type returned by all SELF methods
  */
 public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF>
-		implements InstanceCapableSettingsBuilder<SELF> {
+		implements InstanceCapableSettingsBuilder<SELF>,
+		RemoteCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{

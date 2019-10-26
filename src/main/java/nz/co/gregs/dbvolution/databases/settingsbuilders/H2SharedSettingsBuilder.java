@@ -35,7 +35,9 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2SharedDB;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
-public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedSettingsBuilder>{
+public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedSettingsBuilder>
+		implements RemoteCapableSettingsBuilder<H2SharedSettingsBuilder>,
+		ProtocolCapableSettingsBuilder<H2SharedSettingsBuilder> {
 
 //	@Override
 //	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
@@ -44,19 +46,18 @@ public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedS
 //		String protocol = defaultString(settings.getProtocol(), "tcp");
 //		return "jdbc:h2:" + protocol + "://" + hostname + ":" + port + "/" + settings.getDatabaseName();
 //	}
-
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
 		String hostname = DefaultString.check(settings.getHost(), "localhost");
 		String port = DefaultString.check(settings.getPort(), "" + getDefaultPort());
-		final String databaseName = DefaultString.check(settings.getDatabaseName(),settings.getFilename());
-		return  hostname + ":" + port + "/" + databaseName;
+		final String databaseName = DefaultString.check(settings.getDatabaseName(), settings.getFilename(), settings.getInstance());
+		return hostname + ":" + port + "/" + databaseName;
 	}
 
 	@Override
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		String protocol = defaultString(settings.getProtocol(), "tcp");
-		return  "jdbc:h2:"+protocol + "://";
+		return "jdbc:h2:" + protocol + "://";
 	}
 
 	@Override
