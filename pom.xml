@@ -791,7 +791,7 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<testMySQL>true</testMySQL>
+								<testMySQLContainer>true</testMySQLContainer>
 								<testPostgresSQL>true</testPostgresSQL>
 							</systemPropertyVariables>
 						</configuration>
@@ -815,7 +815,7 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<testMySQL>true</testMySQL>
+								<testMySQLContainer>true</testMySQLContainer>
 								<testPostgresSQL>true</testPostgresSQL>
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
@@ -871,7 +871,7 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<testMySQL>true</testMySQL>
+								<testMySQLContainer>true</testMySQLContainer>
 								<testOracleXE>true</testOracleXE>
 								<testMSSQLServer>true</testMSSQLServer>
 							</systemPropertyVariables>

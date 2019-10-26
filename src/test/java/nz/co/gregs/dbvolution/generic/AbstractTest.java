@@ -93,7 +93,8 @@ public abstract class AbstractTest {
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				MySQLTestDatabase.getFromSettings("mysql")
+				//MySQLTestDatabase.getFromSettings("mysql")
+				getMySQLContainerDatabaseForCluster()
 				)});
 		}
 		if (System.getProperty("testFullCluster") != null) {
@@ -102,7 +103,8 @@ public abstract class AbstractTest {
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "full"),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				MySQLTestDatabase.getFromSettings("mysql"),
+				//				MySQLTestDatabase.getFromSettings("mysql"),
+				getMySQLContainerDatabaseForCluster(),
 				getMSSQLServerContainerDatabaseForCluster()
 				)});
 		}
@@ -112,7 +114,8 @@ public abstract class AbstractTest {
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				MySQLTestDatabase.getFromSettings("mysql")
+				getMySQLContainerDatabaseForCluster()
+				//MySQLTestDatabase.getFromSettings("mysql")
 				)});
 			databases.add(new Object[]{"MySQL",
 				MySQLTestDatabase.getFromSettings("mysql")
@@ -203,7 +206,7 @@ public abstract class AbstractTest {
 		}
 		return MySQL_CONTAINER_DATABASE;
 	}
-	
+
 	private static MySQLContainerDB getMySQLContainerDatabaseForCluster() {
 		if (MySQL_CONTAINER_DATABASE_FOR_CLUSTER == null) {
 			MySQL_CONTAINER_DATABASE_FOR_CLUSTER = MySQLContainerDB.getInstance();
