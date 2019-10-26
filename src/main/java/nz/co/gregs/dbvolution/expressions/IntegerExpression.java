@@ -151,6 +151,32 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param value a literal value to use in the expression
 	 */
+	public IntegerExpression(Integer value) {
+		super(new DBInteger(value));
+	}
+
+	/**
+	 * Create a IntegerExpression based on an existing Long.
+	 *
+	 * <p>
+	 * This performs a similar function to
+	 * {@code IntegerExpression(IntegerResult)}.
+	 *
+	 * @param value a literal value to use in the expression
+	 */
+	public IntegerExpression(Long value) {
+		super(new DBInteger(value));
+	}
+
+	/**
+	 * Create a IntegerExpression based on an existing Integer.
+	 *
+	 * <p>
+	 * This performs a similar function to
+	 * {@code IntegerExpression(IntegerResult)}.
+	 *
+	 * @param value a literal value to use in the expression
+	 */
 	public IntegerExpression(int value) {
 		super(new DBInteger(value));
 	}
