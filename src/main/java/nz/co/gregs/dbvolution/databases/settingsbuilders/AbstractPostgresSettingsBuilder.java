@@ -45,7 +45,8 @@ public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostg
 		implements ClusterCapableSettingsBuilder<SELF>,
 		InstanceCapableSettingsBuilder<SELF>,
 		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>{
+		NamedDatabaseCapableSettingsBuilder<SELF>,
+		ExtrasCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

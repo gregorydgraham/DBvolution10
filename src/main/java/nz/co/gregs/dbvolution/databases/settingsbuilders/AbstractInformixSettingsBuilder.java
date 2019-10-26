@@ -44,7 +44,8 @@ import nz.co.gregs.dbvolution.databases.InformixDB;
 public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
 		implements InstanceCapableSettingsBuilder<SELF>,
 		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>{
+		NamedDatabaseCapableSettingsBuilder<SELF>,
+		ExtrasCapableSettingsBuilder<SELF>{
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

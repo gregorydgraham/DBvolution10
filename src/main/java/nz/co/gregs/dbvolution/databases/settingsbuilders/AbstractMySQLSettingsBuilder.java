@@ -43,7 +43,8 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 		implements ClusterCapableSettingsBuilder<SELF>,
 		InstanceCapableSettingsBuilder<SELF>,
 		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>{
+		NamedDatabaseCapableSettingsBuilder<SELF>, 
+		ExtrasCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -89,11 +90,6 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 		return settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
 	}
 
-//	@Override
-//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		final String url = getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
-//		return url;
-//	}
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		settings.setPort("3306");

@@ -44,7 +44,8 @@ import nz.co.gregs.dbvolution.databases.JavaDB;
 public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
 		implements InstanceCapableSettingsBuilder<SELF>,
 		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>{
+		NamedDatabaseCapableSettingsBuilder<SELF>,
+		ExtrasCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -100,7 +101,7 @@ public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBS
 				+ ":" + settings.getPort()
 				+ "/" + ("".equals(settings.getProtocol()) ? "" : settings.getProtocol() + ":")
 				+ settings.getDatabaseName()
-				+ encodeExtras(settings, "?", "=", "&", "");
+				+ encodeExtras(settings, ";", "=", ";", "");
 	}
 
 //	@Override

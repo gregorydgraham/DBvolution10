@@ -44,7 +44,8 @@ import nz.co.gregs.dbvolution.utility.DefaultString;
  */
 public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF>>
 		extends AbstractSettingsBuilder<SELF>
-		implements ClusterCapableSettingsBuilder<SELF> {
+		implements ClusterCapableSettingsBuilder<SELF>,
+		ExtrasCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -106,7 +107,8 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 	@Override
 	public String encodeHost(DatabaseConnectionSettings settings) {
 		final String filename = settings.getFilename();
-		final String encoded = DefaultString.check(filename, settings.getInstance(), settings.getDatabaseName());
+		String encoded = DefaultString.check(filename, settings.getInstance(), settings.getDatabaseName());
+		encoded += encodeExtras(settings, ";", "=", ";", "");
 		return encoded;
 	}
 

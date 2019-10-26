@@ -147,12 +147,12 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return storedSettingsInAbstractURLInterpreter;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setExtras(Map<String, String> extras) {
-		getStoredSettings().setExtras(extras);
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setExtras(Map<String, String> extras) {
+//		getStoredSettings().setExtras(extras);
+//		return (SELF) this;
+//	}
 
 	@SuppressWarnings("unchecked")
 	public final SELF addExtra(String key, String value) {
@@ -187,11 +187,11 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return (SELF) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final Map<String, String> getExtras() {
-		return getStoredSettings().getExtras();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final Map<String, String> getExtras() {
+//		return getStoredSettings().getExtras();
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override

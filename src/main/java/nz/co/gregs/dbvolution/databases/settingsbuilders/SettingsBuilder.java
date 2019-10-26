@@ -103,11 +103,11 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
 //	String getDatabaseName();
 
-	Map<String, String> getExtras();
+//	Map<String, String> getExtras();
 
 //	SELF setDatabaseName(String databaseName);
 
-	SELF setExtras(Map<String, String> extras);
+//	SELF setExtras(Map<String, String> extras);
 
 //	String getHost(String host);
 //
