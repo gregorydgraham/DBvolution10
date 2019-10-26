@@ -35,29 +35,20 @@ import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
+/**
+ *
+ * @author gregorygraham
+ * @param <SELF>
+ */
+public interface ClusterCapableSettingsBuilder<SELF extends ClusterCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
 
-public abstract class AbstractClusterCapableSettingsBuilder<SELF extends AbstractClusterCapableSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF> {
-
-	protected String encodeClusterHosts(List<DatabaseConnectionSettings> hosts){
+	public default String encodeClusterHosts(List<DatabaseConnectionSettings> hosts){
 		SeparatedString sep = SeparatedString.forSeparator(",");
 		sep.addAll(
 				hosts.stream()
-						.map((t) -> {
-							return encodeHost(t); //To change body of generated lambdas, choose Tools | Templates.
-						})
+						.map(this::encodeHost)
 						.collect(Collectors.toList())
 		);
 		return sep.toString();
 	}
-
-	@Override
-	protected String encodeHostAbstract(DatabaseConnectionSettings settings) {
-		List<DatabaseConnectionSettings> hosts = settings.getClusterHosts();
-		if (hosts.isEmpty()) {
-			return encodeHost(settings);
-		} else {
-			return encodeClusterHosts(settings.getClusterHosts());
-		}
-	}
-	
 }

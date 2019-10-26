@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
@@ -52,14 +53,19 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 
 	protected abstract DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings);
 
-	protected abstract String encodeHost(DatabaseConnectionSettings settings);
-
 	protected final String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
 		return this.getJDBCURLPreamble(settings) + encodeHostAbstract(settings);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected String encodeHostAbstract(DatabaseConnectionSettings settings) {
-		return encodeHost(settings);
+		List<DatabaseConnectionSettings> hosts = settings.getClusterHosts();
+		if (!hosts.isEmpty() && (this instanceof ClusterCapableSettingsBuilder)) {
+			ClusterCapableSettingsBuilder builder = (ClusterCapableSettingsBuilder) this;
+			return builder.encodeClusterHosts(settings.getClusterHosts());
+		} else {
+			return encodeHost(settings);
+		}
 	}
 
 	public final DatabaseConnectionSettings parseURL(String jdbcURL) {
@@ -143,13 +149,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public final SELF setDatabaseName(String databaseName) {
-		getStoredSettings().setDatabaseName(databaseName);
-		return (SELF) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
 	public final SELF setExtras(Map<String, String> extras) {
 		getStoredSettings().setExtras(extras);
 		return (SELF) this;
@@ -186,12 +185,6 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	public final SELF setUsername(String username) {
 		getStoredSettings().setUsername(username);
 		return (SELF) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final String getDatabaseName() {
-		return getStoredSettings().getDatabaseName();
 	}
 
 	@SuppressWarnings("unchecked")

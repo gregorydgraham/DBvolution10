@@ -42,52 +42,55 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  */
 public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
-
 	DatabaseConnectionSettings getStoredSettings();
-	
+
 	public String generateJDBCURL(DatabaseConnectionSettings settings);
 
 	public Class<? extends DBDatabase> generatesURLForDatabase();
+
+	String encodeHost(DatabaseConnectionSettings settings);
 
 	public boolean canProcessesURLsFor(DBDatabase otherdb);
 
 	public Integer getDefaultPort();
 
 	/**
-	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
-	 * 
-	 * 
-	 * @see #toSettings() 
-	 * @see #toJDBCURL() 
-	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
-	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
+	 * Part of the fluent API, this provides a quick why to parse a URL and alter
+	 * it.
+	 *
+	 *
+	 * @see #toSettings()
+	 * @see #toJDBCURL()
+	 * @see AbstractURLInterpreter#setUsername(java.lang.String)
+	 * @see AbstractURLInterpreter#setPassword(java.lang.String)
 	 * @param jdbcURL
-	 * @return 
+	 * @return
 	 */
 	public SELF fromJDBCURL(String jdbcURL);
 
 	/**
-	 * Part of the fluent API, this provides a quick why to parse a URL and alter it.
-	 * 
+	 * Part of the fluent API, this provides a quick why to parse a URL and alter
+	 * it.
+	 *
 	 * @param jdbcURL
 	 * @param username
 	 * @param password
-	 * @see #toSettings() 
-	 * @see #toJDBCURL() 
-	 * @see AbstractURLInterpreter#setUsername(java.lang.String) 
-	 * @see AbstractURLInterpreter#setPassword(java.lang.String) 
-	 * @return 
+	 * @see #toSettings()
+	 * @see #toJDBCURL()
+	 * @see AbstractURLInterpreter#setUsername(java.lang.String)
+	 * @see AbstractURLInterpreter#setPassword(java.lang.String)
+	 * @return
 	 */
 	public SELF fromJDBCURL(String jdbcURL, String username, String password);
 
 	public SELF fromSettings(DatabaseConnectionSettings settingsfromSystemUsingPrefix);
-	
+
 	public DatabaseConnectionSettings toSettings();
 
 	public String toJDBCURL();
 
 	String getLabel();
-	
+
 	SELF setLabel(String label);
 
 	String getUsername();
@@ -98,10 +101,11 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
 	SELF setPassword(String password);
 
-	String getDatabaseName();
+//	String getDatabaseName();
 
 	Map<String, String> getExtras();
-	SELF setDatabaseName(String databaseName);
+
+//	SELF setDatabaseName(String databaseName);
 
 	SELF setExtras(Map<String, String> extras);
 
@@ -118,6 +122,4 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 //	SELF setPort(long port);
 //
 //	SELF setProtocol(String protocol);
-
-
 }

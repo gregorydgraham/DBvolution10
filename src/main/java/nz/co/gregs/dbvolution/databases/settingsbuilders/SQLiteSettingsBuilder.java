@@ -40,7 +40,9 @@ import nz.co.gregs.dbvolution.databases.SQLiteDB;
  *
  * @author gregorygraham
  */
-public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSettingsBuilder> implements FileBasedSettingsBuilder<SQLiteSettingsBuilder> {
+public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSettingsBuilder>
+		implements FileBasedSettingsBuilder<SQLiteSettingsBuilder>,
+		NamedDatabaseCapableSettingsBuilder<SQLiteSettingsBuilder>{
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -82,7 +84,7 @@ public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSetting
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		final String filename = settings.getFilename();
 		return filename == null || filename.isEmpty()
 				? settings.getDatabaseName()

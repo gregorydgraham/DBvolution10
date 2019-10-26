@@ -35,7 +35,8 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
-public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder> {
+public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder>
+implements NamedDatabaseCapableSettingsBuilder<H2MemorySettingsBuilder>{
 
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
@@ -43,7 +44,7 @@ public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemoryS
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		final String encoded
 				= DefaultString.check(
 						settings.getDatabaseName(),

@@ -115,7 +115,7 @@ public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSetting
 	 * @return
 	 */
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + ":"
 				+ settings.getPort() + "/"
 				+ settings.getInstance();

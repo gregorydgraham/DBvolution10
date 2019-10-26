@@ -92,7 +92,7 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + ":"
 				+ settings.getPort() + "/"
 				+ settings.getDatabaseName()

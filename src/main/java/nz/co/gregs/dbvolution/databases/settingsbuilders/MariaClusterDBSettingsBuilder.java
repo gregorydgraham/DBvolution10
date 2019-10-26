@@ -42,7 +42,8 @@ import nz.co.gregs.dbvolution.databases.MariaClusterDB;
  */
 public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder>
 		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder>,
-		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder> {
+		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder>,
+		NamedDatabaseCapableSettingsBuilder<MariaClusterDBSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -100,7 +101,7 @@ public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<Maria
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + ":"
 				+ settings.getPort() + "/"
 				+ settings.getDatabaseName();

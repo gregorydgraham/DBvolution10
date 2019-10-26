@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A DBDatabase tweaked for MySQL databases

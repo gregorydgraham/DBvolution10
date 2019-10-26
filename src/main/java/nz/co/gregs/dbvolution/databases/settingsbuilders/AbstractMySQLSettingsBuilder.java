@@ -39,9 +39,11 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @author gregorygraham
  * @param <SELF> the type returned by all SELF methods
  */
-public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF>
-		implements InstanceCapableSettingsBuilder<SELF>,
-		RemoteCapableSettingsBuilder<SELF> {
+public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
+		implements ClusterCapableSettingsBuilder<SELF>,
+		InstanceCapableSettingsBuilder<SELF>,
+		RemoteCapableSettingsBuilder<SELF>,
+		NamedDatabaseCapableSettingsBuilder<SELF>{
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -83,7 +85,7 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
 	}
 

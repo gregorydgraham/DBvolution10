@@ -100,7 +100,7 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + "/"
 				+ settings.getDatabaseName()
 				+ "?schema=" + settings.getSchema();

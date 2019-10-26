@@ -30,30 +30,21 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  *
  * @author gregorygraham
  * @param <SELF>
  */
-public interface FileBasedSettingsBuilder<SELF extends FileBasedSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
+public interface NamedDatabaseCapableSettingsBuilder<SELF extends NamedDatabaseCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
 
-	public default String getFilename(){
-		return getStoredSettings().getFilename();
+	@SuppressWarnings("unchecked")
+	public default SELF setDatabaseName(String databaseName) {
+		getStoredSettings().setDatabaseName(databaseName);
+		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public default SELF setFilename(String filename) {
-		getStoredSettings().setFilename(filename);
-		return (SELF) this;
+	public default String getDatabaseName() {
+		return getStoredSettings().getDatabaseName();
 	}
-	
-	@SuppressWarnings(value = "unchecked")
-	default SELF setFilename(File databaseFile) throws IOException{
-		setFilename(databaseFile.getCanonicalFile().toString());
-		return (SELF) this;
-	}
-	
 }

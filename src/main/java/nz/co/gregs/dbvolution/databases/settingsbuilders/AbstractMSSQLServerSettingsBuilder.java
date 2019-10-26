@@ -43,7 +43,8 @@ import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
  */
 public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
 		implements InstanceCapableSettingsBuilder<SELF>,
-		RemoteCapableSettingsBuilder<SELF>{
+		RemoteCapableSettingsBuilder<SELF>,
+		NamedDatabaseCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -86,7 +87,7 @@ public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMS
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		final String databaseName = settings.getDatabaseName();
 		final String instance = settings.getInstance();
 		final String urlFromSettings

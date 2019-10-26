@@ -42,7 +42,8 @@ import nz.co.gregs.dbvolution.databases.MariaDB;
  */
 public class MariaDBSettingsBuilder extends AbstractSettingsBuilder<MariaDBSettingsBuilder>
 		implements InstanceCapableSettingsBuilder<MariaDBSettingsBuilder>,
-		RemoteCapableSettingsBuilder<MariaDBSettingsBuilder> {
+		RemoteCapableSettingsBuilder<MariaDBSettingsBuilder>,
+		NamedDatabaseCapableSettingsBuilder<MariaDBSettingsBuilder>{
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -101,7 +102,7 @@ public class MariaDBSettingsBuilder extends AbstractSettingsBuilder<MariaDBSetti
 	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + ":"
 				+ settings.getPort() + "/"
 				+ settings.getDatabaseName();

@@ -80,7 +80,7 @@ public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQ
 //	}
 
 	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
+	public String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() 
 				+ ":" + settings.getPort() 
 				+ "/" + settings.getDatabaseName()
