@@ -30,6 +30,7 @@ import java.util.Locale;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
@@ -133,7 +134,16 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2SharedDB", H2TestDatabase.getSharedDBFromSettings("h2shared")});
 		}
 		if (System.getProperty("testH2FileDB") != null) {
-			databases.add(new Object[]{"H2FileDB", H2TestDatabase.getFromSettings("h2file")});
+			//Quite convoluted creation but it's meant to test the file builder
+			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix("h2file");
+			databases.add(new Object[]{"H2FileDB", new H2FileDB(
+				new H2FileSettingsBuilder()
+				.setFilename(settings.getFilename())
+				.setUsername(settings.getUsername())
+				.setPassword(settings.getUsername())
+				)
+			}
+			);
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
 			databases.add(new Object[]{"H2DataSourceDB", H2TestDatabase.getFromSettingsUsingDataSource("h2datasource")});
@@ -569,7 +579,6 @@ public abstract class AbstractTest {
 //		public MSSQLServerLocalTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
 //			super(host, instance, database, Integer.parseInt(port), username, password);
 //		}
-
 		private MSSQLServerLocalTestDB(MSSQLServerSettingsBuilder builder) throws SQLException {
 			super(builder);
 		}
