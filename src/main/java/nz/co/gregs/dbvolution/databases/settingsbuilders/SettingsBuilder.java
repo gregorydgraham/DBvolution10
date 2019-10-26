@@ -86,9 +86,17 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
 	public String toJDBCURL();
 
-	String getDBDatabaseName();
+	String getLabel();
+	
+	SELF setLabel(String label);
 
-	DataSource getDataSource();
+	String getUsername();
+
+	SELF setUsername(String username);
+
+	String getPassword();
+
+	SELF setPassword(String password);
 
 	String getDatabaseName();
 
@@ -96,25 +104,9 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
 	String getHost(String host);
 
-//	String getInstance();
-
-	String getLabel();
-
-	String getPassword();
-
 	String getPort();
 
 	String getProtocol();
-
-	String getSchema();
-
-	String getUrl();
-
-	String getUsername();
-	
-	SELF setDBDatabaseName(String dbDatabaseName);
-
-	SELF setDataSource(DataSource dataSource);
 
 	SELF setDatabaseName(String databaseName);
 
@@ -122,21 +114,10 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF>> {
 
 	SELF setHost(String host);
 
-//	SELF setInstance(String instance);
-
-	SELF setLabel(String label);
-
-	SELF setPassword(String password);
-
 	SELF setPort(int port);
 
 	SELF setPort(long port);
 
 	SELF setProtocol(String protocol);
 
-	SELF setSchema(String schema);
-
-	SELF setUrl(String url);
-
-	SELF setUsername(String username);
 }

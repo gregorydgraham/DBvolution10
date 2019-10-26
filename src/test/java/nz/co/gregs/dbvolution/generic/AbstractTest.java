@@ -588,11 +588,11 @@ public abstract class AbstractTest {
 		public static H2MemoryTestDB getClusterDBFromSettings(String prefix) throws SQLException {
 			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
 			H2MemorySettingsBuilder builder = new H2MemorySettingsBuilder().fromSettings(settings);
-			String file = builder.getInstance();
+			String file = builder.getDatabaseName();
 			if (file != null && !file.equals("")) {
-				builder.setInstance(file + "-cluster.h2db");
+				builder.setDatabaseName(file + "-cluster.h2db");
 			} else {
-				builder.setInstance("cluster.h2db");
+				builder.setDatabaseName("cluster.h2db");
 			}
 			return new H2MemoryTestDB(builder);
 		}

@@ -41,7 +41,8 @@ import nz.co.gregs.dbvolution.databases.InformixDB;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF> {
+public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
+		implements InstanceCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -74,11 +75,11 @@ public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInfor
 
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getHost() 
-				+ ":" + settings.getPort() 
-				+ "/" + settings.getDatabaseName() 
-				+ ":INFORMIXSERVER=" 
-				+ settings.getInstance() 
+		return settings.getHost()
+				+ ":" + settings.getPort()
+				+ "/" + settings.getDatabaseName()
+				+ ":INFORMIXSERVER="
+				+ settings.getInstance()
 				+ settings.formatExtras(":", "=", ";", "");
 	}
 
@@ -86,7 +87,6 @@ public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInfor
 //	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
 //		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + ":INFORMIXSERVER=" + settings.getInstance() + settings.formatExtras(":", "=", ";", "");
 //	}
-
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return InformixDB.class;

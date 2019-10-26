@@ -40,7 +40,8 @@ import nz.co.gregs.dbvolution.databases.NuoDB;
  *
  * @author gregorygraham
  */
-public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsBuilder> {
+public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsBuilder>
+		implements InstanceCapableSettingsBuilder<NuoDBSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -51,17 +52,17 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
 		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:+", ""));
 		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
+				.split("/", 2)[0]
+				.split(":")[0]);
 		set.setInstance(set.getExtras().get("instance"));
 		set.setSchema("");
 		return set;
@@ -71,11 +72,11 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		return getJDBCURLPreamble();
 	}
-	
+
 	protected String getJDBCURLPreamble() {
 		return "jdbc:com.nuodb://";
 	}
-	
+
 //	@Override
 //	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
 //		String url = settings.getUrl();
@@ -83,7 +84,6 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 //				+ settings.getHost() + "/"
 //				+ settings.getDatabaseName() + "?schema=" + settings.getSchema();
 //	}
-
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
@@ -102,7 +102,7 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 	@Override
 	protected String encodeHost(DatabaseConnectionSettings settings) {
 		return settings.getHost() + "/"
-				+ settings.getDatabaseName() 
+				+ settings.getDatabaseName()
 				+ "?schema=" + settings.getSchema();
 	}
 }

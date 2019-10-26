@@ -40,7 +40,8 @@ import nz.co.gregs.dbvolution.databases.MariaClusterDB;
  *
  * @author gregorygraham
  */
-public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder> {
+public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder>
+		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -82,7 +83,6 @@ public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<Maria
 //				+ settings.getPort() + "/"
 //				+ settings.getDatabaseName();
 //	}
-
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;

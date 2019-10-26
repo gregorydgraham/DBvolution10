@@ -30,44 +30,20 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.H2MemoryDB;
-import nz.co.gregs.dbvolution.utility.DefaultString;
+/**
+ *
+ * @author gregorygraham
+ * @param <SELF>
+ */
+public interface SchemaCapableSettingsBuilder<SELF extends SchemaCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
 
-public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder> {
-
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return H2MemoryDB.class;
+	@SuppressWarnings("unchecked")
+	public default SELF setSchema(String schema) {
+		getStoredSettings().setSchema(schema);
+		return (SELF) this;
 	}
-
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
-//	}
-	@Override
-	protected String encodeHost(DatabaseConnectionSettings settings) {
-		final String encoded
-				= DefaultString.check(
-						settings.getFilename(),
-						settings.getDatabaseName(),
-						settings.getInstance()
-				);
-		return encoded;
-	}
-
-	@Override
-	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
-		return "jdbc:h2:mem:";
-	}
-
-	@Override
-	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
-		super.setDefaultsInternal(settings);
-		settings.setDatabaseName("unknown");
-		settings.setProtocol("mem");
-		return settings;
+	
+	public default String getSchema() {
+		return getStoredSettings().getSchema();
 	}
 }

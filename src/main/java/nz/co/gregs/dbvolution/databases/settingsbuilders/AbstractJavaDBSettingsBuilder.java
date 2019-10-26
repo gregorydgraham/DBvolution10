@@ -41,7 +41,8 @@ import nz.co.gregs.dbvolution.databases.JavaDB;
  * @author gregorygraham
  * @param <SELF>
  */
-public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF> {
+public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
+		implements InstanceCapableSettingsBuilder<SELF> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -105,7 +106,6 @@ public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBS
 //		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + ("".equals(settings.getProtocol()) ? "" : settings.getProtocol() + ":") + settings.getDatabaseName() //+ ";create=true";
 //				+ encodeExtras(settings, "?", "=", "&", "");
 //	}
-
 	@Override
 	public Class<? extends DBDatabase> generatesURLForDatabase() {
 		return JavaDB.class;

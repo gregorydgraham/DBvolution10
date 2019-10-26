@@ -49,7 +49,7 @@ public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedS
 	protected String encodeHost(DatabaseConnectionSettings settings) {
 		String hostname = DefaultString.check(settings.getHost(), "localhost");
 		String port = DefaultString.check(settings.getPort(), "" + getDefaultPort());
-		final String databaseName = DefaultString.check(settings.getDatabaseName(), settings.getInstance(),settings.getFilename());
+		final String databaseName = DefaultString.check(settings.getDatabaseName(),settings.getFilename());
 		return  hostname + ":" + port + "/" + databaseName;
 	}
 

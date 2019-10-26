@@ -39,8 +39,9 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @author gregorygraham
  * @param <SELF> the type returned by all SELF methods
  */
-public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF> {
-	
+public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF>> extends AbstractClusterCapableSettingsBuilder<SELF>
+		implements InstanceCapableSettingsBuilder<SELF> {
+
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
 			put("createDatabaseIfNotExist", "true");
@@ -59,7 +60,7 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 
 	@Override
 	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		settings.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
 		settings.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
 		if (jdbcURL.matches(";")) {
@@ -90,7 +91,6 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 //		final String url = getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
 //		return url;
 //	}
-
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		settings.setPort("3306");
@@ -137,5 +137,5 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 		getStoredSettings().addExtra("verifyServerCertificate", "" + b);
 		return (SELF) this;
 	}
-	
+
 }

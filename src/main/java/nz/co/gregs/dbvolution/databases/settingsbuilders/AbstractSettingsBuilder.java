@@ -31,7 +31,6 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.Map;
-import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
@@ -142,12 +141,12 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return storedSettingsInAbstractURLInterpreter;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setDataSource(DataSource dataSource) {
-		getStoredSettings().setDataSource(dataSource);
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setDataSource(DataSource dataSource) {
+//		getStoredSettings().setDataSource(dataSource);
+//		return (SELF) this;
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -156,12 +155,12 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return (SELF) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setDBDatabaseName(String dbDatabaseName) {
-		getStoredSettings().setDbdatabaseClass(dbDatabaseName);
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setDBDatabaseClass(String dbDatabaseName) {
+//		getStoredSettings().setDbdatabaseClass(dbDatabaseName);
+//		return (SELF) this;
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -242,19 +241,19 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return (SELF) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setSchema(String schema) {
-		getStoredSettings().setSchema(schema);
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setSchema(String schema) {
+//		getStoredSettings().setSchema(schema);
+//		return (SELF) this;
+//	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final SELF setUrl(String url) {
-		getStoredSettings().setUrl(url);
-		return (SELF) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final SELF setUrl(String url) {
+//		getStoredSettings().setUrl(url);
+//		return (SELF) this;
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -282,11 +281,11 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 //		return (SELF) this;
 //	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final DataSource getDataSource() {
-		return getStoredSettings().getDataSource();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final DataSource getDataSource() {
+//		return getStoredSettings().getDataSource();
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -294,11 +293,11 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return getStoredSettings().getDatabaseName();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final String getDBDatabaseName() {
-		return getStoredSettings().getDbdatabaseClass();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final String getDBDatabaseClass() {
+//		return getStoredSettings().getDbdatabaseClass();
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -348,17 +347,17 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 		return getStoredSettings().getProtocol();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final String getSchema() {
-		return getStoredSettings().getSchema();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final String getSchema() {
+//		return getStoredSettings().getSchema();
+//	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final String getUrl() {
-		return getStoredSettings().getUrl();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public final String getUrl() {
+//		return getStoredSettings().getUrl();
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override

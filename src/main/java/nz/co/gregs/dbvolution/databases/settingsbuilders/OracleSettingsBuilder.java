@@ -41,7 +41,9 @@ import nz.co.gregs.dbvolution.databases.OracleDB;
  * @author gregorygraham
  */
 public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSettingsBuilder>
-		implements InstanceCapableSettingsBuilder<OracleSettingsBuilder> {
+		implements 
+		InstanceCapableSettingsBuilder<OracleSettingsBuilder>,
+		SchemaCapableSettingsBuilder<OracleSettingsBuilder>{
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
