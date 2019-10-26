@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  *
  * @author gregorygraham
  */
-public class ClusterSettingsBuilder extends AbstractSettingsBuilder<ClusterSettingsBuilder> {
+public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DBDatabaseClusterSettingsBuilder> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 

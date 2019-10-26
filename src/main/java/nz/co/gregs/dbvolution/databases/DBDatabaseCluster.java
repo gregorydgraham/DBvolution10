@@ -54,7 +54,7 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.ClusterSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.DBDatabaseClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
@@ -111,7 +111,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
-//	private final SettingsBuilder urlProcessor = new ClusterSettingsBuilder();
+//	private final SettingsBuilder urlProcessor = new DBDatabaseClusterSettingsBuilder();
 
 	/**
 	 * Nope.
@@ -138,8 +138,8 @@ public class DBDatabaseCluster extends DBDatabase {
 //	}
 
 	@Override
-	protected ClusterSettingsBuilder getURLInterpreter() {
-		return new ClusterSettingsBuilder();
+	protected DBDatabaseClusterSettingsBuilder getURLInterpreter() {
+		return new DBDatabaseClusterSettingsBuilder();
 	}
 
 	public static enum Status {
