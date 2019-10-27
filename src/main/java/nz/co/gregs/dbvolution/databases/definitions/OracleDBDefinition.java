@@ -82,9 +82,9 @@ public class OracleDBDefinition extends DBDefinition {
 				+ "||' '||" + hours
 				+ "||':'||" + minutes
 				+ "||':'||(" + seconds + "+" + subsecond + ")"
-								+ "||' '||'" + timeZoneSign+"'"
-								+ "||" + timeZoneHourOffset
-								+ "||" + timeZoneMinuteOffSet
+				+ "||' '||'" + timeZoneSign + "'"
+				+ "||" + timeZoneHourOffset
+				+ "||" + timeZoneMinuteOffSet
 				+ ", '" + ORACLE_DATE_FORMAT_STRING_WITH_TIMEZONE + "')";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
@@ -542,8 +542,8 @@ public class OracleDBDefinition extends DBDefinition {
 	public DBExpression transformToSortableType(DBExpression columnExpression) {
 //		QueryableDatatype<?> qdt = columnExpression.getQueryableDatatypeForExpressionValue();
 //		if (qdt instanceof DBBoolean) {
-			if (columnExpression instanceof BooleanExpression) {
-				return ((BooleanExpression) columnExpression).ifTrueFalseNull(1, 0, null);
+		if (columnExpression instanceof BooleanExpression) {
+			return ((BooleanExpression) columnExpression).ifTrueFalseNull(1, 0, null);
 //			} else if (columnExpression instanceof AbstractColumn) {
 //				DBExpression expr = ((AbstractColumn) columnExpression).asExpression();
 //				if (expr instanceof BooleanResult) {
@@ -758,8 +758,28 @@ public class OracleDBDefinition extends DBDefinition {
 	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
 		return "ALTER TABLE " + formatTableName(existingTable) + " ADD " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
 	}
+
+	@Override
 	public String doNumberToIntegerTransform(String sql) {
 		return "CAST(" + sql + " AS NUMBER(38,0))";
+	}
+
+	@Override
+	public String doCurrentUTCDateTimeTransform() {
+		return "(SYSTIMESTAMP at time zone 'UTC')";
+	}
+
+	/**
+	 * Creates the CURRENTTIME function for this database.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the default implementation returns " CURRENT_TIMESTAMP "
+	 */
+	@Override
+	public String doCurrentUTCTimeTransform() {
+		return "(SYSTIMESTAMP at time zone 'UTC')";
 	}
 
 }
