@@ -25,9 +25,11 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeText;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -116,6 +118,10 @@ public class OracleDBDefinition extends DBDefinition {
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBBoolean) {
 			return " NUMBER(1)";
+		} else if (qdt instanceof DBNumber) {
+			return " NUMBER(38,16) ";
+		} else if (qdt instanceof DBInteger) {
+			return " NUMBER(38,0) ";
 		} else if (qdt instanceof DBString) {
 			return " VARCHAR(1000) ";
 		} else if (qdt instanceof DBDate) {
@@ -752,4 +758,8 @@ public class OracleDBDefinition extends DBDefinition {
 	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
 		return "ALTER TABLE " + formatTableName(existingTable) + " ADD " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
 	}
+	public String doNumberToIntegerTransform(String sql) {
+		return "CAST(" + sql + " AS NUMBER(38,0))";
+	}
+
 }
