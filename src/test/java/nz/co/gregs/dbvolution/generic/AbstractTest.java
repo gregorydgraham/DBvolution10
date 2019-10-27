@@ -586,6 +586,7 @@ public abstract class AbstractTest {
 
 		public Oracle11XETestDB(String host, String port, String instance, String username, String password) throws SQLException {
 			super(host, Integer.parseInt(port), instance, username, password);
+			this.setPrintSQLBeforeExecuting(true);
 		}
 	}
 
