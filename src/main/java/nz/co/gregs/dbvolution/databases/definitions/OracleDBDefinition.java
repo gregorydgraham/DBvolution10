@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.CaseExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
@@ -531,27 +532,56 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
-		if (columnExpression instanceof BooleanExpression) {
-			return ((BooleanExpression) columnExpression).ifTrueFalseNull(1, 0, null);
-		} else {
-			return super.transformToStorableType(columnExpression);
-		}
+		return super.transformToStorableType(columnExpression);
 	}
 
 	@Override
 	public DBExpression transformToSortableType(DBExpression columnExpression) {
-//		QueryableDatatype<?> qdt = columnExpression.getQueryableDatatypeForExpressionValue();
-//		if (qdt instanceof DBBoolean) {
 		if (columnExpression instanceof BooleanExpression) {
 			return ((BooleanExpression) columnExpression).ifTrueFalseNull(1, 0, null);
-//			} else if (columnExpression instanceof AbstractColumn) {
-//				DBExpression expr = ((AbstractColumn) columnExpression).asExpression();
-//				if (expr instanceof BooleanResult) {
-//					return new BooleanExpression((BooleanResult) expr).ifTrueFalseNull(1, 0, null);
-//				}
-//			}
 		}
 		return super.transformToSortableType(columnExpression);
+	}
+
+	@Override
+	public DBExpression transformToGroupableType(DBExpression expression) {
+		if (expression instanceof BooleanExpression) {
+			return ((BooleanExpression) expression).ifTrueFalseNull(1, 0, null);
+		} else {
+			return super.transformToGroupableType(expression);
+		}
+	}
+
+	@Override
+	public DBExpression transformToSelectableType(DBExpression expression) {
+		if (expression instanceof CaseExpression) {
+			return super.transformToSelectableType(expression);
+		} else if (expression instanceof BooleanExpression) {
+			BooleanExpression boolExpr = (BooleanExpression) expression;
+			if (boolExpr.isWindowingFunction()) {
+				return super.transformToSelectableType(expression);
+			} else if (!boolExpr.isBooleanStatement()) {
+				return super.transformToSelectableType(expression);
+			} else {
+				return boolExpr.ifTrueFalseNull(1, 0, null);
+			}
+		} else {
+			return super.transformToSelectableType(expression);
+		}
+	}
+
+	@Override
+	public DBExpression transformToWhenableType(BooleanExpression test) {
+		if (test.isBooleanStatement()) {
+			return test;
+		} else {
+			return new BooleanExpression(test) {
+				@Override
+				public String toSQLString(DBDefinition db) {
+					return "(" + super.toSQLString(db) + "=1)";
+				}
+			};
+		}
 	}
 
 	@Override
@@ -794,7 +824,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "LIST_AGG(" + accumulateColumn + ", " + separator + ")"+ " WITHIN GROUP( ORDER BY " + orderByColumnName+")";
+		return "LIST_AGG(" + accumulateColumn + ", " + separator + ")" + " WITHIN GROUP( ORDER BY " + orderByColumnName + ")";
 	}
 
 }
