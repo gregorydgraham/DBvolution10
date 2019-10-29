@@ -70,22 +70,22 @@ public class OracleDBDefinition extends DBDefinition {
 		if (date == null) {
 			return getNull();
 		}
-		return " TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER.format(date) + "','" + ORACLE_DATE_FORMAT_STRING_WITH_TIMEZONE + "') ";
+		return "/*getDateFormattedForQuery*/ TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER.format(date) + "','" + ORACLE_DATE_FORMAT_STRING_WITH_TIMEZONE + "') ";
 	}
 
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return "TO_TIMESTAMP_TZ("
+		return "/*getDatePartsFormattedForQuery*/TO_TIMESTAMP_TZ("
 				+ years
 				+ "||'-'||" + months
 				+ "||'-'||" + days
 				+ "||' '||" + hours
 				+ "||':'||" + minutes
-				+ "||':'||(" + seconds + "+" + subsecond + ")"
+				+ "||':'||to_char(" + seconds + "+" + subsecond + ", '90D099999')"
 				+ "||' '||'" + timeZoneSign + "'"
 				+ "||" + timeZoneHourOffset
-				+ "||" + timeZoneMinuteOffSet
-				+ ", '" + ORACLE_DATE_FORMAT_STRING_WITH_TIMEZONE + "')";
+				+ "||':'||" + timeZoneMinuteOffSet
+				+ ", '" + "YYYY-MM-DD HH24:MI:SS.FF6 TZH:TZM" + "')";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
@@ -780,6 +780,21 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doCurrentUTCTimeTransform() {
 		return "(SYSTIMESTAMP at time zone 'UTC')";
+	}
+
+	@Override
+	public String doInstantSubsecondTransform(String dateExpression) {
+		return doInstantSecondTransform(dateExpression) + "-" + doRoundTransform(doInstantSecondTransform(dateExpression));
+	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
+		return "LIST_AGG(" + accumulateColumn + ", " + separator + ")";
+	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
+		return "LIST_AGG(" + accumulateColumn + ", " + separator + ")"+ " WITHIN GROUP( ORDER BY " + orderByColumnName+")";
 	}
 
 }
