@@ -454,7 +454,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 								groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 								groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 								if (expression != null) {
-									groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
+									groupByClause.append(groupByColSep).append(defn.transformToGroupableType(expression).toSQLString(defn));
 									groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 								} else {
 									groupByClause.append(groupByColSep).append(selectColumn);
@@ -585,7 +585,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					final DBExpression expression = entry.getValue();
 					if (!expression.isWindowingFunction()
 							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
-						groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
+						groupByClause.append(groupByColSep).append(defn.transformToGroupableType(expression).toSQLString(defn));
 						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 					}
 				}
