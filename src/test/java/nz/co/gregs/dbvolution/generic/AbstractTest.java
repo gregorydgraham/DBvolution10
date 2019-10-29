@@ -35,6 +35,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import nz.co.gregs.dbvolution.example.*;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
@@ -371,6 +372,10 @@ public abstract class AbstractTest {
 	}
 
 	public void tearDown(DBDatabase database) throws Exception {
+	}
+
+	protected String oracleSafeStrings(String expect) throws NoAvailableDatabaseException {
+		return database.getDefinition().supportsDifferenceBetweenNullAndEmptyString() ? expect : expect == null ? "" : expect;
 	}
 
 	private static class H2TestDatabase extends H2DB {
