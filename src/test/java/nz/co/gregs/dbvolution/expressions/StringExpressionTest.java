@@ -27,7 +27,6 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -36,8 +35,6 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.results.NumberResult;
-import nz.co.gregs.dbvolution.expressions.search.SearchAcross;
-import nz.co.gregs.dbvolution.expressions.search.SearchString;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -1368,8 +1365,10 @@ public class StringExpressionTest extends AbstractTest {
 			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
 			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
 			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
-			Assert.assertThat(got.lag.getValue(), is((String) expect[4]));
-			Assert.assertThat(got.lead.getValue(), is((String) expect[5]));
+			final String lagTest = oracleSafeStrings((String)expect[4]);
+			Assert.assertThat(got.lag.getValue(), is(lagTest));
+			final String leadTest = oracleSafeStrings((String)expect[5]);
+			Assert.assertThat(got.lead.getValue(), is(leadTest));
 		}
 	}
 
