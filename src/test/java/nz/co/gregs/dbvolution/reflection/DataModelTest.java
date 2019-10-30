@@ -480,6 +480,8 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$8TestCustomer");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.IntegerExpressionTest$ExtendedCarCompany");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.BooleanExpressionTest$MarqueWithEquivalentCaseStatements");
+		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$TestDefaultInsertWithLocalDateTimeValue");
+		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$TestDefaultInsertWithInstantValue");
 
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {
@@ -500,13 +502,13 @@ public class DataModelTest extends AbstractTest {
 			}
 			Assert.assertTrue(knownKeys.contains(foundString));
 		}
-		Assert.assertThat(result.size(), is(297));
+		Assert.assertThat(result.size(), is(299));
 	}
 
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		Assert.assertThat(result.size(), is(115));
+		Assert.assertThat(result.size(), is(117));
 	}
 
 	@Test
