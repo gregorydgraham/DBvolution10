@@ -27,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
@@ -251,6 +252,18 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	 */
 	public void setValue(GregorianCalendar date) {
 		super.setLiteralValue(date.toZonedDateTime().withZoneSameLocal(ZoneOffset.UTC).toInstant());
+	}
+
+	/**
+	 * Sets the value of this QDT to the Java Instant provided.
+	 *
+	 * <p>
+	 * The local date and time is moved to UTC before storing.</p>
+	 *
+	 * @param date	date
+	 */
+	public void setValue(Date date) {
+		super.setLiteralValue(date.toInstant());
 	}
 
 	/**
