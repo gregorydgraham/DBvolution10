@@ -22,7 +22,9 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
@@ -203,6 +205,15 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	@Override
 	public void setValue(LocalDateTime date) {
 		super.setLiteralValue(date);
+	}
+
+	/**
+	 * Sets the value of this QDT to the Java LocalDateTime provided.
+	 *
+	 * @param date	date
+	 */
+	public void setValue(Date date) {
+		super.setLiteralValue(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
 	}
 
 	/**
