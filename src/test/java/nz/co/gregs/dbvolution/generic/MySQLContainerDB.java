@@ -31,8 +31,7 @@
 package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
-import java.time.ZoneId;
-import java.util.TimeZone;
+import java.time.Duration;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +49,7 @@ import org.testcontainers.utility.MountableFile;
  */
 public class MySQLContainerDB extends MySQLDB {
 
-	static final Log LOG = LogFactory.getLog(MSSQLServerContainerDB.class);
+	static final Log LOG = LogFactory.getLog(MySQLContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
 	protected final MySQLContainer storedContainer;
@@ -70,9 +69,10 @@ public class MySQLContainerDB extends MySQLDB {
 					// use an anonymous inner class because otherwise we get only an Object no an OutputFrame
 					@Override
 					public void accept(OutputFrame t) {
-						LOG.info("MYSQL CONTAINER: " + t.getUtf8String().replaceAll("\n$", ""));
+						LOG.info("" + t.getUtf8String().replaceAll("\n$", ""));
 					}
-				});
+				})
+				.withStartupTimeout(Duration.ofMinutes(2));
 		container.withEnv("MYSQL_USER", username);
 		container.withEnv("MYSQL_PASSWORD", password);
 		container.withEnv("TZ", "Pacific/Auckland");
