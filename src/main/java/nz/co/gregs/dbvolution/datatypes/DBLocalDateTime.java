@@ -35,7 +35,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
-import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOrEqualsOperator;
