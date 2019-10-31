@@ -155,7 +155,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	//'2019-06-11 23:09:06.1075250 +12:00'
-	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
+	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n XXX");
 	DateTimeFormatter DATETIMEFORMATTER_WITHOUT_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
 
 	@Override
