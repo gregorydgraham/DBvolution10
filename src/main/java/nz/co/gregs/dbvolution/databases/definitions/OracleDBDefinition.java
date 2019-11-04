@@ -136,13 +136,17 @@ public class OracleDBDefinition extends DBDefinition {
 		DateTimeFormatter.ofPattern("y-M-d H:m:s.S XXX"),// this works for LocalDate
 		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSSSS XXX"),// this works for Instant
 		DateTimeFormatter.ofPattern("y-M-d H:m:s.n XXX"),
+		DateTimeFormatter.ofPattern("y-M-d H:m:s.S VV"),
+		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSSSS VV"),// works for named offsets
+//		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSS VV"),
+//		DateTimeFormatter.ofPattern("y-M-d H:m:s.S z"),
+//		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSSSS z"),
+//		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSS z"),
 		DateTimeFormatter.ofPattern("y-M-d H:m:s.nnnnnn XXX")
 	};
-//	DateTimeFormatter parseZonedDateTimeFromGetStringFormat1 = DateTimeFormatter.ofPattern("y-M-d H:m:s.S XXX");
-//	DateTimeFormatter parseZonedDateTimeFromGetStringFormat2 = DateTimeFormatter.ofPattern("y-M-d H:m:s.n X");
 
 	public ZonedDateTime parseZonedDateTimeFromGetString(String inputFromResultSet) throws DateTimeParseException {
-		System.out.println(inputFromResultSet);
+//		System.out.println(inputFromResultSet);
 		if (inputFromResultSet == null || inputFromResultSet.isEmpty()) {
 			return null;
 		}
@@ -152,27 +156,27 @@ public class OracleDBDefinition extends DBDefinition {
 		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
 			try {
 				zdt = ZonedDateTime.parse(subSequence, format);
-				System.out.println("SUCCESSFUL FORMAT: " + format.toString());
+//				System.out.println("SUCCESSFUL FORMAT: " + format.toString());
 				return zdt;
 			} catch (DateTimeParseException ex) {
 				storedException = ex;
-				System.out.println("FAILED: " + format.toString());
-				System.out.println("MESSAGE: " + ex.getLocalizedMessage());
+//				System.out.println("FAILED: " + format.toString());
+//				System.out.println("MESSAGE: " + ex.getLocalizedMessage());
 			}
 		}
 		String input = inputFromResultSet;
 		input = input.replaceAll("\\+([0-9]):00", "+0$1:00");
-		System.out.println(input);
+//		System.out.println(input);
 		subSequence = input.subSequence(0, input.length());
 		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
 			try {
 				zdt = ZonedDateTime.parse(subSequence, format);
-				System.out.println("SUCCESSFUL FORMAT: " + format.toString());
+//				System.out.println("SUCCESSFUL FORMAT: " + format.toString());
 				return zdt;
 			} catch (DateTimeParseException ex) {
 				storedException = ex;
-				System.out.println("FAILED: " + format.toString());
-				System.out.println("MESSAGE: " + ex.getLocalizedMessage());
+//				System.out.println("FAILED: " + format.toString());
+//				System.out.println("MESSAGE: " + ex.getLocalizedMessage());
 			}
 		}
 		throw storedException;
