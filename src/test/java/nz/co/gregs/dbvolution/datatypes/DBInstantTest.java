@@ -75,6 +75,8 @@ public class DBInstantTest extends AbstractTest {
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusHours(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMinutes(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusSeconds(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
+		Assert.assertThat(allRows.get(0).instantField.instantValue(), is(then));
+		Assert.assertThat(allRows.get(0).instantField.getValue(), is(then));
 	}
 
 	public static class DBInstantTable extends DBRow {

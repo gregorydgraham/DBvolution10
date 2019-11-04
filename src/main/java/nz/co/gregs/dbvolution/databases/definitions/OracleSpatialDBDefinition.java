@@ -73,7 +73,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return doMultiPoint2DAsTextTransform(selectableName);
 		} else {
-			return selectableName;
+			return super.doColumnTransformForSelect(qdt, selectableName);
 		}
 	}
 

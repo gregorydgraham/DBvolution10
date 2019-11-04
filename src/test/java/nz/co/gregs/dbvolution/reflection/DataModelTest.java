@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -182,7 +183,7 @@ public class DataModelTest extends AbstractTest {
 		}
 		Set<String> foundKeys = foundMap.keySet();
 
-		List<String> knownKeys = new ArrayList<>();
+		Set<String> knownKeys = new HashSet<String>();
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LocalDateExpressionTest$MarqueWithDateWindowingFunctions");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpressionTest$BoundingBoxTest");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.IntegerExpressionTest$CarCompanyWithChoose");
@@ -476,12 +477,12 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.DBRecursiveQueryTest$PartsStringKey$ParentPart");
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$TestDefaultValueRetrieval");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$32MyClass");
-		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest$MarqueWithEndOfMonthForInstantColumn");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$8TestCustomer");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.IntegerExpressionTest$ExtendedCarCompany");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.BooleanExpressionTest$MarqueWithEquivalentCaseStatements");
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$TestDefaultInsertWithLocalDateTimeValue");
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$TestDefaultInsertWithInstantValue");
+		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest$MarqueWithEndOfMonthForLocalDateTimeColumn");
 
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {

@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
@@ -313,14 +315,17 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		LocalDateTime dbValue = null;
 		try {
 			final Timestamp timestamp = resultSet.getTimestamp(fullColumnName);
+			final java.sql.Date date = resultSet.getDate(fullColumnName);
+			final Time time = resultSet.getTime(fullColumnName);
+			final Timestamp cal = resultSet.getTimestamp(fullColumnName, new GregorianCalendar());
 
 			if (resultSet.wasNull()) {
 				dbValue = null;
 			} else {
-				final LocalDateTime utcVersion = timestamp.toLocalDateTime();
-				final LocalDateTime localDateTime = utcVersion;
-				LocalDateTime timestampValue = localDateTime;
-				dbValue = timestampValue;
+				final LocalDateTime localDateTime = timestamp.toLocalDateTime();
+//				final LocalDateTime localDateTime = utcVersion;
+//				LocalDateTime timestampValue = localDateTime;
+				dbValue = localDateTime;
 			}
 		} catch (SQLException sqlex) {
 			throw new DBRuntimeException("Unable to set LocalDateTime by getting LocalDateTime: " + sqlex.getLocalizedMessage(), sqlex);

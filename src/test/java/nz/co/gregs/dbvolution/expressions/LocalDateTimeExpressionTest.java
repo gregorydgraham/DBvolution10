@@ -157,7 +157,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(3));
-		}
+	}
 
 	@Test
 	public void testLeastOfWithDates() throws SQLException {
@@ -423,8 +423,8 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				.orderBy(this.column(this.carCompany).descending())
 				.rows().unboundedPreceding().forFollowing(1));
 		@DBColumn
-		DBLocalDateTime lag1 = 
-				this.column(this.creationLocalDateTime)
+		DBLocalDateTime lag1
+				= this.column(this.creationLocalDateTime)
 						.previousRowValue()
 						.allRows()
 						.orderBy(this.column(this.carCompany).ascending(), this.column(this.uidMarque).ascending())
@@ -446,9 +446,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
-				.setSortOrder(marq.column(marq.carCompany));
+				.setSortOrder(
+						marq.column(marq.carCompany),
+						marq.column(marq.name)
+				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
+		
+		query.printAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
 
@@ -479,6 +484,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		for (int i = 0; i < allRows.size(); i++) {
 			got = allRows.get(i).get(marq);
 			Object[] expect = expectedValues.get(i);
+			System.out.println("testAggregatorWithWindowingFunctions: " + got.toString());
 			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
 			Assert.assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
 			Assert.assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
@@ -893,7 +899,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	@Test
 	public void testIsNotNull() throws SQLException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
-		DBQuery query = database.getDBQuery(marq);
+		DBQuery query = database.getDBQuery(marq).setQueryLabel("testIsNotNull");
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isNotNull());
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
@@ -1826,7 +1832,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		db.insert(toInsert);
 	}
 
-	public static class MarqueWithEndOfMonthForInstantColumn extends MarqueWithLocalDateTime {
+	public static class MarqueWithEndOfMonthForLocalDateTimeColumn extends MarqueWithLocalDateTime {
 
 		private static final long serialVersionUID = 1L;
 
@@ -1838,7 +1844,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		DBLocalDateTime endOfMonth = this.column(this.creationLocalDateTime).endOfMonth().asExpressionColumn();
 	}
 
-	@DBTableName("marque_with_instant")
+	@DBTableName("marque_with_localdatetime")
 	public static class MarqueWithLocalDateTime extends DBRow {
 
 		private static final long serialVersionUID = 1L;
@@ -1866,7 +1872,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 //		public DBString pricingCodePrefix = new DBString();
 //		@DBColumn("reservationsalwd")
 //		public DBString reservationsAllowed = new DBString();
-		@DBColumn("creation_date")
+		@DBColumn("creation_localdatetime")
 		public DBLocalDateTime creationLocalDateTime = new DBLocalDateTime();
 
 //		@DBColumn("enabled")

@@ -2791,8 +2791,8 @@ public abstract class DBDefinition implements Serializable {
 	 * @see #prefersDatesReadAsStrings()
 	 */
 	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
-		LocalDateTime parse = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DateTimeFormatter.ISO_DATE_TIME);
-		Instant toInstant = parse.toInstant(ZoneOffset.UTC);
+		ZonedDateTime parse = ZonedDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DateTimeFormatter.ISO_DATE_TIME);
+		Instant toInstant = parse.toInstant();
 		return toInstant;
 	}
 

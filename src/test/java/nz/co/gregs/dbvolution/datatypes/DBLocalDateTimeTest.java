@@ -58,7 +58,7 @@ public class DBLocalDateTimeTest extends AbstractTest {
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DBLocalDateTimeTable> allRows = database.getDBTable(new DBLocalDateTimeTable()).setBlankQueryAllowed(true).getAllRows();
-		
+		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 
 		Assert.assertThat(then.plusMonths(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
@@ -72,6 +72,10 @@ public class DBLocalDateTimeTest extends AbstractTest {
 		Assert.assertThat(then.minusHours(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
 		Assert.assertThat(then.minusMinutes(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
 		Assert.assertThat(then.minusSeconds(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
+		Assert.assertThat(allRows.get(0).dateOnly.getValue(), is(then));
+		Assert.assertThat(allRows.get(0).dateOnly.localDateTimeValue(), is(then));
+		Assert.assertThat(allRows.get(0).dateOnly.localDateValue(), is(then.toLocalDate()));
+		Assert.assertThat(allRows.get(0).dateOnly.localTimeValue(), is(then.toLocalTime()));
 	}
 
 	public static class DBLocalDateTimeTable extends DBRow {

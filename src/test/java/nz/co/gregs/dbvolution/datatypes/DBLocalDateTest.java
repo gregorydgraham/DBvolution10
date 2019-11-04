@@ -48,13 +48,16 @@ public class DBLocalDateTest extends AbstractTest {
 	@Test
 	public void testGetSQLDatatype() throws SQLException {		
 		DBLocalDateTable dateOnlyTest = new DBLocalDateTable();
-		dateOnlyTest.dateOnly.setValue(LocalDate.now());
+		LocalDate then = LocalDate.now();
+		dateOnlyTest.dateOnly.setValue(then);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DBLocalDateTable> allRows = database.getDBTable(new DBLocalDateTable()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).dateOnly.getValue(), is(then));
+		Assert.assertThat(allRows.get(0).dateOnly.localDateValue(), is(then));
 		Assert.assertThat(allRows.get(0).dateOnly.getValue().compareTo(LocalDate.now()), isOneOf(-1, 0));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);

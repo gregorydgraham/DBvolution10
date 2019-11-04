@@ -28,7 +28,6 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -195,7 +194,7 @@ public class Oracle11XEDB extends OracleDB {
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(statement);
-
+		this.setPrintSQLBeforeExecuting(true);
 		for (GeometryFunctions fn : GeometryFunctions.values()) {
 			fn.add(statement);
 		}
@@ -211,10 +210,9 @@ public class Oracle11XEDB extends OracleDB {
 //	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return Oracle11XEDB.class;
 //	}
-
 	@Override
 	protected OracleSettingsBuilder getURLInterpreter() {
-		return new OracleSettingsBuilder(){
+		return new OracleSettingsBuilder() {
 			@Override
 			public Class<? extends DBDatabase> generatesURLForDatabase() {
 				return Oracle11XEDB.class;
