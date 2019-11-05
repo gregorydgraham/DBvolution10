@@ -1758,6 +1758,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		final LocalDateTime april1st2011 = LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3);
 		final LocalDateTime nullDate = null;
 		for (MarqueWithEndOfMonthOfLocalDateTimeColumn allRow : allRows) {
+			System.out.println(allRow);
 			Assert.assertThat(allRow.endOfMonth.getValue(),
 					anyOf(
 							is(nullDate),

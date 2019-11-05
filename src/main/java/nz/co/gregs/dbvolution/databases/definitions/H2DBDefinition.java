@@ -65,25 +65,30 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 		return "PARSEDATETIME('" + STRING_TO_DATE_FORMAT.format(date) + "','" + H2_DATE_FORMAT_INCLUDING_TIMEZONE + "')";
 	}
 	
-	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		String result = "PARSEDATETIME("
-				+ "''||"+years
-				+ "||'-'||" + doLeftPadTransform(months, "'0'", "2")
-				+ "||'-'||" + doLeftPadTransform(days, "'0'","2")
-				+ "||' '||" + doLeftPadTransform(hours,"'0'","2")
-				+ "||':'||" + doLeftPadTransform(minutes, "'0'","2")
-				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
-				+ "||(" + seconds + "+" +doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))+")"
-				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "2"), "'000'", "''")
-				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "3"), "'00'", "''")
-				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "4"), "'0'", "''")
-//				+ "||' '||'" + timeZoneSign+"'"
-//				+ "||"+ doLeftPadTransform(timeZoneHourOffset, "'0'","2")
-//				+ "||" + doLeftPadTransform(timeZoneMinuteOffSet, "'0'","2")
-				+ ", '" + H2_DATE_FORMAT_WITHOUT_TZ+"'"
-				+")";
-		return result;
-	}
+//	@Override
+//	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+//		String result = "PARSEDATETIME("
+//				+ "''||"+years
+//				+ "||'-'||" + doLeftPadTransform(months, "'0'", "2")
+//				+ "||'-'||" + doLeftPadTransform(days, "'0'","2")
+//				+ "||' '||" + doLeftPadTransform(hours,"'0'","2")
+//				+ "||':'||" + doLeftPadTransform(minutes, "'0'","2")
+//				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
+//				+ "||(" + seconds + "+" +doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))+")"
+//				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))), "2"), "'000'", "''")
+//				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))), "3"), "'00'", "''")
+//				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))), "4"), "'0'", "''")
+////				+ "||' '||'" + timeZoneSign+"'"
+////				+ "||"+ doLeftPadTransform(timeZoneHourOffset, "'0'","2")
+////				+ "||" + doLeftPadTransform(timeZoneMinuteOffSet, "'0'","2")
+//				+ ", '" + H2_DATE_FORMAT_WITHOUT_TZ+"'"
+//				+")";
+//		return result;
+//	}
+
+//	private String truncateSubsecondForDateFormatting(String subsecond) {
+//		return doSubstringTransform(subsecond, "1","8");
+//	}
 
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
@@ -94,15 +99,18 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 				+ "||' '||" + doLeftPadTransform(hours,"'0'","2")
 				+ "||':'||" + doLeftPadTransform(minutes, "'0'","2")
 				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
-				+ "||(" + seconds + "+" +doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))+")"
-				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "2"), "'000'", "''")
-				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "3"), "'00'", "''")
-				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "4"), "'0'", "''")
+				+ "||" + seconds
+//				+ "||(" + seconds + "+" +doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))+")"
+//				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))), "2"), "'000'", "''")
+//				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))), "3"), "'00'", "''")
+//				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(truncateSubsecondForDateFormatting(subsecond))), "4"), "'0'", "''")
 				+ "||' '||'" + timeZoneSign+"'"
 				+ "||"+ doLeftPadTransform(timeZoneHourOffset, "'0'","2")
 				+ "||" + doLeftPadTransform(timeZoneMinuteOffSet, "'0'","2")
-				+ ", '" + H2_DATE_FORMAT_INCLUDING_TIMEZONE+"'"
+//				+ ", '" + H2_DATE_FORMAT_INCLUDING_TIMEZONE+"'"
+				+ ", '"+ "yyyy-M-d HH:mm:ss Z"+"'"
 				+")";
+		result = "TIMESTAMPADD('NANOSECOND', ("+ subsecond+"*1000000000), "+result+")";
 		return result;
 	}
 
@@ -123,7 +131,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 		} else if (qdt instanceof DBInstant) {
 			return "TIMESTAMP(9) WITH TIME ZONE";
 		} else if (qdt instanceof DBLocalDateTime) {
-			return "TIMESTAMP(9)";
+			return "TIMESTAMP(9) WITH TIME ZONE";
 		} else if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBDateRepeat) {
@@ -764,4 +772,9 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 		 return "/*insert timezone*/dateadd(minute, extract(timezone_minute from "+instantValueWithCorrectTZ+"), dateadd(hour, extract(timezone_hour from "+instantValueWithCorrectTZ+"), "+dateValue+"))/*!insert timezone*/";
 //		return "(now() at time zone 'utc')";
 	}
+	
+//	@Override
+//	public boolean prefersDatesReadAsStrings() {
+//		return true;
+//	}
 }

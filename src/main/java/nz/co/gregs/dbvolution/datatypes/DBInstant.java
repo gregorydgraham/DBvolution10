@@ -73,7 +73,7 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 
 	private static final long serialVersionUID = 1L;
 //	private final SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
-	private final DateTimeFormatter toStringFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd kk:mm:ss.SSS ZZZZ");
+//	private final DateTimeFormatter toStringFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd kk:mm:ss.SSS ZZZZ");
 
 	/**
 	 * The default constructor for DBDate.
@@ -376,7 +376,7 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 				if (defn.supportsTimeZones()) {
 					utcVersion = timestamp.toInstant();
 				} else {
-					utcVersion = timestamp.toLocalDateTime().atZone(ZoneOffset.UTC).toInstant();
+					utcVersion = timestamp.toInstant().atZone(ZoneOffset.UTC).toInstant();
 				}
 				dbValue = utcVersion;
 			}

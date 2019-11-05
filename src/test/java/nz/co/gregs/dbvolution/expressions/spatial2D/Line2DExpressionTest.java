@@ -289,7 +289,7 @@ public class Line2DExpressionTest extends AbstractTest {
 	@Test
 	public void testIntersects() throws SQLException {
 		final LineTestTable lineTestTable = new LineTestTable();
-		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		DBQuery dbQuery = database.getDBQuery(lineTestTable).setQueryLabel("testIntersects");
 		Coordinate coordinate1 = new Coordinate(1, 2);
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		final Line2DExpression nonCrossingLine = Line2DExpression.value(coordinate1, coordinate2);
@@ -301,7 +301,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(2));
-		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery = database.getDBQuery(lineTestTable).setQueryLabel("testIntersects2");
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));

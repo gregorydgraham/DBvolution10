@@ -185,6 +185,7 @@ public abstract class AbstractTest {
 
 		for (Object[] database : databases) {
 			System.out.println("Processing: Database " + database[0]);
+//			((DBDatabase)database[1]).setPrintSQLBeforeExecuting(true);
 		}
 
 		return databases;

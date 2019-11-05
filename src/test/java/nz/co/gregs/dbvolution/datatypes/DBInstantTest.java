@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
@@ -63,18 +64,19 @@ public class DBInstantTest extends AbstractTest {
 				.getAllRows();
 		
 		Assert.assertThat(allRows.size(), is(1));
+		final OffsetDateTime gotValue = allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC);
 
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusMonths(1).isAfter(allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusDays(1).isAfter(allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusHours(1).isAfter(allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusMinutes(1).isAfter(allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusSeconds(1).isAfter(allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC)), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusMonths(1).isAfter(gotValue), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusDays(1).isAfter(gotValue), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusHours(1).isAfter(gotValue), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusMinutes(1).isAfter(gotValue), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusSeconds(1).isAfter(gotValue), is(true));
 		
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMonths(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusDays(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusHours(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMinutes(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusSeconds(1).isBefore((allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC))), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMonths(1).isBefore((gotValue)), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusDays(1).isBefore((gotValue)), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusHours(1).isBefore((gotValue)), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMinutes(1).isBefore((gotValue)), is(true));
+		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusSeconds(1).isBefore((gotValue)), is(true));
 		Assert.assertThat(allRows.get(0).instantField.instantValue(), is(then));
 		Assert.assertThat(allRows.get(0).instantField.getValue(), is(then));
 	}

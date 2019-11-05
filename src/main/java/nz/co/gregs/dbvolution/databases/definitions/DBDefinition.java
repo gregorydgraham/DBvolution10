@@ -63,6 +63,10 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import static java.time.temporal.ChronoField.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
@@ -144,7 +148,9 @@ public abstract class DBDefinition implements Serializable {
 		if (date == null) {
 			return getNull();
 		}
-		final int tzMillis = TimeZone.getDefault().getRawOffset();
+//		ZoneId systemDefault = ZoneOffset.systemDefault();
+		int tzMillis = TimeZone.getDefault().getOffset(Instant.now().toEpochMilli());
+//		final int tzMillis = TimeZone.getTimeZone(ZoneId.systemDefault()).getRawOffset();
 		String tzSign = tzMillis < 0 ? "-" : "+";
 		int tzHour = tzMillis / (1000 * 60 * 60);
 		int tzMinutes = (tzMillis - (tzHour * 1000 * 60 * 60)) / 1000 * 60;
@@ -2773,6 +2779,21 @@ public abstract class DBDefinition implements Serializable {
 		return LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DateTimeFormatter.ISO_DATE_TIME);
 	}
 
+//	Pattern HAS_SPACE_BETWEEN_DATE_AND_TIME = Pattern.compile("([0-9]) ([0-9])");
+//	Pattern HAS_SPACE_BETWEEN_TIME_AND_TIMEZONE = Pattern.compile("([0-9]) ([-+0-9])");
+//	Pattern HAS_SHORT_TIMEZONE = Pattern.compile("([-+][0-9]{2})$");
+	
+//	DateTimeFormatter DATETIME_FORMATTER = new DateTimeFormatterBuilder()
+//			.appendValue(YEAR).appendLiteral("-")
+//			.appendValue(MONTH_OF_YEAR).appendLiteral("-")
+//			.appendValue(DAY_OF_MONTH).appendLiteral("T")
+//			.appendValue(CLOCK_HOUR_OF_DAY).appendLiteral(":")
+//			.appendValue(MINUTE_OF_HOUR).appendLiteral(":")
+//			.appendValue(SECOND_OF_MINUTE)
+//			.appendValue(NANO_OF_SECOND)
+//			.appendValue()
+//			.
+//			;
 	/**
 	 * returns the date format used when reading dates as strings.
 	 *
@@ -2791,8 +2812,14 @@ public abstract class DBDefinition implements Serializable {
 	 * @see #prefersDatesReadAsStrings()
 	 */
 	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
-		ZonedDateTime parse = ZonedDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DateTimeFormatter.ISO_DATE_TIME);
-		Instant toInstant = parse.toInstant();
+		Instant toInstant = null;
+		String temp = inputFromResultSet;
+//		temp = HAS_SPACE_BETWEEN_DATE_AND_TIME.matcher(temp).replaceFirst("$1T$2");
+//		temp = HAS_SPACE_BETWEEN_TIME_AND_TIMEZONE.matcher(temp).replaceFirst("$1$2");
+//		temp = HAS_SHORT_TIMEZONE.matcher(temp).replaceFirst("$100");
+		
+		ZonedDateTime parse = ZonedDateTime.parse(temp.subSequence(0, temp.length()), DateTimeFormatter.ISO_DATE_TIME);
+		toInstant = parse.toInstant();
 		return toInstant;
 	}
 

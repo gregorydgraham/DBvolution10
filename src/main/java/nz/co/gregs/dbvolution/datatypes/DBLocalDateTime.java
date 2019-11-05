@@ -315,9 +315,9 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		LocalDateTime dbValue = null;
 		try {
 			final Timestamp timestamp = resultSet.getTimestamp(fullColumnName);
-			final java.sql.Date date = resultSet.getDate(fullColumnName);
-			final Time time = resultSet.getTime(fullColumnName);
-			final Timestamp cal = resultSet.getTimestamp(fullColumnName, new GregorianCalendar());
+//			final java.sql.Date date = resultSet.getDate(fullColumnName);
+//			final Time time = resultSet.getTime(fullColumnName);
+//			final Timestamp cal = resultSet.getTimestamp(fullColumnName, new GregorianCalendar());
 
 			if (resultSet.wasNull()) {
 				dbValue = null;
