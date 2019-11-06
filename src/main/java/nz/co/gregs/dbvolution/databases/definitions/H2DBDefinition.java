@@ -131,7 +131,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 		} else if (qdt instanceof DBInstant) {
 			return "TIMESTAMP(9) WITH TIME ZONE";
 		} else if (qdt instanceof DBLocalDateTime) {
-			return "TIMESTAMP(9) WITH TIME ZONE";
+			return "TIMESTAMP(9)";
 		} else if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBDateRepeat) {
