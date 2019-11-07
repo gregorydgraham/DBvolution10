@@ -729,6 +729,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "CAST(" + sql + " AS SIGNED)";
 	}
 
+	@Override
 	public boolean supportsTimeZones() {
 		return false;
 	}

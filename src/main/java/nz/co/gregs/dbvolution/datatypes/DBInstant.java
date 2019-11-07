@@ -303,8 +303,8 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link Instant#parse(java.lang.CharSequence) }.
-	 * so please confirms to the requirements of that method.
+	 * The date String will be parsed by {@link Instant#parse(java.lang.CharSequence)
+	 * }. so please confirms to the requirements of that method.
 	 *
 	 * @param dateStr	dateStr
 	 */
@@ -372,11 +372,11 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 			if (resultSet.wasNull()) {
 				dbValue = null;
 			} else {
-				final Instant utcVersion;//.toLocalDateTime().atZone(ZoneOffset.UTC).toInstant();
+				Instant utcVersion;
 				if (defn.supportsTimeZones()) {
 					utcVersion = timestamp.toInstant();
 				} else {
-					utcVersion = timestamp.toInstant().atZone(ZoneOffset.UTC).toInstant();
+					utcVersion = timestamp.toLocalDateTime().atZone(ZoneOffset.UTC).toInstant();
 				}
 				dbValue = utcVersion;
 			}

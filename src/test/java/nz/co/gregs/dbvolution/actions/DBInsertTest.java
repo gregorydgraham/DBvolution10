@@ -474,13 +474,13 @@ public class DBInsertTest extends AbstractTest {
 		Thread.sleep(1000);
 
 		gotRow.name.setValue("blarg");
-		gotRow.creationDate.setValue(april2nd2011);
+		final Instant april2nd2011Instant = april2nd2011.toInstant();
+		gotRow.creationDate.setValue(april2nd2011Instant);
 		database.update(gotRow);
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
 		Assert.assertThat(gotRow.pk_uid.getValue(), is(2L));
 		Assert.assertThat(gotRow.name.getValue(), is("blarg"));
 		Assert.assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		final Instant april2nd2011Instant = april2nd2011.toInstant();
 		Assert.assertThat(gotRow.creationDate.getValue(), is(april2nd2011Instant));
 		Assert.assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
 		Assert.assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
