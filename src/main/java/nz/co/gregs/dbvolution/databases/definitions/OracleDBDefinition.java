@@ -1041,4 +1041,9 @@ public class OracleDBDefinition extends DBDefinition {
 		};
 	}
 
+	@Override
+	public boolean requiresOnClauseForAllJoins() {
+		return true;
+	}
+
 }
