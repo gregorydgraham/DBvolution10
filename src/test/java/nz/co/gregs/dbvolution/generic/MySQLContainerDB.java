@@ -63,7 +63,7 @@ public class MySQLContainerDB extends MySQLDB {
 		MySQLContainer container = (MySQLContainer) new MySQLContainer("mysql:latest")
 				.withDatabaseName("some_database")
 				// there is a problem with the config file in the image so add our own
-				.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/tstMySQL.cnf")
+				//.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/tstMySQL.cnf")
 				// set the log consumer so we see some output
 				.withLogConsumer(new Consumer<OutputFrame>() {
 					// use an anonymous inner class because otherwise we get only an Object no an OutputFrame
