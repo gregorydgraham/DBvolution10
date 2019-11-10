@@ -61,7 +61,7 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	protected String encodeHostAbstract(DatabaseConnectionSettings settings) {
 		List<DatabaseConnectionSettings> hosts = settings.getClusterHosts();
 		if (!hosts.isEmpty() && (this instanceof ClusterCapableSettingsBuilder)) {
-			ClusterCapableSettingsBuilder builder = (ClusterCapableSettingsBuilder) this;
+			ClusterCapableSettingsBuilder<?> builder = (ClusterCapableSettingsBuilder<?>) this;
 			return builder.encodeClusterHosts(settings.getClusterHosts());
 		} else {
 			return encodeHost(settings);
