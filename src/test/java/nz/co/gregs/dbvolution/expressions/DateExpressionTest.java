@@ -1641,9 +1641,9 @@ public class DateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testSecondsFromReturnsDecimal() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(false);
 		
 		allRows.forEach((row) -> {
 			if (row.subseconds.doubleValue() != 0.01) {
