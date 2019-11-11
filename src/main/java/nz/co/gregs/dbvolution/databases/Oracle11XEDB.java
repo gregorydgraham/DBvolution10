@@ -194,7 +194,7 @@ public class Oracle11XEDB extends OracleDB {
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(statement);
-		this.setPrintSQLBeforeExecuting(true);
+//		this.setPrintSQLBeforeExecuting(true);
 		for (GeometryFunctions fn : GeometryFunctions.values()) {
 			fn.add(statement);
 		}
