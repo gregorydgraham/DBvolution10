@@ -16,13 +16,17 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,7 +54,8 @@ public class DBLocalDateTimeTest extends AbstractTest {
 	public void testGetSQLDatatype() throws SQLException {
 
 		DBLocalDateTimeTable dateOnlyTest = new DBLocalDateTimeTable();
-		final LocalDateTime then = LocalDateTime.now();
+		LocalDateTime then = LocalDateTime.now();
+		System.out.println("THEN: " + then);
 		dateOnlyTest.dateOnly.setValue(then);
 
 		database.preventDroppingOfTables(false);
@@ -61,21 +66,37 @@ public class DBLocalDateTimeTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 
+		// Protect against SQLite's low precision problems
+		Matcher<LocalDateTime> matchExactValue = is(then);
+		Matcher<LocalTime> matchExactTime = is(then.toLocalTime());
+		if (!database.supportsNanosecondPrecision() || !database.supportsMicrosecondPrecision()) {
+			matchExactValue = isOneOf(
+					then,
+					then.truncatedTo(ChronoUnit.MILLIS),
+					then.truncatedTo(ChronoUnit.MICROS)
+			);
+			matchExactTime = isOneOf(
+					then.toLocalTime(),
+					then.truncatedTo(ChronoUnit.MILLIS).toLocalTime(),
+					then.truncatedTo(ChronoUnit.MICROS).toLocalTime()
+			);
+		}
+
 		Assert.assertThat(then.plusMonths(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
 		Assert.assertThat(then.plusDays(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
 		Assert.assertThat(then.plusHours(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
 		Assert.assertThat(then.plusMinutes(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
 		Assert.assertThat(then.plusSeconds(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
-		
+
 		Assert.assertThat(then.minusMonths(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
 		Assert.assertThat(then.minusDays(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
 		Assert.assertThat(then.minusHours(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
 		Assert.assertThat(then.minusMinutes(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
 		Assert.assertThat(then.minusSeconds(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
-		Assert.assertThat(allRows.get(0).dateOnly.getValue(), is(then));
-		Assert.assertThat(allRows.get(0).dateOnly.localDateTimeValue(), is(then));
+		Assert.assertThat(allRows.get(0).dateOnly.getValue(), matchExactValue);
+		Assert.assertThat(allRows.get(0).dateOnly.localDateTimeValue(), matchExactValue);
 		Assert.assertThat(allRows.get(0).dateOnly.localDateValue(), is(then.toLocalDate()));
-		Assert.assertThat(allRows.get(0).dateOnly.localTimeValue(), is(then.toLocalTime()));
+		Assert.assertThat(allRows.get(0).dateOnly.localTimeValue(), matchExactTime);
 	}
 
 	public static class DBLocalDateTimeTable extends DBRow {
@@ -88,6 +109,27 @@ public class DBLocalDateTimeTest extends AbstractTest {
 
 		@DBColumn
 		DBLocalDateTime dateOnly = new DBLocalDateTime();
+
+//		@DBColumn
+//		DBInteger year = this.column(this.dateOnly).year().asExpressionColumn();
+//		
+//		@DBColumn
+//		DBInteger month = this.column(this.dateOnly).month().asExpressionColumn();
+//		
+//		@DBColumn
+//		DBInteger day = this.column(this.dateOnly).day().asExpressionColumn();
+//		
+//		@DBColumn
+//		DBInteger hour = this.column(this.dateOnly).hour().asExpressionColumn();
+//		
+//		@DBColumn
+//		DBInteger minute = this.column(this.dateOnly).minute().asExpressionColumn();
+//		
+//		@DBColumn
+//		DBInteger second = this.column(this.dateOnly).second().asExpressionColumn();
+//		
+//		@DBColumn
+//		DBNumber subsecond = this.column(this.dateOnly).subsecond().asExpressionColumn();
 	}
 
 }

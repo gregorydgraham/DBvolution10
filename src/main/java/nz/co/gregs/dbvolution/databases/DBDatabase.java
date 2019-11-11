@@ -2447,6 +2447,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		;
 	}
+
+	public boolean supportsMicrosecondPrecision() {
+		return true;
+	}
+
+	public boolean supportsNanosecondPrecision() {
+		return true;
+	}
 	
 	public static enum ResponseToException {
 		REPLACECONNECTION(),

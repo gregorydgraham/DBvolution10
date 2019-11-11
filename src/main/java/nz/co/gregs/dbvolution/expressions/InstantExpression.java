@@ -2317,7 +2317,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @return a Instant expression
 	 */
 	public InstantExpression firstOfMonth() {
-		return this.setDay(1).atStartOfDay();
+		return this.setDay(1);//.atStartOfDay();
 	}
 
 	/**
@@ -4544,7 +4544,9 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 				InstantExpression only = (InstantExpression) getInnerResult();
 				return only
 						.addDays(only.day().minus(1).bracket().times(-1).integerResult())
-						.addMonths(1).addDays(-1).setHour(0).setMinute(0).setSecond(0).toSQLString(db);
+						.addMonths(1).addDays(-1)
+						//.setHour(0).setMinute(0).setSecond(0)
+						.toSQLString(db);
 			}
 		}
 

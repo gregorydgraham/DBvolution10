@@ -19,12 +19,14 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,18 +53,28 @@ public class DBInstantTest extends AbstractTest {
 	@SuppressWarnings("deprecation")
 	public void testGetSQLDatatype() throws SQLException {
 		DBInstantTable dateOnlyTest = new DBInstantTable();
-		final Instant then = Instant.now();
+		var then = Instant.now();
 		dateOnlyTest.instantField.setValue(then);
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
+
+		// Protect against SQLite's low precision problems
+		Matcher<Instant> matchExactValue = is(then);
+		if (!database.supportsNanosecondPrecision() || !database.supportsMicrosecondPrecision()) {
+			matchExactValue = isOneOf(
+					then,
+					then.truncatedTo(ChronoUnit.MILLIS),
+					then.truncatedTo(ChronoUnit.MICROS));
+		}
+
 		List<DBInstantTable> allRows = database.getDBTable(new DBInstantTable())
 				.setQueryLabel("CHECK INSTANT INSERT ROUND TRIP")
 				.setBlankQueryAllowed(true)
 				.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(1));
 		final OffsetDateTime gotValue = allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC);
 
@@ -71,14 +83,14 @@ public class DBInstantTest extends AbstractTest {
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusHours(1).isAfter(gotValue), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusMinutes(1).isAfter(gotValue), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusSeconds(1).isAfter(gotValue), is(true));
-		
+
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMonths(1).isBefore((gotValue)), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusDays(1).isBefore((gotValue)), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusHours(1).isBefore((gotValue)), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMinutes(1).isBefore((gotValue)), is(true));
 		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusSeconds(1).isBefore((gotValue)), is(true));
-		Assert.assertThat(allRows.get(0).instantField.instantValue(), is(then));
-		Assert.assertThat(allRows.get(0).instantField.getValue(), is(then));
+		Assert.assertThat(allRows.get(0).instantField.instantValue(), matchExactValue);
+		Assert.assertThat(allRows.get(0).instantField.getValue(), matchExactValue);
 	}
 
 	public static class DBInstantTable extends DBRow {

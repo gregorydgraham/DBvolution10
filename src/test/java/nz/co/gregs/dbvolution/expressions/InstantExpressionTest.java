@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -837,25 +838,25 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant marq = new MarqueWithInstant();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetween(march1st2013, march2nd2013));
+				marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(march1st2013, march2nd2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetween(april1st2011, april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(april1st2011, april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetween(InstantExpression.value(april1st2011), april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(InstantExpression.value(april1st2011), april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetween(april1st2011, InstantExpression.value(april2nd2011Instant)));
+		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(april1st2011, InstantExpression.value(april2nd2011Instant)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
@@ -985,32 +986,32 @@ public class InstantExpressionTest extends AbstractTest {
 
 	@Test
 	public void testBetweenExclusiveFunction() throws SQLException {
-		Instant march1st2013 = (new GregorianCalendar(2013, 2, 1)).toZonedDateTime().toInstant();
+		final Instant march1st2013 = (new GregorianCalendar(2013, 2, 1)).toZonedDateTime().toInstant();
 		final Instant march2nd2013 = (new GregorianCalendar(2013, 2, 2)).toZonedDateTime().toInstant();
 		final Instant april1st2011 = (new GregorianCalendar(2011, 3, 1)).toZonedDateTime().toInstant();
 
 		MarqueWithInstant marq = new MarqueWithInstant();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetweenExclusive(march1st2013, march2nd2013));
+				marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(march1st2013, march2nd2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetweenExclusive(april1st2011, april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(april1st2011, april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetweenExclusive(InstantExpression.value(april1st2011), april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(InstantExpression.value(april1st2011), april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetweenExclusive(april1st2011, InstantExpression.value(april2nd2011Instant)));
+		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(april1st2011, InstantExpression.value(april2nd2011Instant)));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
@@ -1711,37 +1712,25 @@ public class InstantExpressionTest extends AbstractTest {
 	@Test
 	public void testEndOfMonthCalculation() throws SQLException {
 		MarqueWithEndOfMonthForInstantColumn marq = new MarqueWithEndOfMonthForInstantColumn();
-		DBTable<MarqueWithEndOfMonthForInstantColumn> table = database.getDBTable(marq).setQueryLabel("MarqueWithEndOfMonthForInstantColumn");
+		DBTable<MarqueWithEndOfMonthForInstantColumn> table = database.getDBTable(marq);
 		List<MarqueWithEndOfMonthForInstantColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
-		final Instant march31st2013 = ZonedDateTime.of(LocalDateTime.of(2013, Month.MARCH, 31, 0, 0, 0), ZoneOffset.UTC).toInstant();
-		final Instant april30th2011 = ZonedDateTime.of(LocalDateTime.of(2011, Month.APRIL, 30, 0, 0, 0), ZoneOffset.UTC).toInstant();
-		final Instant march1st2013 = ZonedDateTime.of(LocalDateTime.of(2013, Month.MARCH, 1, 0, 0, 0), ZoneOffset.UTC).toInstant();//ZonedDateTime.of(LocalDateTime.of(2013, Month.MARCH, 1, 12, 34, 56),ZoneOffset.UTC).toLocalDateTime();
-		final Instant april1st2011 = ZonedDateTime.of(LocalDateTime.of(2011, Month.APRIL, 1, 0, 0, 0), ZoneOffset.UTC).toInstant();//ZonedDateTime.of(LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3), ZoneOffset.UTC).toLocalDateTime();
-//		final LocalDateTime march1st2013 = LocalDateTime.of(2013, Month.MARCH, 1, 12, 34, 56);
-//		final LocalDateTime april1st2011 = LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3);
-		final Instant nullDate = null;
-		for (MarqueWithEndOfMonthForInstantColumn row : allRows) {
-			Assert.assertThat(row.endOfMonth.getValue(),
+		
+		final Instant march31st2013 = LocalDateTime.of(2013, Month.MARCH, 31, 12, 34, 56).toInstant(ZoneOffset.UTC);
+		final Instant april30th2011 = LocalDateTime.of(2011, Month.APRIL, 30, 1, 2, 3).toInstant(ZoneOffset.UTC);
+		final Instant march1st2013 = LocalDateTime.of(2013, Month.MARCH, 1, 12, 34, 56).toInstant(ZoneOffset.UTC);
+		final Instant april1st2011 = LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3).toInstant(ZoneOffset.UTC);
+		final LocalDateTime nullDate = null;
+		for (MarqueWithEndOfMonthForInstantColumn allRow : allRows) {
+			System.out.println(allRow);
+			Assert.assertThat(allRow.endOfMonth.getValue(),
 					anyOf(
 							is(nullDate),
 							is(march31st2013),
 							is(april30th2011)
 					));
-			Assert.assertThat(row.endOfMonth.getValue(),
-					anyOf(
-							is(nullDate),
-							is(march31st2013),
-							is(april30th2011)
-					));
-			Assert.assertThat(row.firstOfMonth.getValue(),
-					anyOf(
-							is(nullDate),
-							is(march1st2013),
-							is(april1st2011)
-					));
-			Assert.assertThat(row.firstOfMonth.getValue(),
+			Assert.assertThat(allRow.firstOfMonth.getValue(),
 					anyOf(
 							is(nullDate),
 							is(march1st2013),
@@ -1752,23 +1741,80 @@ public class InstantExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.endOfMonth).dayIs(31));
 		List<DBQueryRow> allRows1 = dbQuery.getAllRows();
-//		database.print(allRows1);
 		for (DBQueryRow row : allRows1) {
 			Assert.assertThat(
-					row.get(marq).endOfMonth.instantValue(),
+					row.get(marq).endOfMonth.getValue(),
 					is(march31st2013));
 			Assert.assertThat(
-					row.get(marq).endOfMonth.localDateValue().atStartOfDay(ZoneOffset.UTC).toInstant(),
-					is(march31st2013));
-			Assert.assertThat(row.get(marq).firstOfMonth.instantValue(), is(march1st2013));
-//			System.out.println("INSTANT: " + row.get(marq).firstOfMonth.getValue());
-//			System.out.println("LOCALDATE: " + row.get(marq).firstOfMonth.localDateValue());
-			Assert.assertThat(
-					row.get(marq).firstOfMonth.localDateValue(),
-					is(LocalDate.ofInstant(march1st2013, ZoneOffset.UTC))
+					row.get(marq).firstOfMonth.getValue(),
+					is(march1st2013)
 			);
 		}
 	}
+
+//	@Test
+//	public void testEndOfMonthCalculation() throws SQLException {
+//		MarqueWithEndOfMonthForInstantColumn marq = new MarqueWithEndOfMonthForInstantColumn();
+//		DBTable<MarqueWithEndOfMonthForInstantColumn> table = database.getDBTable(marq).setQueryLabel("MarqueWithEndOfMonthForInstantColumn");
+//		List<MarqueWithEndOfMonthForInstantColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
+//
+//		Assert.assertThat(allRows.size(), is(22));
+////		final Instant march31st2013 = ZonedDateTime.of(LocalDateTime.of(2013, Month.MARCH, 31, 0, 0, 0), ZoneOffset.UTC).toInstant();
+////		final Instant april30th2011 = ZonedDateTime.of(LocalDateTime.of(2011, Month.APRIL, 30, 0, 0, 0), ZoneOffset.UTC).toInstant();
+////		final Instant march1st2013 = ZonedDateTime.of(LocalDateTime.of(2013, Month.MARCH, 1, 0, 0, 0), ZoneOffset.UTC).toInstant();//ZonedDateTime.of(LocalDateTime.of(2013, Month.MARCH, 1, 12, 34, 56),ZoneOffset.UTC).toLocalDateTime();
+////		final Instant april1st2011 = ZonedDateTime.of(LocalDateTime.of(2011, Month.APRIL, 1, 0, 0, 0), ZoneOffset.UTC).toInstant();//ZonedDateTime.of(LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3), ZoneOffset.UTC).toLocalDateTime();
+//		final Instant march31st2013 = LocalDateTime.of(2013, Month.MARCH, 31, 12, 34, 56).toInstant(ZoneOffset.UTC);
+//		final Instant april30th2011 = LocalDateTime.of(2011, Month.APRIL, 30, 1, 2, 3).toInstant(ZoneOffset.UTC);
+//		final Instant march1st2013 = LocalDateTime.of(2013, Month.MARCH, 1, 12, 34, 56).toInstant(ZoneOffset.UTC);
+//		final Instant april1st2011 = LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3).toInstant(ZoneOffset.UTC);
+//		final Instant nullDate = null;
+//		for (MarqueWithEndOfMonthForInstantColumn row : allRows) {
+//			Assert.assertThat(row.endOfMonth.getValue(),
+//					anyOf(
+//							is(nullDate),
+//							is(march31st2013),
+//							is(april30th2011)
+//					));
+//			Assert.assertThat(row.endOfMonth.getValue(),
+//					anyOf(
+//							is(nullDate),
+//							is(march31st2013),
+//							is(april30th2011)
+//					));
+//			Assert.assertThat(row.firstOfMonth.getValue(),
+//					anyOf(
+//							is(nullDate),
+//							is(march1st2013),
+//							is(april1st2011)
+//					));
+//			Assert.assertThat(row.firstOfMonth.getValue(),
+//					anyOf(
+//							is(nullDate),
+//							is(march1st2013),
+//							is(april1st2011)
+//					));
+//		}
+//
+//		DBQuery dbQuery = database.getDBQuery(marq);
+//		dbQuery.addCondition(marq.column(marq.endOfMonth).dayIs(31));
+//		List<DBQueryRow> allRows1 = dbQuery.getAllRows();
+////		database.print(allRows1);
+//		for (DBQueryRow row : allRows1) {
+//			Assert.assertThat(
+//					row.get(marq).endOfMonth.instantValue(),
+//					is(march31st2013));
+//			Assert.assertThat(
+//					row.get(marq).endOfMonth.localDateValue().atTime(OffsetTime.ofInstant(Instant.now(),ZoneOffset.UTC)).toInstant(),
+//					is(march31st2013));
+//			Assert.assertThat(row.get(marq).firstOfMonth.instantValue(), is(march1st2013));
+////			System.out.println("INSTANT: " + row.get(marq).firstOfMonth.getValue());
+////			System.out.println("LOCALDATE: " + row.get(marq).firstOfMonth.localDateValue());
+//			Assert.assertThat(
+//					row.get(marq).firstOfMonth.localDateValue(),
+//					is(LocalDate.ofInstant(march1st2013, ZoneOffset.UTC))
+//			);
+//		}
+//	}
 
 	@Before
 	public void setupMarqueWithInstant() throws Exception {

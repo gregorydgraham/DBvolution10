@@ -98,7 +98,7 @@ public class PostgresDBDefinition extends DBDefinition {
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				.add(
 						doConcatTransform(
-								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
+								"'" + timeZoneSign + "'", doLeftPadTransform("'"+timeZoneHourOffset+"'", "'0'", "'2'"), doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
 						)
 				)
 				.toString();
@@ -112,6 +112,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " BIGINT ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP ";
+		} else if (qdt instanceof DBInstant) {
+			return " TIMESTAMPTZ ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " BYTEA ";
 		} else if (qdt instanceof DBBoolean) {

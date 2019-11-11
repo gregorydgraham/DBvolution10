@@ -542,8 +542,8 @@ public class DateExpressionTest extends AbstractTest {
 
 		got = query.getAllRows();
 
-		if(got.size()!=1){
-			System.out.println("EXPECTED CREATION DATE: "+then);
+		if (got.size() != 1) {
+			System.out.println("EXPECTED CREATION DATE: " + then);
 			query.printSQLForQuery();
 			database.getDBTable(marq).setBlankQueryAllowed(true).print();
 		}
@@ -1641,9 +1641,15 @@ public class DateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testSecondsFromReturnsDecimal() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
 		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
-
+		database.setPrintSQLBeforeExecuting(true);
+		
 		allRows.forEach((row) -> {
+			if (row.subseconds.doubleValue() != 0.01) {
+				System.out.println("" + row);
+				System.out.println("SUBSECOND: " + row.subseconds.doubleValue());
+			}
 			Assert.assertThat(row.subseconds.doubleValue(), is(0.01));
 		});
 	}

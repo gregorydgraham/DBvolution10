@@ -126,7 +126,6 @@ public class DBDatabaseCluster extends DBDatabase {
 //	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 //		throw new UnsupportedOperationException("DBDatabaseCluster does not support getSettingsFromJDBCURL() yet.");
 //	}
-
 	@Override
 	public Integer getDefaultPort() {
 		throw new UnsupportedOperationException("DBDatabaseCluster does not support getDefaultPort() yet.");
@@ -136,7 +135,6 @@ public class DBDatabaseCluster extends DBDatabase {
 //	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return DBDatabaseCluster.class;
 //	}
-
 	@Override
 	protected DBDatabaseClusterSettingsBuilder getURLInterpreter() {
 		return new DBDatabaseClusterSettingsBuilder();
@@ -472,7 +470,6 @@ public class DBDatabaseCluster extends DBDatabase {
 //	public synchronized void unusedConnection(DBConnection connection) throws SQLException {
 //		throw new UnsupportedOperationException("DBDatabase.unusedConnection() should not be called");
 //	}
-
 	@Override
 	public Connection getConnectionFromDriverManager() throws SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnectionFromDriverManager() should not be called");
@@ -1241,6 +1238,30 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
+	@Override
+	public boolean supportsMicrosecondPrecision() {
+		boolean result = true;
+		for (DBDatabase db : getDatabases()) {
+			result = result && db.supportsMicrosecondPrecision();
+			if (result == false) {
+				return result;
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public boolean supportsNanosecondPrecision() {
+		boolean result = true;
+		for (DBDatabase db : getDatabases()) {
+			result = result && db.supportsNanosecondPrecision();
+			if (result == false) {
+				return result;
+			}
+		}
+		return result;
+	}
+
 	private void addActionToQueue(DBAction action) {
 		for (DBDatabase db : details.getAllDatabases()) {
 			Queue<DBAction> queue = details.getActionQueue(db);
@@ -1443,7 +1464,6 @@ public class DBDatabaseCluster extends DBDatabase {
 //	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 //		return "CLUSTER";
 //	}
-
 	public final boolean getAutoRebuild() {
 		return details.getAutoRebuild();
 	}

@@ -292,4 +292,14 @@ public class SQLiteDB extends DBDatabase {
 		return new SQLiteSettingsBuilder();
 	}
 
+	@Override
+	public boolean supportsMicrosecondPrecision() {
+		return false;
+	}
+
+	@Override
+	public boolean supportsNanosecondPrecision() {
+		return false;
+	}
+
 }

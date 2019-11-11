@@ -63,13 +63,12 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 *
 	 */
 	private final DateFormat DATETIME_PRECISE_FORMAT = getDateTimeFormat();//
-	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final String[] RESERVED_WORDS_ARRAY = new String[]{};
 	private static final List<String> RESERVED_WORDS_LIST = Arrays.asList(RESERVED_WORDS_ARRAY);
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
-		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_PRECISE_FORMAT.format(date) + "') ";
+		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_SIMPLE_FORMAT_WITH_MILLISECONDS.format(date) + "') ";
 	}
 
 	@Override
@@ -80,8 +79,8 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 				+ "||'-'||" + doLeftPadTransform(days, "0", "2")
 				+ "||' '||" + doLeftPadTransform(hours, "0", "2")
 				+ "||':'||" + doLeftPadTransform(minutes, "0", "2")
-				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
-				+ "||(" + seconds + "+" + subsecond + ")"
+				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||" + seconds), "1"), "'0'", "''")
+				+ "||(" + seconds + "+" + (subsecond.length() > 5 ? subsecond.substring(0, 5) : subsecond) + ")"
 				+ " )";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
@@ -373,12 +372,22 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 		return true;
 	}
 
+	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT_WITH_MILLISECONDS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT_WITH_SECONDS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	@Override
 	public synchronized Date parseDateFromGetString(String getStringDate) throws ParseException {
 		try {
 			return DATETIME_PRECISE_FORMAT.parse(getStringDate);
 		} catch (ParseException ex) {
-			return (DATETIME_SIMPLE_FORMAT).parse(getStringDate);
+			try {
+				return DATETIME_SIMPLE_FORMAT_WITH_MILLISECONDS.parse(getStringDate);
+			} catch (ParseException ex2) {
+				try {
+					return DATETIME_SIMPLE_FORMAT_WITH_SECONDS.parse(getStringDate);
+				} catch (ParseException ex3) {
+					throw ex;
+				}
+			}
 		}
 	}
 
@@ -954,7 +963,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	}
 
 	public DateFormat getDateTimeFormat() {
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
 	}
 
 	@Override
@@ -1062,7 +1071,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	@Override
 	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
-		String getStringDate = inputFromResultSet.replaceAll(" ", "T")+"Z";
+		String getStringDate = inputFromResultSet.replaceAll(" ", "T") + "Z";
 		return Instant.parse(getStringDate.subSequence(0, getStringDate.length()));
 	}
 
