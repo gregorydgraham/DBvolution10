@@ -33,9 +33,13 @@ package nz.co.gregs.dbvolution.utility;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Encapsulates robust date-time parsing.
@@ -44,46 +48,66 @@ import java.time.temporal.TemporalAccessor;
  */
 public class TemporalStringParser {
 
+	static final Log LOG = LogFactory.getLog(TemporalStringParser.class);
+
 	private TemporalStringParser() {
 	}
 
 	static final DateTimeFormatter[] INSTANT_FORMATTERS
 			= new DateTimeFormatter[]{
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSVV"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSv"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSz"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSVV"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSv"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSz"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SVV"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.Sv"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SX"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SZ"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.Sz"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssVV"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssv"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"), 
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"), 
-				DateTimeFormatter.ISO_OFFSET_DATE_TIME, 
-				DateTimeFormatter.ISO_ZONED_DATE_TIME, 
-				DateTimeFormatter.RFC_1123_DATE_TIME, 
-				DateTimeFormatter.ISO_INSTANT, 
-				DateTimeFormatter.ISO_DATE_TIME, 
-				DateTimeFormatter.ISO_LOCAL_DATE_TIME, 
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSVV"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSv"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSz"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSVV"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSv"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSz"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SVV"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.Sv"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SX"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SZ"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.Sz"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssVV"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssv"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"),
+				DateTimeFormatter.ISO_OFFSET_DATE_TIME,
+				DateTimeFormatter.ISO_ZONED_DATE_TIME,
+				DateTimeFormatter.RFC_1123_DATE_TIME,
+				DateTimeFormatter.ISO_INSTANT
+			};
+
+	static final DateTimeFormatter[] LOCALDATE_FORMATTERS
+			= new DateTimeFormatter[]{
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
+				DateTimeFormatter.ISO_DATE_TIME,
+				DateTimeFormatter.ISO_LOCAL_DATE_TIME,
 				DateTimeFormatter.BASIC_ISO_DATE};
 
 	public static Instant toInstant(String inputFromResultSet) throws ParseException {
+		return toZonedDateTime(inputFromResultSet).toInstant();
+	}
+
+	public static ZonedDateTime toZonedDateTime(String inputFromResultSet) throws ParseException {
 		if (inputFromResultSet == null) {
 			return null;
 		}
@@ -96,41 +120,141 @@ public class TemporalStringParser {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				zoneddatetime = ZonedDateTime.from(parsed);
-				return zoneddatetime.toInstant();
+				LOG.debug("PARSE SUCCEEDED: " + format.toString());
+				LOG.debug("PARSED: " + sequence);
+				LOG.debug("TO: " + zoneddatetime);
 			} catch (Exception ex1) {
-				System.out.println("PARSE FAILED: " + format.toString());
-				System.out.println("MESSAGE: " + ex1.getMessage());
+				LOG.debug("PARSE FAILED: " + format.toString());
+				LOG.debug("MESSAGE: " + ex1.getMessage());
 				if (ex1 instanceof ParseException) {
 					exception = (ParseException) ex1;
 				}
 			}
 		}
-		;
+		for (DateTimeFormatter format : LOCALDATE_FORMATTERS) {
+			try {
+				final TemporalAccessor parsed = format.parse(sequence);
+				zoneddatetime = ZonedDateTime.of(LocalDateTime.from(parsed), ZoneId.of("Z"));
+				LOG.debug("PARSE SUCCEEDED: " + format.toString());
+				LOG.debug("PARSED: " + sequence);
+				LOG.debug("TO: " + zoneddatetime);
+			} catch (Exception ex1) {
+				LOG.debug("PARSE FAILED: " + format.toString());
+				LOG.debug("MESSAGE: " + ex1.getMessage());
+				if (ex1 instanceof ParseException) {
+					exception = (ParseException) ex1;
+				}
+			}
+		}
 		try {
-			Instant instant = Timestamp.valueOf(str).toInstant();
-			return instant;
+			Timestamp timestamp = Timestamp.valueOf(str);
+			zoneddatetime = ZonedDateTime.of(timestamp.toLocalDateTime(), ZoneId.of("Z"));
+			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
+			LOG.debug("PARSED: " + str);
+			LOG.debug("TO: " + zoneddatetime);
 		} catch (Exception ex1) {
-			System.out.println("PARSE FAILED: Timestamp.valueOf(" + str + ")");
-			System.out.println("MESSAGE: " + ex1.getMessage());
+			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
+			LOG.debug("MESSAGE: " + ex1.getMessage());
 			if (ex1 instanceof ParseException) {
 				exception = (ParseException) ex1;
 			}
 		}
 		str = inputFromResultSet;
 		try {
-			Instant instant = Timestamp.valueOf(str).toInstant();
-			return instant;
+			Timestamp timestamp = Timestamp.valueOf(str);
+			zoneddatetime = ZonedDateTime.of(timestamp.toLocalDateTime(), ZoneId.of("Z"));
+			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
+			LOG.debug("PARSED: " + str);
+			LOG.debug("TO: " + zoneddatetime);
 		} catch (Exception ex1) {
-			System.out.println("PARSE FAILED: Timestamp.valueOf(" + str + ")");
-			System.out.println("MESSAGE: " + ex1.getMessage());
+			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
+			LOG.debug("MESSAGE: " + ex1.getMessage());
 			if (ex1 instanceof ParseException) {
 				exception = (ParseException) ex1;
 			}
 		}
 		if (zoneddatetime != null) {
-			return zoneddatetime.toInstant();
+			return zoneddatetime;
+		} else {
+			LOG.debug("PARSE FAILED:");
+			LOG.debug("PARSED: " + inputFromResultSet);
+			throw exception;
 		}
-		throw exception;
+	}
+
+	public static LocalDateTime toLocalDateTime(String inputFromResultSet) throws ParseException {
+		if (inputFromResultSet == null) {
+			return null;
+		}
+		LocalDateTime localdatetime = null;
+		String str = inputFromResultSet;
+		ParseException exception = new ParseException(str, 0);
+		str = inputFromResultSet.replaceFirst(" ", "T");
+		final CharSequence sequence = str.subSequence(0, str.length());
+		for (DateTimeFormatter format : INSTANT_FORMATTERS) {
+			try {
+				final TemporalAccessor parsed = format.parse(sequence);
+				localdatetime = ZonedDateTime.from(parsed).toLocalDateTime();
+				LOG.debug("PARSE SUCCEEDED: " + format.toString());
+				LOG.debug("PARSED: " + sequence);
+				LOG.debug("TO: " + localdatetime);
+			} catch (Exception ex1) {
+				LOG.debug("PARSE FAILED: " + format.toString());
+				LOG.debug("MESSAGE: " + ex1.getMessage());
+				if (ex1 instanceof ParseException) {
+					exception = (ParseException) ex1;
+				}
+			}
+		}
+		for (DateTimeFormatter format : LOCALDATE_FORMATTERS) {
+			try {
+				final TemporalAccessor parsed = format.parse(sequence);
+				localdatetime = LocalDateTime.from(parsed);
+				LOG.debug("PARSE SUCCEEDED: " + format.toString());
+				LOG.debug("PARSED: " + sequence);
+				LOG.debug("TO: " + localdatetime);
+			} catch (Exception ex1) {
+				LOG.debug("PARSE FAILED: " + format.toString());
+				LOG.debug("MESSAGE: " + ex1.getMessage());
+				if (ex1 instanceof ParseException) {
+					exception = (ParseException) ex1;
+				}
+			}
+		}
+		try {
+			Timestamp timestamp = Timestamp.valueOf(str);
+			localdatetime = timestamp.toLocalDateTime();
+			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
+			LOG.debug("PARSED: " + str);
+			LOG.debug("TO: " + localdatetime);
+		} catch (Exception ex1) {
+			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
+			LOG.debug("MESSAGE: " + ex1.getMessage());
+			if (ex1 instanceof ParseException) {
+				exception = (ParseException) ex1;
+			}
+		}
+		str = inputFromResultSet;
+		try {
+			Timestamp timestamp = Timestamp.valueOf(str);
+			localdatetime = timestamp.toLocalDateTime();
+			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
+			LOG.debug("PARSED: " + str);
+			LOG.debug("TO: " + localdatetime);
+		} catch (Exception ex1) {
+			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
+			LOG.debug("MESSAGE: " + ex1.getMessage());
+			if (ex1 instanceof ParseException) {
+				exception = (ParseException) ex1;
+			}
+		}
+		if (localdatetime != null) {
+			return localdatetime;
+		} else {
+			LOG.debug("PARSE FAILED:");
+			LOG.debug("PARSED: " + inputFromResultSet);
+			throw exception;
+		}
 	}
 
 }
