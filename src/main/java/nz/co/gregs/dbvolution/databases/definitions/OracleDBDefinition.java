@@ -782,6 +782,11 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doInstantEndOfMonthTransform(String dateSQL) {
+		return "LAST_DAY(" + dateSQL + ")";
+	}
+
+	@Override
 	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob
 	) {
 		if (lob instanceof DBLargeText) {

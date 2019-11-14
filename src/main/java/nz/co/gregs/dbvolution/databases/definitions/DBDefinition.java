@@ -2716,6 +2716,23 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * Indicates whether the database prefers instant values to be read as Strings.
+	 *
+	 * <p>
+	 * Normally instants are read as instants but this method switches DBvolution to
+	 * using a text mode.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the default implementation returns false.
+	 * @see #parseDateFromGetString(java.lang.String)
+	 */
+	public boolean prefersInstantsReadAsStrings() {
+		return prefersDatesReadAsStrings();
+	}
+
+	/**
 	 * returns the date format used when reading dates as strings.
 	 *
 	 * <p>
@@ -6059,6 +6076,23 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the last day of the month that the date is in.
 	 */
 	public String doEndOfMonthTransform(String dateSQL) {
+		throw new UnsupportedOperationException("DBDefinition does not support doEndOfMonthTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Override this method to provide a specific transform that will derive the
+	 * last day of the month from the date value provided.
+	 *
+	 * <p>
+	 * If no override is provided for this method a default implementation will be
+	 * used instead.
+	 *
+	 * @param dateSQL the date value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the last day of the month that the date is in.
+	 */
+	public String doInstantEndOfMonthTransform(String dateSQL) {
 		throw new UnsupportedOperationException("DBDefinition does not support doEndOfMonthTransform(String) yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

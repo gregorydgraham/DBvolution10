@@ -338,7 +338,7 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	@Override
 	protected Instant getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) {
 		Instant dbValue;
-		if (defn.prefersDatesReadAsStrings()) {
+		if (defn.prefersInstantsReadAsStrings()) {
 			dbValue = setByGetString(defn, resultSet, fullColumnName);
 		} else {
 			dbValue = setByGetTimestamp(defn, resultSet, fullColumnName);

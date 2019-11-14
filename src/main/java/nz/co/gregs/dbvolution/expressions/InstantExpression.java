@@ -4539,7 +4539,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 		@Override
 		public String toSQLString(DBDefinition db) {
 			try {
-				return db.doEndOfMonthTransform(this.getInnerResult().toSQLString(db));
+				return db.doInstantEndOfMonthTransform(this.getInnerResult().toSQLString(db));
 			} catch (UnsupportedOperationException exp) {
 				InstantExpression only = (InstantExpression) getInnerResult();
 				return only

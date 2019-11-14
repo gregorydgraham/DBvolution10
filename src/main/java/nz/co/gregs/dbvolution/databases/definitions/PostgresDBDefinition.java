@@ -17,18 +17,32 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
+import java.sql.Timestamp;
 import java.text.*;
+import java.time.Instant;
+import java.time.Year;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.InstantExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Spatial2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
+import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
@@ -83,11 +97,19 @@ public class PostgresDBDefinition extends DBDefinition {
 		return SeparatedString.startsWith("make_timestamp(").separatedBy(", ").endsWith(")")
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
-//				.add(
-//						doConcatTransform(
-//								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
-//						)
-//				)
+				//				.add(
+				//						doConcatTransform(
+				//								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
+				//						)
+				//				)
+				.toString();
+	}
+
+	@Override
+	public String getInstantPartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return SeparatedString.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
+				.addAll(years, months, days)
+				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				.toString();
 	}
 
@@ -98,7 +120,7 @@ public class PostgresDBDefinition extends DBDefinition {
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				.add(
 						doConcatTransform(
-								"'" + timeZoneSign + "'", doLeftPadTransform("'"+timeZoneHourOffset+"'", "'0'", "'2'"), doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
+								"'" + timeZoneSign + "'", doLeftPadTransform("'" + timeZoneHourOffset + "'", "'0'", "'2'"), doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
 						)
 				)
 				.toString();
@@ -178,7 +200,6 @@ public class PostgresDBDefinition extends DBDefinition {
 //		return "case when " + columnName + " is null then null when " + columnName + " then 1 else 0 end";
 ////		return "(" + columnName + ")::integer";
 //	}
-
 	@Override
 	public String doIntegerToBitTransform(String columnName) {
 		return columnName + "::bit";
@@ -360,6 +381,7 @@ public class PostgresDBDefinition extends DBDefinition {
 //	}
 	@Override
 	public String doInstantDayOfWeekTransform(String dateSQL) {
+//		return " (EXTRACT(DOW FROM (" + dateSQL + "))+1)";
 		return " (EXTRACT(DOW FROM (" + dateSQL + ") AT TIME ZONE 'UTC')+1)";
 	}
 
@@ -555,6 +577,9 @@ public class PostgresDBDefinition extends DBDefinition {
 			return "(" + selectableName + ")::VARCHAR";
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return "ST_ASTEXT(" + selectableName + ")::VARCHAR";
+		} else if (qdt instanceof DBInstant) {
+			return "(" + selectableName + ") at time zone 'UTC'";
+//			return "to_char((" + selectableName + ") at time zone 'UTC', 'YYYY-MM-DD HH:MI:SS.US')";
 		} else {
 			return selectableName;
 		}
@@ -1037,6 +1062,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doInstantYearTransform(String dateExpression) {
+//		return doNumberToIntegerTransform("EXTRACT(YEAR FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(YEAR FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1051,6 +1077,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doInstantMonthTransform(String dateExpression) {
+//		return doNumberToIntegerTransform("EXTRACT(MONTH FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(MONTH FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1069,6 +1096,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doInstantDayTransform(String dateExpression) {
+//		return doNumberToIntegerTransform("EXTRACT(DAY FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(DAY FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1083,6 +1111,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doInstantHourTransform(String dateExpression) {
+//		return doNumberToIntegerTransform("EXTRACT(HOUR FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(HOUR FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1097,6 +1126,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doInstantMinuteTransform(String dateExpression) {
+//		return doNumberToIntegerTransform("EXTRACT(MINUTE FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(MINUTE FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1111,6 +1141,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doInstantSecondTransform(String dateExpression) {
+//		return "EXTRACT(SECOND FROM " + dateExpression + ")";
 		return "EXTRACT(SECOND FROM " + dateExpression + " AT TIME ZONE 'UTC')";
 	}
 
@@ -1128,6 +1159,41 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doInstantSubsecondTransform(String dateExpression) {
+//		return "(EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000)";
 		return "(EXTRACT(MILLISECOND FROM " + dateExpression + " AT TIME ZONE 'UTC')/1000.0000)";
+	}
+
+	@Override
+	public String doInstantEndOfMonthTransform(String dateSQL) {
+//		return super.doInstantEndOfMonthTransform(dateSQL);
+		return "((("+dateSQL+" at time zone 'UTC'+ (( CAST((EXTRACT(DAY FROM "+dateSQL+" AT TIME ZONE 'UTC')) as INTEGER) - 1)  * -1)*INTERVAL '1 DAY' )+ (1)*INTERVAL '1 MONTH')+ (-1)*INTERVAL '1 DAY' ) at time zone 'UTC'";
+	}
+
+	@Override
+	public boolean prefersInstantsReadAsStrings() {
+		return true;
+	}
+
+	//2013-03-24 01:34:56+13
+	@Override
+	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
+		return TemporalStringParser.toInstant(inputFromResultSet);
+	}
+	//2013-03-24 01:34:56+13
+
+	@Override
+	public DBExpression transformToSelectableType(DBExpression columnExpression) {
+//		if ((columnExpression instanceof InstantExpression)
+//				||columnExpression instanceof DBInstant) {
+//			final InstantExpression expr = (InstantExpression) columnExpression;
+//			return new StringExpression(expr) {
+//				@Override
+//				public String toSQLString(DBDefinition db) {
+//					return "to_char((" + this.getInnerResult().toSQLString(db) + ") at time zone 'UTC', 'YYYY-MM-DD HH:MI:SS.US')";
+//				}
+//
+//			};
+//		}
+		return super.transformToSelectableType(columnExpression);
 	}
 }
