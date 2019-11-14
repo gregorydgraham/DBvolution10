@@ -1132,6 +1132,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 		} catch (Throwable e) {
 			StackTraceElement[] trace = e.getStackTrace();
+			System.out.println(""+e.getMessage());
+			System.out.println(""+e.getLocalizedMessage());
 			System.out.println("" + trace[0]);
 			System.out.println("" + trace[1]);
 			System.out.println("" + trace[2]);
