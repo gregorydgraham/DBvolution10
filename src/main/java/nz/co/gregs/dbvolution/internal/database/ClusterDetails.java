@@ -51,6 +51,8 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.Encryption;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -59,6 +61,8 @@ import nz.co.gregs.dbvolution.utility.Encryption;
 public class ClusterDetails implements Serializable {
 
 	private final static long serialVersionUID = 1l;
+
+	private static final Log LOG = LogFactory.getLog(ClusterDetails.class);
 
 	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> unsynchronizedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
@@ -162,6 +166,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	private synchronized boolean removeDatabaseFromAllLists(DBDatabase database) {
+		LOG.info("REMOVING: " + database.getLabel());
 		boolean result = queuedActions.containsKey(database) ? queuedActions.remove(database) != null : true;
 		result = result && quarantinedDatabases.contains(database) ? quarantinedDatabases.remove(database) : true;
 		result = result && unsynchronizedDatabases.contains(database) ? unsynchronizedDatabases.remove(database) : true;

@@ -83,10 +83,10 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
  * @author Gregory Graham
  */
 public abstract class DBDatabase implements Serializable, Cloneable {
-	
+
 	private static final long serialVersionUID = 1l;
-	static final Log LOG = LogFactory.getLog(DBDatabase.class);
-	
+	static final private Log LOG = LogFactory.getLog(DBDatabase.class);
+
 	private String driverName = "";
 	private boolean printSQLBeforeExecuting = false;
 	boolean isInATransaction = false;
@@ -107,11 +107,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
 	private Exception exception = null;
 	private ScheduledFuture<?> regularThreadPoolFuture;
-	
+
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
 	}
-	
+
 	@Override
 	public String toString() {
 		String jdbcURL = settings.getUrl();
@@ -141,7 +141,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		DBDatabase newInstance = (DBDatabase) clone;
 		return newInstance;
 	}
-	
+
 	@Override
 	public synchronized int hashCode() {
 		int hash = 7;
@@ -153,7 +153,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		hash = 29 * hash + (this.getSettings() != null ? this.getSettings().hashCode() : 0);
 		return hash;
 	}
-	
+
 	@Override
 	public synchronized boolean equals(Object obj) {
 		if (obj == null) {
@@ -387,7 +387,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 //		settings.setPort(set.getPort());
 		createRequiredTables();
 	}
-	
+
 	private void initDriver(String driverName1) {
 		this.driverName = driverName1;
 		try {
@@ -396,7 +396,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	DBTransactionStatement getDBTransactionStatement() throws SQLException {
 		final DBStatement dbStatement = getDBStatement();
 		if (dbStatement instanceof DBTransactionStatement) {
@@ -437,7 +437,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		}
 		return statement;
 	}
-	
+
 	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (!terminated) {
 			DBConnection connection = getConnection();
@@ -508,7 +508,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			return conn;
 		}
 	}
-	
+
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
 			value = {"OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", "ODR_OPEN_DATABASE_RESOURCE"},
 			justification = "Raw connections are pooled and closed  in discardConnection()")
@@ -578,7 +578,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 */
 	protected DBConnection storedConnection;
-	
+
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
 			value = {"OBL_UNSATISFIED_OBLIGATION", "ODR_OPEN_DATABASE_RESOURCE"},
 			justification = "Breaking the obligation is required to keep some databases, mostly memory DBs, from disappearing")
@@ -718,7 +718,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		}
 		return changes;
 	}
-	
+
 	protected DBActionList updateAnyway(List<DBRow> rows) throws SQLException {
 		DBActionList actions = new DBActionList();
 		for (DBRow row : rows) {
@@ -1369,7 +1369,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		printSQLIfRequested(sqlString, System.out);
 		LOG.debug(sqlString);
 	}
-	
+
 	synchronized void printSQLIfRequested(String sqlString, PrintStream out) {
 		if (printSQLBeforeExecuting) {
 			out.println(sqlString);
@@ -1555,11 +1555,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, true);
 	}
-	
+
 	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
 		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper>(), new ArrayList<PropertyWrapper>());
 	}
-	
+
 	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields, List<PropertyWrapper> spatial2DFields) {
 		StringBuilder sqlScript = new StringBuilder();
 		String lineSeparator = System.getProperty("line.separator");
@@ -1581,7 +1581,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 						.append(definition.getCreateTableColumnsNameAndTypeSeparator())
 						.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
 				sep = nextSep + lineSeparator;
-				
+
 				if (field.isPrimaryKey()) {
 					pkFields.add(field);
 				}
@@ -1594,7 +1594,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				}
 			}
 		}
-		
+
 		if (includeForeignKeyClauses) {
 			for (String fkClause : fkClauses) {
 				sqlScript.append(sep).append(fkClause);
@@ -1621,14 +1621,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
 		return sqlScript.toString();
 	}
-	
+
 	private synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-		
+
 		preventDDLDuringTransaction("DBDatabase.createTable()");
-		
+
 		List<PropertyWrapper> pkFields = new ArrayList<>();
 		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
-		
+
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
 		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString, QueryIntention.CREATE_TABLE);
@@ -1644,7 +1644,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					}
 				}
 			}
-			
+
 			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() > 0) {
 				List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
@@ -1721,7 +1721,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws SQLException database exceptions
 	 */
 	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-		
+
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> fkClauses = new ArrayList<>();
 		for (PropertyWrapper field : fields) {
@@ -1761,7 +1761,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws SQLException database exceptions
 	 */
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
-		
+
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> indexClauses = new ArrayList<>();
 		for (PropertyWrapper field : fields) {
@@ -1810,7 +1810,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		final String dropTableStart = definition.getDropTableStart();
 		final String formatTableName = definition.formatTableName(tableRow);
 		final String endSQLStatement = definition.endSQLStatement();
-		
+
 		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
 		String sqlString = sqlScript.toString();
 		try (DBStatement dbStatement = getDBStatement()) {
@@ -1974,9 +1974,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		if (preventAccidentalDroppingDatabase) {
 			throw new AccidentalDroppingOfDatabaseException();
 		}
-		
+
 		String dropStr = getDefinition().getDropDatabase(databaseName);
-		
+
 		printSQLIfRequested(dropStr);
 		LOG.info(dropStr);
 		if (doIt) {
@@ -2033,7 +2033,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the internal label of this database
 	 */
 	final public String getLabel() {
-		return settings.getLabel();
+		final String label = settings.getLabel();
+		return 
+				label==null||label.isEmpty()
+				?"Unlabelled "+this.getClass().getSimpleName()
+				:label;
 	}
 
 	/**
@@ -2075,7 +2079,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public synchronized void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
-	
+
 	protected synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
 		if (isInATransaction) {
 			throw new AutoCommitActionDuringTransactionException(message);
@@ -2099,7 +2103,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
 		this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
 	}
-	
+
 	protected synchronized boolean getPreventAccidentalDroppingOfTables() {
 		return this.preventAccidentalDroppingOfTables;
 	}
@@ -2121,7 +2125,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
 	}
-	
+
 	public synchronized boolean getPreventAccidentalDroppingOfDatabases() {
 		return this.preventAccidentalDroppingDatabase;
 	}
@@ -2303,7 +2307,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected boolean supportsPooledConnections() {
 		return true;
 	}
-	
+
 	private synchronized void usedConnection(DBConnection connection) {
 		if (supportsPooledConnections()) {
 			getConnectionList(FREE_CONNECTIONS).remove(connection);
@@ -2331,7 +2335,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 		}
 	}
-	
+
 	private synchronized List<DBConnection> getConnectionList(Map<String, List<DBConnection>> connectionMap) {
 		final String key = this.getSettings().encode();
 		List<DBConnection> connList = connectionMap.get(key);
@@ -2377,7 +2381,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		throw exp;
 	}
-	
+
 	protected abstract SettingsBuilder<?> getURLInterpreter();
 
 	public final String getUrlFromSettings(DatabaseConnectionSettings oldSettings) {
@@ -2427,23 +2431,23 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow, T dbRow) {
 		return new DBRecursiveQuery<T>(query, keyToFollow);
 	}
-	
+
 	public boolean isDBDatabaseCluster() {
 		return (this instanceof DBDatabaseCluster);
 	}
-	
+
 	protected final DataSource getDataSource() {
 		return settings.getDataSource();
 	}
-	
+
 	public void setLastException(Exception except) {
 		this.exception = except;
 	}
-	
+
 	public Exception getLastException() {
 		return this.exception;
 	}
-	
+
 	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		;
 	}
@@ -2455,16 +2459,16 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public boolean supportsNanosecondPrecision() {
 		return true;
 	}
-	
+
 	public static enum ResponseToException {
 		REPLACECONNECTION(),
 		REQUERY(),
 		SKIPQUERY();
-		
+
 		ResponseToException() {
 		}
 	}
-	
+
 	public <K extends DBRow> DBQueryInsert<K> getDBQueryInsert(K mapper) {
 		return new DBQueryInsert<>(this, mapper);
 	}
@@ -2492,25 +2496,25 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {
 		return new DBMigration<>(this, mapper);
 	}
-	
+
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		return action.execute(this);
 	}
-	
+
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return query.query(this);
 	}
-	
+
 	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
 		return query.toSQLString(this);
 	}
-	
+
 	@SuppressFBWarnings(
 			value = "REC_CATCH_EXCEPTION",
 			justification = "Database vendors throw all sorts of silly exceptions")
 	public boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = false;
-		
+
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
 			try (DBStatement dbStatement = getDBStatement()) {
 				DBConnection conn = dbStatement.getConnection();
@@ -2538,11 +2542,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		}
 		return tableExists;
 	}
-	
+
 	boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
 		return tableExists(DBRow.getDBRow(tab));
 	}
-	
+
 	private void createRequiredTables() throws SQLException {
 		Set<DBRow> tables = DataModel.getRequiredTables();
 		for (DBRow table : tables) {
@@ -2564,9 +2568,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			addMissingColumnsToTable(table);
 		}
 	}
-	
+
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
-		
+
 		List<PropertyWrapper> newColumns = new ArrayList<>();
 		String testQuery = getDBTable(table)
 				.setQueryTimeout(10000)
@@ -2608,12 +2612,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			alterTableAddColumn(table, newColumn);
 		}
 	}
-	
+
 	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
 		preventDDLDuringTransaction("DBDatabase.alterTable()");
-		
+
 		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
-		
+
 		try (DBStatement dbStatement = getDBStatement()) {
 			try {
 				boolean execute = dbStatement.execute(sqlString, QueryIntention.ADD_COLUMN_TO_TABLE);
@@ -2626,50 +2630,49 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 //	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
 //	
 //	protected abstract DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL);
-	
 	public abstract Integer getDefaultPort();
-	
+
 	public DatabaseConnectionSettings getSettings() {
 		return settings;
 	}
-	
+
 	protected void setSettings(DatabaseConnectionSettings newSettings) {
 		settings.copy(newSettings);
 		setDBDatabaseClassInSettings();
 	}
-	
+
 	private void setDBDatabaseClassInSettings() {
 		settings.setDbdatabaseClass(getBaseDBDatabaseClass().getCanonicalName());
 	}
-	
+
 	protected void startServerIfRequired() {
 		;
 	}
-	
+
 	public boolean isMemoryDatabase() {
 		return false;
 	}
-	
+
 	protected final Map<String, String> getExtras() {
 		return settings.getExtras();
 	}
-	
+
 	protected final String getHost() {
 		return settings.getHost();
 	}
-	
+
 	protected final String getDatabaseInstance() {
 		return settings.getInstance();
 	}
-	
+
 	protected final String getPort() {
 		return settings.getPort();
 	}
-	
+
 	protected final String getSchema() {
 		return settings.getSchema();
 	}
@@ -2693,8 +2696,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public synchronized void stop() {
 		terminated = true;
 		for (RegularProcess regularProcessor : getRegularProcessors()) {
+			LOG.info("STOPPING: " + regularProcessor.getSimpleName());
 			regularProcessor.stop();
 		}
+		LOG.info("STOPPING: " + this.getLabel());
 		try {
 			if (transactionStatement != null) {
 				try {
@@ -2704,6 +2709,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 			if (transactionConnection != null) {
 				try {
+					LOG.info("STOPPING: transaction connection");
 					discardConnection(transactionConnection);
 				} catch (Exception ex) {
 				}
@@ -2712,6 +2718,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			synchronized (freeConnections) {
 				final DBConnection[] free = freeConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : free) {
+					LOG.info("STOPPING: free connection");
 					discardConnection(connection);
 				}
 			}
@@ -2719,11 +2726,13 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			synchronized (busyConnections) {
 				final DBConnection[] busy = busyConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : busy) {
+					LOG.info("STOPPING: busy connection");
 					discardConnection(connection);
 				}
 			}
 			try {
 				if (storedConnection != null) {
+					LOG.info("STOPPING: stored connection");
 					storedConnection.close();
 				}
 			} catch (SQLException ex) {
@@ -2731,11 +2740,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		} catch (Exception ex) {
 		}
 	}
-	
+
 	public boolean getPrintSQLBeforeExecuting() {
 		return printSQLBeforeExecuting;
 	}
-	
+
 	public boolean getBatchSQLStatementsWhenPossible() {
 		return batchIfPossible;
 	}
@@ -2755,34 +2764,34 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		cluster.backupToDBDatabase(backupDatabase);
 		cluster.dismantle();
 	}
-	
+
 	private synchronized void startRegularProcessor() {
 		if (regularThreadPoolFuture != null) {
 			regularThreadPoolFuture.cancel(true);
 		}
 		regularThreadPoolFuture = getRegularThreadPool().scheduleWithFixedDelay(new RunRegularProcessors(), 1, 1, TimeUnit.MINUTES);
 	}
-	
+
 	public final void addRegularProcess(RegularProcess processor) {
 		processor.setDatabase(this);
 		getRegularProcessors().add(processor);
 	}
-	
+
 	public final void removeRegularProcess(RegularProcess processor) {
 		processor.setDatabase(null);
 		getRegularProcessors().remove(processor);
 	}
-	
-	protected final Class<? extends DBDatabase> getBaseDBDatabaseClass(){
+
+	protected final Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 		return getURLInterpreter().generatesURLForDatabase();
 	}
-	
+
 	protected class RunRegularProcessors implements Runnable {
-		
+
 		public RunRegularProcessors() {
 			super();
 		}
-		
+
 		@Override
 		public void run() {
 			for (RegularProcess process : getRegularProcessors()) {
@@ -2801,15 +2810,15 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 		}
 	}
-	
+
 	private class StopDatabase extends Thread {
-		
+
 		DBDatabase db;
-		
+
 		public StopDatabase(DBDatabase db) {
 			this.db = db;
 		}
-		
+
 		@Override
 		public void run() {
 			db.stop();

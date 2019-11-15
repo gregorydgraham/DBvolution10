@@ -70,7 +70,8 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Creates a database cluster programmatically.
@@ -105,6 +106,8 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
  * @author gregorygraham
  */
 public class DBDatabaseCluster extends DBDatabase {
+	
+	static final private Log LOG = LogFactory.getLog(DBDatabaseCluster.class);
 
 	private static final long serialVersionUID = 1l;
 
@@ -1483,9 +1486,11 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public synchronized void stop() {
 		shutdownClusterProcesses();
+		LOG.info("STOPPING: contained databases");
 		for (DBDatabase db : details.getAllDatabases()) {
 			db.stop();
 		}
+		LOG.info("STOPPING: removing all databases");
 		details.removeAllDatabases();
 		super.stop();
 	}
@@ -1512,6 +1517,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private synchronized void shutdownClusterProcesses() {
+		LOG.info("STOPPING: action thread pool");
 		ACTION_THREAD_POOL.shutdown();
 	}
 

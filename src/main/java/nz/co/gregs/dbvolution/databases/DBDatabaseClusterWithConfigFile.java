@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Creates a DBDatabaseCluster based on the information in yamlConfigFilename.
@@ -92,6 +94,8 @@ import java.util.logging.Logger;
  * @author gregorygraham
  */
 public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
+	
+	static final private Log LOG = LogFactory.getLog(DBDatabaseClusterWithConfigFile.class);
 
 	static final long serialVersionUID = 1L;
 
