@@ -62,7 +62,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 	}
 
 	@Override
-	public Partitioned<A> partition(EqualExpression... cols) {
+	public Partitioned<A> partition(EqualExpression<?,?,?>... cols) {
 		return new WindowFunctionFramable.Partitioned<A>(this, cols);
 	}
 
@@ -154,7 +154,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		private final WindowFunctionFramable<A> innerExpression;
 		private final EqualExpression<?, ?, ?>[] partitionExpressions;
 
-		private Partitioned(WindowFunctionFramable<A> expression, EqualExpression... cols) {
+		private Partitioned(WindowFunctionFramable<A> expression, EqualExpression<?,?,?>... cols) {
 			super();
 			this.innerExpression = expression;
 			this.partitionExpressions = cols;
@@ -180,7 +180,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 			if (getPartitionExpressions().length > 0) {
 				partitionClause.append("PARTITION BY ");
 				String separator = "";
-				for (EqualExpression partitionByColumn : getPartitionExpressions()) {
+				for (EqualExpression<?,?,?> partitionByColumn : getPartitionExpressions()) {
 					partitionClause.append(separator).append(partitionByColumn.toSQLString(defn));
 					separator = ", ";
 				}
@@ -243,7 +243,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		public boolean isPurelyFunctional() {
 			boolean functional = getInnerExpression().isPurelyFunctional();
 			if (functional == true) {
-				for (EqualExpression column : getPartitionExpressions()) {
+				for (EqualExpression<?,?,?> column : getPartitionExpressions()) {
 					functional = functional && column.isPurelyFunctional();
 				}
 			}
@@ -290,15 +290,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implemen
 		/**
 		 * @return the expressions used in the partition clause
 		 */
-		protected EqualExpression[] getPartitionExpressions() {
-			return partitionExpressions;
-		}
-
-		/**
-		 * @return the columns
-		 */
-		@Deprecated
-		protected EqualExpression[] getColumns() {
+		protected EqualExpression<?,?,?>[] getPartitionExpressions() {
 			return partitionExpressions;
 		}
 

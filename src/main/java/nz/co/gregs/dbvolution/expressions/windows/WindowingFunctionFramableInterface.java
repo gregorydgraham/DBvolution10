@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
  */
 public interface WindowingFunctionFramableInterface<A extends EqualExpression<?,?,?>> extends DBExpression {
 
-	Partitioned<A> partition(EqualExpression... cols);
+	Partitioned<A> partition(EqualExpression<?,?,?>... cols);
 
 	Partitioned<A> unpartitioned();
 

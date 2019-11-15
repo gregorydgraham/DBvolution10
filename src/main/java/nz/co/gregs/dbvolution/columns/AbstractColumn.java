@@ -112,9 +112,9 @@ public class AbstractColumn implements DBExpression, Serializable {
 
 	public DBExpression getExpression() {
 		if (field instanceof QueryableDatatype) {
-			final QueryableDatatype qdt = (QueryableDatatype) field;
+			final QueryableDatatype<?> qdt = (QueryableDatatype) field;
 			if (qdt.hasColumnExpression()) {
-				return (qdt).getColumnExpression()[0];
+				return qdt.getColumnExpression()[0];
 			}
 		}
 		return null;
