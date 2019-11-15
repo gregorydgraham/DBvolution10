@@ -116,7 +116,7 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 			}
 			accepted = colleagues.acceptanceDate.isNotNull();
 			declined = colleagues.denialDate.isNotNull();
-			System.out.println("ColleagueListItem");
+//			System.out.println("ColleagueListItem");
 		}
 
 		public Colleagues getColleaguesRow() {

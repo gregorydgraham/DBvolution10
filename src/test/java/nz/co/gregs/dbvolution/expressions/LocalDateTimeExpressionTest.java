@@ -484,7 +484,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		for (int i = 0; i < allRows.size(); i++) {
 			got = allRows.get(i).get(marq);
 			Object[] expect = expectedValues.get(i);
-			System.out.println("testAggregatorWithWindowingFunctions: " + got.toString());
+//			System.out.println("testAggregatorWithWindowingFunctions: " + got.toString());
 			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
 			Assert.assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
 			Assert.assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
@@ -1758,7 +1758,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		final LocalDateTime april1st2011 = LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3);
 		final LocalDateTime nullDate = null;
 		for (MarqueWithEndOfMonthOfLocalDateTimeColumn allRow : allRows) {
-			System.out.println(allRow);
+//			System.out.println(allRow);
 			Assert.assertThat(allRow.endOfMonth.getValue(),
 					anyOf(
 							is(nullDate),

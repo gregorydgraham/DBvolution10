@@ -208,8 +208,8 @@ public class BooleanExpressionTest extends AbstractTest {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque).setBlankQueryAllowed(true);
 
-		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
-		System.out.println(""+dbQuery.getSQLForQuery());
+//		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
+//		System.out.println(""+dbQuery.getSQLForQuery());
 		dbQuery.printAllRows();
 		Assert.assertThat(dbQuery.getAllRows().size(), is(22));
 		
@@ -217,8 +217,8 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
-		System.out.println(""+dbQuery.getSQLForQuery());
+//		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
+//		System.out.println(""+dbQuery.getSQLForQuery());
 		dbQuery.printAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 
