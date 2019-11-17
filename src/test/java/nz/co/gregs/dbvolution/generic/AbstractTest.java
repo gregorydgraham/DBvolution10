@@ -222,6 +222,7 @@ public abstract class AbstractTest {
 	private static MSSQLServerContainerDB getMSSQLServerContainerDatabase() {
 		if (MSSQLSERVER_CONTAINER_DATABASE == null) {
 			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServerContainerDB.getInstance();
+			MSSQLSERVER_CONTAINER_DATABASE.setLabel("MySQL Container DB");
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE;
 	}
@@ -229,6 +230,7 @@ public abstract class AbstractTest {
 	private static MSSQLServerContainerDB getMSSQLServerContainerDatabaseForCluster() {
 		if (MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER == null) {
 			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServerContainerDB.getInstance();
+			MSSQLSERVER_CONTAINER_DATABASE.setLabel("MySQL Container DB for Cluster Testing");
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
