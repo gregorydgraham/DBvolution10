@@ -155,6 +155,15 @@ public class InformixDBDefinition extends DBDefinition {
 		return "(CURRENT HOUR TO FRACTION(3))";
 	}
 
+	/**
+	 * Defines the function used to get the current timestamp from the database.
+	 *
+	 * @return the default implementation returns " CURRENT_TIMESTAMP "
+	 */
+	protected String getCurrentZonedDateTimeFunction() {
+		return "(CURRENT)";
+	}
+	
 	@Override
 	public String doCurrentDateTimeTransform() {
 		return "(CURRENT)";

@@ -1537,6 +1537,15 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * Defines the function used to get the current timestamp from the database.
+	 *
+	 * @return the default implementation returns " CURRENT_TIMESTAMP "
+	 */
+	protected String getCurrentZonedDateTimeFunction() {
+		return getCurrentDateTimeFunction();
+	}
+
+	/**
 	 * Creates the CURRENTTIMESTAMP function for this database.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1549,15 +1558,15 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String getDefaultTimeZoneSign() {
-		return "case when extract(timezone_hour from " + getCurrentDateTimeFunction() + ")>=0 then '+' else '-' end";
+		return "case when extract(timezone_hour from " + getCurrentZonedDateTimeFunction() + ")>=0 then '+' else '-' end";
 	}
 
 	public String getDefaultTimeZoneHour() {
-		return "extract(timezone_hour from " + getCurrentDateTimeFunction() + ")";
+		return "extract(timezone_hour from " + getCurrentZonedDateTimeFunction()+ ")";
 	}
 
 	public String getDefaultTimeZoneMinute() {
-		return "extract(timezone_minute from " + getCurrentDateTimeFunction() + ")";
+		return "extract(timezone_minute from " + getCurrentZonedDateTimeFunction() + ")";
 	}
 
 	/**

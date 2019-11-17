@@ -21,6 +21,7 @@ import java.text.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -623,9 +624,20 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return " WITH ";
 	}
 
+	/**
+	 * Defines the function used to get the current timestamp from the database.
+	 *
+	 * @return the default implementation returns " CURRENT_TIMESTAMP "
+	 */
+	@Override
+	protected String getCurrentZonedDateTimeFunction() {
+		return " SYSDATETIMEOFFSET() ";
+	}
+
 	@Override
 	protected String getCurrentDateTimeFunction() {
-		return " SYSDATETIMEOFFSET() ";
+		return " SYSDATETIME() ";
+//		return " SYSDATETIMEOFFSET() ";
 //		return " switchoffset("
 //				+ "SYSDATETIME()" + ", '"
 //				+ OffsetTime.now().format(DateTimeFormatter.ofPattern("ZZZZZ"))
