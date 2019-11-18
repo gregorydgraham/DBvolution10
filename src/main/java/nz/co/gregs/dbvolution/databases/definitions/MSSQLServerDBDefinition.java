@@ -146,11 +146,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public Date parseDateFromGetString(String getStringDate) throws ParseException {
-		String tempString = getStringDate.replaceAll(":([0-9]*)$", "$1");
 		Date parsed;
 		try {
-			parsed = TemporalStringParser.toDate(getStringDate); 
+			parsed = TemporalStringParser.toDate(getStringDate);
 		} catch (ParseException ex1) {
+			String tempString = getStringDate.replaceAll(":([0-9]*)$", "$1");
 			try {
 				parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
 			} catch (ParseException ex) {
