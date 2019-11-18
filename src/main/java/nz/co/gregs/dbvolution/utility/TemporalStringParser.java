@@ -38,6 +38,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -255,6 +256,10 @@ public class TemporalStringParser {
 			LOG.debug("PARSED: " + inputFromResultSet);
 			throw exception;
 		}
+	}
+	
+	public static Date toDate(String input) throws ParseException{
+		return Date.from( toLocalDateTime(input).atZone( ZoneId.systemDefault()).toInstant());
 	}
 
 }
