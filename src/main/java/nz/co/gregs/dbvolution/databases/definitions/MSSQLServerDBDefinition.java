@@ -43,6 +43,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -148,9 +149,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		String tempString = getStringDate.replaceAll(":([0-9]*)$", "$1");
 		Date parsed;
 		try {
-			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
-		} catch (ParseException ex) {
-			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
+			parsed = TemporalStringParser.toDate(getStringDate); 
+		} catch (ParseException ex1) {
+			try {
+				parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
+			} catch (ParseException ex) {
+				parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
+			}
 		}
 		return parsed;
 	}
@@ -1424,7 +1429,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		}
 		return lineString;
 	}
-	
+
 	@Override
 	public String getDefaultOrderingClause() {
 		return "ORDER BY (SELECT NULL)";
