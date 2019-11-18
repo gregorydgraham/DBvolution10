@@ -163,12 +163,10 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		this(new MSSQLServerDBDefinition(),
 				driverName,
 				new MSSQLServerSettingsBuilder().fromJDBCURL(jdbcURL, username, password)
-		//				jdbcURL, username, password
 		);
 	}
 
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String jdbcURL, String username, String password) throws SQLException {
-//		super(defn, driverName, jdbcURL, username, password);
 		this(new MSSQLServerSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
@@ -185,12 +183,10 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
-//		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
 		this(new MSSQLServerSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String jdbcURL, String username, String password) throws SQLException {
-//		this(defn, SQLSERVERDRIVERNAME, jdbcURL, username, password);
 		this(defn, SQLSERVERDRIVERNAME, new MSSQLServerSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
@@ -209,11 +205,6 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
-//		this(
-//				new MSSQLServerDBDefinition(),
-//				hostname, instanceName, databaseName, portNumber,
-//				username, password
-//		);
 		this(new MSSQLServerSettingsBuilder()
 						.setHost(hostname)
 						.setPort(portNumber)
@@ -226,33 +217,16 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(defn,
-				//				SQLSERVERDRIVERNAME,
-new MSSQLServerSettingsBuilder()
+				new MSSQLServerSettingsBuilder()
 						.setHost(hostname)
 						.setPort(portNumber)
 						.setInstance(instanceName)
 						.setDatabaseName(databaseName)
 						.setUsername(username)
 						.setPassword(password)
-		//				"jdbc:sqlserver://"
-		//				+ (hostname != null ? hostname : DEFAULT_HOST_NAME)
-		//				+ (instanceName != null ? "\\" + instanceName : "")
-		//				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
-		//				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
-		//				username,
-		//				password
 		);
 	}
-
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		final String urlFromSettings = "jdbc:sqlserver://" + settings.getHost()
-//				+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
-//				+ settings.getPort() + ";"
-//				+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
-//		return url != null && !url.isEmpty() ? url : urlFromSettings;
-//	}
+	
 	/**
 	 * Connect to an MS SQLServer database using the connection details specified
 	 * and Microsoft's driver.
@@ -278,8 +252,6 @@ new MSSQLServerSettingsBuilder()
 						.setDatabaseName(databaseName)
 						.setUsername(username)
 						.setPassword(password)
-		//				hostname, instanceName, databaseName, portNumber,
-		//				username, password
 		);
 	}
 
@@ -293,12 +265,6 @@ new MSSQLServerSettingsBuilder()
 						.setDatabaseName(databaseName)
 						.setDatabaseName(username)
 						.setPassword(password)
-		//				"jdbc:sqlserver://" + (hostname != null ? hostname : DEFAULT_HOST_NAME)
-		//				+ (instanceName != null ? "\\" + instanceName : "")
-		//				+ ":" + (portNumber != null ? portNumber : DEFAULT_PORT_NUMBER)
-		//				+ ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
-		//				username,
-		//				password
 		);
 	}
 
@@ -351,36 +317,13 @@ new MSSQLServerSettingsBuilder()
 		return super.addFeatureToFixException(exp, intent);
 	}
 
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-//		final String port = noPrefix.split("\\\\", 2)[1].split(":")[1];
-//		set.setPort(port);
-//		final String host = noPrefix.split("\\\\", 2)[0];
-//		set.setHost(host);
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		final String instance = noPrefix
-//				.split("\\\\", 2)[1]
-//				.split(":")[0];
-//		set.setInstance(instance);
-//		set.setSchema("");
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 1433;
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return MSSQLServerDB.class;
-//	}
 	@Override
-	protected AbstractMSSQLServerSettingsBuilder getURLInterpreter() {
+	protected AbstractMSSQLServerSettingsBuilder<?> getURLInterpreter() {
 		return new MSSQLServerSettingsBuilder();
 	}
 }
