@@ -118,7 +118,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected AbstractMySQLSettingsBuilder<?> getURLInterpreter() {
+	protected AbstractMySQLSettingsBuilder<?,?> getURLInterpreter() {
 		return new MySQLSettingsBuilder();
 	}
 

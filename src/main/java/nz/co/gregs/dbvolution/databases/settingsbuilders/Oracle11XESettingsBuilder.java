@@ -30,18 +30,25 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.Informix11DB;
+import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 
-public class Informix11SettingsBuilder extends AbstractInformixSettingsBuilder<Informix11SettingsBuilder, Informix11DB> {
+/**
+ *
+ * @author gregorygraham
+ */
+public class Oracle11XESettingsBuilder extends AbstractOracleSettingsBuilder<Oracle11XESettingsBuilder, Oracle11XEDB> {
 
-	@Override
-	public Class<Informix11DB> generatesURLForDatabase() {
-		return Informix11DB.class;
+	public Oracle11XESettingsBuilder() {
 	}
 
 	@Override
-	public Informix11DB getDBDatabase() throws Exception {
-		return new Informix11DB(this);
+	public Class<Oracle11XEDB> generatesURLForDatabase() {
+		return Oracle11XEDB.class;
 	}
 
+	@Override
+	public Oracle11XEDB getDBDatabase() throws Exception {
+		return new Oracle11XEDB(this.toSettings());
+	}
+	
 }

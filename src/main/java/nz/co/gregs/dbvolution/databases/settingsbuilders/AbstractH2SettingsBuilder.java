@@ -30,22 +30,24 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF>>
-		extends AbstractSettingsBuilder<SELF>
-		implements ClusterCapableSettingsBuilder<SELF>,
-		ExtrasCapableSettingsBuilder<SELF> {
+public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
+		extends AbstractSettingsBuilder<SELF, DATABASE>
+		implements ClusterCapableSettingsBuilder<SELF, DATABASE>,
+		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -112,10 +114,10 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 		return encoded;
 	}
 
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return H2DB.class;
-	}
+//	@Override
+//	public Class<H2DB> generatesURLForDatabase() {
+//		return H2DB.class;
+//	}
 
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
@@ -126,6 +128,19 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 	@Override
 	public Integer getDefaultPort() {
 		return 9123;
+	}
+	
+	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
+
+	@Override
+	public void setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		this.clusterHost.clear();
+		this.clusterHost.addAll(hosts);
+	}
+
+	@Override
+	public List<DatabaseConnectionSettings> getClusterHosts() {
+		return this.clusterHost;
 	}
 
 }

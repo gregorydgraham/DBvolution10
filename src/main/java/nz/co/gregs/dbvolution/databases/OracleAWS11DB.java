@@ -15,17 +15,17 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleAWS11SettingsBuilder;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWS11DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Implements support for version 11 and prior of the Oracle database as provide
@@ -183,14 +183,10 @@ public class OracleAWS11DB extends OracleAWSDB {
 //	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return OracleAWS11DB.class;
 //	}
-	
-		@Override
-	protected OracleSettingsBuilder getURLInterpreter() {
-		return new OracleSettingsBuilder(){
-			@Override
-			public Class<? extends DBDatabase> generatesURLForDatabase() {
-				return OracleAWS11DB.class;
-			}
-		};
+
+	@Override
+	protected AbstractOracleSettingsBuilder getURLInterpreter() {
+		return new OracleAWS11SettingsBuilder();
 	}
+
 }

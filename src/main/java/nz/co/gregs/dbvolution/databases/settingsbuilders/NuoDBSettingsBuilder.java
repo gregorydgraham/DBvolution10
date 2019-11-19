@@ -30,9 +30,10 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.NuoDB;
 
@@ -40,10 +41,15 @@ import nz.co.gregs.dbvolution.databases.NuoDB;
  *
  * @author gregorygraham
  */
-public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsBuilder>
-		implements InstanceCapableSettingsBuilder<NuoDBSettingsBuilder> {
+public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsBuilder, NuoDB>
+		implements
+		InstanceCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
+		NamedDatabaseCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
+		SchemaCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
+		ClusterCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -90,7 +96,7 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<NuoDB> generatesURLForDatabase() {
 		return NuoDB.class;
 	}
 
@@ -104,5 +110,27 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 		return settings.getHost() + "/"
 				+ settings.getDatabaseName()
 				+ "?schema=" + settings.getSchema();
+	}
+
+	@Override
+	public NuoDB getDBDatabase() throws Exception {
+		List<String> brokers = new ArrayList<>(0);
+		List<Long> ports = new ArrayList<>(0);
+		for (DatabaseConnectionSettings dcs : getClusterHosts()) {
+			brokers.add(dcs.getHost());
+			ports.add(Long.getLong(dcs.getPort()));
+		}
+		return new NuoDB(brokers, ports, this.getDatabaseName(), getSchema(), getUsername(), getPassword());
+	}
+
+	@Override
+	public void setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		this.clusterHost.clear();
+		this.clusterHost.addAll(hosts);
+	}
+
+	@Override
+	public List<DatabaseConnectionSettings> getClusterHosts() {
+		return this.clusterHost;
 	}
 }

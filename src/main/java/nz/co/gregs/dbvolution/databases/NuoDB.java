@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.NuoDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * DBDatabase tweaked to work best with NuoDB.

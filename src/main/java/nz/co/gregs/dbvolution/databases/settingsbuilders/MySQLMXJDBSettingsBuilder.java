@@ -32,7 +32,6 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
 
@@ -40,7 +39,7 @@ import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
  *
  * @author gregorygraham
  */
-public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQLMXJDBSettingsBuilder> {
+public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQLMXJDBSettingsBuilder, MySQLMXJDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -78,13 +77,12 @@ public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQ
 //		return url != null && !url.isEmpty() ? url : "jdbc:mysql:mxj://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName()
 //				+encodeExtras(settings, "?", "=", "&", "");
 //	}
-
 	@Override
 	public String encodeHost(DatabaseConnectionSettings settings) {
-		return settings.getHost() 
-				+ ":" + settings.getPort() 
+		return settings.getHost()
+				+ ":" + settings.getPort()
 				+ "/" + settings.getDatabaseName()
-				+encodeExtras(settings, "?", "=", "&", "");
+				+ encodeExtras(settings, "?", "=", "&", "");
 	}
 
 	@Override
@@ -98,7 +96,7 @@ public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQ
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<MySQLMXJDB> generatesURLForDatabase() {
 		return MySQLMXJDB.class;
 	}
 
@@ -106,8 +104,13 @@ public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQ
 	public Integer getDefaultPort() {
 		return 3306;
 	}
-	
-	public MySQLMXJDBSettingsBuilder setBanana(boolean bool){
+
+	public MySQLMXJDBSettingsBuilder setBanana(boolean bool) {
 		return this;
+	}
+
+	@Override
+	public MySQLMXJDB getDBDatabase() throws Exception {
+		return new MySQLMXJDB(this);
 	}
 }

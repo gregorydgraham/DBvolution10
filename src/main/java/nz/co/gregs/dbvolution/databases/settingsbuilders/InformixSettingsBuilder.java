@@ -30,9 +30,21 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import nz.co.gregs.dbvolution.databases.InformixDB;
+
 /**
  *
  * @author gregorygraham
  */
-public class InformixSettingsBuilder extends AbstractInformixSettingsBuilder<InformixSettingsBuilder> {
+public class InformixSettingsBuilder extends AbstractInformixSettingsBuilder<InformixSettingsBuilder, InformixDB> {
+
+	@Override
+	public Class<InformixDB> generatesURLForDatabase() {
+		return InformixDB.class;
+	}
+
+	@Override
+	public InformixDB getDBDatabase() throws Exception {
+		return new InformixDB(this);
+	}
 }

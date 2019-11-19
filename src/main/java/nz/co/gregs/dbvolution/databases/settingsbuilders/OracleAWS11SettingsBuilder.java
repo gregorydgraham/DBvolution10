@@ -30,18 +30,27 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.Informix11DB;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
+import nz.co.gregs.dbvolution.databases.OracleAWSDB;
 
-public class Informix11SettingsBuilder extends AbstractInformixSettingsBuilder<Informix11SettingsBuilder, Informix11DB> {
-
-	@Override
-	public Class<Informix11DB> generatesURLForDatabase() {
-		return Informix11DB.class;
+/**
+ *
+ * @author gregorygraham
+ */
+public class OracleAWS11SettingsBuilder extends AbstractOracleSettingsBuilder {
+	
+	public OracleAWS11SettingsBuilder() {
 	}
 
 	@Override
-	public Informix11DB getDBDatabase() throws Exception {
-		return new Informix11DB(this);
+	public Class generatesURLForDatabase() {
+		return OracleAWSDB.class;
 	}
 
+	@Override
+	public DBDatabase getDBDatabase() throws Exception {
+		return new OracleAWS11DB(this.toSettings());
+	}
+	
 }

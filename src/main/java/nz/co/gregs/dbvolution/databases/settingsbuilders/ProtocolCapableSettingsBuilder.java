@@ -30,11 +30,13 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+
 /**
  *
  * @author gregorygraham
  * @param <SELF>
  */
-public interface ProtocolCapableSettingsBuilder<SELF extends ProtocolCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
-	
+public interface ProtocolCapableSettingsBuilder<SELF extends ProtocolCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
+
 }

@@ -30,12 +30,15 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public interface InstanceCapableSettingsBuilder<SELF extends InstanceCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
+public interface InstanceCapableSettingsBuilder<SELF extends InstanceCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE>{
 
 	@SuppressWarnings("unchecked")
 	public default SELF setInstance(String instance){

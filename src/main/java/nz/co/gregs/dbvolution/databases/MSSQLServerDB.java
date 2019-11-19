@@ -323,7 +323,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	@Override
-	protected AbstractMSSQLServerSettingsBuilder<?> getURLInterpreter() {
+	protected AbstractMSSQLServerSettingsBuilder<?,?> getURLInterpreter() {
 		return new MSSQLServerSettingsBuilder();
 	}
 }

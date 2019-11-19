@@ -30,7 +30,20 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-public class H2FileSettingsBuilder extends AbstractH2SettingsBuilder<H2FileSettingsBuilder>
-		implements FileBasedSettingsBuilder<H2FileSettingsBuilder> {
+import java.sql.SQLException;
+import nz.co.gregs.dbvolution.databases.H2FileDB;
+
+public class H2FileSettingsBuilder extends AbstractH2SettingsBuilder<H2FileSettingsBuilder, H2FileDB>
+		implements FileBasedSettingsBuilder<H2FileSettingsBuilder, H2FileDB> {
+
+	@Override
+	public Class<H2FileDB> generatesURLForDatabase() {
+		return H2FileDB.class;
+	}
+
+	@Override
+	public H2FileDB getDBDatabase() throws SQLException {
+		return new H2FileDB(this);
+	}
 
 }

@@ -30,10 +30,22 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import nz.co.gregs.dbvolution.databases.JavaDB;
+
 /**
  *
  * @author gregorygraham
  */
-public class JavaDBSettingsBuilder extends AbstractJavaDBSettingsBuilder<JavaDBSettingsBuilder>
-		implements ProtocolCapableSettingsBuilder<JavaDBSettingsBuilder> {
+public class JavaDBSettingsBuilder extends AbstractJavaDBSettingsBuilder<JavaDBSettingsBuilder, JavaDB>
+		implements ProtocolCapableSettingsBuilder<JavaDBSettingsBuilder, JavaDB> {
+
+	@Override
+	public Class<JavaDB> generatesURLForDatabase() {
+		return JavaDB.class;
+	}
+
+	@Override
+	public JavaDB getDBDatabase() throws Exception {
+		return new JavaDB(this);
+	}
 }

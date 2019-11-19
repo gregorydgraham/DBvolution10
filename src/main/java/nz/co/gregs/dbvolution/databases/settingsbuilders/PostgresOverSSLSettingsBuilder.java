@@ -32,14 +32,13 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 
 /**
  *
  * @author gregorygraham
  */
-public class PostgresOverSSLSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresOverSSLSettingsBuilder> {
+public class PostgresOverSSLSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresOverSSLSettingsBuilder, PostgresDBOverSSL> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -54,7 +53,12 @@ public class PostgresOverSSLSettingsBuilder extends AbstractPostgresSettingsBuil
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<PostgresDBOverSSL> generatesURLForDatabase() {
 		return PostgresDBOverSSL.class;
+	}
+
+	@Override
+	public PostgresDBOverSSL getDBDatabase() throws Exception {
+		return new PostgresDBOverSSL(this);
 	}
 }

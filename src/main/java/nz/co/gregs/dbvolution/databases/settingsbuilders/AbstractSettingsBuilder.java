@@ -40,8 +40,9 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuilder<SELF>> implements SettingsBuilder<SELF> {
+public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> implements SettingsBuilder<SELF, DATABASE> {
 
 	private DatabaseConnectionSettings storedSettingsInAbstractURLInterpreter;
 
@@ -61,7 +62,7 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	protected String encodeHostAbstract(DatabaseConnectionSettings settings) {
 		List<DatabaseConnectionSettings> hosts = settings.getClusterHosts();
 		if (!hosts.isEmpty() && (this instanceof ClusterCapableSettingsBuilder)) {
-			ClusterCapableSettingsBuilder<?> builder = (ClusterCapableSettingsBuilder<?>) this;
+			ClusterCapableSettingsBuilder<?,?> builder = (ClusterCapableSettingsBuilder<?,?>) this;
 			return builder.encodeClusterHosts(settings.getClusterHosts());
 		} else {
 			return encodeHost(settings);
@@ -130,7 +131,7 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	@Override
 	public final DatabaseConnectionSettings toSettings() {
 		DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
-		newSettings.copy(storedSettingsInAbstractURLInterpreter);
+		newSettings.copy(getStoredSettings());
 		return newSettings;
 	}
 

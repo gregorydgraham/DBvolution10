@@ -92,13 +92,13 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, Map<String, String> extras) throws SQLException {
 		this(new PostgresOverSSLSettingsBuilder()
-						.setHost(hostname)
-						.setPort(port)
-						.setDatabaseName(databaseName)
-						.setUsername(username)
-						.setPassword(password)
-						.setExtras(extras)
-						.toSettings()
+				.setHost(hostname)
+				.setPort(port)
+				.setDatabaseName(databaseName)
+				.setUsername(username)
+				.setPassword(password)
+				.setExtras(extras)
+				.toSettings()
 		);
 		//		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
 	}
@@ -117,12 +117,12 @@ public class PostgresDBOverSSL extends PostgresDB {
 	@Deprecated
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
 		this(new PostgresOverSSLSettingsBuilder()
-						.setHost(hostname)
-						.setPort(port)
-						.setDatabaseName(databaseName)
-						.setUsername(username)
-						.setPassword(password)
-						.toSettings()
+				.setHost(hostname)
+				.setPort(port)
+				.setDatabaseName(databaseName)
+				.setUsername(username)
+				.setPassword(password)
+				.toSettings()
 		);
 		//		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
 	}
@@ -149,14 +149,18 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) throws SQLException {
 		this(new PostgresOverSSLSettingsBuilder()
-						.setHost(hostname)
-						.setPort(port)
-						.setDatabaseName(databaseName)
-						.setUsername(username)
-						.setPassword(password)
-						.toSettings()
+				.setHost(hostname)
+				.setPort(port)
+				.setDatabaseName(databaseName)
+				.setUsername(username)
+				.setPassword(password)
+				.toSettings()
 		);
 //		this(hostname, port, databaseName, username, password, "");
+	}
+
+	public PostgresDBOverSSL(PostgresOverSSLSettingsBuilder builder) throws SQLException {
+		this(builder.toSettings());
 	}
 
 	@Override

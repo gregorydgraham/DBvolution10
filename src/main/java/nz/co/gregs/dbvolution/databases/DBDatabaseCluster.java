@@ -116,6 +116,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	private final transient DBStatementCluster clusterStatement;
 //	private final SettingsBuilder urlProcessor = new DBDatabaseClusterSettingsBuilder();
 
+	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		this(builder.getDatabaseName(),new Configuration(builder.getAutoRebuild(), builder.getAutoReconnect()));
+	}
+
 	/**
 	 * Nope.
 	 *

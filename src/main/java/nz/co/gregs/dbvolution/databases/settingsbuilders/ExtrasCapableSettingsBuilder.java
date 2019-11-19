@@ -30,16 +30,16 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public interface ExtrasCapableSettingsBuilder<SELF extends ExtrasCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
+public interface ExtrasCapableSettingsBuilder<SELF extends ExtrasCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE>{
 
 	public default Map<String, String> getExtras(){
 		return getStoredSettings().getExtras();

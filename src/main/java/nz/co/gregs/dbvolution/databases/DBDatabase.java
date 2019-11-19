@@ -329,7 +329,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?> dcs) throws SQLException {
+	public DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?,?> dcs) throws SQLException {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
@@ -2382,7 +2382,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		throw exp;
 	}
 
-	protected abstract SettingsBuilder<?> getURLInterpreter();
+	protected abstract SettingsBuilder<?,?> getURLInterpreter();
 
 	public final String getUrlFromSettings(DatabaseConnectionSettings oldSettings) {
 		return getURLInterpreter().generateJDBCURL(oldSettings);

@@ -30,12 +30,15 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public interface RemoteCapableSettingsBuilder<SELF extends RemoteCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF> {
+public interface RemoteCapableSettingsBuilder<SELF extends RemoteCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
 
 	@SuppressWarnings("unchecked")
 	public default SELF setHost(String host) {

@@ -40,10 +40,10 @@ import nz.co.gregs.dbvolution.databases.MariaClusterDB;
  *
  * @author gregorygraham
  */
-public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder>
-		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder>,
-		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder>,
-		NamedDatabaseCapableSettingsBuilder<MariaClusterDBSettingsBuilder> {
+public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB>
+		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB>,
+		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB>,
+		NamedDatabaseCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -91,7 +91,7 @@ public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<Maria
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<MariaClusterDB> generatesURLForDatabase() {
 		return MariaClusterDB.class;
 	}
 
@@ -105,5 +105,10 @@ public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<Maria
 		return settings.getHost() + ":"
 				+ settings.getPort() + "/"
 				+ settings.getDatabaseName();
+	}
+
+	@Override
+	public MariaClusterDB getDBDatabase() throws Exception {
+		return new MariaClusterDB(this);
 	}
 }

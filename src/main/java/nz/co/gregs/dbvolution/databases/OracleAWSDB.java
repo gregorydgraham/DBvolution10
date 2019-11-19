@@ -23,12 +23,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Super class for connecting the different versions of the AWS Oracle DB.
@@ -90,7 +89,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleAWSDB(OracleSettingsBuilder dcs) throws SQLException {
+	public OracleAWSDB(AbstractOracleSettingsBuilder dcs) throws SQLException {
 		this(new OracleAWSDBDefinition(), dcs);
 	}
 
@@ -112,7 +111,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleAWSDB(OracleAWSDBDefinition defn, OracleSettingsBuilder dcs) throws SQLException {
+	public OracleAWSDB(OracleAWSDBDefinition defn, AbstractOracleSettingsBuilder dcs) throws SQLException {
 		super(defn, dcs);
 	}
 
@@ -171,20 +170,6 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 
 	@Override
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement dbStatement, TR tableRow) throws SQLException {
-	}
-
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return OracleAWSDB.class ;
-//	}
-	@Override
-	protected OracleSettingsBuilder getURLInterpreter() {
-		return new OracleSettingsBuilder() {
-			@Override
-			public Class<? extends DBDatabase> generatesURLForDatabase() {
-				return OracleAWSDB.class;
-			}
-		};
 	}
 
 }

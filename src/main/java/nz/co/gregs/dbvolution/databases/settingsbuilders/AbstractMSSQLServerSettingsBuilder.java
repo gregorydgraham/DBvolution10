@@ -34,18 +34,18 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
-		implements InstanceCapableSettingsBuilder<SELF>,
-		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>,
-		ExtrasCapableSettingsBuilder<SELF> {
+public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+		implements InstanceCapableSettingsBuilder<SELF, DATABASE>,
+		RemoteCapableSettingsBuilder<SELF, DATABASE>,
+		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
+		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -100,29 +100,15 @@ public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMS
 		return urlFromSettings;
 	}
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		final String databaseName = settings.getDatabaseName();
-//		final String instance = settings.getInstance();
-//		final String urlFromSettings
-//				= getJDBCURLPreamble()
-//				+ settings.getHost()
-//				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
-//				+ ":" + settings.getPort() + ";"
-//				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";");
-//		return url != null && !url.isEmpty() ? url : urlFromSettings;
-//	}
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
 	}
 
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return MSSQLServerDB.class;
-	}
-
+//	@Override
+//	public Class<? extends DBDatabase> generatesURLForDatabase() {
+//		return MSSQLServerDB.class;
+//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 1433;

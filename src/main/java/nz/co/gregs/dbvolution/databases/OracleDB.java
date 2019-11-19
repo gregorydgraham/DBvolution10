@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -85,6 +85,16 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
+	 * @param builder
+	 * @throws java.sql.SQLException database errors
+	 */
+	public OracleDB(AbstractOracleSettingsBuilder builder) throws SQLException {
+		this(builder.toSettings());
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -119,7 +129,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		this(definition, driverName, new OracleSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
+		this(definition, driverName, new Oracle11XESettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -140,7 +150,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, OracleSettingsBuilder dataSource) throws SQLException {
+	public OracleDB(DBDefinition dbDefinition, AbstractOracleSettingsBuilder dataSource) throws SQLException {
 		this(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
 	}
 
@@ -152,7 +162,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, String driverName, OracleSettingsBuilder dataSource) throws SQLException {
+	public OracleDB(DBDefinition dbDefinition, String driverName, AbstractOracleSettingsBuilder dataSource) throws SQLException {
 		super(dbDefinition, driverName, dataSource.toSettings());
 	}
 
@@ -245,75 +255,11 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		final String formattedTableName = definition.formatTableName(tableRow);
 		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'", QueryIntention.DELETE_ROW);
 	}
-
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty()
-//				? url
-//				: "jdbc:oracle:thin:@//"
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getInstance();
-//	}
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		return new HashMap<String, String>();
-//	}
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-//		return noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0];
-//
-//	}
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-//		return noPrefix
-//				.split("/", 2)[1];
-//	}
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-//		return noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:+", "");
-//	}
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("?", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
-//		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
-//		set.setInstance(noPrefix.split("/", 2)[1]);
-//		set.setSchema("");
-//		return set;
-//	}
+	
 	@Override
 	public Integer getDefaultPort() {
 		return 1521;
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return OracleDB.class;
-//	}
-	@Override
-	protected OracleSettingsBuilder getURLInterpreter() {
-		return new OracleSettingsBuilder();
-	}
 
 }

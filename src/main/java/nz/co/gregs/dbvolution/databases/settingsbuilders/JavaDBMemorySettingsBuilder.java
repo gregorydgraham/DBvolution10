@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.JavaDBMemoryDB;
 
 
-public class JavaDBMemorySettingsBuilder extends AbstractJavaDBSettingsBuilder<JavaDBMemorySettingsBuilder> {
+public class JavaDBMemorySettingsBuilder extends AbstractJavaDBSettingsBuilder<JavaDBMemorySettingsBuilder, JavaDBMemoryDB> {
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
@@ -45,8 +45,13 @@ public class JavaDBMemorySettingsBuilder extends AbstractJavaDBSettingsBuilder<J
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<JavaDBMemoryDB> generatesURLForDatabase() {
 		return JavaDBMemoryDB.class;
+	}
+
+	@Override
+	public JavaDBMemoryDB getDBDatabase() throws Exception {
+		return new JavaDBMemoryDB(this);
 	}
 	
 }

@@ -101,6 +101,10 @@ public class Informix11DB extends InformixDB {
 		super(new Informix11DBDefinition(), dataSource);
 	}
 
+	public Informix11DB(Informix11SettingsBuilder builder) throws ClassNotFoundException, SQLException {
+		this(builder.toSettings());
+	}
+
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone();

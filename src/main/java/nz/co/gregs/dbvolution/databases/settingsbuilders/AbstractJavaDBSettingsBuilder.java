@@ -34,18 +34,18 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.JavaDB;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
-		implements InstanceCapableSettingsBuilder<SELF>,
-		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>,
-		ExtrasCapableSettingsBuilder<SELF> {
+public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+		implements InstanceCapableSettingsBuilder<SELF, DATABASE>,
+		RemoteCapableSettingsBuilder<SELF, DATABASE>,
+		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
+		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -70,20 +70,6 @@ public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBS
 		settings.setInstance(settings.getExtras().get("instance"));
 		settings.setSchema("");
 		return settings;
-		//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
-		//		if (jdbcURL.matches(";")) {
-		//			String extrasString = jdbcURL.split("\\?", 2)[1];
-		//			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
-		//		}
-		//		settings.setPort(noPrefix
-		//				.split("/", 2)[0]
-		//				.replaceAll("^[^:]*:+", ""));
-		//		settings.setHost(noPrefix
-		//				.split("/", 2)[0]
-		//				.split(":")[0]);
-		//		settings.setInstance(settings.getExtras().get("instance"));
-		//		settings.setSchema("");
-		//		return settings;
 	}
 
 	protected String getJDBCURLPreamble() {
@@ -105,14 +91,9 @@ public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBS
 	}
 
 //	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + ("".equals(settings.getProtocol()) ? "" : settings.getProtocol() + ":") + settings.getDatabaseName() //+ ";create=true";
-//				+ encodeExtras(settings, "?", "=", "&", "");
+//	public Class<? extends DBDatabase> generatesURLForDatabase() {
+//		return JavaDB.class;
 //	}
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return JavaDB.class;
-	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {

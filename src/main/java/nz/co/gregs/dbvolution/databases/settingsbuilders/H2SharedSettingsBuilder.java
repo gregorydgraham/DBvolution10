@@ -30,23 +30,16 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2SharedDB;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
-public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedSettingsBuilder>
-		implements RemoteCapableSettingsBuilder<H2SharedSettingsBuilder>,
-		ProtocolCapableSettingsBuilder<H2SharedSettingsBuilder>,
-		NamedDatabaseCapableSettingsBuilder<H2SharedSettingsBuilder>{
+public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>
+		implements RemoteCapableSettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>,
+		ProtocolCapableSettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>,
+		NamedDatabaseCapableSettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>{
 
-//	@Override
-//	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		String hostname = defaultString(settings.getHost(), "localhost");
-//		String port = defaultString(settings.getPort(), "" + getDefaultPort());
-//		String protocol = defaultString(settings.getProtocol(), "tcp");
-//		return "jdbc:h2:" + protocol + "://" + hostname + ":" + port + "/" + settings.getDatabaseName();
-//	}
 	@Override
 	public String encodeHost(DatabaseConnectionSettings settings) {
 		String hostname = DefaultString.check(settings.getHost(), "localhost");
@@ -69,11 +62,16 @@ public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedS
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<H2SharedDB> generatesURLForDatabase(){
 		return H2SharedDB.class;
 	}
 
 	private String defaultString(String initialValue, String defaultValue) {
 		return initialValue == null || initialValue.isEmpty() ? defaultValue : initialValue;
+	}
+
+	@Override
+	public H2SharedDB getDBDatabase() throws SQLException {
+		return new H2SharedDB(this);
 	}
 }

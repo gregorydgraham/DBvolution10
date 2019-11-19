@@ -32,7 +32,6 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 
@@ -40,9 +39,12 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  *
  * @author gregorygraham
  */
-public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DBDatabaseClusterSettingsBuilder> {
+public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster>
+		implements NamedDatabaseCapableSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	private boolean useAutoRebuild = false;
+	private boolean useAutoReconnect = false;
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -51,7 +53,7 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 
 	@Override
 	public DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
-		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
@@ -71,13 +73,13 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 	protected String getJDBCURLPreamble(DatabaseConnectionSettings settings) {
 		return getJDBCURLPreamble();
 	}
-	
+
 	protected String getJDBCURLPreamble() {
 		return "jdbc:dbvolution-cluster://";
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<DBDatabaseCluster> generatesURLForDatabase() {
 		return DBDatabaseCluster.class;
 	}
 
@@ -97,5 +99,28 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 				+ settings.getPort() + "/"
 				+ settings.getDatabaseName()
 				+ encodeExtras(settings, "?", "=", "&", "");
+	}
+
+	@Override
+	public DBDatabaseCluster getDBDatabase() throws Exception {
+		return new DBDatabaseCluster(this);
+	}
+
+	public DBDatabaseClusterSettingsBuilder setAutoRebuild(boolean useAutoRebuild) {
+		this.useAutoRebuild = useAutoRebuild;
+		return this;
+	}
+
+	public DBDatabaseClusterSettingsBuilder setAutoReconnect(boolean useAutoReconnect) {
+		this.useAutoReconnect = useAutoReconnect;
+		return this;
+	}
+
+	public boolean getAutoRebuild() {
+		return this.useAutoRebuild;
+	}
+
+	public boolean getAutoReconnect() {
+		return this.useAutoReconnect;
 	}
 }

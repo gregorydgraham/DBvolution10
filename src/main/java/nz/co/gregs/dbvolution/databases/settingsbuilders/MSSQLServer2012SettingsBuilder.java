@@ -30,18 +30,22 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.MSSQLServer2012DB;
 
 /**
  *
  * @author gregorygraham
  */
-public class MSSQLServer2012SettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServer2012SettingsBuilder>
-implements InstanceCapableSettingsBuilder<MSSQLServer2012SettingsBuilder>{
+public class MSSQLServer2012SettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServer2012SettingsBuilder, MSSQLServer2012DB>
+implements InstanceCapableSettingsBuilder<MSSQLServer2012SettingsBuilder, MSSQLServer2012DB>{
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<MSSQLServer2012DB> generatesURLForDatabase() {
 		return MSSQLServer2012DB.class;
+	}
+
+	@Override
+	public MSSQLServer2012DB getDBDatabase() throws Exception {
+		return new MSSQLServer2012DB(this);
 	}
 }

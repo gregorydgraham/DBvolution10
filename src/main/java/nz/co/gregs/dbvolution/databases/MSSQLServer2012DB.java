@@ -62,6 +62,10 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 		super(new MSSQLServer2012DBDefinition(), driverName, hostname, instanceName, databaseName, portNumber, username, password);
 	}
 
+	public MSSQLServer2012DB(MSSQLServer2012SettingsBuilder builder) throws SQLException {
+		this(builder.toSettings());
+	}
+
 //	@Override
 //	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return MSSQLServer2012DB.class;

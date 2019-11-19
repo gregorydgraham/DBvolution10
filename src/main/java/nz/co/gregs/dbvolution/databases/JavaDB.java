@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.JavaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractJavaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for JavaDB.
@@ -40,7 +39,6 @@ public class JavaDB extends DBDatabase {
 
 	private static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
 	public static final long serialVersionUID = 1l;
-	private String derivedURL;
 
 	/**
 	 * Default Constructor.
@@ -125,7 +123,7 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	protected AbstractJavaDBSettingsBuilder<?> getURLInterpreter() {
+	protected AbstractJavaDBSettingsBuilder<?,?> getURLInterpreter() {
 		return new JavaDBSettingsBuilder();
 	}
 }

@@ -30,21 +30,25 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF> the type returned by all SELF methods
+ * @param <DATABASE>
  */
-public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
-		implements ClusterCapableSettingsBuilder<SELF>,
-		InstanceCapableSettingsBuilder<SELF>,
-		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>, 
-		ExtrasCapableSettingsBuilder<SELF> {
+public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+		implements ClusterCapableSettingsBuilder<SELF, DATABASE>,
+		InstanceCapableSettingsBuilder<SELF, DATABASE>,
+		RemoteCapableSettingsBuilder<SELF, DATABASE>,
+		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
+		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
@@ -141,6 +145,19 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 	public SELF setVerifyServerCertificate(boolean b) {
 		getStoredSettings().addExtra("verifyServerCertificate", "" + b);
 		return (SELF) this;
+	}
+
+	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
+
+	@Override
+	public void setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		this.clusterHost.clear();
+		this.clusterHost.addAll(hosts);
+	}
+
+	@Override
+	public List<DatabaseConnectionSettings> getClusterHosts() {
+		return this.clusterHost;
 	}
 
 }

@@ -32,7 +32,6 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 
@@ -40,9 +39,9 @@ import nz.co.gregs.dbvolution.databases.SQLiteDB;
  *
  * @author gregorygraham
  */
-public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSettingsBuilder>
-		implements FileBasedSettingsBuilder<SQLiteSettingsBuilder>,
-		NamedDatabaseCapableSettingsBuilder<SQLiteSettingsBuilder>{
+public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB>
+		implements FileBasedSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB>,
+		NamedDatabaseCapableSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -56,7 +55,7 @@ public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSetting
 
 	@Override
 	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings set) {
-		String noPrefix = jdbcURL.replaceAll("^"+getJDBCURLPreamble(), "");
+		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
 		if (jdbcURL.contains(";")) {
 			String extrasString = jdbcURL.split("\\?", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
@@ -90,13 +89,13 @@ public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSetting
 				? settings.getDatabaseName()
 				: filename;
 	}
-	
+
 	protected String getJDBCURLPreamble() {
 		return "jdbc:sqlite://";
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<SQLiteDB> generatesURLForDatabase() {
 		return SQLiteDB.class;
 	}
 
@@ -110,11 +109,8 @@ public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSetting
 		return -1;// SQLite doesn't use ports
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public final SQLiteSettingsBuilder setFilename(File databaseFile) throws IOException {
-//		setFilename(databaseFile.getCanonicalFile().toString());
-//		setDatabaseName(databaseFile.getCanonicalFile().toString());
-//		return this;
-//	}
+	@Override
+	public SQLiteDB getDBDatabase() throws Exception {
+		return new SQLiteDB(this);
+	}
 }

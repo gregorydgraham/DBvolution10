@@ -34,18 +34,18 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.InformixDB;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
-		implements InstanceCapableSettingsBuilder<SELF>,
-		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>,
-		ExtrasCapableSettingsBuilder<SELF>{
+public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+		implements InstanceCapableSettingsBuilder<SELF, DATABASE>,
+		RemoteCapableSettingsBuilder<SELF, DATABASE>,
+		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
+		ExtrasCapableSettingsBuilder<SELF, DATABASE>{
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -90,10 +90,10 @@ public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInfor
 //	public String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
 //		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + ":INFORMIXSERVER=" + settings.getInstance() + settings.formatExtras(":", "=", ";", "");
 //	}
-	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return InformixDB.class;
-	}
+//	@Override
+//	public Class<? extends DBDatabase> generatesURLForDatabase() {
+//		return InformixDB.class;
+//	}
 
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {

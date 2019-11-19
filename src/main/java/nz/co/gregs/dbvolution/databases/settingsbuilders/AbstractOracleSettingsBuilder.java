@@ -34,17 +34,18 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.OracleDB;
 
 /**
  *
  * @author gregorygraham
+ * @param <SELF>
+ * @param <DATABASE>
  */
-public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSettingsBuilder>
-		implements 
-		InstanceCapableSettingsBuilder<OracleSettingsBuilder>,
-		SchemaCapableSettingsBuilder<OracleSettingsBuilder>,
-		RemoteCapableSettingsBuilder<OracleSettingsBuilder>{
+public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+		implements
+		InstanceCapableSettingsBuilder<SELF, DATABASE>, 
+		SchemaCapableSettingsBuilder<SELF, DATABASE>, 
+		RemoteCapableSettingsBuilder<SELF, DATABASE> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -92,11 +93,6 @@ public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSetting
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return OracleDB.class;
-	}
-
-	@Override
 	public Integer getDefaultPort() {
 		return 1521;
 	}
@@ -120,12 +116,12 @@ public class OracleSettingsBuilder extends AbstractSettingsBuilder<OracleSetting
 				+ settings.getPort() + "/"
 				+ settings.getInstance();
 	}
-	
-	public OracleSettingsBuilder setSID(String sid){
+
+	public AbstractOracleSettingsBuilder setSID(String sid) {
 		return this.setInstance(sid);
 	}
-	
-	public String getSID(){
+
+	public String getSID() {
 		return this.getInstance();
 	}
 }

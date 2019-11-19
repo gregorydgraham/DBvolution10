@@ -373,7 +373,7 @@ public class H2DB extends DBDatabase {
 	private final static H2SettingsBuilder URL_PROCESSOR = new H2SettingsBuilder();
 
 	@Override
-	protected AbstractH2SettingsBuilder<?> getURLInterpreter() {
+	protected AbstractH2SettingsBuilder<?,?> getURLInterpreter() {
 		return URL_PROCESSOR;
 	}
 }

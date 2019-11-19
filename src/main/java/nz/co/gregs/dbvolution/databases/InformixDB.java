@@ -152,6 +152,10 @@ public class InformixDB extends DBDatabase {
 		this(new InformixDBDefinition(), dataSource);
 	}
 
+	public InformixDB(InformixSettingsBuilder builder) throws SQLException {
+		this(builder.toSettings());
+	}
+
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -238,7 +242,7 @@ public class InformixDB extends DBDatabase {
 //	}
 
 	@Override
-	protected AbstractInformixSettingsBuilder<?> getURLInterpreter() {
+	protected AbstractInformixSettingsBuilder<?,?> getURLInterpreter() {
 		return new InformixSettingsBuilder();
 	}
 	

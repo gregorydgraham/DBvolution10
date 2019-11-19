@@ -105,7 +105,10 @@ public class H2MemoryDB extends H2DB {
 	 * The dummy parameter is ignored and only used to differentiate between the
 	 * to 2 constructors.
 	 *
-	 *
+	 * <p>
+	 * It is recommended that you use
+	 * {@link #H2MemoryDB(nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) the settings builder constructor}
+	 * instead.</p>
 	 *
 	 *
 	 *
@@ -168,7 +171,6 @@ public class H2MemoryDB extends H2DB {
 //		return H2MemoryDB.class;
 //	}
 //	private final static H2MemorySettingsBuilder URL_PROCESSOR = new H2MemorySettingsBuilder();
-
 	@Override
 	protected H2MemorySettingsBuilder getURLInterpreter() {
 		return new H2MemorySettingsBuilder();

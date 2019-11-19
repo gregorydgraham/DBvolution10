@@ -30,14 +30,27 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.sql.SQLException;
+import nz.co.gregs.dbvolution.databases.H2DB;
+
 /**
  *
  * @author gregorygraham
  */
-public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuilder>
-		implements FileBasedSettingsBuilder<H2SettingsBuilder>,
-		RemoteCapableSettingsBuilder<H2SettingsBuilder> ,
-		ProtocolCapableSettingsBuilder<H2SettingsBuilder>,
-		NamedDatabaseCapableSettingsBuilder<H2SettingsBuilder>{
+public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuilder, H2DB>
+		implements FileBasedSettingsBuilder<H2SettingsBuilder, H2DB>,
+		RemoteCapableSettingsBuilder<H2SettingsBuilder, H2DB> ,
+		ProtocolCapableSettingsBuilder<H2SettingsBuilder, H2DB>,
+		NamedDatabaseCapableSettingsBuilder<H2SettingsBuilder, H2DB>{
+
+	@Override
+	public Class<H2DB> generatesURLForDatabase() {
+		return H2DB.class;
+	}
+
+	@Override
+	public H2DB getDBDatabase() throws SQLException {
+		return new H2DB(this);
+	}
 
 }

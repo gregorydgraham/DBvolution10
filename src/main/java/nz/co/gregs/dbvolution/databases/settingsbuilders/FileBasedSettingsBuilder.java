@@ -32,13 +32,15 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.io.File;
 import java.io.IOException;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public interface FileBasedSettingsBuilder<SELF extends FileBasedSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
+public interface FileBasedSettingsBuilder<SELF extends FileBasedSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
 
 	public default String getFilename(){
 		return getStoredSettings().getFilename();

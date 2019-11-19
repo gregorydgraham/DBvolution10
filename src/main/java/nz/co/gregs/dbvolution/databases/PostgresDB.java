@@ -153,11 +153,11 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
 		this(new PostgresSettingsBuilder()
-						.setHost(hostname)
-						.setPort(port)
-						.setDatabaseName(databaseName)
-						.setUsername(username)
-						.setPassword(password)
+				.setHost(hostname)
+				.setPort(port)
+				.setDatabaseName(databaseName)
+				.setUsername(username)
+				.setPassword(password)
 		//hostname, port, databaseName, username, password 
 		);
 	}
@@ -180,12 +180,12 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, Map<String, String> urlExtras) throws SQLException {
 		this(new PostgresSettingsBuilder()
-						.setHost(hostname)
-						.setPort(port)
-						.setDatabaseName(databaseName)
-						.setExtras(urlExtras)
-						.setUsername(username)
-						.setPassword(password)
+				.setHost(hostname)
+				.setPort(port)
+				.setDatabaseName(databaseName)
+				.setExtras(urlExtras)
+				.setUsername(username)
+				.setPassword(password)
 		);
 //		this.setDatabaseName(databaseName);
 	}
@@ -452,7 +452,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 //		return PostgresDB.class;
 //	}
 	@Override
-	protected AbstractPostgresSettingsBuilder<?> getURLInterpreter() {
+	protected AbstractPostgresSettingsBuilder<?, ?> getURLInterpreter() {
 		return new PostgresSettingsBuilder();
 	}
 }

@@ -32,6 +32,7 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
@@ -39,10 +40,14 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public interface ClusterCapableSettingsBuilder<SELF extends ClusterCapableSettingsBuilder<SELF>> extends SettingsBuilder<SELF>{
+public interface ClusterCapableSettingsBuilder<SELF extends ClusterCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
 
-	public default String encodeClusterHosts(List<DatabaseConnectionSettings> hosts){
+	void setClusterHosts(List<DatabaseConnectionSettings> hosts);
+	List<DatabaseConnectionSettings> getClusterHosts();
+	
+	public default String encodeClusterHosts(List<DatabaseConnectionSettings> hosts) {
 		SeparatedString sep = SeparatedString.forSeparator(",");
 		sep.addAll(
 				hosts.stream()

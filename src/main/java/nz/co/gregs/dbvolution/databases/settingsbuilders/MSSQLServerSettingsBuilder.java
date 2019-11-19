@@ -30,10 +30,22 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
+
 /**
  *
  * @author gregorygraham
  */
-public class MSSQLServerSettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServerSettingsBuilder>
-implements InstanceCapableSettingsBuilder<MSSQLServerSettingsBuilder>{
+public class MSSQLServerSettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServerSettingsBuilder, MSSQLServerDB>
+		implements InstanceCapableSettingsBuilder<MSSQLServerSettingsBuilder, MSSQLServerDB> {
+
+	@Override
+	public Class<MSSQLServerDB> generatesURLForDatabase() {
+		return MSSQLServerDB.class;
+	}
+
+	@Override
+	public MSSQLServerDB getDBDatabase() throws Exception {
+		return new MSSQLServerDB(this);
+	}
 }

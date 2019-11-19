@@ -30,23 +30,25 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
 
 /**
  *
  * @author gregorygraham
  * @param <SELF>
+ * @param <DATABASE>
  */
-public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostgresSettingsBuilder<SELF>> extends AbstractSettingsBuilder<SELF>
-		implements ClusterCapableSettingsBuilder<SELF>,
-		InstanceCapableSettingsBuilder<SELF>,
-		RemoteCapableSettingsBuilder<SELF>,
-		NamedDatabaseCapableSettingsBuilder<SELF>,
-		ExtrasCapableSettingsBuilder<SELF> {
+public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostgresSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+		implements ClusterCapableSettingsBuilder<SELF, DATABASE>,
+		InstanceCapableSettingsBuilder<SELF, DATABASE>,
+		RemoteCapableSettingsBuilder<SELF, DATABASE>,
+		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
+		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
@@ -84,28 +86,27 @@ public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostg
 		return settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
 	}
 
-//	@Override
-//	protected String generateJDBCURLInternal(DatabaseConnectionSettings settings) {
-//		return getJDBCURLPreamble() + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + encodeExtras(settings, "?", "=", "&", "");
-//		/*"jdbc:postgresql://"
-//		+ settings.getHost() + ":"
-//		+ settings.getPort() + "/"
-//		+ settings.getDatabaseName()
-//		+ settings.formatExtras("?", "=", "&", "");*/
-//	}
 	@Override
 	protected DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;
 	}
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
-		return PostgresDB.class;
+	public Integer getDefaultPort() {
+		return 5432;
+	}
+
+	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
+
+	@Override
+	public void setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		this.clusterHost.clear();
+		this.clusterHost.addAll(hosts);
 	}
 
 	@Override
-	public Integer getDefaultPort() {
-		return 5432;
+	public List<DatabaseConnectionSettings> getClusterHosts() {
+		return this.clusterHost;
 	}
 
 	@SuppressWarnings("unchecked")

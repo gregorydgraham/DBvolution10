@@ -30,9 +30,21 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import nz.co.gregs.dbvolution.databases.PostgresDB;
+
 /**
  *
  * @author gregorygraham
  */
-public class PostgresSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresSettingsBuilder>{
+public class PostgresSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresSettingsBuilder, PostgresDB> {
+
+	@Override
+	public Class<PostgresDB> generatesURLForDatabase() {
+		return PostgresDB.class;
+	}
+
+	@Override
+	public PostgresDB getDBDatabase() throws Exception {
+		return new PostgresDB(this);
+	}
 }

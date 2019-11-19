@@ -72,6 +72,10 @@ public class H2SharedDB extends H2DB {
 		super(settings);
 	}
 
+	public H2SharedDB(H2SharedSettingsBuilder settingsBuilder) throws SQLException {
+		this(settingsBuilder.toSettings());
+	}
+
 	@Override
 	protected synchronized void addDatabaseSpecificFeatures(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(stmt);

@@ -30,16 +30,16 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
-public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder>
-implements NamedDatabaseCapableSettingsBuilder<H2MemorySettingsBuilder>{
+public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder, H2MemoryDB>
+implements NamedDatabaseCapableSettingsBuilder<H2MemorySettingsBuilder, H2MemoryDB>{
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<H2MemoryDB> generatesURLForDatabase() {
 		return H2MemoryDB.class;
 	}
 
@@ -65,5 +65,10 @@ implements NamedDatabaseCapableSettingsBuilder<H2MemorySettingsBuilder>{
 		settings.setDatabaseName("unknown");
 		settings.setProtocol("mem");
 		return settings;
+	}
+
+	@Override
+	public H2MemoryDB getDBDatabase() throws SQLException {
+		return new H2MemoryDB(this);
 	}
 }

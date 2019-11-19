@@ -15,11 +15,11 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle12SettingsBuilder;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Implements support for version 12 of the Oracle database.
@@ -125,19 +125,10 @@ public class Oracle12DB extends OracleDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return Oracle12DB.class;
-//	}	
-	
 	@Override
-	protected OracleSettingsBuilder getURLInterpreter() {
-		return new OracleSettingsBuilder() {
-			@Override
-			public Class<? extends DBDatabase> generatesURLForDatabase() {
-				return Oracle12DB.class;
-			}
-		};
+	protected Oracle12SettingsBuilder getURLInterpreter() {
+		return new Oracle12SettingsBuilder();
 	}
+
 
 }

@@ -30,15 +30,18 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.MySQLDB_5_7;
 
-
-public class MySQL_5_7SettingsBuilder extends AbstractMySQLSettingsBuilder<MySQL_5_7SettingsBuilder> {
+public class MySQL_5_7SettingsBuilder extends AbstractMySQLSettingsBuilder<MySQL_5_7SettingsBuilder, MySQLDB_5_7> {
 
 	@Override
-	public Class<? extends DBDatabase> generatesURLForDatabase() {
+	public Class<MySQLDB_5_7> generatesURLForDatabase() {
 		return MySQLDB_5_7.class;
 	}
-	
+
+	@Override
+	public MySQLDB_5_7 getDBDatabase() throws Exception {
+		return new MySQLDB_5_7(this);
+	}
+
 }
