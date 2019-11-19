@@ -6,7 +6,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
@@ -22,7 +22,10 @@ public class DBRowClassWrapperUsabilityTest {
 
 	@BeforeClass
 	public static void setup() throws SQLException {
-		database = new H2MemoryDB("dbvolutionTest", "", "", false);
+//		database = new H2MemoryDB("dbvolutionTest", "", "", false);
+		database = new H2MemorySettingsBuilder()
+				.setDatabaseName("dbvolutionTest")
+				.getDBDatabase();
 	}
 
 	@Test
