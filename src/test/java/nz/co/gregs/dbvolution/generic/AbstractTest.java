@@ -86,46 +86,46 @@ public abstract class AbstractTest {
 		if (System.getProperty("testSmallCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", DBDatabaseCluster.Configuration.manual(),
-						SQLiteTestDB.getFromSettings(),
-						H2MemoryTestDB.getFromSettings("h2memory")
+				SQLiteTestDB.getFromSettings(),
+				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", DBDatabaseCluster.Configuration.manual(),
-						SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
-						H2MemoryTestDB.getFromSettings("h2memory")
+				SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
+				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.manual(),
-						H2MemoryTestDB.getFromSettings("h2memory"),
-						SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
-						PostgreSQLTestDatabase.getFromSettings("postgres"),
-						//MySQLTestDatabase.getFromSettings("mysql")
-						getMySQLContainerDatabaseForCluster()
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
+				PostgreSQLTestDatabase.getFromSettings("postgres"),
+				MySQLTestDatabase.getFromSettings("mysql")
+				//getMySQLContainerDatabaseForCluster()
 				)});
 		}
 		if (System.getProperty("testFullCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer",
 				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(),
-						H2MemoryTestDB.getFromSettings("h2memory"),
-						SQLiteTestDB.getClusterDBFromSettings("sqlite", "full"),
-						PostgreSQLTestDatabase.getFromSettings("postgres"),
-						//				MySQLTestDatabase.getFromSettings("mysql"),
-						getMySQLContainerDatabaseForCluster(),
-						getMSSQLServerContainerDatabaseForCluster()
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				SQLiteTestDB.getClusterDBFromSettings("sqlite", "full"),
+				PostgreSQLTestDatabase.getFromSettings("postgres"),
+				MySQLTestDatabase.getFromSettings("mysql"),
+				//getMySQLContainerDatabaseForCluster(),
+				getMSSQLServerContainerDatabaseForCluster()
 				)});
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("MySQL+Cluster", DBDatabaseCluster.Configuration.manual(),
-						H2MemoryTestDB.getFromSettings("h2memory"),
-						SQLiteTestDB.getFromSettings(),
-						PostgreSQLTestDatabase.getFromSettings("postgres"),
-						getMySQLContainerDatabaseForCluster()
-						//MySQLTestDatabase.getFromSettings("mysql")
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				SQLiteTestDB.getFromSettings(),
+				PostgreSQLTestDatabase.getFromSettings("postgres"),
+				getMySQLContainerDatabaseForCluster()
+				//MySQLTestDatabase.getFromSettings("mysql")
 				)});
 			databases.add(new Object[]{"MySQL",
 				MySQLTestDatabase.getFromSettings("mysql")
@@ -153,11 +153,11 @@ public abstract class AbstractTest {
 			//Quite convoluted creation but it's meant to test the file builder
 			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix("h2file");
 			databases.add(new Object[]{"H2FileDB", new H2FileDB(
-					new H2FileSettingsBuilder()
-							.setFilename(settings.getFilename())
-							.setUsername(settings.getUsername())
-							.setPassword(settings.getUsername())
-			)
+				new H2FileSettingsBuilder()
+				.setFilename(settings.getFilename())
+				.setUsername(settings.getUsername())
+				.setPassword(settings.getUsername())
+				)
 			}
 			);
 		}
