@@ -54,6 +54,7 @@ import org.junit.runners.Parameterized.Parameters;
 public abstract class AbstractTest {
 
 	public DBDatabase database;
+	static List<Object[]> databases = new ArrayList<>(0);
 	Marque myMarqueRow = new Marque();
 	CarCompany myCarCompanyRow = new CarCompany();
 	public DBTable<Marque> marquesTable;
@@ -72,51 +73,59 @@ public abstract class AbstractTest {
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-		List<Object[]> databases = new ArrayList<>();
+		if (databases.isEmpty()) {
+			getDatabasesFromSettings();
+		}
+		for (Object[] database : databases) {
+			System.out.println("Processing: Database " + database[0]);
+		}
+		return databases;
+	}
 
+	protected static void getDatabasesFromSettings() throws InvocationTargetException, IllegalArgumentException, IOException, InstantiationException, SQLException, IllegalAccessException, ClassNotFoundException, SecurityException, NoSuchMethodException {
 		if (System.getProperty("testSmallCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", DBDatabaseCluster.Configuration.manual(),
-				SQLiteTestDB.getFromSettings(),
-				H2MemoryTestDB.getFromSettings("h2memory")
+						SQLiteTestDB.getFromSettings(),
+						H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", DBDatabaseCluster.Configuration.manual(),
-				SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
-				H2MemoryTestDB.getFromSettings("h2memory")
+						SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
+						H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.manual(),
-				H2MemoryTestDB.getFromSettings("h2memory"),
-				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
-				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				//MySQLTestDatabase.getFromSettings("mysql")
-				getMySQLContainerDatabaseForCluster()
+						H2MemoryTestDB.getFromSettings("h2memory"),
+						SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
+						PostgreSQLTestDatabase.getFromSettings("postgres"),
+						//MySQLTestDatabase.getFromSettings("mysql")
+						getMySQLContainerDatabaseForCluster()
 				)});
 		}
 		if (System.getProperty("testFullCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer",
 				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(),
-				H2MemoryTestDB.getFromSettings("h2memory"),
-				SQLiteTestDB.getClusterDBFromSettings("sqlite", "full"),
-				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				//				MySQLTestDatabase.getFromSettings("mysql"),
-				getMySQLContainerDatabaseForCluster(),
-				getMSSQLServerContainerDatabaseForCluster()
+						H2MemoryTestDB.getFromSettings("h2memory"),
+						SQLiteTestDB.getClusterDBFromSettings("sqlite", "full"),
+						PostgreSQLTestDatabase.getFromSettings("postgres"),
+						//				MySQLTestDatabase.getFromSettings("mysql"),
+						getMySQLContainerDatabaseForCluster(),
+						getMSSQLServerContainerDatabaseForCluster()
 				)});
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("MySQL+Cluster", DBDatabaseCluster.Configuration.manual(),
-				H2MemoryTestDB.getFromSettings("h2memory"),
-				SQLiteTestDB.getFromSettings(),
-				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				getMySQLContainerDatabaseForCluster()
-				//MySQLTestDatabase.getFromSettings("mysql")
+						H2MemoryTestDB.getFromSettings("h2memory"),
+						SQLiteTestDB.getFromSettings(),
+						PostgreSQLTestDatabase.getFromSettings("postgres"),
+						getMySQLContainerDatabaseForCluster()
+						//MySQLTestDatabase.getFromSettings("mysql")
 				)});
 			databases.add(new Object[]{"MySQL",
 				MySQLTestDatabase.getFromSettings("mysql")
@@ -144,11 +153,11 @@ public abstract class AbstractTest {
 			//Quite convoluted creation but it's meant to test the file builder
 			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix("h2file");
 			databases.add(new Object[]{"H2FileDB", new H2FileDB(
-				new H2FileSettingsBuilder()
-				.setFilename(settings.getFilename())
-				.setUsername(settings.getUsername())
-				.setPassword(settings.getUsername())
-				)
+					new H2FileSettingsBuilder()
+							.setFilename(settings.getFilename())
+							.setUsername(settings.getUsername())
+							.setPassword(settings.getUsername())
+			)
 			}
 			);
 		}
@@ -182,13 +191,6 @@ public abstract class AbstractTest {
 		if (databases.isEmpty() || System.getProperty("testH2BlankDB") != null) {
 			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
 		}
-
-		for (Object[] database : databases) {
-			System.out.println("Processing: Database " + database[0]);
-//			((DBDatabase)database[1]).setPrintSQLBeforeExecuting(true);
-		}
-
-		return databases;
 	}
 
 	private static PostgresContainerDB POSTGRES_CONTAINER_DATABASE = null;
