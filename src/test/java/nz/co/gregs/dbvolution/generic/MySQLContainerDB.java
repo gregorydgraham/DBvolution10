@@ -32,6 +32,7 @@ package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.ZoneId;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,20 +63,16 @@ public class MySQLContainerDB extends MySQLDB {
 		 */
 		MySQLContainer container = (MySQLContainer) new MySQLContainer("mysql:latest")
 				.withDatabaseName("some_database")
-				// there is a problem with the config file in the image so add our own
-				//.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/tstMySQL.cnf")
 				// set the log consumer so we see some output
-				.withLogConsumer(new Consumer<OutputFrame>() {
-					// use an anonymous inner class because otherwise we get only an Object no an OutputFrame
-					@Override
-					public void accept(OutputFrame t) {
-						LOG.info("" + t.getUtf8String().replaceAll("\n$", ""));
-					}
-				})
-				.withStartupTimeout(Duration.ofMinutes(2));
+				.withLogConsumer(new ConsumerImpl())
+				// there is a problem with the config file in the image so add our own
+				.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/mysql.cnf")
+				.withStartupTimeout(Duration.ofMinutes(2))
+				;
 		container.withEnv("MYSQL_USER", username);
 		container.withEnv("MYSQL_PASSWORD", password);
-		container.withEnv("TZ", "Pacific/Auckland");
+		container.withEnv("TZ", ZoneId.systemDefault().toString());
+//		container.withEnv("TZ", "Pacific/Auckland");
 //		container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
 
@@ -111,6 +108,14 @@ public class MySQLContainerDB extends MySQLDB {
 	public synchronized void stop() {
 		super.stop();
 		storedContainer.stop();
+	}
+
+	private static class ConsumerImpl implements Consumer<OutputFrame> {
+
+		@Override
+		public void accept(OutputFrame t) {
+			LOG.info("" + t.getUtf8String().replaceAll("\n$", ""));
+		}
 	}
 
 }
