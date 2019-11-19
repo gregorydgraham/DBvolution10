@@ -42,7 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.output.OutputFrame;
-import org.testcontainers.utility.MountableFile;
+//import org.testcontainers.utility.MountableFile;
 
 /**
  *
@@ -66,7 +66,7 @@ public class MySQLContainerDB extends MySQLDB {
 				// set the log consumer so we see some output
 				.withLogConsumer(new ConsumerImpl())
 				// there is a problem with the config file in the image so add our own
-				.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/mysql.cnf")
+				//.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/")
 				.withStartupTimeout(Duration.ofMinutes(2))
 				;
 		container.withEnv("MYSQL_USER", username);
