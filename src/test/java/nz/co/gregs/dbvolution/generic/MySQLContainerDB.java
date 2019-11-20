@@ -40,7 +40,9 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.MySQLContainerProvider;
 import org.testcontainers.containers.output.OutputFrame;
 //import org.testcontainers.utility.MountableFile;
 
@@ -61,14 +63,18 @@ public class MySQLContainerDB extends MySQLDB {
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		MySQLContainer container = (MySQLContainer) new MySQLContainer("mysql:latest")
-				.withDatabaseName("some_database")
+		JdbcDatabaseContainer container = new MySQLContainerProvider().newInstance("latest");
+		container.withDatabaseName("some_database");
+		container.withLogConsumer(new ConsumerImpl());
+		container.withStartupTimeout(Duration.ofMinutes(2));
+//		MySQLContainer container = (MySQLContainer) new MySQLContainer("mysql:latest")
+//				.withDatabaseName("some_database")
 				// set the log consumer so we see some output
-				.withLogConsumer(new ConsumerImpl())
+//				.withLogConsumer(new ConsumerImpl())
 				// there is a problem with the config file in the image so add our own
 				//.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/")
-				.withStartupTimeout(Duration.ofMinutes(2))
-				;
+//				.withStartupTimeout(Duration.ofMinutes(2))
+//				;
 		container.withEnv("MYSQL_USER", username);
 		container.withEnv("MYSQL_PASSWORD", password);
 		container.withEnv("TZ", ZoneId.systemDefault().toString());
@@ -78,7 +84,7 @@ public class MySQLContainerDB extends MySQLDB {
 
 		try {
 			// create the actual dbdatabase 
-			MySQLContainerDB dbdatabase = new MySQLContainerDB(container);
+			MySQLContainerDB dbdatabase = new MySQLContainerDB((MySQLContainer) container);
 			return dbdatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
