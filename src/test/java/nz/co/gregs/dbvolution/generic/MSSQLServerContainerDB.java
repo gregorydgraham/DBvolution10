@@ -38,7 +38,9 @@ import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MSSQLServerContainer;
+import org.testcontainers.containers.MSSQLServerContainerProvider;
 
 /**
  *
@@ -55,12 +57,15 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		MSSQLServerContainer container = new MSSQLServerContainer<>();
-//		container.withEnv("TZ", "Pacific/Auckland");
-		container.withEnv("TZ", ZoneId.systemDefault().getId());
+		JdbcDatabaseContainer container = new MSSQLServerContainerProvider().newInstance();
+		container.addEnv("TZ", ZoneId.systemDefault().getId());
+
+//		MSSQLServerContainer container = new MSSQLServerContainer<>();
+////		container.withEnv("TZ", "Pacific/Auckland");
+//		container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
 		try {
-			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB(container);
+			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB((MSSQLServerContainer)container);
 			return staticDatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MSSQLServerContainerDB.class.getName()).log(Level.SEVERE, null, ex);
