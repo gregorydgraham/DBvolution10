@@ -543,7 +543,7 @@ public class DateExpressionTest extends AbstractTest {
 		got = query.getAllRows();
 
 		if (got.size() != 1) {
-			System.out.println("EXPECTED CREATION DATE: " + then);
+//			System.out.println("EXPECTED CREATION DATE: " + then);
 			query.printSQLForQuery();
 			database.getDBTable(marq).setBlankQueryAllowed(true).print();
 		}

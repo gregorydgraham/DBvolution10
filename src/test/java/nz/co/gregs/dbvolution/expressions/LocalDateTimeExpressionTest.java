@@ -453,7 +453,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 		
-		query.printAllRows();
+//		query.printAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
 

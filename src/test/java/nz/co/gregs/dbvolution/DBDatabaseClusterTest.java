@@ -291,7 +291,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				DBDatabaseCluster cluster
 						= new DBDatabaseCluster(nameOfCluster, DBDatabaseCluster.Configuration.autoRebuild());
 
-				System.out.println("" + cluster.getClusterDetails().getAuthoritativeDatabaseConnectionSettings().encode());
+//				System.out.println("" + cluster.getClusterDetails().getAuthoritativeDatabaseConnectionSettings().encode());
 
 				try {
 					H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();

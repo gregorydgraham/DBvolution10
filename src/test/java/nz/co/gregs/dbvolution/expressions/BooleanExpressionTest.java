@@ -210,7 +210,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 //		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
 //		System.out.println(""+dbQuery.getSQLForQuery());
-		dbQuery.printAllRows();
+//		dbQuery.printAllRows();
 		Assert.assertThat(dbQuery.getAllRows().size(), is(22));
 		
 		dbQuery.addCondition(marque.column(marque.name).isIgnoreCase("TOYOTA"));
@@ -219,7 +219,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 //		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
 //		System.out.println(""+dbQuery.getSQLForQuery());
-		dbQuery.printAllRows();
+//		dbQuery.printAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 
 		dbQuery = database.getDBQuery(marque);
@@ -1216,7 +1216,7 @@ public class BooleanExpressionTest extends AbstractTest {
 							marq.column(marq.uidMarque).ascending()
 					);
 			List<DBQueryRow> allRows = query.getAllRows();
-			query.printSQLForQuery();
+//			query.printSQLForQuery();
 			Assert.assertThat(allRows.size(), is(22));
 
 			MarqueWithEquivalentCaseStatements got;

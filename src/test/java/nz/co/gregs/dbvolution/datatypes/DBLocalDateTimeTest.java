@@ -55,7 +55,7 @@ public class DBLocalDateTimeTest extends AbstractTest {
 
 		DBLocalDateTimeTable dateOnlyTest = new DBLocalDateTimeTable();
 		LocalDateTime then = LocalDateTime.now();
-		System.out.println("THEN: " + then);
+//		System.out.println("THEN: " + then);
 		dateOnlyTest.dateOnly.setValue(then);
 
 		database.preventDroppingOfTables(false);
@@ -63,7 +63,7 @@ public class DBLocalDateTimeTest extends AbstractTest {
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DBLocalDateTimeTable> allRows = database.getDBTable(new DBLocalDateTimeTable()).setBlankQueryAllowed(true).getAllRows();
-		database.print(allRows);
+//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 
 		// Protect against SQLite's low precision problems
