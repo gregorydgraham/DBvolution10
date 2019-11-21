@@ -483,6 +483,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$TestDefaultInsertWithLocalDateTimeValue");
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$TestDefaultInsertWithInstantValue");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest$MarqueWithEndOfMonthForLocalDateTimeColumn");
+		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBDurationTest$DurationTable");
 
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {
@@ -509,7 +510,7 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		Assert.assertThat(result.size(), is(117));
+		Assert.assertThat(result.size(), is(118));
 	}
 
 	@Test
