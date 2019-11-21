@@ -56,6 +56,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1562,7 +1563,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String getDefaultTimeZoneHour() {
-		return "extract(timezone_hour from " + getCurrentZonedDateTimeFunction()+ ")";
+		return "extract(timezone_hour from " + getCurrentZonedDateTimeFunction() + ")";
 	}
 
 	public String getDefaultTimeZoneMinute() {
@@ -2725,11 +2726,12 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
-	 * Indicates whether the database prefers instant values to be read as Strings.
+	 * Indicates whether the database prefers instant values to be read as
+	 * Strings.
 	 *
 	 * <p>
-	 * Normally instants are read as instants but this method switches DBvolution to
-	 * using a text mode.
+	 * Normally instants are read as instants but this method switches DBvolution
+	 * to using a text mode.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -2808,7 +2810,6 @@ public abstract class DBDefinition implements Serializable {
 //	Pattern HAS_SPACE_BETWEEN_DATE_AND_TIME = Pattern.compile("([0-9]) ([0-9])");
 //	Pattern HAS_SPACE_BETWEEN_TIME_AND_TIMEZONE = Pattern.compile("([0-9]) ([-+0-9])");
 //	Pattern HAS_SHORT_TIMEZONE = Pattern.compile("([-+][0-9]{2})$");
-	
 //	DateTimeFormatter DATETIME_FORMATTER = new DateTimeFormatterBuilder()
 //			.appendValue(YEAR).appendLiteral("-")
 //			.appendValue(MONTH_OF_YEAR).appendLiteral("-")
@@ -2843,7 +2844,7 @@ public abstract class DBDefinition implements Serializable {
 //		temp = HAS_SPACE_BETWEEN_DATE_AND_TIME.matcher(temp).replaceFirst("$1T$2");
 //		temp = HAS_SPACE_BETWEEN_TIME_AND_TIMEZONE.matcher(temp).replaceFirst("$1$2");
 //		temp = HAS_SHORT_TIMEZONE.matcher(temp).replaceFirst("$100");
-		
+
 		ZonedDateTime parse = ZonedDateTime.parse(temp.subSequence(0, temp.length()), DateTimeFormatter.ISO_DATE_TIME);
 		toInstant = parse.toInstant();
 		return toInstant;
@@ -6768,5 +6769,75 @@ public abstract class DBDefinition implements Serializable {
 
 	public String getDefaultOrderingClause() {
 		return "";
+	}
+
+	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
+		if (interval == null) {
+			return null;
+		}
+		int days = (int) interval.toDaysPart();
+		int hours = interval.toHoursPart();
+		int minutes = interval.toMinutesPart();
+
+		int nanos = interval.toNanosPart();
+		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
+		String intervalString
+				= "INTERVAL '"
+				+ days
+				+ " " + hours
+				+ ":" + minutes
+				+ ":" + seconds
+				+ "' DAY TO SECOND";
+		return intervalString;
+	}
+
+	public Duration parseDurationFromGetString(String intervalStr) {
+		if (intervalStr == null || intervalStr.isEmpty()) {
+			return null;
+		}
+		String[] numbers = intervalStr.split("[^0-9]+");
+		Long days = Long.valueOf(numbers[1]);
+		Long hours = Long.valueOf(numbers[2]);
+		Long minutes = Long.valueOf(numbers[3]);
+		Long seconds = Long.valueOf(numbers[4]);
+		long nanos = 0;
+		if (numbers.length == 6) {
+			final String subsecondStr = numbers[5];
+			nanos = Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length())));
+		}
+		Duration duration = Duration.ofDays(days)
+				.plusHours(hours)
+				.plusMinutes(minutes)
+				.plusSeconds(seconds)
+				.plusNanos(nanos);
+		return duration;
+	}
+
+	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String doDurationGreaterThanTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String doDurationLessThanEqualsTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String doDurationGreaterThanEqualsTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String doDurationEqualsTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String doDatePlusDurationTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String doDateMinusDurationTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

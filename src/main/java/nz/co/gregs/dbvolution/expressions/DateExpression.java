@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
@@ -32,8 +33,10 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsDurationDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.dbvolution.results.DurationResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import org.joda.time.Period;
 
@@ -1262,6 +1265,32 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
+	 * Create a DateRepeat value representing the difference between this date
+	 * expression and the one provided
+	 *
+	 * @param date the other date which defines this DateRepeat
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateRepeat expression
+	 */
+	public DurationExpression getDurationFrom(Date date) {
+		return getDurationFrom(value(date));
+	}
+
+	/**
+	 * Create a DateRepeat value representing the difference between this date
+	 * expression and the one provided
+	 *
+	 * @param dateExpression the other date which defines this DateRepeat
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return DateRepeat expression
+	 */
+	public DurationExpression getDurationFrom(DateResult dateExpression) {
+		return new DurationExpression(new DateGetDurationFromExpression(this, dateExpression));
+	}
+
+	/**
 	 * Subtract the period/duration provided from this date expression to get an
 	 * offset date.
 	 *
@@ -1278,6 +1307,19 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * Subtract the period/duration provided from this date expression to get an
 	 * offset date.
 	 *
+	 * @param interval the amount of time this date needs to be offset by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a Date expression
+	 */
+	public DateExpression minus(Duration interval) {
+		return minus(DurationExpression.value(interval));
+	}
+
+	/**
+	 * Subtract the period/duration provided from this date expression to get an
+	 * offset date.
+	 *
 	 * @param intervalExpression the amount of time this date needs to be offset
 	 * by.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1286,6 +1328,20 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression minus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DateMinusDateRepeatExpression(this, intervalExpression));
+	}
+
+	/**
+	 * Subtract the period/duration provided from this date expression to get an
+	 * offset date.
+	 *
+	 * @param intervalExpression the amount of time this date needs to be offset
+	 * by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a Date expression
+	 */
+	public DateExpression minus(DurationResult intervalExpression) {
+		return new DateExpression(new DateMinusDurationExpression(this, intervalExpression));
 	}
 
 	/**
@@ -1313,6 +1369,33 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression plus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DatePlusDateRepeatExpression(this, intervalExpression));
+	}
+
+	/**
+	 * Add the period/duration provided from this date expression to get an offset
+	 * date.
+	 *
+	 * @param interval the amount of time this date needs to be offset by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a Date expression
+	 */
+	public DateExpression plus(Duration interval) {
+		return plus(DurationExpression.value(interval));
+	}
+
+	/**
+	 * Add the period/duration provided from this date expression to get an offset
+	 * date.
+	 *
+	 * @param intervalExpression the amount of time this date needs to be offset
+	 * by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a Date expression
+	 */
+	public DateExpression plus(DurationResult intervalExpression) {
+		return new DateExpression(new DatePlusDurationExpression(this, intervalExpression));
 	}
 
 	/**
@@ -2834,6 +2917,83 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
+	private static abstract class DateDateExpressionWithDurationResult extends DurationExpression implements CanBeWindowingFunctionWithFrame<DurationExpression>{
+
+		private static final long serialVersionUID = 1L;
+
+		protected DateExpression first;
+		protected DateExpression second;
+		private boolean requiresNullProtection = false;
+
+		DateDateExpressionWithDurationResult(DateExpression first, DateResult second) {
+			this.first = first;
+			this.second = new DateExpression(second);
+			if (second == null || second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		@Override
+		public DateDateExpressionWithDurationResult copy() {
+			DateDateExpressionWithDurationResult newInstance;
+			try {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
+			}
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
+		 */
+		public DateExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		public DateExpression getSecond() {
+			return second;
+		}
+		
+		@Override
+		public WindowFunctionFramable<DurationExpression> over() {
+			return new WindowFunctionFramable<DurationExpression>(new DurationExpression(this));
+		}
+	}
+
 	private static abstract class DateDateRepeatArithmeticDateResult extends DateExpression {
 
 		private static final long serialVersionUID = 1L;
@@ -2909,6 +3069,85 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 * @return the second
 		 */
 		public DateRepeatExpression getSecond() {
+			return second;
+		}
+	}
+
+	private static abstract class DateDurationArithmeticDateResult extends DateExpression {
+
+		private static final long serialVersionUID = 1L;
+
+		protected DateExpression first;
+		protected DurationExpression second;
+		private boolean requiresNullProtection = false;
+
+		DateDurationArithmeticDateResult(DateExpression first, DurationResult second) {
+			this.first = first;
+			this.second = new DurationExpression(second);
+			if (second == null || second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.doExpressionTransformation(db);
+		}
+
+		@Override
+		public DateDurationArithmeticDateResult copy() {
+			DateDurationArithmeticDateResult newInstance;
+			try {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
+			}
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		protected abstract String doExpressionTransformation(DBDefinition db);
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
+		 */
+		public DateExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		public DurationExpression getSecond() {
 			return second;
 		}
 	}
@@ -3744,6 +3983,46 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
+	protected static class DateGetDurationFromExpression extends DateDateExpressionWithDurationResult {
+
+		public DateGetDurationFromExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+				return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				final DateExpression left = getFirst();
+				final DateExpression right = new DateExpression(getSecond());
+				return BooleanExpression.anyOf(left.isNull(), right.isNull())
+						.ifThenElse(
+								nullString(),
+								StringExpression.value(INTERVAL_PREFIX)
+										.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
+										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
+										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
+										.append(left.second().minus(right.second()).bracket())
+										.append(".")
+										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
+										.append(SECOND_SUFFIX)
+						).toSQLString(db);
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateGetDurationFromExpression copy() {
+			return new DateGetDurationFromExpression(first.copy(), second.copy());
+		}
+	}
+
 	protected static class DateMinusDateRepeatExpression extends DateDateRepeatArithmeticDateResult {
 
 		public DateMinusDateRepeatExpression(DateExpression first, DateRepeatResult second) {
@@ -3780,6 +4059,43 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		@Override
 		public DateMinusDateRepeatExpression copy() {
 			return new DateMinusDateRepeatExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateMinusDurationExpression extends DateDurationArithmeticDateResult {
+
+		public DateMinusDurationExpression(DateExpression first, DurationResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransformation(DBDefinition db) {
+			if (db instanceof SupportsDurationDatatypeFunctions) {
+				return db.doDateMinusDurationTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				final DateExpression left = getFirst();
+				final DurationExpression right = new DurationExpression(getSecond());
+				return BooleanExpression.anyOf(left.isNull(), right.isNull())
+						.ifThenElse(
+								nullDate(),
+								left.addDays(right.getDays().times(-1))
+										.addHours(right.getHours().times(-1))
+										.addMinutes(right.getMinutes().times(-1))
+										.addSeconds(right.getSeconds().times(-1))
+						//									.addMilliseconds(right.getMilliseconds().times(-1))
+						).toSQLString(db);
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateMinusDurationExpression copy() {
+			return new DateMinusDurationExpression(first.copy(), second.copy());
 		}
 	}
 
@@ -3820,6 +4136,43 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			return new DatePlusDateRepeatExpression(getFirst().copy(), getSecond().copy());
 		}
 
+	}
+
+	protected static class DatePlusDurationExpression extends DateDurationArithmeticDateResult {
+
+		public DatePlusDurationExpression(DateExpression first, DurationResult second) {
+			super(first, second);
+		}
+		
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransformation(DBDefinition db) {
+			if (db instanceof SupportsDurationDatatypeFunctions) {
+				return db.doDatePlusDurationTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				final DateExpression left = getFirst();
+				final DurationExpression right = new DurationExpression(getSecond());
+				return BooleanExpression.anyOf(left.isNull(), right.isNull())
+						.ifThenElse(
+								nullDate(),
+								left.addDays(right.getDays())
+										.addHours(right.getHours())
+										.addMinutes(right.getMinutes())
+										.addSeconds(right.getSeconds())
+						).toSQLString(db);
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DatePlusDurationExpression copy() {
+			return new DatePlusDurationExpression(getFirst().copy(), getSecond().copy());
+		}
 	}
 
 	protected static class DateIsLessThanOrEqualExpression extends DateDateExpressionWithBooleanResult {

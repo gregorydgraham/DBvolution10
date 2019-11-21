@@ -21,6 +21,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -135,6 +136,8 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 			return " VARCHAR(2001) ";
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return " VARCHAR(2002) ";
+		} else if (qdt instanceof DBDuration) {
+			return " VARCHAR(65) ";
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
@@ -1130,6 +1133,27 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	@Override
 	public String doInstantSubsecondTransform(String dateExpression) {
 		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as BIGINT)))";
+	}
+
+	@Override
+	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
+		if (interval == null) {
+			return null;
+		}
+		int days = (int) interval.toDaysPart();
+		int hours = interval.toHoursPart();
+		int minutes = interval.toMinutesPart();
+
+		int nanos = interval.toNanosPart();
+		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
+		String intervalString
+				= "'INTERVAL "
+				+ days
+				+ " " + hours
+				+ ":" + minutes
+				+ ":" + seconds
+				+ " DAY TO SECOND'";
+		return intervalString;
 	}
 
 }

@@ -17,29 +17,18 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
-import java.sql.Timestamp;
 import java.text.*;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.Year;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.time.temporal.IsoFields;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.InstantExpression;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.Spatial2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
@@ -148,6 +137,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " PATH ";
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return " GEOMETRY ";
+		} else if (qdt instanceof DBDuration) {
+			return " INTERVAL DAY TO SECOND(6) ";
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
@@ -1183,17 +1174,28 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public DBExpression transformToSelectableType(DBExpression columnExpression) {
-//		if ((columnExpression instanceof InstantExpression)
-//				||columnExpression instanceof DBInstant) {
-//			final InstantExpression expr = (InstantExpression) columnExpression;
-//			return new StringExpression(expr) {
-//				@Override
-//				public String toSQLString(DBDefinition db) {
-//					return "to_char((" + this.getInnerResult().toSQLString(db) + ") at time zone 'UTC', 'YYYY-MM-DD HH:MI:SS.US')";
-//				}
-//
-//			};
-//		}
 		return super.transformToSelectableType(columnExpression);
+	}
+	
+	public Duration parseDurationFromGetString(String intervalStr) {
+		if (intervalStr == null || intervalStr.isEmpty()) {
+			return null;
+		}
+		String[] numbers = intervalStr.split("[^0-9]+");
+		Long days = Long.valueOf(numbers[0]);
+		Long hours = Long.valueOf(numbers[1]);
+		Long minutes = Long.valueOf(numbers[2]);
+		Long seconds = Long.valueOf(numbers[3]);
+		long nanos = 0;
+		if (numbers.length == 5) {
+			final String subsecondStr = numbers[4];
+			nanos = Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length())));
+		}
+		Duration duration = Duration.ofDays(days)
+				.plusHours(hours)
+				.plusMinutes(minutes)
+				.plusSeconds(seconds)
+				.plusNanos(nanos);
+		return duration;
 	}
 }
