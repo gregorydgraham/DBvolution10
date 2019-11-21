@@ -106,11 +106,13 @@ public class JoinTest extends AbstractTest {
 
 		String expectedResult3 = "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( __1641109531.fkstatistic2 = __77293264.stat2id ) where (1=1) and (__1641109531.uidcompany = 234)";
 		String expectedResult2 = "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from [company] as __1641109531 inner join [statistic] as __77293264 on( __1641109531.fkstatistic2 = __77293264.stat2id ) where (1=1) and (__1641109531.uidcompany = 234)";
+		String expectedResult1 = "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( __1641109531.fkstatistic2 = __77293264.stat2id ) where (1=1) and (__1641109531.uidcompany = 234) ;";
 		assertThat(dbQuery.isUseANSISyntax(), is(true));
 		assertThat(testableSQLWithoutColumnAliases(generateSQLString),
 				isOneOf(
-						testableSQLWithoutColumnAliases(expectedResult3), 
-						testableSQLWithoutColumnAliases(expectedResult2)
+						testableSQLWithoutColumnAliases(expectedResult1),
+						testableSQLWithoutColumnAliases(expectedResult2),
+						testableSQLWithoutColumnAliases(expectedResult3)
 				)
 		);
 	}
@@ -136,8 +138,8 @@ public class JoinTest extends AbstractTest {
 				+ "and (__1641109531.uidcompany = 234) "
 				+ "and (__1641109531.fkstatistic2 = __77293264.stat2id) "
 				+ ";";
-		
-		String expectedResult2 
+
+		String expectedResult2
 				= "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company, statistic where (1=1) and (__1641109531.uidcompany = 234) and (__1641109531.fkstatistic2 = __77293264.stat2id)";
 
 		assertThat(testableSQLWithoutColumnAliases(generateSQLString),
