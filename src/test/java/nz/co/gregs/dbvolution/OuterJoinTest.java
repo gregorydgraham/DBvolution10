@@ -91,11 +91,13 @@ public class OuterJoinTest extends AbstractTest {
 		queryState.addJoinedTable(mrq);
 		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, queryState, link, new QueryOptions()));
 
-		String expectedLinkJoin = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company )";
+		String expectedLinkJoin1 = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company )";
+		String expectedLinkJoin2 = "[car_company] as __78874071 inner join [marque] as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join [lt_carco_logo] as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany )";
 		Assert.assertThat(
 				testableSQL(ansiJoinClause.toString()),
 				anyOf(
-						is(testableSQL(expectedLinkJoin)),
+						is(testableSQL(expectedLinkJoin1)),
+						is(testableSQL(expectedLinkJoin2)),
 						is(testableSQL("car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany )"))
 				));
 
