@@ -1553,12 +1553,12 @@
 			<version>1.12.3</version>
 			<scope>test</scope>
 		</dependency>
-				<dependency>
-					<groupId>com.oracle.jdbc</groupId>
-					<artifactId>ojdbc8</artifactId>
-					<version>19.3.0.0</version>
-					<scope>test</scope>
-				</dependency>
+		<dependency>
+			<groupId>com.oracle.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.3.0.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>
