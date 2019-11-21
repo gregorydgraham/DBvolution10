@@ -504,7 +504,7 @@ public class DataModelTest extends AbstractTest {
 			}
 			Assert.assertTrue(knownKeys.contains(foundString));
 		}
-		Assert.assertThat(result.size(), is(299));
+		Assert.assertThat(result.size(), is(300));
 	}
 
 	@Test
