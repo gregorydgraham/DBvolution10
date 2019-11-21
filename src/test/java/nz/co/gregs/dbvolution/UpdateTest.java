@@ -38,9 +38,14 @@ public class UpdateTest extends AbstractTest {
 		insertedRow.individualAllocationsAllowed.setValue("Y");
 		String sqlForUpdate = marquesTable.update(insertedRow).get(0).getSQLStatements(database).get(0);
 		final String testableQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4);");
-		final String testableSQLServerQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);");
+		final String testableSQLServerQueryString1 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);");
+		final String testableSQLServerQueryString2 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4);");
 		Assert.assertThat(testableSQL(sqlForUpdate),
-				isIn(new String[]{testableQueryString, testableSQLServerQueryString}));
+				isOneOf(
+						testableQueryString,
+						testableSQLServerQueryString1,
+						testableSQLServerQueryString2
+				));
 //        marquesTable.update(insertedRow);
 		insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
 		Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
@@ -56,13 +61,15 @@ public class UpdateTest extends AbstractTest {
 
 		peugeot.individualAllocationsAllowed.setValue("Y");
 		String sqlForUpdate = marquesTable.update(peugeot).get(0).getSQLStatements(database).get(0);
-		final String updateQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4893059);");
-		final String updateSQLServerQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4893059);");
+		final String updateQueryStr1 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4893059);");
+		final String updateQueryStr2 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4893059);");
+		final String updateQueryStr3 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4893059);");
 		Assert.assertThat(testableSQL(sqlForUpdate),
-				isIn(new String[]{
-			updateQueryStr,
-			updateSQLServerQueryStr
-		}));
+				isOneOf(
+						updateQueryStr1,
+						updateQueryStr2,
+						updateQueryStr3
+				));
 		marquesTable.update(peugeot);
 		Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
 		Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));
