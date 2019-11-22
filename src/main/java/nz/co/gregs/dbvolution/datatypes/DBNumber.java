@@ -250,7 +250,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 		if (getLiteralValue() == null) {
 			return null;
 		} else if (getLiteralValue() instanceof Number) {
-			return getLiteralValue();
+			return getLiteralValue().doubleValue();
 		} else {
 			return Double.parseDouble(getLiteralValue().toString());
 		}
