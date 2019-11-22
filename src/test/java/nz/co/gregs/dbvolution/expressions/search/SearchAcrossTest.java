@@ -46,7 +46,6 @@ public class SearchAcrossTest extends AbstractTest {
 				.addSearchColumn(column(name), "name")
 				.getRankingExpression()
 				.asExpressionColumn();
-//				.column(name).searchForRanking("+o", "-l", "R"));
 	}
 
 	@Test
@@ -71,16 +70,6 @@ public class SearchAcrossTest extends AbstractTest {
 				searchString.descending(),
 				marq.column(marq.name).ascending()
 		);
-
-//		query.printSQLForQuery();
-//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-//		int i = 0;
-//		for (DBQueryRow row : rows) {
-//			final SearchAcrossMarque marque = row.get(marq);
-//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
 
 		query.addCondition(
 				searchString.getComparisonExpression()
@@ -121,16 +110,6 @@ public class SearchAcrossTest extends AbstractTest {
 				marq.column(marq.name).ascending()
 		);
 
-//		List<DBQueryRow> got = query.setBlankQueryAllowed(true).getAllRows();
-
-//		int i = 0;
-//		for (DBQueryRow row : got) {
-//			final SearchAcrossMarque marque = row.get(marq);
-//			String rank = got.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
-
 		query.addCondition(
 				searchString.getComparisonExpression()
 		);
@@ -163,17 +142,6 @@ public class SearchAcrossTest extends AbstractTest {
 				rankColumn.descending(),
 				marq.column(marq.name).ascending()
 		);
-
-//		query.printSQLForQuery();
-//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-//
-//		int i = 0;
-//		for (DBQueryRow row : rows) {
-//			final SearchAcrossMarque marque = row.get(marq);
-//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
 		
 		query.addCondition(rankColumn.isGreaterThan(0));
 
