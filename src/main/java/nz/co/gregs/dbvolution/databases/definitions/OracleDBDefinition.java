@@ -17,13 +17,12 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +33,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBInstant;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
@@ -248,6 +248,8 @@ public class OracleDBDefinition extends DBDefinition {
 			return " BLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
+		} else if (qdt instanceof DBDuration) {
+			return " INTERVAL DAY(9) TO SECOND(9) ";
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
@@ -1049,6 +1051,33 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public boolean requiresOnClauseForAllJoins() {
 		return true;
+	}
+
+//	@Override
+//	public Duration parseDurationFromGetString(String intervalStr) {
+//		if (intervalStr == null || intervalStr.isEmpty()) {
+//			return null;
+//		}
+//		String[] numbers = intervalStr.split("[^0-9]+");
+//		Long days = Long.valueOf(numbers[0]);
+//		Long hours = Long.valueOf(numbers[1]);
+//		Long minutes = Long.valueOf(numbers[2]);
+//		Long seconds = Long.valueOf(numbers[3]);
+//		long nanos = 0;
+//		if (numbers.length == 5) {
+//			final String subsecondStr = numbers[4];
+//			nanos = Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length())));
+//		}
+//		Duration duration = Duration.ofDays(days)
+//				.plusHours(hours)
+//				.plusMinutes(minutes)
+//				.plusSeconds(seconds)
+//				.plusNanos(nanos);
+//		return duration;
+//	}
+
+	public int getParseDurationPartOffset() {
+		return 0;
 	}
 
 }

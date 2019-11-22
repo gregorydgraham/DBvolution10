@@ -124,8 +124,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return " GEOMETRY ";
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return " GEOMETRY ";
-		} else if (qdt instanceof DBDuration) {
-			return " VARCHAR(65) ";
+//		} else if (qdt instanceof DBDuration) {
+//			return " VARCHAR(65) ";
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
@@ -1437,24 +1437,29 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "ORDER BY (SELECT NULL)";
 	}
 
+//	@Override
+//	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
+//		if (interval == null) {
+//			return null;
+//		}
+//		int days = (int) interval.toDaysPart();
+//		int hours = interval.toHoursPart();
+//		int minutes = interval.toMinutesPart();
+//
+//		int nanos = interval.toNanosPart();
+//		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
+//		String intervalString
+//				= "'INTERVAL "
+//				+ days
+//				+ " " + hours
+//				+ ":" + minutes
+//				+ ":" + seconds
+//				+ " DAY(18) TO SECOND(9)'";
+//		return intervalString;
+//	}
+	
 	@Override
-	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
-		if (interval == null) {
-			return null;
-		}
-		int days = (int) interval.toDaysPart();
-		int hours = interval.toHoursPart();
-		int minutes = interval.toMinutesPart();
-
-		int nanos = interval.toNanosPart();
-		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
-		String intervalString
-				= "'INTERVAL "
-				+ days
-				+ " " + hours
-				+ ":" + minutes
-				+ ":" + seconds
-				+ " DAY(18) TO SECOND(9)'";
-		return intervalString;
+	public boolean supportsDurationNatively() {
+		return false;
 	}
 }

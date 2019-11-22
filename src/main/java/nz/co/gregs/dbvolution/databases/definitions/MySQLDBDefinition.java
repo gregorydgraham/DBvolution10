@@ -92,8 +92,8 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
-		} else if (qdt instanceof DBDuration) {
-			return " VARCHAR(65) ";
+//		} else if (qdt instanceof DBDuration) {
+//			return " VARCHAR(65) ";
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
@@ -737,24 +737,29 @@ public class MySQLDBDefinition extends DBDefinition {
 		return false;
 	}
 
-	@Override
-	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
-		if (interval == null) {
-			return null;
-		}
-		int days = (int) interval.toDaysPart();
-		int hours = interval.toHoursPart();
-		int minutes = interval.toMinutesPart();
+//	@Override
+//	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
+//		if (interval == null) {
+//			return null;
+//		}
+//		int days = (int) interval.toDaysPart();
+//		int hours = interval.toHoursPart();
+//		int minutes = interval.toMinutesPart();
+//
+//		int nanos = interval.toNanosPart();
+//		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
+//		String intervalString
+//				= "'INTERVAL "
+//				+ days
+//				+ " " + hours
+//				+ ":" + minutes
+//				+ ":" + seconds
+//				+ " DAY TO SECOND'";
+//		return intervalString;
+//	}
 
-		int nanos = interval.toNanosPart();
-		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
-		String intervalString
-				= "'INTERVAL "
-				+ days
-				+ " " + hours
-				+ ":" + minutes
-				+ ":" + seconds
-				+ " DAY TO SECOND'";
-		return intervalString;
+	@Override
+	public boolean supportsDurationNatively() {
+		return false;
 	}
 }

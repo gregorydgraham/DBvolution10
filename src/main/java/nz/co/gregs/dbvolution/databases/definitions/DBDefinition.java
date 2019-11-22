@@ -64,10 +64,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import static java.time.temporal.ChronoField.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
@@ -1311,6 +1308,9 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the databases type for the QDT as a string
 	 */
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
+		if ((qdt instanceof DBDuration) && (!supportsDurationNatively())) {
+			return " VARCHAR(65) ";
+		}
 		return qdt.getSQLDatatype();
 	}
 
@@ -6781,13 +6781,24 @@ public abstract class DBDefinition implements Serializable {
 
 		int nanos = interval.toNanosPart();
 		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
-		String intervalString
-				= "INTERVAL '"
-				+ days
-				+ " " + hours
-				+ ":" + minutes
-				+ ":" + seconds
-				+ "' DAY TO SECOND";
+		String intervalString;
+		if (supportsDurationNatively()) {
+			intervalString
+					= "INTERVAL '"
+					+ days
+					+ " " + hours
+					+ ":" + minutes
+					+ ":" + seconds
+					+ "' DAY TO SECOND";
+		} else {
+			intervalString
+					= "'INTERVAL "
+					+ days
+					+ " " + hours
+					+ ":" + minutes
+					+ ":" + seconds
+					+ " DAY TO SECOND'";
+		}
 		return intervalString;
 	}
 
@@ -6795,14 +6806,15 @@ public abstract class DBDefinition implements Serializable {
 		if (intervalStr == null || intervalStr.isEmpty()) {
 			return null;
 		}
+		int durationPartsOffset = getParseDurationPartOffset();
 		String[] numbers = intervalStr.split("[^0-9]+");
-		Long days = Long.valueOf(numbers[1]);
-		Long hours = Long.valueOf(numbers[2]);
-		Long minutes = Long.valueOf(numbers[3]);
-		Long seconds = Long.valueOf(numbers[4]);
+		Long days = Long.valueOf(numbers[durationPartsOffset]);
+		Long hours = Long.valueOf(numbers[durationPartsOffset + 1]);
+		Long minutes = Long.valueOf(numbers[durationPartsOffset + 2]);
+		Long seconds = Long.valueOf(numbers[durationPartsOffset + 3]);
 		long nanos = 0;
-		if (numbers.length == 6) {
-			final String subsecondStr = numbers[5];
+		if (numbers.length == durationPartsOffset + 5) {
+			final String subsecondStr = numbers[durationPartsOffset + 4];
 			nanos = Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length())));
 		}
 		Duration duration = Duration.ofDays(days)
@@ -6839,5 +6851,13 @@ public abstract class DBDefinition implements Serializable {
 
 	public String doDateMinusDurationTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public boolean supportsDurationNatively() {
+		return true;
+	}
+
+	public int getParseDurationPartOffset() {
+		return 1;
 	}
 }

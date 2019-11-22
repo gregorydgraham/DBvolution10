@@ -38,8 +38,8 @@ import static org.hamcrest.Matchers.*;
  */
 public class DBDurationTest extends AbstractTest {
 	
-	public static LocalDateTime march23rd2013 = LocalDateTime.of(2013, 2, 23, 12, 34, 56);
-	public static LocalDateTime april2nd2011 = LocalDateTime.of(2011, 3, 2, 1, 2, 3);
+	public static LocalDateTime march23rd2013LocalDateTime = LocalDateTime.of(2013, 2, 23, 12, 34, 56);
+	public static LocalDateTime april2nd2011LocalDateTime = LocalDateTime.of(2011, 3, 2, 1, 2, 3);
 
 	public DBDurationTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
