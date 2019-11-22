@@ -845,7 +845,6 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
-
 		List<String> result = new ArrayList<>();
 		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column) + "");
 		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
@@ -886,8 +885,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable
-	) {
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
 		return "LISTAGG(" + accumulateColumn + ", " + separator + ") WITHIN GROUP( ORDER BY 1 )";
 	}
 
@@ -902,7 +900,6 @@ public class OracleDBDefinition extends DBDefinition {
 			public String toSQLString(DBDefinition db) {
 				return "to_char( CAST(" + expression.toSQLString(db) + " AS TIMESTAMP WITH TIME ZONE), 'YYYY-MM-DD HH24:MI:SS.FF TZH:TZM')";
 			}
-
 		};
 	}
 
