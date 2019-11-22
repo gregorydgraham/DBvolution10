@@ -84,7 +84,6 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		Assert.assertThat(distinctValuesForColumn.size(), is(3));
 		DBDate[] toArray = distinctValuesForColumn.toArray(new DBDate[]{});
 		Assert.assertThat(toArray[0].isNull(), is(true));
-//		Assert.assertThat(distinctValuesForColumn, hasItem((DBDate) null));
 
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBDate dBDate : distinctValuesForColumn) {
@@ -113,7 +112,6 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		} else {
 			Assert.assertThat(distinctValuesForColumn.size(), is(2));
 		}
-//		Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
 
 		List<String> foundStrings = new ArrayList<>();
 		for (DBString val : distinctValuesForColumn) {
@@ -127,16 +125,10 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				foundStrings.add((val.toString()));
 			}
 		}
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
-			Assert.assertThat(foundStrings.size(), is(2));
-			Assert.assertThat(foundStrings, hasItems("Y", ""));
-			Assert.assertThat(foundStrings.get(0), is(""));
-			Assert.assertThat(foundStrings.get(1), is("Y"));
-		} else {
-			Assert.assertThat(foundStrings.size(), is(1));
-			Assert.assertThat(foundStrings, hasItems("Y"));
-			Assert.assertThat(foundStrings.get(0), is("Y"));
-		}
+		Assert.assertThat(foundStrings.size(), is(2));
+		Assert.assertThat(foundStrings, hasItems("Y", ""));
+		Assert.assertThat(foundStrings.get(0), is(""));
+		Assert.assertThat(foundStrings.get(1), is("Y"));
 	}
 
 	@Test
@@ -154,23 +146,16 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 						)
 				);
 			}
-//			if (val != null) {
-				foundStrings.add((val.toString()));
-//			}
+			foundStrings.add((val.toString()));
 		}
-//		for (String foundString : foundStrings) {
-//			System.out.println(foundString);
-//		}
 		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));
-//			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
 			Assert.assertThat(foundStrings.size(), is(3));
 			Assert.assertThat(foundStrings.get(0), is(""));
 			Assert.assertThat(foundStrings.get(1), is(""));
 			Assert.assertThat(foundStrings.get(2), is("Y"));
 		} else {
 			Assert.assertThat(distinctValuesForColumn.size(), is(2));
-//			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
 			Assert.assertThat(foundStrings.size(), is(2));
 			Assert.assertThat(foundStrings.get(1), is("Y"));
 			Assert.assertThat(foundStrings.get(0), is(""));

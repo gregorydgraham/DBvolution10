@@ -724,13 +724,13 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * FALSE.
 	 */
 	public boolean isEmptyString() {
-		return isDBEmptyString;
+		return isDBEmptyString|| (getLiteralValue()!=null && getLiteralValue().isEmpty());
 	}
 
 	@Override
 	protected String getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		if (resultSet.wasNull()||gotString==null) {
+		if (resultSet.wasNull() || gotString == null) {
 			if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 				return null;
 			} else {
@@ -900,5 +900,14 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	@Override
 	protected boolean checkForNullDuringSetFromResultSet() {
 		return false;
+	}
+
+	@Override
+	public Boolean isConsistentWithEmptyRow(DBDefinition defn) {
+		if (defn.supportsDifferenceBetweenNullAndEmptyString()) {
+			return isNull();
+		} else {
+			return isEmptyOrNullString();
+		}
 	}
 }

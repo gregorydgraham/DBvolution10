@@ -1471,4 +1471,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	protected boolean checkForNullDuringSetFromResultSet() {
 		return true;
 	}
+
+	public Boolean isConsistentWithEmptyRow(DBDefinition defn) {
+		return isNull();
+	}
 }

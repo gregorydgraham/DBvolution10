@@ -1351,7 +1351,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 						qdt.setFromResultSet(defn, resultSet, resultSetColumnName);
 
-						if (newInstance.isEmptyRow() && !qdt.isNull()) {
+						if (newInstance.isEmptyRow() && !qdt.isConsistentWithEmptyRow(defn)) {
 							newInstance.setEmptyRow(false);
 						}
 					}
