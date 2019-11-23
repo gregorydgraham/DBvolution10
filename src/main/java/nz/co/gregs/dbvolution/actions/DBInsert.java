@@ -267,9 +267,6 @@ public class DBInsert extends DBAction {
 											}
 										}
 									}
-								} catch (LoopDetectedInRecursiveSQL ex) {
-									/*this should never occur*/
-									Logger.getLogger(DBInsert.class.getName()).log(Level.SEVERE, null, ex);
 								}
 							}
 						}
