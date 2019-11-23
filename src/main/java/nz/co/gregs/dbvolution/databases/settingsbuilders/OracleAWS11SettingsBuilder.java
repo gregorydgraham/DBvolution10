@@ -30,26 +30,24 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
-import nz.co.gregs.dbvolution.databases.OracleAWSDB;
 
 /**
  *
  * @author gregorygraham
  */
-public class OracleAWS11SettingsBuilder extends AbstractOracleSettingsBuilder {
+public class OracleAWS11SettingsBuilder extends AbstractOracleSettingsBuilder<OracleAWS11SettingsBuilder, OracleAWS11DB> {
 	
 	public OracleAWS11SettingsBuilder() {
 	}
 
 	@Override
-	public Class generatesURLForDatabase() {
-		return OracleAWSDB.class;
+	public Class<OracleAWS11DB> generatesURLForDatabase() {
+		return OracleAWS11DB.class;
 	}
 
 	@Override
-	public DBDatabase getDBDatabase() throws Exception {
+	public OracleAWS11DB getDBDatabase() throws Exception {
 		return new OracleAWS11DB(this.toSettings());
 	}
 	

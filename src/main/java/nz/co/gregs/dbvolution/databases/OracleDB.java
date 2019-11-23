@@ -88,7 +88,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param builder
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(AbstractOracleSettingsBuilder builder) throws SQLException {
+	public OracleDB(AbstractOracleSettingsBuilder<?,?> builder) throws SQLException {
 		this(builder.toSettings());
 	}
 
@@ -150,7 +150,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, AbstractOracleSettingsBuilder dataSource) throws SQLException {
+	public OracleDB(DBDefinition dbDefinition, AbstractOracleSettingsBuilder<?,?> dataSource) throws SQLException {
 		this(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
 	}
 
@@ -162,7 +162,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, String driverName, AbstractOracleSettingsBuilder dataSource) throws SQLException {
+	public OracleDB(DBDefinition dbDefinition, String driverName, AbstractOracleSettingsBuilder<?,?> dataSource) throws SQLException {
 		super(dbDefinition, driverName, dataSource.toSettings());
 	}
 

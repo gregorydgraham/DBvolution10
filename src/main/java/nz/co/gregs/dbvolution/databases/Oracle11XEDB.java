@@ -21,11 +21,11 @@ import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
 
@@ -98,7 +98,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
-	public Oracle11XEDB(AbstractOracleSettingsBuilder dcs) throws SQLException {
+	public Oracle11XEDB(Oracle11XESettingsBuilder dcs) throws SQLException {
 		this(new Oracle11XEDBDefinition(), dcs.toSettings());
 	}
 
@@ -207,18 +207,19 @@ public class Oracle11XEDB extends OracleDB {
 	}
 
 	@Override
-	protected AbstractOracleSettingsBuilder getURLInterpreter() {
-		return new AbstractOracleSettingsBuilder() {
-			@Override
-			public Class generatesURLForDatabase() {
-				return OracleAWSDB.class;
-			}
-
-			@Override
-			public DBDatabase getDBDatabase() throws Exception {
-				return new Oracle11XEDB(this.toSettings());
-			}
-		};
+	protected Oracle11XESettingsBuilder getURLInterpreter() {
+		return new Oracle11XESettingsBuilder();
+//		return new AbstractOracleSettingsBuilder() {
+//			@Override
+//			public Class generatesURLForDatabase() {
+//				return OracleAWSDB.class;
+//			}
+//
+//			@Override
+//			public DBDatabase getDBDatabase() throws Exception {
+//				return new Oracle11XEDB(this.toSettings());
+//			}
+//		};
 	}
 
 }

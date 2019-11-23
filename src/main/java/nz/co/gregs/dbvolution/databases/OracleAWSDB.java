@@ -89,7 +89,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleAWSDB(AbstractOracleSettingsBuilder dcs) throws SQLException {
+	public OracleAWSDB(AbstractOracleSettingsBuilder<?,?> dcs) throws SQLException {
 		this(new OracleAWSDBDefinition(), dcs);
 	}
 
@@ -111,7 +111,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleAWSDB(OracleAWSDBDefinition defn, AbstractOracleSettingsBuilder dcs) throws SQLException {
+	public OracleAWSDB(OracleAWSDBDefinition defn, AbstractOracleSettingsBuilder<?,?> dcs) throws SQLException {
 		super(defn, dcs);
 	}
 

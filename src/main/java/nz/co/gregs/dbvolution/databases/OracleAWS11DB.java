@@ -185,7 +185,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 //	}
 
 	@Override
-	protected AbstractOracleSettingsBuilder getURLInterpreter() {
+	protected OracleAWS11SettingsBuilder getURLInterpreter() {
 		return new OracleAWS11SettingsBuilder();
 	}
 

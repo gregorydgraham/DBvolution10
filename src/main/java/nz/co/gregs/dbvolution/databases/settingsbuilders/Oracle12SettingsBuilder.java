@@ -30,27 +30,24 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle12DB;
-import nz.co.gregs.dbvolution.databases.OracleAWSDB;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 
 /**
  *
  * @author gregorygraham
  */
-public class Oracle12SettingsBuilder extends AbstractOracleSettingsBuilder {
+public class Oracle12SettingsBuilder extends AbstractOracleSettingsBuilder<Oracle12SettingsBuilder, Oracle12DB> {
 
 	public Oracle12SettingsBuilder() {
 	}
 
 	@Override
-	public Class generatesURLForDatabase() {
-		return OracleAWSDB.class;
+	public Class<Oracle12DB> generatesURLForDatabase() {
+		return Oracle12DB.class;
 	}
 
 	@Override
-	public DBDatabase getDBDatabase() throws Exception {
+	public Oracle12DB getDBDatabase() throws Exception {
 		return new Oracle12DB(this.toSettings());
 	}
 	

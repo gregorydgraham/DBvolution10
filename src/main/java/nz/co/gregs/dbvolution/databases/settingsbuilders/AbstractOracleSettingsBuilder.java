@@ -117,7 +117,7 @@ public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleS
 				+ settings.getInstance();
 	}
 
-	public AbstractOracleSettingsBuilder setSID(String sid) {
+	public AbstractOracleSettingsBuilder<?,?> setSID(String sid) {
 		return this.setInstance(sid);
 	}
 

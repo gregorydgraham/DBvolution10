@@ -146,7 +146,7 @@ public class H2DB extends DBDatabase {
 	 * @param dataSource dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	protected H2DB(AbstractH2SettingsBuilder dataSource) throws SQLException {
+	protected H2DB(AbstractH2SettingsBuilder<?,?> dataSource) throws SQLException {
 		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
 	}
 
