@@ -36,7 +36,9 @@ package nz.co.gregs.dbvolution.exceptions;
  */
 public class LoopDetectedInRecursiveSQL extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	public LoopDetectedInRecursiveSQL() {
 	}
-	
+
 }
