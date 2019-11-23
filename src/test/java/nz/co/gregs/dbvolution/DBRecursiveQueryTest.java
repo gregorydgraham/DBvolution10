@@ -424,6 +424,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 	@Test 
 	public void copesWithLoopInTrees() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
 		Parts nose = new Parts();
 		nose.name.setValue("Nose");
 		database.insert(nose);

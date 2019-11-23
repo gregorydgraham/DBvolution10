@@ -217,6 +217,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	private final static Pattern TRIGGER_DOES_NOT_EXIST = Pattern.compile("ORA-04080: trigger .* does not exist");
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("ORA-00955: name is already used by an existing object");
 	private final static Pattern TABLE_DOES_NOT_EXIST = Pattern.compile("ORA-00942: table or view does not exist");
+	private final static Pattern LOOP_IN_RECURSIVE_QUERY = Pattern.compile("ORA-32044: cycle detected while executing recursive WITH query");
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
@@ -229,6 +230,8 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.DROP_TABLE))) {
 //			System.out.println("HANDLED: NO RESPONSE REQUIRED");
 			return ResponseToException.SKIPQUERY;
+		} else if (LOOP_IN_RECURSIVE_QUERY.matcher(message).lookingAt()){
+			return ResponseToException.EMULATE_RECURSIVE_QUERY;
 		} else {
 //			System.out.println("!!! NO RESPONSE CONFIGURED !!!");
 			exp.printStackTrace();

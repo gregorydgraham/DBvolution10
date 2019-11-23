@@ -2463,7 +2463,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public static enum ResponseToException {
 		REPLACECONNECTION(),
 		REQUERY(),
-		SKIPQUERY();
+		SKIPQUERY(), 
+		EMULATE_RECURSIVE_QUERY();
 
 		ResponseToException() {
 		}

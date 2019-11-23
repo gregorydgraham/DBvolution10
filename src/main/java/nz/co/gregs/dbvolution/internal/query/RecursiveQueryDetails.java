@@ -57,6 +57,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.ColumnProvidedMustBeAForeignKey;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
@@ -178,7 +179,11 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		List<DBQueryRow> returnList = new ArrayList<>();
 		final RecursiveSQLDirection direction = details.getDirection();
 		if (database.getDefinition().supportsRecursiveQueriesNatively()) {
-			returnList = performNativeRecursiveQuery(database, details, direction, returnList);
+			try {
+				returnList = performNativeRecursiveQuery(database, details, direction, returnList);
+			} catch (LoopDetectedInRecursiveSQL loop) {
+				returnList = performRecursiveQueryEmulation(database, details, direction);
+			}
 		} else {
 			returnList = performRecursiveQueryEmulation(database, details, direction);
 		}
@@ -186,7 +191,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		return returnList;
 	}
 
-	private synchronized List<DBQueryRow> performNativeRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, RecursiveSQLDirection direction, List<DBQueryRow> returnList) throws SQLException, UnableToInstantiateDBRowSubclassException {
+	private synchronized List<DBQueryRow> performNativeRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, RecursiveSQLDirection direction, List<DBQueryRow> returnList) throws SQLException, UnableToInstantiateDBRowSubclassException, LoopDetectedInRecursiveSQL {
 		final DBDefinition defn = database.getDefinition();
 		try (DBStatement dbStatement = database.getDBStatement()) {
 			final DBQuery query = recursiveDetails.getOriginalQuery();

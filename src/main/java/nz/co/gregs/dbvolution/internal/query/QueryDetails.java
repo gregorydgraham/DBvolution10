@@ -43,6 +43,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -367,7 +368,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return queryCount;
 	}
 
-	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
+	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException, LoopDetectedInRecursiveSQL {
 		long result = 0L;
 		try (DBStatement dbStatement = db.getDBStatement()) {
 			final String sqlForCount = details.getSQLForCount(db, details);
@@ -1026,7 +1027,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	@Override
-	public synchronized DBQueryable query(DBDatabase db) throws SQLException, AccidentalBlankQueryException {
+	public synchronized DBQueryable query(DBDatabase db) throws SQLException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
 		getOptions().setQueryDatabase(db);
 		final QueryType queryType = getOptions().getQueryType();
 		switch (queryType) {
@@ -1051,7 +1052,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return this;
 	}
 
-	public synchronized void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException, AccidentalBlankQueryException {
+	public synchronized void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
 		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
 		final DBDefinition defn = database.getDefinition();
@@ -1097,7 +1098,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	protected synchronized void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException {
+	protected synchronized void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
 		prepareForQuery(db, options);
 
 		final DBDefinition defn = db.getDefinition();
@@ -1116,7 +1117,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	}
 
-	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
 		DBQueryRow queryRow;
 
 		try (DBStatement dbStatement = db.getDBStatement()) {
@@ -1253,8 +1254,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.sql.SQLTimeoutException time out exception
+	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
-	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
+	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException, LoopDetectedInRecursiveSQL {
 		final Long timeoutTime = this.getTimeoutInMilliseconds();
 		ScheduledFuture<?> cancelHandle = null;
 		if (timeoutTime > 0) {

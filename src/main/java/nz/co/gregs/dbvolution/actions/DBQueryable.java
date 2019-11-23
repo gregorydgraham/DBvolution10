@@ -35,6 +35,7 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 
 /**
  *
@@ -57,8 +58,9 @@ public interface DBQueryable {
 	 * @return The complete list of all actions performed to complete this action
 	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
+	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
-	public DBQueryable query(DBDatabase db) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException;
+	public DBQueryable query(DBDatabase db) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL;
 
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException ;
 

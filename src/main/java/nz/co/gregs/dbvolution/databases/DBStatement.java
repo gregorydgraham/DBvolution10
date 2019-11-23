@@ -16,6 +16,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,25 +82,10 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param intent
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
+	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
-//	@Override
-	public ResultSet executeQuery(String sql, QueryIntention intent) throws SQLException {
+	public ResultSet executeQuery(String sql, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
 		return executeQuery(sql, "UNLABELLED", intent);
-//		final String logSQL = "EXECUTING QUERY: " + sql;
-//		database.printSQLIfRequested(logSQL);
-//		ResultSet executeQuery = null;
-//		try {
-//			executeQuery = getInternalStatement().executeQuery(sql);
-//		} catch (SQLException exp) {
-//			try {
-//				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql);
-//			} catch (SQLException ex) {
-//				throw ex;
-//			} catch (Exception ex) {
-//				throw new SQLException(ex);
-//			}
-//		}
-//		return executeQuery;
 	}
 
 	/**
@@ -113,8 +99,9 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param intent the query or DDL intention when the exception occurred
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
+	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
-	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException {
+	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
 		final String logSQL = "EXECUTING QUERY \"" + label + "\": " + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
@@ -123,6 +110,8 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		} catch (SQLException exp) {
 			try {
 				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql, intent);
+			} catch (LoopDetectedInRecursiveSQL loop) {
+				throw loop;
 			} catch (SQLException ex) {
 //				System.out.println("executeQuery: "+ex.getMessage());
 //				System.out.println("INTENT: "+intent.name());
@@ -142,11 +131,13 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		return executeQuery;
 	}
 
-	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql, QueryIntention intent) throws Exception {
+	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql, QueryIntention intent) throws Exception, LoopDetectedInRecursiveSQL {
 		ResultSet executeQuery;
 		checkForBrokenConnection(exp, sql);
 		try {
 			handleResponseFromFixingException(exp, intent);
+		} catch (LoopDetectedInRecursiveSQL loop) {
+			throw loop;
 		} catch (Exception ex) {
 			// Checking the table will generate exceptions
 			if (!intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
@@ -520,13 +511,18 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		}
 	}
 
-	public boolean handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception {
+	public boolean handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception, LoopDetectedInRecursiveSQL {
 		DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent);
-		if (response.equals(DBDatabase.ResponseToException.REPLACECONNECTION)) {
-			replaceBrokenConnection();
-			return true;
-		} else if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
-			return true;
+		switch (response) {
+			case REPLACECONNECTION:
+				replaceBrokenConnection();
+				return true;
+			case SKIPQUERY:
+				return true;
+			case EMULATE_RECURSIVE_QUERY:
+				throw new LoopDetectedInRecursiveSQL();
+			default:
+				break;
 		}
 		return false;
 	}
