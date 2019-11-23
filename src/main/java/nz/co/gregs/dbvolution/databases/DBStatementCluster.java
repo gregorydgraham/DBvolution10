@@ -28,12 +28,12 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.ArrayList;
 import java.util.Random;
+import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 
@@ -313,12 +313,12 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public ResultSet executeQuery(String string, QueryIntention intent) throws SQLException {
+	public ResultSet executeQuery(String string, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
 		return getRandomStatement().executeQuery(string, intent);
 	}
 
 	@Override
-	public ResultSet executeQuery(String string, String label, QueryIntention intent) throws SQLException {
+	public ResultSet executeQuery(String string, String label, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
 		return getRandomStatement().executeQuery(string, label, intent);
 	}
 

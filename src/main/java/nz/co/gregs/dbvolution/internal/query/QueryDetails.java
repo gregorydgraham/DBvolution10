@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -44,6 +46,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -1015,7 +1018,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 	public synchronized List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		final QueryOptions opts = getOptions();
 		if (this.needsResults(opts)) {
-			getOptions().getQueryDatabase().executeDBQuery(this);
+			try {
+				getOptions().getQueryDatabase().executeDBQuery(this);
+			} catch (LoopDetectedInRecursiveSQL ex) {
+				/*This should never happen*/
+				Logger.getLogger(QueryDetails.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 		if (opts.getRowLimit() > 0 && getResults().size() > opts.getRowLimit()) {
 			final int firstItemOfPage = opts.getPageIndex() * opts.getRowLimit();

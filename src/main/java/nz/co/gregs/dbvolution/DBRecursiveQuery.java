@@ -387,7 +387,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return trees;
 	}
 
-	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveQueryDetails<T> queryDetails) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveQueryDetails<T> queryDetails) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		if (queryDetails.needsResults(queryDetails.getOptions())) {
 			queryDetails.getOriginalQuery().getDatabase().executeDBQuery(queryDetails);
 		}

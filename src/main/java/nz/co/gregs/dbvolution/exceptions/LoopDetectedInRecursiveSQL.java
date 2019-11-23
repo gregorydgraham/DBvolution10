@@ -34,7 +34,7 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author gregorygraham
  */
-public class LoopDetectedInRecursiveSQL extends Exception {
+public class LoopDetectedInRecursiveSQL extends RuntimeException {
 
 	public LoopDetectedInRecursiveSQL() {
 	}

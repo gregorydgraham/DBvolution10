@@ -101,7 +101,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @throws SQLException database exceptions
 	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
-	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
+	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING QUERY \"" + label + "\": " + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
@@ -511,7 +511,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		}
 	}
 
-	public boolean handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception, LoopDetectedInRecursiveSQL {
+	public boolean handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception {
 		DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent);
 		switch (response) {
 			case REPLACECONNECTION:

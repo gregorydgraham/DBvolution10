@@ -60,7 +60,7 @@ public interface DBQueryable {
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
-	public DBQueryable query(DBDatabase db) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL;
+	public DBQueryable query(DBDatabase db) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException;
 
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException ;
 
