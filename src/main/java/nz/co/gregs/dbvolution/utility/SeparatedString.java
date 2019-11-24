@@ -36,7 +36,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Simple access to creating a string of a variety of strings separated by a
@@ -78,6 +80,7 @@ public class SeparatedString {
 	private String escapeChar = "";
 	private String useWhenEmpty = "";
 	private String keyValueSeparator = "";
+	private boolean closedLoop = false;
 
 	private SeparatedString() {
 	}
@@ -193,6 +196,8 @@ public class SeparatedString {
 			Pattern matchBefore = Pattern.compile(getWrapBefore());
 			Pattern matchAfter = Pattern.compile(getWrapAfter());
 			Pattern matchEsc = Pattern.compile(getEscapeChar());
+			String currentElement = "";
+			String firstElement = null;
 			for (String element : allTheElements) {
 				String str = element;
 				if (!escapeChar.equals("")) {
@@ -200,8 +205,15 @@ public class SeparatedString {
 					str = matchAfter.matcher(str).replaceAll(getEscapeChar() + getWrapAfter());
 					str = matchEsc.matcher(str).replaceAll(getEscapeChar() + getEscapeChar());
 				}
-				strs.append(sep).append(getWrapBefore()).append(str).append(getWrapAfter());
+				currentElement = getWrapBefore() + str + getWrapAfter();
+				if (firstElement == null) {
+					firstElement = currentElement;
+				}
+				strs.append(sep).append(currentElement);
 				sep = this.getSeparator();
+			}
+			if (this.closedLoop && firstElement != null && !firstElement.equals(currentElement)) {
+				strs.append(sep).append(firstElement);
 			}
 			return getPrefix() + strs.toString() + getSuffix();
 		}
@@ -251,6 +263,18 @@ public class SeparatedString {
 
 	public SeparatedString addAll(String... strs) {
 		final List<String> asList = Arrays.asList(strs);
+		if (asList != null) {
+			getStrings().addAll(asList);
+		}
+		return this;
+	}
+
+	public SeparatedString addAll(Function<String, String> stringProcessor, String... strs) {
+		return addAll(stringProcessor, Arrays.asList(strs));
+	}
+
+	public SeparatedString addAll(Function<String, String> stringProcessor, List<String> strs) {
+		final List<String> asList = strs.stream().map(stringProcessor).collect(Collectors.toList());
 		if (asList != null) {
 			getStrings().addAll(asList);
 		}
@@ -333,6 +357,16 @@ public class SeparatedString {
 	 */
 	public String getEscapeChar() {
 		return escapeChar;
+	}
+
+	public SeparatedString withClosedLoop() {
+		this.closedLoop = true;
+		return this;
+	}
+
+	public SeparatedString withoutClosedLoop() {
+		this.closedLoop = false;
+		return this;
 	}
 
 	public SeparatedString withWrapper(String wrapAroundEachTerm) {
