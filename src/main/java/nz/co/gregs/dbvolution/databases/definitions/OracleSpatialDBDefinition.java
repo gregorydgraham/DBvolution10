@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.internal.oracle.xe.Line2DFunctions;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
@@ -395,7 +396,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
-		return "SDO_GEOM.SDO_INTERSECTION(" + firstLine + ", " + secondLine + ", 0.0000005)";
+		return Line2DFunctions.GETPOINTFROMORDARRAY.toString()+"(SDO_GEOM.SDO_INTERSECTION(" + firstLine + ", " + secondLine + ", 0.0000005))";
 	}
 
 	@Override
