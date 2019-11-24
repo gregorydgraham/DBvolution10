@@ -913,4 +913,9 @@ public class OracleDBDefinition extends DBDefinition {
 		return 0;
 	}
 
+	@Override
+	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
+		return formatColumnName(primaryKeyColumnName);
+	}
+
 }
