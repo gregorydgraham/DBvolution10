@@ -144,49 +144,35 @@ public enum Line2DFunctions implements FeatureAdd {
 			+ "                                         ,v_px2, v_py2)\n"
 			+ "                                         )\n"
 			+ "             END;\n"
-			+ "END;") //	INTERSECTSLINE2D("NUMBER", "firstLine IN MDSYS.SDO_GEOMETRY, secondLine IN MDSYS.SDO_GEOMETRY", ""
-	//			+ "   ln1           MDSYS.SDO_GEOMETRY;\n"
-	//			+ "   ln2           MDSYS.SDO_GEOMETRY;\n"
-	//			+ "   ln1_index     INTEGER := 1;\n"
-	//			+ "   ln2_index     INTEGER := 1;\n"
-	//			+ "BEGIN\n"
-	//			+ "   --   DBMS_OUTPUT.PUT_LINE ('STARTING INTERSECTS... ');\n"
-	//			+ "\n"
-	//			+ "   IF (firstLine IS NULL OR secondLine IS NULL)\n"
-	//			+ "   THEN\n"
-	//			+ "      RETURN NULL;\n"
-	//			+ "   END IF;\n"
-	//			+ "   \n"
-	//			+ "   ln1 := DBV_LN2D_GETLNSEGMENT2DATINDEX(firstLine, ln1_index);\n"
-	//			+ "   \n"
-	//			+ "   --'2 3, 3 4'\n"
-	//			+ "   WHILE ln1 is not null\n"
-	//			+ "   LOOP\n"
-	//			+ "      ln2:= DBV_LN2D_GETLNSEGMENT2DATINDEX(secondLine, ln2_index);\n"
-	//			+ "      WHILE ln2 is not null\n"
-	//			+ "      LOOP\n"
-	//			+ "  \n"
-	//			+ "        --   DBMS_OUTPUT.PUT_LINE ('SECOND POINT: ' || pointAsText);\n"
-	//			+ "  \n"
-	//			+ "        IF ln2 is not null\n"
-	//			+ "        THEN\n"
-	//			+ "           if SDO_GEOM.RELATE(ln1, 'ANYINTERACT', ln2, 0.0000005) <> 'FALSE'\n"
-	//			+ "           then\n"
-	//			+ "             return 1;\n"
-	//			+ "           end if;\n"
-	//			+ "        END IF;\n"
-	//			+ "        ln2_index := ln2_index+1;\n"
-	//			+ "        ln2:= DBV_LN2D_GETLNSEGMENT2DATINDEX(secondLine, ln2_index);\n"
-	//			+ "      END LOOP;\n"
-	//			+ "\n"
-	//			+ "      ln1_index := ln1_index+1;\n"
-	//			+ "      ln1:= DBV_LN2D_GETLNSEGMENT2DATINDEX(firstLine, ln1_index);\n"
-	//			+ "   END LOOP;\n"
-	//			+ "\n"
-	//			+ "   -- No Collision\n"
-	//			+ "   RETURN 0;\n"
-	//			+ "END;");
-	;
+			+ "END;"),
+	GETPOINTFROMORDARRAY(
+			"MDSYS.SDO_GEOMETRY",
+			"p_geometry     IN MDSYS.SDO_GEOMETRY",
+			""
+			+ "     v_element         NUMBER;\n"
+			+ "     v_elements        NUMBER;\n"
+			+ "     v_geometry        MDSYS.SDO_Geometry;\n"
+			+ "     v_SdoPoint        MDSYS.SDO_Point_Type := MDSYS.SDO_Point_Type(0,0,NULL);\n"
+			+ "     v_Ordinates       MDSYS.SDO_Ordinate_Array;\n"
+			+ "  BEGIN\n"
+			+ "    IF ( MOD(p_geometry.sdo_gtype,10) NOT IN (1,5) ) THEN\n"
+			+ "      v_geometry := NULL;\n"
+			+ "    ELSIF p_geometry.sdo_point IS NOT NULL THEN\n"
+			+ "      v_geometry := mdsys.sdo_geometry(p_geometry.sdo_gtype,p_geometry.sdo_srid,p_geometry.sdo_point,NULL,NULL);\n"
+			+ "    ELSIF p_geometry.sdo_ordinates IS NOT NULL THEN\n"
+			+ "      v_ordinates  := p_geometry.sdo_ordinates;\n"
+			+ "      v_SdoPoint.X := v_ordinates(1);\n"
+			+ "      v_SdoPoint.Y := v_ordinates(2);\n"
+			+ "      IF ( FLOOR(p_geometry.sdo_gtype/1000) = 3 ) THEN\n"
+			+ "        v_SdoPoint.Z := v_ordinates(3);\n"
+			+ "      END IF;\n"
+			+ "      v_geometry := mdsys.sdo_geometry(p_geometry.sdo_gtype,p_geometry.sdo_srid,v_SdoPoint,NULL,NULL);\n"
+			+ "    ELSE\n"
+			+ "      v_geometry := NULL;\n"
+			+ "    END IF;\n"
+			+ "    RETURN v_geometry;\n"
+			+ "  END;"
+	);
 
 	private final String returnType;
 	private final String parameters;
@@ -208,20 +194,7 @@ public enum Line2DFunctions implements FeatureAdd {
 	public String toString() {
 		return "DBV_LN2D_" + name();
 	}
-	
-//	public void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
-//		try {
-//			if (!this.code.isEmpty()) {
-//				final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
-//						+ "    RETURN " + this.returnType
-//						+ " AS \n" + "\n" + this.code;
-//				stmt.execute(createFn);
-//			}
-//		} catch (Exception ex) {
-//			throw new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: "+name(), ex);
-//		}
-//	}
-	
+
 	@Override
 	public String featureName() {
 		return name();
@@ -232,7 +205,7 @@ public enum Line2DFunctions implements FeatureAdd {
 		if (!this.code.isEmpty()) {
 			return new String[]{
 				"CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
-						+ "    RETURN " + this.returnType
+					+ "    RETURN " + this.returnType
 						+ " AS \n" + "\n" + this.code
 			};
 		}
