@@ -17,7 +17,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -46,8 +45,6 @@ import org.apache.commons.logging.LogFactory;
  * Mostly this is a thin wrapper around DBDatabase, Connection, and Statement
  * objects
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -77,14 +74,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * Executes the given SQL statement, which returns a single ResultSet object.
 	 *
 	 * @param sql SQL
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @param intent
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
-	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
-	public ResultSet executeQuery(String sql, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
+	public ResultSet executeQuery(String sql, QueryIntention intent) throws SQLException {
 		return executeQuery(sql, "UNLABELLED", intent);
 	}
 
@@ -92,14 +86,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * Executes the given SQL statement, which returns a single ResultSet object.
 	 *
 	 * @param sql SQL
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @param label an arbitrary label for the query to help with query
 	 * identification
 	 * @param intent the query or DDL intention when the exception occurred
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
-	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 */
 	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING QUERY \"" + label + "\": " + sql;
@@ -113,18 +104,8 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			} catch (LoopDetectedInRecursiveSQL loop) {
 				throw loop;
 			} catch (SQLException ex) {
-//				System.out.println("executeQuery: "+ex.getMessage());
-//				System.out.println("INTENT: "+intent.name());
-//				System.out.println("LABEL: "+label);
-//				System.out.println("SQL: "+sql);
-//				ex.printStackTrace();
 				throw ex;
 			} catch (Exception ex) {
-//				System.out.println("executeQuery: "+ex.getMessage());
-//				System.out.println("INTENT: "+intent.name());
-//				System.out.println("LABEL: "+label);
-//				System.out.println("SQL: "+sql);
-//				ex.printStackTrace();
 				throw new SQLException(ex);
 			}
 		}
@@ -168,14 +149,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * statement.
 	 *
 	 * @param string	string
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int executeUpdate(String string) throws SQLException {
 		database.printSQLIfRequested(string);
 		int executeUpdate = getInternalStatement().executeUpdate(string);
@@ -223,15 +201,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * VARCHAR, NCHAR, NVARCHAR, LONGNVARCHAR and LONGVARCHAR columns. If the
 	 * limit is exceeded, the excess data is silently discarded.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current column size limit for columns storing character and
 	 * binary values; zero means there is no limit. 1 Database exceptions may be
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getMaxFieldSize() throws SQLException {
 		return getInternalStatement().getMaxFieldSize();
 	}
@@ -250,7 +225,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setMaxFieldSize(int i) throws SQLException {
 		getInternalStatement().setMaxFieldSize(i);
 	}
@@ -260,15 +234,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * this Statement object can contain. If this limit is exceeded, the excess
 	 * rows are silently dropped.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current maximum number of rows for a <code>ResultSet</code>
 	 * object produced by this <code>Statement</code> object; zero means there is
 	 * no limit 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getMaxRows() throws SQLException {
 		return getInternalStatement().getMaxRows();
 	}
@@ -284,7 +255,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setMaxRows(int i) throws SQLException {
 		getInternalStatement().setMaxRows(i);
 	}
@@ -302,7 +272,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param bln bln
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setEscapeProcessing(boolean bln) throws SQLException {
 		getInternalStatement().setEscapeProcessing(bln);
 	}
@@ -311,14 +280,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * Retrieves the number of seconds the driver will wait for a Statement object
 	 * to execute. If the limit is exceeded, a SQLException is thrown.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current query timeout limit in seconds; zero means there is no
 	 * limit 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getQueryTimeout() throws SQLException {
 		return getInternalStatement().getQueryTimeout();
 	}
@@ -336,7 +302,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setQueryTimeout(int i) throws SQLException {
 		getInternalStatement().setQueryTimeout(i);
 	}
@@ -349,7 +314,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @throws java.sql.SQLException
 	 */
-//	@Override
 	public synchronized void cancel() throws SQLException {
 		try {
 			getInternalStatement().cancel();
@@ -401,14 +365,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * (re)executed. This method may not be called on a closed Statement object;
 	 * doing so will cause an SQLException to be thrown.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the first <code>SQLWarning</code> object or <code>null</code> if
 	 * there are no warnings 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public SQLWarning getWarnings() throws SQLException {
 		return getInternalStatement().getWarnings();
 	}
@@ -422,7 +383,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void clearWarnings() throws SQLException {
 		getInternalStatement().clearWarnings();
 	}
@@ -445,7 +405,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param string string
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setCursorName(String string) throws SQLException {
 		getInternalStatement().setCursorName(string);
 	}
@@ -466,15 +425,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * result(s).
 	 *
 	 * @param sql	string
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @param intent
 	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
 	 * object; <code>FALSE</code> if it is an update count or there are no results
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean execute(String sql, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING: " + sql;
 		database.printSQLIfRequested(logSQL);
@@ -555,15 +511,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * <p>
 	 * This method should be called only once per result.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current result as a <code>ResultSet</code> object or
 	 * <code>null</code> if the result is an update count or there are no more
 	 * results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public ResultSet getResultSet() throws SQLException {
 		return getInternalStatement().getResultSet();
 	}
@@ -574,15 +527,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * <p>
 	 * This method should be called only once per result.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current result as an update count; -1 if the current result is
 	 * a <code>ResultSet</code> object or there are no more results. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getUpdateCount() throws SQLException {
 		return getInternalStatement().getUpdateCount();
 	}
@@ -599,15 +549,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * (stmt.getUpdateCount() == -1))
 	 * </code>
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return true if the next result is a ResultSet object; false if it is an
 	 * update count or there are no more results 1 Database exceptions may be
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean getMoreResults() throws SQLException {
 		return getInternalStatement().getMoreResults();
 	}
@@ -624,7 +571,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setFetchDirection(int i) throws SQLException {
 		getInternalStatement().setFetchDirection(i);
 	}
@@ -636,14 +582,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * If this Statement object has not set a fetch direction by calling the
 	 * method setFetchDirection, the return value is implementation-specific.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the default fetch direction for result sets generated from this
 	 * Statement object 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getFetchDirection() throws SQLException {
 		return getInternalStatement().getFetchDirection();
 	}
@@ -662,7 +605,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setFetchSize(int i) throws SQLException {
 		getInternalStatement().setFetchSize(i);
 	}
@@ -674,8 +616,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * If this Statement object has not set a fetch size by calling the method
 	 * setFetchSize, the return value is implementation-specific.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the default fetch size for result sets generated from this
 	 * Statement object
@@ -683,7 +623,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getFetchSize() throws SQLException {
 		return getInternalStatement().getFetchSize();
 	}
@@ -692,14 +631,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * Retrieves the result set concurrency for ResultSet objects generated by
 	 * this Statement object.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return either ResultSet.CONCUR_READ_ONLY or ResultSet.CONCUR_UPDATABLE 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getResultSetConcurrency() throws SQLException {
 		return getInternalStatement().getResultSetConcurrency();
 	}
@@ -708,15 +644,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * Retrieves the result set type for ResultSet objects generated by this
 	 * Statement object.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return one of ResultSet.TYPE_FORWARD_ONLY,
 	 * ResultSet.TYPE_SCROLL_INSENSITIVE, or ResultSet.TYPE_SCROLL_SENSITIVE 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getResultSetType() throws SQLException {
 		return getInternalStatement().getResultSetType();
 	}
@@ -732,11 +665,9 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param string string
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void addBatch(String string) throws SQLException {
 		localBatchList.add(string);
 		getInternalStatement().addBatch(string);
-//		setBatchHasEntries(true);
 	}
 
 	/**
@@ -746,11 +677,9 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void clearBatch() throws SQLException {
 		localBatchList.clear();
 		getInternalStatement().clearBatch();
-//		setBatchHasEntries(false);
 	}
 
 	/**
@@ -784,8 +713,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * continuing to process commands in a batch update after a
 	 * BatchUpdateException object has been thrown.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return an array of update counts containing one element for each command
 	 * in the batch. The elements of the array are ordered according to the order
@@ -793,7 +720,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int[] executeBatch() throws SQLException {
 		if (database.isPrintSQLBeforeExecuting()) {
 			localBatchList.stream().forEach((t) -> database.printSQLIfRequested(t));
@@ -804,14 +730,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Retrieves the Connection object that produced this Statement object.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the connection that produced this statement 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public DBConnection getConnection() throws SQLException {
 		return connection;
 	}
@@ -829,14 +752,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * </code>
 	 *
 	 * @param i	i
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the next result is a ResultSet object; false if it is an
 	 * update count or there are no more results. 1 Database exceptions may be
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean getMoreResults(int i) throws SQLException {
 		return getInternalStatement().getMoreResults();
 	}
@@ -848,15 +768,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * If this Statement object did not generate any keys, an empty ResultSet
 	 * object is returned.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a ResultSet object containing the auto-generated key(s) generated
 	 * by the execution of this Statement object 1 Database exceptions may be
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public ResultSet getGeneratedKeys() throws SQLException {
 		return getInternalStatement().getGeneratedKeys();
 	}
@@ -872,14 +789,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @param string string
 	 * @param i i
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int executeUpdate(String string, int i) throws SQLException {
 		database.printSQLIfRequested(string);
 		return getInternalStatement().executeUpdate(string, i);
@@ -898,14 +812,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @param string string
 	 * @param ints ints
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int executeUpdate(String string, int[] ints) throws SQLException {
 		database.printSQLIfRequested(string);
 		return getInternalStatement().executeUpdate(string, ints);
@@ -924,13 +835,10 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @param string string
 	 * @param strings strings
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either the row count for INSERT, UPDATE, or DELETE statements, or 0
 	 * for SQL statements that return nothing 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int executeUpdate(String string, String[] strings) throws SQLException {
 		final String logSQL = "EXECUTING UPDATE: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -958,13 +866,10 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @param string string
 	 * @param i i
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the first result is a ResultSet object; false if it is an
 	 * update count or there are no results. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean execute(String string, int i) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -994,13 +899,10 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @param string string
 	 * @param ints ints
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the first result is a ResultSet object; false if it is an
 	 * update count or there are no results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean execute(String string, int[] ints) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -1030,14 +932,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @param string string
 	 * @param strings strings
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the next result is a ResultSet object; false if it is an
 	 * update count or there are no more results 1 Database exceptions may be
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean execute(String string, String[] strings, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -1045,22 +944,19 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		try {
 			return getInternalStatement().execute(string, strings);
 		} catch (SQLException exp) {
-			return addFeatureAndAttemptExecuteAgain(exp, string, strings, intent);
-		}
-	}
+					return addFeatureAndAttemptExecuteAgain(exp, string, strings, intent);
+				}
+			}
 
 	/**
 	 * Retrieves the result set holdability for ResultSet objects generated by
 	 * this Statement object.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return either ResultSet.HOLD_CURSORS_OVER_COMMIT or
 	 * ResultSet.CLOSE_CURSORS_AT_COMMIT 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public int getResultSetHoldability() throws SQLException {
 		return getInternalStatement().getResultSetHoldability();
 	}
@@ -1070,14 +966,11 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * closed if the method close has been called on it, or if it is automatically
 	 * closed.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return true if this Statement object is closed; false if it is still open
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean isClosed() throws SQLException {
 		if (database.getDefinition().supportsStatementIsClosed()) {
 			return getInternalStatement().isClosed();
@@ -1105,7 +998,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @param bln bln
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void setPoolable(boolean bln) throws SQLException {
 		getInternalStatement().setPoolable(bln);
 	}
@@ -1113,15 +1005,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Returns a value indicating whether the Statement is poolable or not.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return true if the Statement is poolable; false otherwise
 	 *
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean isPoolable() throws SQLException {
 		return getInternalStatement().isPoolable();
 	}
@@ -1140,13 +1029,10 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @param iface A Class defining an interface that the result must implement.
 	 * @param <T> the required interface.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an object that implements the interface. May be a proxy for the
 	 * actual implementing object. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		return getInternalStatement().unwrap(iface);
 	}
@@ -1164,15 +1050,12 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * with the same argument should succeed.
 	 *
 	 * @param iface a Class defining an interface.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if this implements the interface or directly or indirectly
 	 * wraps an object that does.
 	 * @throws java.sql.SQLException if an error occurs while determining whether
 	 * this is a wrapper for an object with the given interface.
 	 * @since 1.6
 	 */
-//	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		return getInternalStatement().isWrapperFor(iface);
 	}
@@ -1183,8 +1066,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Indicates that a batch has been added.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the batch has un-executed entries, otherwise FALSE.
 	 */
@@ -1195,8 +1076,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Indicates that a batch has been added.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the batch has un-executed entries, otherwise FALSE.
 	 */
@@ -1211,7 +1090,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public void closeOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("DBStatement does not support closeOnCompletion() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -1219,27 +1097,21 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Unsupported.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return unsupported 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-//	@Override
 	public boolean isCloseOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("DBStatement does not support closeOnCompletion() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the internalStatement
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected synchronized Statement getInternalStatement() throws SQLException {
 		if (this.internalStatement == null) {
-//			System.out.println("OPENING DBSTATEMENT");
 			this.setInternalStatement(connection.getInternalStatement());
 		}
 		return this.internalStatement;
