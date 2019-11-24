@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
  * A subclass of OracleDB that contains definitions of standard Spatial
@@ -164,23 +165,17 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
-		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
-		final String ordinateSep = ", ";
-		String pairSep = "";
-		for (String pointish : pointSQL) {
-			ordinateArray
-					.append(pairSep)
-					.append(doPoint2DGetXTransform(pointish))
-					.append(ordinateSep)
-					.append(doPoint2DGetYTransform(pointish));
-			pairSep = ", ";
-		}
-		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
-		ordinateArray.append(")");
-		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
-				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),"
-				+ ordinateArray
-				+ ")";
+		SeparatedString sepStr;
+		sepStr = SeparatedString
+				.byCommas()
+				.withPrefix("MDSYS.SDO_GEOMETRY(2003, NULL, NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),MDSYS.SDO_ORDINATE_ARRAY(")
+				.withSuffix("))")
+				.withClosedLoop()
+				.addAll(
+						(t)->{return doPoint2DGetXTransform(t) + ", " + doPoint2DGetYTransform(t);}, 
+						pointSQL
+				);
+		return sepStr.toString();
 	}
 
 	@Override
