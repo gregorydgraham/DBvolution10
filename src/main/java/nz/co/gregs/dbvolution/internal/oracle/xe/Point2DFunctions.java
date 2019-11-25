@@ -22,58 +22,17 @@ import nz.co.gregs.dbvolution.internal.FeatureAdd;
  *
  * @author gregorygraham
  */
-public enum MultiPoint2DFunctions implements FeatureAdd {
+public enum Point2DFunctions implements FeatureAdd {
 
-	/**
-	 *
-	 */
-	GETPOINTATINDEX(GeometryFunctions.GETPOINTATINDEX),
-	/**
-	 *
-	 */
-	NUMPOINTS("NUMBER", "p_geometry     IN MDSYS.SDO_GEOMETRY", " begin return p_geometry.sdo_ordinates.count/2; end;"),
-	/**
-	 *
-	 */
-	ASPOLY2D("MDSYS.SDO_GEOMETRY", "p_geometry     IN MDSYS.SDO_GEOMETRY", ""
-			+ "   BEGIN\n"
-			+ "    return MDSYS.SDO_GEOMETRY(\n"
-			+ "      2003,\n"
-			+ "      p_geometry.SDO_SRID,\n"
-			+ "      p_geometry.SDO_POINT,\n"
-			+ "      p_geometry.SDO_ELEM_INFO,\n"
-			+ "      p_geometry.SDO_ORDINATES\n"
-			+ "    );\n"
-			+ "END;"),
-	/**
-	 *
-	 */
-	ASLINE2D("MDSYS.SDO_GEOMETRY", "p_geometry in MDSYS.SDO_GEOMETRY", ""
-			+ "   BEGIN\n"
-			+ "    return MDSYS.SDO_GEOMETRY(\n"
-			+ "      2002,\n"
-			+ "      p_geometry.SDO_SRID,\n"
-			+ "      p_geometry.SDO_POINT,\n"
-			+ "      MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),\n"
-			+ "      p_geometry.SDO_ORDINATES\n"
-			+ "    );\n"
-			+ "END;"),
-	/**
-	 *
-	 */
 	ASTEXT("VARCHAR", "p_geometry     IN MDSYS.SDO_GEOMETRY",
 			""
 			+ "     v_dims  PLS_INTEGER;    -- Number of dimensions in geometry\n"
 			+ "     v_gtype NUMBER;         -- SDO_GTYPE of returned geometry\n"
-			+ "     v_count NUMBER;         -- SDO_GTYPE of returned geometry\n"
-			+ "     v_p     NUMBER := 1;    -- Index into ordinates array\n"
 			+ "     v_px    NUMBER;         -- X of extracted point\n"
 			+ "     v_py    NUMBER;         -- Y of extracted point\n"
 			+ "     v_pz    NUMBER;         -- Z of extracted point\n"
 			+ "     v_pm    NUMBER;         -- M of extracted point\n"
-			+ "     v_sep   VARCHAR(10):='';\n"
-			+ "     -- separator between the points\n"
-			+ "     v_wkt   VARCHAR(20000) := 'MULTIPOINT (';\n"
+			+ "     v_wkt   VARCHAR(20000);\n"
 			+ "     -- the Well Known Text to return\n"
 			+ "     \n"
 			+ "     Function ST_isMeasured( p_gtype in number )\n"
@@ -87,59 +46,47 @@ public enum MultiPoint2DFunctions implements FeatureAdd {
 			+ "     End ST_isMeasured;\n"
 			+ "\n"
 			+ "   BEGIN\n"
+			+ "     IF (p_geometry IS NULL) THEN       \n"
+			+ "       RETURN NULL;\n"
+			+ "     END IF;\n"
 			+ "     -- Get the number of dimensions from the gtype\n"
 			+ "     v_dims := SUBSTR (p_geometry.SDO_GTYPE, 1, 1);\n"
 			+ "     v_gtype := (v_dims*1000) + 1;\n"
 			+ "     if (p_geometry.sdo_ordinates IS NOT NULL) THEN\n"
-			+ "     v_count := p_geometry.sdo_ordinates.count;\n"
-			+ "     \n"
-			+ "     WHILE (v_p <= v_count)\n"
-			+ "     LOOP\n"
-			+ "       v_px := p_geometry.SDO_ORDINATES(v_p);\n"
-			+ "       v_py := p_geometry.SDO_ORDINATES(v_p+1);\n"
+			+ "       v_px := p_geometry.SDO_ORDINATES(1);\n"
+			+ "       v_py := p_geometry.SDO_ORDINATES(2);\n"
 			+ "       IF ( v_dims > 3 ) THEN\n"
-			+ "         v_pm := p_geometry.SDO_ORDINATES(v_p+3);\n"
-			+ "         v_pz := p_geometry.SDO_ORDINATES(v_p+2);\n"
-			+ "         v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||' '||v_pz||' '||v_pm||')';\n"
+			+ "         v_pz := p_geometry.SDO_ORDINATES(3);\n"
+			+ "         v_pm := p_geometry.SDO_ORDINATES(4);\n"
+			+ "         v_wkt := 'POINT ('||v_px||' '||v_py||' '||v_pz||' '||v_pm||')';\n"
 			+ "       ELSIF ( v_dims = 3 ) THEN\n"
 			+ "           IF ( ST_isMeasured(p_geometry.SDO_GTYPE) ) THEN\n"
-			+ "             v_pm := p_geometry.SDO_ORDINATES(v_p+2);\n"
-			+ "             v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||' '||v_pm||')';\n"
+			+ "             v_pm := p_geometry.SDO_ORDINATES(3);\n"
+			+ "             v_wkt := 'POINT ('||v_px||' '||v_py||' '||v_pm||')';\n"
 			+ "           ELSE\n"
-			+ "             v_pz := p_geometry.SDO_ORDINATES(v_p+2);\n"
-			+ "             v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||' '||v_pz||')';\n"
+			+ "             v_pz := p_geometry.SDO_ORDINATES(3);\n"
+			+ "             v_wkt := 'POINT ('||v_px||' '||v_py||' '||v_pz||')';\n"
 			+ "           END IF;\n"
 			+ "       ELSE\n"
-			+ "           v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||')';\n"
+			+ "           v_wkt := 'POINT ('||v_px||' '||v_py||')';\n"
 			+ "       END IF;\n"
-			+ "      \n"
-			+ "      v_sep := ', ';\n"
-			+ "      v_p := v_p+v_dims;\n"
-			+ "    END LOOP;\n"
 			+ "    ELSIF (p_geometry.sdo_point IS NOT NULL) THEN\n"
 			+ "      v_px := p_geometry.SDO_POINT.X;\n"
 			+ "      v_py := p_geometry.SDO_POINT.Y;\n"
-			+ "      IF ( v_dims > 3 ) THEN\n"
-			+ "        v_pm := p_geometry.SDO_POINT.M;\n"
-			+ "        v_pz := p_geometry.SDO_POINT.Z;\n"
-			+ "        v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||' '||v_pz||' '||v_pm||')';\n"
-			+ "      ELSIF ( v_dims = 3 ) THEN\n"
+			+ "      IF ( v_dims = 3 ) THEN\n"
 			+ "           IF ( ST_isMeasured(p_geometry.SDO_GTYPE) ) THEN\n"
-			+ "             v_pm := p_geometry.SDO_ORDINATES(v_p+2);\n"
-			+ "             v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||' '||v_pm||')';\n"
+			+ "             v_pm := p_geometry.SDO_ORDINATES(3);\n"
+			+ "             v_wkt := 'POINT ('||v_px||' '||v_py||' '||v_pm||')';\n"
 			+ "           ELSE\n"
-			+ "             v_pz := p_geometry.SDO_ORDINATES(v_p+2);\n"
-			+ "             v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||' '||v_pz||')';\n"
+			+ "             v_pz := p_geometry.SDO_ORDINATES(3);\n"
+			+ "             v_wkt := 'POINT ('||v_px||' '||v_py||' '||v_pz||')';\n"
 			+ "           END IF;\n"
-			+ "        ELSE\n"
-			+ "           v_wkt := v_wkt||v_sep||'('||v_px||' '||v_py||')';\n"
-			+ "        END IF;\n"
+			+ "      ELSE\n"
+			+ "           v_wkt := 'POINT ('||v_px||' '||v_py||')';\n"
 			+ "      END IF;\n"
-			+ "    ELSE\n"
-			+ "      return null;\n"
 			+ "    END IF;\n"
-			+ "    return v_wkt||')';\n"
-			+ "-- return 'MULTIPOINT ((), (), ...)';\n"
+			+ "    return v_wkt;\n"
+			+ "-- return 'POINT (x y)';\n"
 			+ "end;"
 	);
 
@@ -147,13 +94,13 @@ public enum MultiPoint2DFunctions implements FeatureAdd {
 	private final String parameters;
 	private final String code;
 
-	MultiPoint2DFunctions(String returnType, String parameters, String code) {
+	Point2DFunctions(String returnType, String parameters, String code) {
 		this.returnType = returnType;
 		this.parameters = parameters;
 		this.code = code;
 	}
 
-	MultiPoint2DFunctions(GeometryFunctions function) {
+	Point2DFunctions(GeometryFunctions function) {
 		this.returnType = function.returnType;
 		this.parameters = function.parameters;
 		this.code = function.code;
@@ -161,7 +108,7 @@ public enum MultiPoint2DFunctions implements FeatureAdd {
 
 	@Override
 	public String toString() {
-		return "DBV_MP2D_" + name();
+		return "DBV_PT2D_" + name();
 	}
 
 	public String toSQLString(String parameters) {

@@ -44,7 +44,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DSQL) {
-		return "'POINT ('||" + doPoint2DGetXTransform(point2DSQL) + "||' '||" + doPoint2DGetYTransform(point2DSQL) + "||')'";
+		return Point2DFunctions.ASTEXT+"("+point2DSQL+")";
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
-		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT + "(" + multiPoint2D + ")";
+		return MultiPoint2DFunctions.ASTEXT.toSQLString(multiPoint2D);
 	}
 
 	@Override

@@ -198,6 +198,9 @@ public class Oracle11XEDB extends OracleDB {
 		for (GeometryFunctions fn : GeometryFunctions.values()) {
 			fn.add(statement);
 		}
+		for (Point2DFunctions fn : Point2DFunctions.values()) {
+			fn.add(statement);
+		}
 		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
 			fn.add(statement);
 		}
@@ -209,17 +212,6 @@ public class Oracle11XEDB extends OracleDB {
 	@Override
 	protected Oracle11XESettingsBuilder getURLInterpreter() {
 		return new Oracle11XESettingsBuilder();
-//		return new AbstractOracleSettingsBuilder() {
-//			@Override
-//			public Class generatesURLForDatabase() {
-//				return OracleAWSDB.class;
-//			}
-//
-//			@Override
-//			public DBDatabase getDBDatabase() throws Exception {
-//				return new Oracle11XEDB(this.toSettings());
-//			}
-//		};
 	}
 
 }

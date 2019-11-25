@@ -47,7 +47,7 @@ public interface FeatureAdd {
 	public default String[] optionalPreparationSQL() {
 		return new String[]{};
 	}
-
+	
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
 			justification = "The strings are actually constant but made dynamically")
 	public default void add(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
