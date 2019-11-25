@@ -164,7 +164,6 @@ public enum MultiPoint2DFunctions implements FeatureAdd {
 			final String create = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
 					+ "    RETURN " + this.returnType
 					+ " AS \n" + "\n" + this.code;
-			System.out.println("" + create);
 			return new String[]{create};
 		}
 		return new String[]{};
