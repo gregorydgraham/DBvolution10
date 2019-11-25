@@ -243,7 +243,6 @@ public abstract class AbstractTest {
 	private static Oracle11XEContainerDB getOracleContainerDatabase() {
 		if (ORACLE_CONTAINER_DATABASE == null) {
 			ORACLE_CONTAINER_DATABASE = Oracle11XEContainerDB.getInstance();
-			ORACLE_CONTAINER_DATABASE.setPrintSQLBeforeExecuting(true);
 		}
 		return ORACLE_CONTAINER_DATABASE;
 	}

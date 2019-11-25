@@ -47,7 +47,6 @@ public class DBDurationTest extends AbstractTest {
 
 	@Test
 	public void basicTest() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
 		final DurationTable durationTable = new DurationTable();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(durationTable);
@@ -61,8 +60,6 @@ public class DBDurationTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(1));
 
 		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
-		
-		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	public static class DurationTable extends DBRow {
