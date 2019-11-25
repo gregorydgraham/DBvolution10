@@ -689,7 +689,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doInstantEndOfMonthTransform(String dateSQL) {
-		return "LAST_DAY(" + dateSQL + ")";
+		return "FROM_TZ(CAST(LAST_DAY(" + dateSQL + ") AS TIMESTAMP), 'UTC')";
 	}
 
 	@Override
