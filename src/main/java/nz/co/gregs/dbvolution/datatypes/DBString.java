@@ -73,6 +73,20 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 		}
 		return strings;
 	}
+	/**
+	 * Utility function to return the values of a list of Strings in a list of
+	 * DBStrings.
+	 *
+	 * @param strings
+	 * @return the defined values of all the DBStrings.
+	 */
+	public static ArrayList<DBString> toDBStringList(List<String> strings) {
+		ArrayList<DBString> dbStrings = new ArrayList<>();
+		for (String string : strings) {
+			dbStrings.add(new DBString(string));
+		}
+		return dbStrings;
+	}
 
 	/**
 	 * The default constructor for DBString.
