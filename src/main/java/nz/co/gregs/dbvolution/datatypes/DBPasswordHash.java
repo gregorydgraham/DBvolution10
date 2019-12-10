@@ -32,7 +32,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.exceptions.IncorrectPasswordException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.utility.UpdatingBCrypt;
+import nz.co.gregs.dbvolution.utility.encryption.UpdatingBCrypt;
 
 /**
  * Creates a password column using the secure hashing.
