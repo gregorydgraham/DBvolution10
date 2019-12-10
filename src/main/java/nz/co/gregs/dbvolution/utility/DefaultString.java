@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.utility;
 
 /**
+ * Returns the first non-null, non-empty string.
  *
  * @author gregorygraham
  */
