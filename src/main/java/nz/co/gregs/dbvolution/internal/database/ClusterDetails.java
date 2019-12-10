@@ -48,9 +48,11 @@ import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException;
+import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.reflection.DataModel;
-import nz.co.gregs.dbvolution.utility.Encryption;
+import nz.co.gregs.dbvolution.utility.encryption.Encryption_Internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -301,8 +303,8 @@ public class ClusterDetails implements Serializable {
 				if (!db.isMemoryDatabase() && name != null && !name.isEmpty()) {
 					final String encode = db.getSettings().encode();
 					try {
-						prefs.put(name, Encryption.encrypt(encode));
-					} catch (Encryption.CannotEncryptInputException ex) {
+						prefs.put(name, Encryption_Internal.encrypt(encode));
+					} catch (CannotEncryptInputException ex) {
 						Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
 						prefs.put(name, encode);
 					}
@@ -322,8 +324,8 @@ public class ClusterDetails implements Serializable {
 			final String rawPrefsValue = prefs.get(getClusterName(), null);
 			if (rawPrefsValue != null) {
 				try {
-					encodedSettings = Encryption.decrypt(rawPrefsValue);
-				} catch (Encryption.UnableToDecryptInput ex) {
+					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
+				} catch (UnableToDecryptInput ex) {
 					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
 					encodedSettings = rawPrefsValue;
 				}
