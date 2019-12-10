@@ -34,6 +34,7 @@ package nz.co.gregs.dbvolution.utility;
  *
  * @author gregorygraham
  */
+@Deprecated
 public class StringLeftPadded {
 
 	private final String string;
