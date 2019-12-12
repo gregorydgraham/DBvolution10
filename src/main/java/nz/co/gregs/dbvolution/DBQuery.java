@@ -2481,19 +2481,22 @@ public class DBQuery implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public ColumnProvider column(QueryableDatatype<?> qdt) {
-		List<DBRow> tables = getAllQueryTables();
-		for (DBRow table : tables) {
-			try {
-				return table.column(qdt);
-			} catch (IncorrectRowProviderInstanceSuppliedException exp) {;
-			}
-		}
 		Map<Object, QueryableDatatype<?>> expressionColumns = details.getExpressionColumns();
 		for (QueryableDatatype<?> entry : expressionColumns.values()) {
 			if (entry.equals(qdt)) {
 				return new QueryColumn<>(this, entry);
 			}
 		}
+		List<DBRow> tables = getAllQueryTables();
+		for (DBRow table : tables) {
+			try {
+				return table.column(qdt);
+			} catch (IncorrectRowProviderInstanceSuppliedException exp) {
+				// we have other tables to check first
+				;
+			}
+		}
+		// we haven't found it, therefore we have problem
 		throw new IncorrectRowProviderInstanceSuppliedException("the object provided could not be found in the table or expressions used in this query, please supply a QDT used by the tables or adde to the query as an expression column.");
 	}
 
