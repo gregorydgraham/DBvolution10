@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnum;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
