@@ -47,6 +47,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Encapsulates database values that are Dates.
  *
  * <p>
+ * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate}, or
+ * {@link DBInstant}.</p>
+ *
+ * <p>
  * Use DBDate when the column is a date datatype, even in databases where the
  * native date type is a String (i.e. {@link SQLiteDB}).
  *
@@ -68,6 +72,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * The default constructor for DBDate.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * Creates an unset undefined DBDate object.
 	 *
 	 */
@@ -77,6 +85,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Creates a DBDate with the value provided.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The resulting DBDate will be set as having the value provided but will not
@@ -93,6 +105,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * provided.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
@@ -104,6 +120,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Creates a DBDate with the value provided.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The resulting DBDate will be set as having the value provided but will not
@@ -126,6 +146,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * Creates a DBDate with the value provided.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The resulting DBDate will be set as having the value provided but will not
 	 * be defined in the database.
 	 *
@@ -146,8 +170,9 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Returns the set value of this DBDate as a Java Date instance.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * @return the value as a Java Date.
 	 */
@@ -166,6 +191,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Sets the value of this QDT to the Java Date provided.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * @param date	date
 	 */
 	@Override
@@ -176,24 +205,21 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Sets the value of this QDT to the date and time now.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 */
 	public void setValueToNow() {
 		super.setValue(new Date());
 	}
 
 	/**
-	 * Implement for Java8 Sets the value of this QDT to the Java.time.LocalDate
-	 * provided.
-	 *
-	 * @param date	date
-	 */
-	/*TODO*/
-//	@Override
-//	public void setValue(LocalDate date) {
-//		super.setLiteralValue(date);
-//	}
-	/**
 	 * Sets the value of this QDT to the dateStr provided.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The date String will be parsed by {@link Date#parse(java.lang.String) }
@@ -217,8 +243,9 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Returns the string value of the DBDate.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * @return a string version of the current value of this DBDate
 	 */
@@ -316,6 +343,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Date... permitted) {
@@ -326,6 +357,9 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 *
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * @param excluded	excluded
 	 */
@@ -336,6 +370,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * if both ends of the range are specified the lower-bound will be included in
 	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
@@ -363,6 +401,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
 	 * return 1, 2, and 3.
@@ -389,6 +431,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
 	 * return 2.
@@ -414,6 +460,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * if both ends of the range are specified the lower-bound will be included in
 	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
@@ -442,6 +492,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
 	 * ..., -1, 0, 4, 5, ... .
@@ -468,6 +522,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
@@ -497,6 +555,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(DateExpression... permitted) {
@@ -507,6 +569,9 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 *
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * @param excluded	excluded
 	 */
@@ -517,6 +582,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * if both ends of the range are specified the lower-bound will be included in
 	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
@@ -544,6 +613,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
 	 * return 1, 2, and 3.
@@ -570,6 +643,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
 	 * return 2.
@@ -595,6 +672,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * if both ends of the range are specified the lower-bound will be included in
 	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
@@ -623,6 +704,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
 	 * everything except 1, 2, and 3.
@@ -649,6 +734,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	/**
 	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
@@ -678,8 +767,9 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * Used internally to decide whether the required query needs to include NULL
 	 * values.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * @return whether the query expression needs to test for NULL.
 	 */
@@ -725,6 +815,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * for the QDT.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The value is only used during the initial insert and does not effect the
 	 * definition of the column within the database.</p>
 	 *
@@ -755,7 +849,12 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	}
 
 	/**
-	 * Sets the value to be inserted when no value has been set to the current database date.
+	 * Sets the value to be inserted when no value has been set to the current
+	 * database date.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The value is only used during the initial insert and does not effect the
@@ -790,13 +889,20 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * for the QDT.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The value is only used during the initial insert and does not effect the
 	 * definition of the column within the database.</p>
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
 	 * handled using the
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new Date()) is probably NOT what you
+	 * want, setDefaultInsertValue(DateExpression.currentDate()) will produce a
+	 * correct creation date value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -829,13 +935,20 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * for the QDT.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The value is only used during updates and does not effect the definition of
 	 * the column within the database nor the initial value of the column.</p>
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
 	 * handled using the
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -862,11 +975,16 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 		super.setDefaultUpdateValue(value);
 		return this;
 	}
-	
+
 	/**
-	 * Sets the value to be used during an update when no value has been set, using
+	 * Sets the value to be used during an update when no value has been set,
+	 * using
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
 	 * for the QDT.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The value is only used during updates and does not effect the definition of
@@ -899,6 +1017,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * Set the value to be used during an update when no value has been set, using
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
 	 * for the QDT.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDateTime}, {@link DBLocalDate},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The value is only used during updates and does not effect the definition of
