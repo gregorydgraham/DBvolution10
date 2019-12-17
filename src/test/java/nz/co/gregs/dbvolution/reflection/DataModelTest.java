@@ -485,6 +485,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest$MarqueWithEndOfMonthForLocalDateTimeColumn");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBDurationTest$DurationTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBEncryptedTextTest$EncryptedTextTestTable");
+		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBUUIDTest$UUIDTestTable");
 
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {
@@ -505,13 +506,13 @@ public class DataModelTest extends AbstractTest {
 			}
 			Assert.assertTrue(knownKeys.contains(foundString));
 		}
-		Assert.assertThat(result.size(), is(301));
+		Assert.assertThat(result.size(), is(302));
 	}
 
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		Assert.assertThat(result.size(), is(119));
+		Assert.assertThat(result.size(), is(120));
 	}
 
 	@Test
@@ -677,7 +678,7 @@ public class DataModelTest extends AbstractTest {
 
 	@Test
 	public void testEncoding() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+
 		final CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("TOYOTA");
 		Marque marque = new Marque();
@@ -686,7 +687,7 @@ public class DataModelTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 		query.printAllRows();
-		database.setPrintSQLBeforeExecuting(false);
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA"));
@@ -718,14 +719,13 @@ public class DataModelTest extends AbstractTest {
 				+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
 				+ "nz.co.gregs.dbvolution.example.Marque"));
 
-		database.setPrintSQLBeforeExecuting(true);
 		query = DataModel
 				.createDBQueryFromEncodedTablesPropertiesAndValues(database, encodedQuery,
 						new ExampleEncodingInterpreter()
 				);
 		allRows = query.getAllRows();
 		query.printAllRows();
-		database.setPrintSQLBeforeExecuting(false);
+
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
