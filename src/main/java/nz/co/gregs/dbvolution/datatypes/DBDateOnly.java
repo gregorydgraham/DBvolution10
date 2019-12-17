@@ -28,6 +28,10 @@ import nz.co.gregs.dbvolution.results.DateResult;
  * Encapsulates date values that only include year, month, and day values.
  *
  * <p>
+ * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime}, or
+ * {@link DBInstant}.</p>
+ *
+ * <p>
  * Use this when the actual date value only stores a partial date without any
  * time value. The instance will behave as a {@link DBDate} but time information
  * will be ignore/discarded.
@@ -45,6 +49,10 @@ public class DBDateOnly extends DBDate {
 	 * The default constructor for DBDateOnly.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * Creates an unset undefined DBDateOnly object.
 	 *
 	 */
@@ -53,6 +61,10 @@ public class DBDateOnly extends DBDate {
 
 	/**
 	 * Creates a DBDateOnly with the value provided.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The resulting DBDate will be set as having the value provided but will not
@@ -71,6 +83,10 @@ public class DBDateOnly extends DBDate {
 	 * Creates a DBDateOnly with the value provided.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The resulting DBDate will be set as having the value provided but will not
 	 * be defined in the database.
 	 *
@@ -86,6 +102,10 @@ public class DBDateOnly extends DBDate {
 	/**
 	 * Creates a column expression with a date result from the expression
 	 * provided.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
@@ -130,6 +150,10 @@ public class DBDateOnly extends DBDate {
 	 * for the QDT.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The value is only used during the initial insert and does not effect the
 	 * definition of the column within the database.</p>
 	 *
@@ -165,6 +189,10 @@ public class DBDateOnly extends DBDate {
 	 * for the QDT.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The value is only used during the initial insert and does not effect the
 	 * definition of the column within the database.</p>
 	 *
@@ -195,6 +223,10 @@ public class DBDateOnly extends DBDate {
 	 * Set the value to be inserted when no value has been set, using
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate) setValue(...)},
 	 * for the QDT.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The value is only used during the initial insert and does not effect the
@@ -240,13 +272,20 @@ public class DBDateOnly extends DBDate {
 	 * for the QDT.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The value is only used during updates and does not effect the definition of
 	 * the column within the database nor the initial value of the column.</p>
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
 	 * handled using the
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -280,13 +319,20 @@ public class DBDateOnly extends DBDate {
 	 * for the QDT.
 	 *
 	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
+	 *
+	 * <p>
 	 * The value is only used during updates and does not effect the definition of
 	 * the column within the database nor the initial value of the column.</p>
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
 	 * handled using the
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -315,6 +361,10 @@ public class DBDateOnly extends DBDate {
 	 * Set the value to be used during an update when no value has been set, using
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
 	 * for the QDT.
+	 *
+	 * <p>
+	 * DEPRECATED: please change to {@link DBLocalDate}, {@link DBLocalDateTime},
+	 * or {@link DBInstant}.</p>
 	 *
 	 * <p>
 	 * The value is only used during updates and does not effect the definition of
