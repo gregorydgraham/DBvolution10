@@ -181,6 +181,38 @@ public class DBUUIDTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testDefaultToRandomUUID() throws SQLException {
+		
+		UUIDTestTable insertRow = new UUIDTestTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(insertRow);
+		database.createTableNoExceptions(insertRow);
+		
+		database.insert(new UUIDTestTable(), new UUIDTestTable());
+		
+		DBTable<UUIDTestTable> table = database.getDBTable(new UUIDTestTable());
+		table.setBlankQueryAllowed(true);
+		List<UUIDTestTable> allRows = table.getAllRows();
+		
+		Assert.assertThat(allRows.size(), is(2));
+		
+		UUIDTestTable firstRow = allRows.get(0);
+		UUIDTestTable secondRow = allRows.get(1);
+		
+		Assert.assertNull(firstRow.uuidValue.getValue());
+		Assert.assertNull(secondRow.uuidValue.getValue());
+		
+		Assert.assertNotNull(firstRow.defaultUUIDValueByName.getValue());
+		Assert.assertNotNull(secondRow.defaultUUIDValueByName.getValue());
+		
+		Assert.assertNotNull(firstRow.defaultUUIDValueRandomly.getValue());
+		Assert.assertNotNull(secondRow.defaultUUIDValueRandomly.getValue());
+		
+		Assert.assertThat(firstRow.defaultUUIDValueByName.getValue(), is(secondRow.defaultUUIDValueByName.getValue()));
+		Assert.assertThat(firstRow.defaultUUIDValueRandomly.getValue().toString(), is(not(secondRow.defaultUUIDValueRandomly.getValue())));
+	}
+
 	public static class UUIDTestTable extends DBRow {
 
 		private final static long serialVersionUID = 1l;
@@ -190,11 +222,14 @@ public class DBUUIDTest extends AbstractTest {
 		@DBColumn("pkid")
 		public DBInteger pkid = new DBInteger();
 
-		@DBColumn("encryptedcol")
+		@DBColumn("uuidColumn")
 		public DBUUID uuidValue = new DBUUID();
 
-		@DBColumn()
-		public DBInteger dummy = new DBInteger(1);
+		@DBColumn("defaulting_uuid")
+		public DBUUID defaultUUIDValueByName = new DBUUID().setDefaultInsertValueByName("dbvolution.gregs.co.nz" + "UUIDTestTable");
+
+		@DBColumn("random_uuid")
+		public DBUUID defaultUUIDValueRandomly = new DBUUID().setDefaultInsertValueRandomly();
 
 	}
 

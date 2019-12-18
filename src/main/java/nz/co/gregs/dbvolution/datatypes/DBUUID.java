@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -172,6 +173,171 @@ public class DBUUID extends QueryableDatatype<UUID> implements UUIDResult {
 	 */
 	public void setValueToNamedUUIDFromBytes(byte[] name) {
 		this.setValue(UUID.nameUUIDFromBytes(name));
+	}
+
+	/**
+	 * Sets the value to a named UUID using
+	 * {@link UUID#nameUUIDFromBytes(byte[]) the standard UUID factory method} and
+	 * name.getBytes(StandardCharsets.UTF_8).
+	 *
+	 * @param name
+	 * @see UUID
+	 *
+	 */
+	public void setValueToNamedUUID(String name) {
+		this.setValue(getUUIDForName(name));
+	}
+
+	/**
+	 * Get named UUID using
+	 * {@link UUID#nameUUIDFromBytes(byte[]) the standard UUID factory method} and
+	 * name.getBytes(StandardCharsets.UTF_8).
+	 *
+	 * @param name
+	 * @return the UUID for the given name
+	 * @see UUID
+	 *
+	 */
+	public static UUID getUUIDForName(String name) {
+		return UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new Date()) is probably NOT what you
+	 * want, setDefaultInsertValue(DateExpression.currentDate()) will produce a
+	 * correct creation date value.</p>
+	 *
+	 * @param uuid the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	@Override
+	public synchronized DBUUID setDefaultInsertValue(UUID uuid) {
+		super.setDefaultInsertValue(uuid);
+		return this;
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * @param value the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBUUID setDefaultInsertValue(UUIDResult value) {
+		super.setDefaultInsertValue(value);
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	@Override
+	public synchronized DBUUID setDefaultUpdateValue(UUID value) {
+		super.setDefaultUpdateValue(value);
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBUUID setDefaultUpdateValue(UUIDResult value) {
+		super.setDefaultUpdateValue(value);
+		return this;
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * @param name the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBUUID setDefaultInsertValueByName(String name) {
+		super.setDefaultInsertValue(getUUIDForName(name));
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
+	 *
+	 * @param name the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBUUID setDefaultUpdateValueByName(String name) {
+		super.setDefaultUpdateValue(getUUIDForName(name));
+		return this;
+	}
+
+	public synchronized DBUUID setDefaultInsertValueRandomly() {
+		super.setDefaultInsertValue(UUID.randomUUID());
+		return this;
+	}
+
+	public synchronized DBUUID setDefaultUpdateValueRandomly() {
+		super.setDefaultUpdateValue(UUID.randomUUID());
+		return this;
 	}
 
 }
