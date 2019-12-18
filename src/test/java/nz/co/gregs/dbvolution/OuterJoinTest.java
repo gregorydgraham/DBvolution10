@@ -97,7 +97,7 @@ public class OuterJoinTest extends AbstractTest {
 
 		String expectedLinkJoin1 = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company )";
 		String expectedLinkJoin2 = "[car_company] as __78874071 inner join [marque] as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join [lt_carco_logo] as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany )";
-		String expectedLinkJoinOracle = "car_company as \"__78874071\" inner join marque as \"__1997432637\" on( \"__1997432637\".fk_carcompany = \"__78874071\".uid_carcompany ) inner join lt_carco_logo as \"_1617907935 \"on( \"_1617907935\".fk_car_company = \"__78874071\".uid_carcompany )";
+		String expectedLinkJoinOracle = "car_company \"_78874071\" inner join marque \"_1997432637\" on( \"_1997432637\".fk_carcompany = \"_78874071\".uid_carcompany ) inner join lt_carco_logo \"1617907935\" on( \"1617907935\".fk_car_company = \"_78874071\".uid_carcompany )";
 		String expectedLinkJoinSQLServer = "car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany )";
 
 		Assert.assertThat(testableSQL(ansiJoinClause.toString()),
