@@ -113,7 +113,7 @@ public class OuterJoinTest extends AbstractTest {
 		String expectedLogoJoin = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) inner join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk and _1617907935.fk_company_logo = _1159239592.logo_id )";
 		String expectedLogoJoinSQLServer1 = "car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) inner join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id )";
 		String expectedLogoJoinSQLServer2 = "[car_company] as __78874071 inner join [marque] as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join [lt_carco_logo] as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) inner join [companylogo] as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id )";
-		String expectedLogoJoinOracle = "car_company as \"__78874071\" inner join marque as \"__1997432637\" on(\" __78874071\".uid_carcompany = \"__1997432637\".fk_carcompany ) inner join lt_carco_logo as \"_1617907935\" on( \"__78874071\".uid_carcompany = \"_1617907935\".fk_car_company ) inner join companylogo as \"_1159239592\" on( \"__78874071\".uid_carcompany = \"_1159239592\".car_company_fk and \"_1617907935\".fk_company_logo = \"_1159239592\".logo_id )";
+		String expectedLogoJoinOracle = "car_company \"_78874071\" inner join marque \"_1997432637\" on( \"_1997432637\".fk_carcompany = \"_78874071\".uid_carcompany ) inner join lt_carco_logo \"1617907935\" on( \"1617907935\".fk_car_company = \"_78874071\".uid_carcompany ) inner join companylogo \"1159239592\" on( \"1159239592\".car_company_fk = \"_78874071\".uid_carcompany and \"1617907935\".fk_company_logo = \"1159239592\".logo_id )";
 		Assert.assertThat(testableSQL(ansiJoinClause.toString()),
 				anyOf(is(testableSQL(expectedLogoJoin)),
 						is(testableSQL(expectedLogoJoinSQLServer1)),
@@ -302,20 +302,21 @@ public class OuterJoinTest extends AbstractTest {
 		Assert.assertThat(testableSQL(sqlForQuery),
 				anyOf(
 						containsString(testableSQL("(__78874071.name) >= 'ford'")),
-						containsString(testableSQL("(__78874071.name) >= N'ford'")
-						)
+						containsString(testableSQL("(__78874071.name) >= N'ford'")),
+						containsString(testableSQL("\"_78874071\".name) >= 'ford'"))
 				)
 		);
 		Assert.assertThat(testableSQL(sqlForQuery),
 				anyOf(
 						containsString(testableSQL("(__78874071.name) <= 'toyota'")),
-						containsString(testableSQL("(__78874071.name) <= N'toyota'")
-						)
+						containsString(testableSQL("(__78874071.name) <= N'toyota'")),
+						containsString(testableSQL("(\"__78874071\".name) <= 'toyota'"))
 				)
 		);
 		Assert.assertThat(testableSQL(sqlForQuery),
 				anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
 						containsString(testableSQL("__1997432637.enabled = 1")),
+						containsString(testableSQL("\"__1997432637\".enabled = 1")),
 						containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
 						containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))")
 						)
@@ -325,11 +326,15 @@ public class OuterJoinTest extends AbstractTest {
 				allOf(
 						anyOf(
 								containsString(testableSQL("(__78874071.name) >= 'ford'")),
+								containsString(testableSQL("(\"__78874071\".name) >= 'ford'")),
 								containsString(testableSQL("(__78874071.name) >= N'ford'"))),
 						anyOf(
 								containsString(testableSQL("(__78874071.name) <= 'toyota'")),
+								containsString(testableSQL("(\"__78874071.name\") <= 'toyota'")),
 								containsString(testableSQL("(__78874071.name) <= N'toyota'"))),
-						anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
+						anyOf(
+								containsString(testableSQL("__1997432637.enabled = TRUE")),
+								containsString(testableSQL("\"__1997432637.enabled\" = TRUE")),
 								containsString(testableSQL("__1997432637.enabled = 1")),
 								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
 								containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))"))
