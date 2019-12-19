@@ -54,7 +54,6 @@ public class DBEncryptedTextTest extends AbstractTest {
 
 	@Test
 	public void testDBEncryptedString() throws SQLException, IncorrectPasswordException, CannotEncryptInputException, UnableToDecryptInput {
-		database.setPrintSQLBeforeExecuting(true);
 
 		EncryptedTextTestTable insertRow = new EncryptedTextTestTable();
 		String passphrase = "very secret phraseAAA!!!{}|!@#$%^&*()_+-=';:/?.,<>\"";
@@ -82,7 +81,6 @@ public class DBEncryptedTextTest extends AbstractTest {
 
 	@Test
 	public void testDBEncryptedStringEasyAPI() throws SQLException, IncorrectPasswordException, CannotEncryptInputException, UnableToDecryptInput {
-		database.setPrintSQLBeforeExecuting(true);
 
 		EncryptedTextTestTable insertRow = new EncryptedTextTestTable();
 		String passphrase = "very secret phraseAAA!!!{}|!@#$%^&*()_+-=';:/?.,<>\"";
