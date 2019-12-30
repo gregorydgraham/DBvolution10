@@ -141,10 +141,11 @@ public class JoinTest extends AbstractTest {
 
 		String expectedResult2
 				= "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company, statistic where (1=1) and (__1641109531.uidcompany = 234) and (__1641109531.fkstatistic2 = __77293264.stat2id)";
-
+		String expectedResultOracle = "select \"_1641109531\".uidcompany, \"_1641109531\".fkstatistic2, \"_77293264\".uidstatistic, \"_77293264\".stat2id from company, statistic where (1=1) and (\"_1641109531\".uidcompany = 234) and (\"_1641109531\".fkstatistic2 = \"_77293264\".stat2id)";
 		assertThat(testableSQLWithoutColumnAliases(generateSQLString),
 				isOneOf(testableSQLWithoutColumnAliases(expectedResult),
-						testableSQLWithoutColumnAliases(expectedResult2)));
+						testableSQLWithoutColumnAliases(expectedResult2),
+						testableSQLWithoutColumnAliases(expectedResultOracle)));
 	}
 
 	@DBTableName("Company")
