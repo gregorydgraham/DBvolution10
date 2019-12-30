@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -85,10 +84,32 @@ public class SeparatedString {
 	private SeparatedString() {
 	}
 
+	/**
+	 * Creates a new SeparatedString that starts with provided value.
+	 *
+	 * <p>
+	 * This adds a prefix to the separated string result. For instance
+	 * SeparatedString.byCommas().startsWith("LIST=").addAll("1","2","3") will
+	 * produce "LIST=1,2,3"</p>
+	 *
+	 * @param precedingString
+	 * @return a SeparatedString that will have precedingString at the beginning
+	 * of the output
+	 */
 	public static SeparatedString startsWith(String precedingString) {
 		return new SeparatedString().withPrefix(precedingString);
 	}
 
+	/**
+	 * Creates a SeparatedString for the map's keys and values.
+	 *
+	 * <p>
+	 * Remember to set the {@link #getKeyValueSeparator() key-value separator}</p>
+	 *
+	 * @param nameValuePairs
+	 * @param nameValueSeparator
+	 * @return a SeparatedString
+	 */
 	public static SeparatedString of(Map<String, String> nameValuePairs, String nameValueSeparator) {
 		ArrayList<String> list = new ArrayList<>();
 		nameValuePairs.entrySet().forEach((entry) -> {
@@ -103,10 +124,28 @@ public class SeparatedString {
 		}
 	}
 
+	/**
+	 * Creates a separated string with the provided values.
+	 *
+	 * <p>
+	 * SeparatedString.of("1","2","3").toString() will produce "1 2 3".
+	 *
+	 * @param allStrings
+	 * @return SeparatedString
+	 */
 	public static SeparatedString of(String... allStrings) {
 		return new SeparatedString().addAll(allStrings);
 	}
 
+	/**
+	 * Creates a separated string with the provided values.
+	 *
+	 * <p>
+	 * SeparatedString.of("1","2","3").toString() will produce "1 2 3".
+	 *
+	 * @param allStrings
+	 * @return SeparatedString
+	 */
 	public static SeparatedString of(List<String> allStrings) {
 		final SeparatedString separatedString = new SeparatedString();
 		if (allStrings != null) {
@@ -116,6 +155,17 @@ public class SeparatedString {
 		return separatedString;
 	}
 
+	/**
+	 * Creates a SeparatedString that will use the provided separator between
+	 * values.
+	 *
+	 * <p>
+	 * SeparatedString.forSeparator(",").addAll("1","2","3").toString() will
+	 * produce "1,2,3"</p>
+	 *
+	 * @param separator
+	 * @return
+	 */
 	public static SeparatedString forSeparator(String separator) {
 		return new SeparatedString().separatedBy(separator);
 	}
@@ -132,20 +182,22 @@ public class SeparatedString {
 	}
 
 	public static SeparatedString byCommas() {
+		return SeparatedString.forSeparator(",");
+	}
+
+	public static SeparatedString byCommaSpace() {
 		return SeparatedString.forSeparator(", ");
 	}
 
 	public static SeparatedString byCommasWithQuotedTermsAndBackslashEscape() {
-		return SeparatedString
-				.forSeparator(", ")
+		return byCommas()
 				.withWrapBefore("\"")
 				.withWrapAfter("\"")
 				.withEscapeChar("\\");
 	}
 
 	public static SeparatedString byCommasWithQuotedTermsAndDoubleBackslashEscape() {
-		return SeparatedString
-				.forSeparator(", ")
+		return byCommas()
 				.withWrapBefore("\"")
 				.withWrapAfter("\"")
 				.withEscapeChar("\\\\");
@@ -185,6 +237,14 @@ public class SeparatedString {
 		return this;
 	}
 
+	public List<String> decode(String str) {
+		return parseToList(str);
+	}
+
+	public String encode() {
+		return toString();
+	}
+
 	@Override
 	public String toString() {
 		final ArrayList<String> allTheElements = getStrings();
@@ -193,17 +253,33 @@ public class SeparatedString {
 		} else {
 			StringBuilder strs = new StringBuilder();
 			String sep = "";
-			Pattern matchBefore = Pattern.compile(getWrapBefore());
-			Pattern matchAfter = Pattern.compile(getWrapAfter());
-			Pattern matchEsc = Pattern.compile(getEscapeChar());
+
+			// I prefer using matcher to avoid all the char sequence stuff
+			// but that prevents using pipes and such
+			final String escCharStr = getEscapeChar();
+			final CharSequence escChrSequence = escCharStr.subSequence(0, escCharStr.length());
+			final CharSequence escChrEscSequence = (escCharStr + escCharStr).subSequence(0, escCharStr.length() * 2);
+
+			final String wrapBeforeStr = getWrapBefore();
+			final String wrapBeforeEscStr = escCharStr + wrapBeforeStr;
+			final CharSequence wrapBeforeSequence = wrapBeforeStr.subSequence(0, wrapBeforeStr.length());
+			final CharSequence wrapBeforeEscSequence = wrapBeforeEscStr.subSequence(0, wrapBeforeEscStr.length());
+
+			final String wrapAfterStr = getWrapAfter();
+			final String wrapAfterEscStr = escCharStr + wrapAfterStr;
+			final CharSequence wrapAfterSequence = wrapAfterStr.subSequence(0, wrapAfterStr.length());
+			final CharSequence wrapAfterEscSequence = wrapAfterEscStr.subSequence(0, wrapAfterEscStr.length());
+
 			String currentElement = "";
 			String firstElement = null;
 			for (String element : allTheElements) {
 				String str = element;
-				if (!escapeChar.equals("")) {
-					str = matchBefore.matcher(str).replaceAll(getEscapeChar() + getWrapBefore());
-					str = matchAfter.matcher(str).replaceAll(getEscapeChar() + getWrapAfter());
-					str = matchEsc.matcher(str).replaceAll(getEscapeChar() + getEscapeChar());
+				if (hasEscapeChar()) {
+					str = str.replace(escChrSequence, escChrEscSequence);
+					str = str.replace(wrapBeforeSequence, wrapBeforeEscSequence);
+					if (hasAsymetricWrapping()) {
+						str = str.replace(wrapAfterSequence, wrapAfterEscSequence);
+					}
 				}
 				currentElement = getWrapBefore() + str + getWrapAfter();
 				if (firstElement == null) {
@@ -405,24 +481,110 @@ public class SeparatedString {
 	}
 
 	public List<String> parseToList(String input) {
-		List<String> list = new ArrayList<>(0);
-		if (input != null) {
-			String str = input;
-			if (hasValue(getWrapBefore())) {
-				str = str.replaceFirst("^" + getWrapBefore(), "");
-			}
-			if (hasValue(getWrapAfter())) {
-				str = str.replaceAll(getWrapAfter() + "$", "");
-			}
-			if (str != null && !str.isEmpty()) {
-				String[] split = str.split(getSeparator());
-				final List<String> asList = Arrays.asList(split);
-				if (asList != null) {
-					list.addAll(asList);
-				}
-			}
+		List<String> output = new ArrayList<>();
+		if (input == null || input.isEmpty()) {
+			return output;
 		}
-		return list;
+		String line = input;
+		if (hasPrefix()) {
+			line = line.replaceAll("^" + getPrefix(), "");
+		}
+		if (hasSuffix()) {
+			line = line.replaceAll(getSuffix() + "$", "");
+		}
+		// we'll be scanning through the line so we need to collect the characters as we go
+		StringBuilder val = new StringBuilder();
+		// we'll need to keep track of what is happening
+		// firstly, are we inside a value?
+		boolean isInValue = false;
+		// secondly is the value in quotes?
+		boolean isInQuotes = false;
+		// finally, has an escape been started?
+		boolean isInEscape = false;
+		// some other things we're going to use
+		final boolean hasEscapeChar = this.hasEscapeChar();
+		final String escapeSeq = getEscapeChar();
+		boolean hasQuoting = this.hasWrapping();
+		final String quoteStart = getWrapBefore();
+		final String quoteEnd = getWrapAfter();
+		boolean quotesAreEqual = quoteStart.equals(quoteEnd);
+		final String separatorString = getSeparator();
+		// loop through all the characters
+		int i = 0;
+		//for (int i = 0; i < line.length(); i++) {
+		while (i < line.length()) {
+			// get the current character
+			char chr = line.charAt(i);
+			String str = line.substring(i);
+			// the escaped character is highest priority
+			if (isInEscape) {
+				// there is an escape in play so just add the character whatever it is
+				val.append(chr);
+				// only one character can be escaped so end the escape
+				isInEscape = false;
+			} else if (hasEscapeChar && str.startsWith(escapeSeq)) {
+				// having handeled escaped chars, a backslash must be the start of an escape sequence
+				isInEscape = true;
+				// move past the escape sequence but remember we'll increment at the end of the loop
+				i = i + escapeSeq.length() - 1;
+			} else if (hasQuoting && str.startsWith(quoteStart)) {
+				if (quotesAreEqual) {
+					// turn the quotes on and off as required
+					isInQuotes = !isInQuotes;
+				} else if (!isInQuotes) {
+					isInQuotes = true;
+				}
+				// move past the escape sequence but remember we'll increment at the end of the loop
+				i = i + quoteStart.length() - 1;
+			} else if (hasQuoting && str.startsWith(quoteEnd)) {
+				if (quotesAreEqual) {
+					// turn the quotes on and off as required
+					isInQuotes = !isInQuotes;
+				} else if (isInQuotes) {
+					isInQuotes = false;
+				}
+				// move past the escape sequence but remember we'll increment at the end of the loop
+				i = i + quoteEnd.length() - 1;
+			} else if (str.startsWith(separatorString)) {
+				// Comma MIGHT be the end of a value but we need to check first
+				if (isInQuotes) {
+					// Inside a quoted string, a comma is just another char
+					val.append(separatorString);
+				} else if (isInValue) {
+					// but in an unquoted value it is the end of the value
+					isInValue = false;
+					// and we need to add the value to the list
+					output.add(val.toString());
+					// and clear the val
+					val = new StringBuilder();
+				} else {
+					// edge case: we're not in a value but we found a comma so its an empty value
+					output.add("");
+				}
+				// Move past the separator
+				i = i + separatorString.length() - 1;
+			} else if (chr == ' ') {
+				// leading spaces are, generally, not part of the value
+				// so ensure we're inside a value before adding them
+				if (isInValue) {
+					val.append(chr);
+				}
+			} else {
+				// We've covered every case, so this must be part of a value
+				isInValue = true;
+				// so we need to append it to the value
+				val.append(chr);
+			}
+			i++;
+		}
+		// The last value doesn't have a terminator so we'll need to add it as well
+		// Note that this means all lines have at least one value even when they're empty
+		output.add(val.toString());
+		return output;
+	}
+
+	public String[] parseToArray(String input) {
+		return parseToList(input).toArray(new String[]{});
 	}
 
 	public Map<String, String> parseToMap(String input) {
@@ -430,13 +592,27 @@ public class SeparatedString {
 		if (input == null || input.isEmpty()) {
 			return map;
 		}
-		String[] split = input.split(getSeparator());
-		for (String string : split) {
-			String[] split2 = string.split(getKeyValueSeparator());
-			if (split2.length == 2) {
-				map.put(split2[0], split[1]);
-			} else if (split2.length == 1) {
-				map.put(split2[0], "");
+		List<String> parseList = parseToList(input);
+		if (parseList == null || parseList.isEmpty()) {
+			return map;
+		}
+		final String keyValueSep = getKeyValueSeparator();
+		if (keyValueSep.isEmpty()) {
+			for (String str : parseList) {
+				map.put(str, "");
+			}
+		} else {
+			for (String str : parseList) {
+				if (keyValueSep.isEmpty()) {
+					map.put(str, "");
+				} else {
+					String[] split = str.split(keyValueSep);
+					if (split.length == 2) {
+						map.put(split[0], split[1]);
+					} else if (split.length == 1) {
+						map.put(split[0], "");
+					}
+				}
 			}
 		}
 		return map;
@@ -446,7 +622,28 @@ public class SeparatedString {
 		return keyValueSeparator;
 	}
 
-	private boolean hasValue(String value) {
-		return value != null && !value.isEmpty();
+	private boolean hasEscapeChar() {
+		return !escapeChar.isEmpty();
+	}
+
+	private boolean hasWrapping() {
+		return !getWrapBefore().isEmpty()
+				|| !getWrapAfter().isEmpty();
+	}
+
+	private boolean hasPrefix() {
+		return !prefix.isEmpty();
+	}
+
+	private boolean hasSuffix() {
+		return !suffix.isEmpty();
+	}
+
+	private boolean hasSymetricWrapping() {
+		return prefix != null && prefix.equals(suffix);
+	}
+
+	private boolean hasAsymetricWrapping() {
+		return !hasSymetricWrapping();
 	}
 }
