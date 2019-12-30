@@ -40,11 +40,14 @@ public class UpdateTest extends AbstractTest {
 		final String testableQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4);");
 		final String testableSQLServerQueryString1 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);");
 		final String testableSQLServerQueryString2 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4);");
+		final String testableOracleQueryString = testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4)");
+		
 		Assert.assertThat(testableSQL(sqlForUpdate),
 				isOneOf(
 						testableQueryString,
 						testableSQLServerQueryString1,
-						testableSQLServerQueryString2
+						testableSQLServerQueryString2,
+						testableOracleQueryString
 				));
 //        marquesTable.update(insertedRow);
 		insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
@@ -64,11 +67,13 @@ public class UpdateTest extends AbstractTest {
 		final String updateQueryStr1 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4893059);");
 		final String updateQueryStr2 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4893059);");
 		final String updateQueryStr3 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4893059);");
+		final String updateQueryStrOracle = testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4893059)");
 		Assert.assertThat(testableSQL(sqlForUpdate),
 				isOneOf(
 						updateQueryStr1,
 						updateQueryStr2,
-						updateQueryStr3
+						updateQueryStr3,
+						updateQueryStrOracle
 				));
 		marquesTable.update(peugeot);
 		Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
