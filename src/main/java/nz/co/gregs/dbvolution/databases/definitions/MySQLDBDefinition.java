@@ -21,7 +21,6 @@ import com.vividsolutions.jts.io.WKTReader;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
