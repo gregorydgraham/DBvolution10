@@ -158,7 +158,9 @@ public abstract class DBDefinition implements Serializable {
 //				.add(date.getSecond(),((0.0+date.getNano())/1000000000.0))
 //				.add(tzSign,tzHour, tzMinutes);
 //		System.out.println(strings.toString());
-		return getLocalDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), "" + ((0.0 + date.getNano()) / 1000000000.0), tzSign, "" + tzHour, "" + tzMinutes);
+//		final String subsecond = "" + ((0.0 + date.getNano()) / 1000000000.0);
+		final String subsecond = "0."+String.format("%09d", date.getNano());
+		return getLocalDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), subsecond, tzSign, "" + tzHour, "" + tzMinutes);
 	}
 
 	/**
