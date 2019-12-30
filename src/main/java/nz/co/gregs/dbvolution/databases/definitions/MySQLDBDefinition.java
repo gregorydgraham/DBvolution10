@@ -101,9 +101,14 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		return " STR_TO_DATE("
-				+ doConcatTransform(years, "'-'", months, "'-'", days,
-						"' '", hours, "'-'", minutes, "'-'", "(" + seconds + "+" + subsecond + ")"
-						 //"' '", timeZoneSign, timeZoneHourOffset, timeZoneMinuteOffSet)//MySQL doesn't support time zones
+				+ doConcatTransform(
+						years,
+						"'-'", doLeftPadTransform(months, "0", "2"),
+						"'-'", doLeftPadTransform(days, "0", "2"),
+						"' '", doLeftPadTransform(hours, "0", "2"),
+						"'-'", doLeftPadTransform(minutes, "0", "2"),
+						"'-'", doTruncTransform("(" + seconds + "+" + subsecond + ")","6")
+				//"' '", timeZoneSign, timeZoneHourOffset, timeZoneMinuteOffSet)//MySQL doesn't support time zones
 				) + ", '%Y-%m-%d %H-%i-%s.%f') ";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
@@ -195,7 +200,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
 	}
-	
+
 	@Override
 	public String doInstantSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
@@ -756,7 +761,6 @@ public class MySQLDBDefinition extends DBDefinition {
 //				+ " DAY TO SECOND'";
 //		return intervalString;
 //	}
-
 	@Override
 	public boolean supportsDurationNatively() {
 		return false;
