@@ -64,13 +64,15 @@ public class DBActionListCreationTest extends AbstractTest {
 		final String standardUpdateSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
 		final String microsoftUpdateSQL = "UPDATE [MARQUE] SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
 		final String oracleUpdateSQL = "UPDATE OO1081299805 SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999";
+		final String oracleUpdateSQL2 = "update marque set uid_marque = 1 where uid_marque = 99999";
 		final String actualUpdateSQL = this.testableSQLWithoutColumnAliases(revertStrings.get(0));
 
 		Assert.assertThat(actualUpdateSQL,
 				anyOf(
 						is(this.testableSQLWithoutColumnAliases(standardUpdateSQL)),
 						is(this.testableSQLWithoutColumnAliases(microsoftUpdateSQL)),
-						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL))
+						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL)),
+						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL2))
 				));
 	}
 
