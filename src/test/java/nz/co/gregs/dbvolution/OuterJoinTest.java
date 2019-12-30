@@ -310,7 +310,8 @@ public class OuterJoinTest extends AbstractTest {
 				anyOf(
 						containsString(testableSQL("(__78874071.name) <= 'toyota'")),
 						containsString(testableSQL("(__78874071.name) <= N'toyota'")),
-						containsString(testableSQL("(\"__78874071\".name) <= 'toyota'"))
+						containsString(testableSQL("(\"__78874071\".name) <= 'toyota'")),
+						containsString(testableSQL("(\"_78874071\".name) <= 'toyota'"))
 				)
 		);
 		Assert.assertThat(testableSQL(sqlForQuery),
@@ -327,10 +328,12 @@ public class OuterJoinTest extends AbstractTest {
 						anyOf(
 								containsString(testableSQL("(__78874071.name) >= 'ford'")),
 								containsString(testableSQL("(\"__78874071\".name) >= 'ford'")),
+								containsString(testableSQL("(\"_78874071\".name) >= 'ford'")),
 								containsString(testableSQL("(__78874071.name) >= N'ford'"))),
 						anyOf(
 								containsString(testableSQL("(__78874071.name) <= 'toyota'")),
 								containsString(testableSQL("(\"__78874071.name\") <= 'toyota'")),
+								containsString(testableSQL("(\"_78874071.name\") <= 'toyota'")),
 								containsString(testableSQL("(__78874071.name) <= N'toyota'"))),
 						anyOf(
 								containsString(testableSQL("__1997432637.enabled = TRUE")),
