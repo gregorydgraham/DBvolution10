@@ -106,7 +106,7 @@ import org.apache.commons.logging.LogFactory;
  * @author gregorygraham
  */
 public class DBDatabaseCluster extends DBDatabase {
-	
+
 	static final private Log LOG = LogFactory.getLog(DBDatabaseCluster.class);
 
 	private static final long serialVersionUID = 1l;
@@ -117,7 +117,7 @@ public class DBDatabaseCluster extends DBDatabase {
 //	private final SettingsBuilder urlProcessor = new DBDatabaseClusterSettingsBuilder();
 
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
-		this(builder.getDatabaseName(),new Configuration(builder.getAutoRebuild(), builder.getAutoReconnect()));
+		this(builder.getDatabaseName(), new Configuration(builder.getAutoRebuild(), builder.getAutoReconnect()));
 	}
 
 	/**
@@ -1267,6 +1267,21 @@ public class DBDatabaseCluster extends DBDatabase {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public boolean supportsDifferenceBetweenNullAndEmptyString() {
+//		boolean result = true;
+//		for (DBDatabase db : getDatabases()) {
+//			result = result && db.supportsDifferenceBetweenNullAndEmptyString();
+//			if (result == false) {
+//				details.setSupportsDifferenceBetweenNullAndEmptyString(result);
+//				return result;
+//			}
+//		}
+//		details.setSupportsDifferenceBetweenNullAndEmptyString(result);
+//		return result;
+		return details.getSupportsDifferenceBetweenNullAndEmptyString();
 	}
 
 	private void addActionToQueue(DBAction action) {

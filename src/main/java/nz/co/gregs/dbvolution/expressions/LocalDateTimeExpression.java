@@ -2609,7 +2609,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return a ISO formatted version of this date
 	 */
 	public StringExpression stringResultISOFormat() {
-		StringExpression isoFormatLocalDateTimeTime = new StringExpression("")
+		StringExpression isoFormatLocalDateTimeTime = value("")
 				.append(this.year())
 				.append("-")
 				.append(this.month())
@@ -2638,7 +2638,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return a USA formatted version of this date
 	 */
 	public StringExpression stringResultUSAFormat() {
-		StringExpression usaFormatLocalDateTimeTime = new StringExpression("")
+		StringExpression usaFormatLocalDateTimeTime = value("")
 				.append(this.month())
 				.append("-")
 				.append(this.day())
@@ -2668,7 +2668,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * around the world
 	 */
 	public StringExpression stringResultCommonFormat() {
-		StringExpression commonFormatLocalDateTimeTime = new StringExpression("")
+		StringExpression commonFormatLocalDateTimeTime = value("")
 				.append(this.day())
 				.append("-")
 				.append(this.month())

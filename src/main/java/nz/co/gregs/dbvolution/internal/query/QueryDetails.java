@@ -415,7 +415,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
 				final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
 				StringBuilder whereClause = new StringBuilder(initialWhereClause);
-				StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
+				final StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
 				String havingClause;
 				String lineSep = System.getProperty("line.separator");
 
@@ -612,15 +612,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 					if (queryType == QueryType.REVERSESELECT) {
 						selectClause = new StringBuilder(getSelectSQLClause());
 					}
-					String groupByClauseFinal = "";
-					if (isGroupedQuery() && groupByIsRequired) {
-						if (useColumnIndexGroupBy) {
-							groupByClauseFinal = groupByColumnIndex;
-						} else {
-							groupByClauseFinal = groupByClause.toString() + lineSep;
-						}
+					OrderByClause orderByClause = getOrderByClause(queryState, defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
+					for (String str : orderByClause.getGroupByClauses()) {
+						groupByClause.append(groupByColSep).append(str);
+						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 					}
-					String orderByClauseFinal = getOrderByClause(queryState, defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
+					String orderByClauseFinal = orderByClause.getOrderByClause();
 					if (!orderByClauseFinal.trim().isEmpty()) {
 						orderByClauseFinal += lineSep;
 						queryState.setHasBeenOrdered(true);
@@ -630,6 +627,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 					havingClause = getHavingClause(database, options);
 					if (!havingClause.trim().isEmpty()) {
 						havingClause += lineSep;
+					}
+					String groupByClauseFinal = "";
+					if (isGroupedQuery() && groupByIsRequired) {
+						if (useColumnIndexGroupBy) {
+							groupByClauseFinal = groupByColumnIndex;
+						} else {
+							groupByClauseFinal = groupByClause.toString() + lineSep;
+						}
 					}
 					sqlString = defn.doWrapQueryForPaging(
 							selectClause.append(lineSep)
@@ -832,7 +837,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return sqlToReturn.toString();
 	}
 
-	private synchronized String getOrderByClause(QueryState state, DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
+	private synchronized OrderByClause getOrderByClause(QueryState state, DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
+		OrderByClause clause = new OrderByClause();
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			state.setHasBeenOrdered(true);
@@ -841,6 +847,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 //			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (SortProvider sorter : sortOrderColumns) {
 				if (!sorter.isWindowingFunction() || defn.supportsWindowingFunctionsInTheOrderByClause()) {
+					clause.addGroupByClauses(sorter.getGroupByClauses(defn));
 					if (sorter.hasQueryColumn()) {
 						orderByClause.add(defn.transformToSortableType(sorter).toSQLString(defn));
 //						orderByClause.append(sortSeparator).append(defn.transformToStorableType(sorter).toSQLString(defn));
@@ -887,11 +894,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 					.withSuffix(defn.endOrderByClause())
 					.useWhenEmpty("");
 //				orderByClause.insert(0, defn.beginOrderByClause()).append(defn.endOrderByClause());
-			return orderByClause.toString();
+			clause.setOrderByClause(orderByClause);
 //			}
 		}
 
-		return "";
+		return clause;
 	}
 
 	private synchronized String getHavingClause(DBDatabase database, QueryOptions options) {
@@ -1141,8 +1148,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 		} catch (Throwable e) {
 			StackTraceElement[] trace = e.getStackTrace();
-			System.out.println(""+e.getMessage());
-			System.out.println(""+e.getLocalizedMessage());
+			System.out.println("" + e.getMessage());
+			System.out.println("" + e.getLocalizedMessage());
 			System.out.println("" + trace[0]);
 			System.out.println("" + trace[1]);
 			System.out.println("" + trace[2]);
@@ -1513,6 +1520,39 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	public String getLabel() {
 		return this.label;
+	}
+
+	private static class OrderByClause {
+
+		String orderByClause = "";
+		private final List<String> groupByClauses = new ArrayList<>();
+
+		public OrderByClause() {
+		}
+
+		String getOrderByClause() {
+			return orderByClause;
+		}
+
+		List<String> getGroupByClauses() {
+			return groupByClauses;
+		}
+
+		void addGroupByClause(String clause) {
+			groupByClauses.add(clause);
+		}
+
+		void addGroupByClauses(List<String> clauses) {
+			groupByClauses.addAll(clauses);
+		}
+
+		void setOrderByClause(String clause) {
+			orderByClause = clause;
+		}
+
+		void setOrderByClause(SeparatedString clause) {
+			orderByClause = clause.toString();
+		}
 	}
 
 }

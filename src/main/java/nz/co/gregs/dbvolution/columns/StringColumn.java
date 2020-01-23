@@ -90,7 +90,11 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		return column.toSQLString(db);
+		if (db.requiredToProduceEmptyStringsForNull()&&db.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
+			return db.convertNullToEmptyString(column.toSQLString(db));
+		} else {
+			return column.toSQLString(db);
+		}
 	}
 
 	@Override

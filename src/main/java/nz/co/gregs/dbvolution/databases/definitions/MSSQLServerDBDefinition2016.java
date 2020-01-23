@@ -1201,7 +1201,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
 		return doStringAccumulateTransform(
 					columnToAccumulate.toSQLString(this),
-					separator.toSQLString(this),
+					separator.getInnerResult().toSQLString(this), // separator needs to be a literal for SQLServer
 					orderBy.toSQLString(this),
 					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
 			);

@@ -28,7 +28,9 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -71,6 +73,10 @@ public class SortProvider implements DBExpression {
 	private AbstractColumn innerColumn = null;
 	protected Ordering direction = Ordering.UNDEFINED;
 	protected OrderOfNulls nullsOrdering = OrderOfNulls.UNDEFINED;
+
+	public List<String> getGroupByClauses(DBDefinition defn) {
+		return new ArrayList<>();
+	}
 
 	public static enum Ordering {
 		ASCENDING,
@@ -289,6 +295,20 @@ public class SortProvider implements DBExpression {
 		return exprSQL;
 	}
 
+	protected boolean usesEmptyStringForNull(DBDefinition defn) {
+		if (hasQueryColumn()) {
+			final Object queryColumn1 = getQueryColumn().asExpressionColumn();
+			return (queryColumn1 instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
+		} else if (hasInnerExpression()) {
+			AnyExpression<?, ?, ?> expr = getInnerExpression();
+			return (expr instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
+		} else if (hasColumn()) {
+			DBExpression expr = getColumn().asExpression();
+			return (expr instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
+		}
+		return false;
+	}
+
 	public boolean hasInnerExpression() {
 		return getInnerExpression() != null || getColumn().hasExpression();
 	}
@@ -429,9 +449,9 @@ public class SortProvider implements DBExpression {
 				return defn.getTrueOperation();
 			} else {
 				String sortingSQL;
-				if (defn.supportsNullsOrderingStandard()) {
+				if (!defn.requiredToProduceEmptyStringsForNull() && defn.supportsNullsOrderingStandard()) {
 					// The standard "mycolumn ASC NULLS LAST" sort
-					sortingSQL = exprSQL + getSortDirectionSQL(defn) + " " + getNullsOrderingStandardSQL(defn);
+					sortingSQL = getNullsOrderingNativeSQL(exprSQL, defn);
 				} else {
 					// The hacky "isnull(mycolumn, 1, 0) ASC, mycolumn ASC" alternative
 					sortingSQL = getNullsOrderingSimulatedSQL(defn) + ", " + exprSQL + " " + getSortDirectionSQL(defn);
@@ -440,21 +460,63 @@ public class SortProvider implements DBExpression {
 			}
 		}
 
+		@Override
+		public List<String> getGroupByClauses(DBDefinition defn) {
+			List<String> listOfClauses = new ArrayList<>();
+			String exprSQL = getExpressionSQL(defn);
+			if (exprSQL == null || exprSQL.isEmpty()) {
+				;
+			} else {
+				if (!defn.requiredToProduceEmptyStringsForNull() && defn.supportsNullsOrderingStandard()) {
+					// The standard "mycolumn ASC NULLS LAST" sort
+					;
+				} else {
+					// The hacky "isnull(mycolumn, 1, 0) ASC, mycolumn ASC" alternative
+					final String nullsOrderingSimulatedSQL = getNullsOrderingSimulatedSQLExpression(defn)
+							+ "/*SortProvider.getGroupByClauses*/";
+					listOfClauses.add(nullsOrderingSimulatedSQL);
+				}
+			}
+			return listOfClauses;
+		}
+
+		private String getNullsOrderingNativeSQL(String exprSQL, DBDefinition defn) {
+			return exprSQL + getSortDirectionSQL(defn) + " " + getNullsOrderingStandardSQL(defn);
+		}
+
 		protected abstract String getNullsOrderingStandardSQL(DBDefinition defn);
 
 		protected final String simulateNullsFirst(DBDefinition defn) {
-			return defn.doIfThenElseTransform(getExpressionSQL(defn) + " IS NULL", "0", "1")
-					+ " "
-					+ defn.getOrderByAscending();
+				return getNullsOrderingSimulatedSQLForNullsFirst(defn)
+						+ " "
+						+ defn.getOrderByAscending();
+		}
+
+		protected String getNullsOrderingSimulatedSQLForNullsFirst(DBDefinition defn) {
+			if (usesEmptyStringForNull(defn)) {
+				return defn.doIfEmptyStringThenElse(getExpressionSQL(defn), "0", "1");
+			} else {
+				return defn.doIfThenElseTransform(defn.doIsNullTransform(getExpressionSQL(defn)), "0", "1");
+			}
 		}
 
 		protected final String simulateNullsLast(DBDefinition defn) {
-			return defn.doIfThenElseTransform(getExpressionSQL(defn) + " IS NULL", "1", "0")
-					+ " "
-					+ defn.getOrderByAscending();
+				return getNullsOrderingSimulatedSQLForNullsLast(defn)
+						+ " "
+						+ defn.getOrderByAscending();
+		}
+
+		protected String getNullsOrderingSimulatedSQLForNullsLast(DBDefinition defn) {
+			if (usesEmptyStringForNull(defn)) {
+				return defn.doIfEmptyStringThenElse(getExpressionSQL(defn), "1", "0");
+			} else {
+				return defn.doIfThenElseTransform(defn.doIsNullTransform(getExpressionSQL(defn)), "1", "0");
+			}
 		}
 
 		abstract String getNullsOrderingSimulatedSQL(DBDefinition defn);
+
+		abstract String getNullsOrderingSimulatedSQLExpression(DBDefinition defn);
 	}
 
 	public static class NullsLast extends NullsOrderer {
@@ -471,6 +533,11 @@ public class SortProvider implements DBExpression {
 		@Override
 		String getNullsOrderingSimulatedSQL(DBDefinition defn) {
 			return simulateNullsLast(defn);
+		}
+
+		@Override
+		String getNullsOrderingSimulatedSQLExpression(DBDefinition defn) {
+			return getNullsOrderingSimulatedSQLForNullsLast(defn);
 		}
 	}
 
@@ -490,6 +557,10 @@ public class SortProvider implements DBExpression {
 			return simulateNullsFirst(defn);
 		}
 
+		@Override
+		String getNullsOrderingSimulatedSQLExpression(DBDefinition defn) {
+			return getNullsOrderingSimulatedSQLForNullsFirst(defn);
+		}
 	}
 
 	private static class NullsHighest extends NullsOrderer {
@@ -522,6 +593,18 @@ public class SortProvider implements DBExpression {
 			}
 		}
 
+		@Override
+		String getNullsOrderingSimulatedSQLExpression(DBDefinition defn) {
+			switch (getOrdering()) {
+				case ASCENDING:
+					return getNullsOrderingSimulatedSQLForNullsLast(defn);
+				case DESCENDING:
+					return getNullsOrderingSimulatedSQLForNullsFirst(defn);
+				default:
+					return getNullsOrderingSimulatedSQLForNullsLast(defn);
+			}
+		}
+
 	}
 
 	private static class NullsLowest extends NullsOrderer {
@@ -551,6 +634,18 @@ public class SortProvider implements DBExpression {
 					return simulateNullsLast(defn);
 				default:
 					return simulateNullsFirst(defn);
+			}
+		}
+
+		@Override
+		String getNullsOrderingSimulatedSQLExpression(DBDefinition defn) {
+			switch (getOrdering()) {
+				case ASCENDING:
+					return getNullsOrderingSimulatedSQLForNullsFirst(defn);
+				case DESCENDING:
+					return getNullsOrderingSimulatedSQLForNullsLast(defn);
+				default:
+					return getNullsOrderingSimulatedSQLForNullsFirst(defn);
 			}
 		}
 	}

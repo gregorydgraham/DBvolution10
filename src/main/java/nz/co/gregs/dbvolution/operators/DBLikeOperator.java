@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import static nz.co.gregs.dbvolution.expressions.AnyExpression.value;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -40,7 +41,7 @@ public class DBLikeOperator extends DBOperator {
 	 * @param likeableValue
 	 */
 	public DBLikeOperator(String likeableValue) {
-		super(likeableValue == null ? null : new StringExpression(likeableValue));
+		super(likeableValue == null ? null : value(likeableValue));
 	}
 
 	/**

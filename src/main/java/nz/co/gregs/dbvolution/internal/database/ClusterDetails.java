@@ -79,6 +79,7 @@ public class ClusterDetails implements Serializable {
 	private String clusterName = "NotDefined";
 	private boolean useAutoRebuild = false;
 	private boolean autoreconnect = false;
+	private boolean supportsDifferenceBetweenNullAndEmptyString = false;
 
 	public ClusterDetails(String clusterName) {
 		this();
@@ -94,6 +95,12 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public final synchronized boolean add(DBDatabase database) {
+		boolean result = getSupportsDifferenceBetweenNullAndEmptyString() && database.supportsDifferenceBetweenNullAndEmptyString();
+		if (result == false) {
+			setSupportsDifferenceBetweenNullAndEmptyString(result);
+			database.getDefinition().setRequiredToProduceEmptyStringsForNull(result);
+		}
+
 		if (clusterContainsDatabase(database)) {
 			readyDatabases.remove(database);
 			pausedDatabases.remove(database);
@@ -407,5 +414,14 @@ public class ClusterDetails implements Serializable {
 
 	public boolean hasAuthoritativeDatabase() {
 		return this.getAuthoritativeDatabaseConnectionSettings() != null;
+	}
+
+	public synchronized void setSupportsDifferenceBetweenNullAndEmptyString(boolean result) {
+		supportsDifferenceBetweenNullAndEmptyString = result;
+		allDatabases.forEach((db) -> db.getDefinition().setRequiredToProduceEmptyStringsForNull(!result));
+	}
+
+	public synchronized boolean getSupportsDifferenceBetweenNullAndEmptyString() {
+		return supportsDifferenceBetweenNullAndEmptyString;
 	}
 }

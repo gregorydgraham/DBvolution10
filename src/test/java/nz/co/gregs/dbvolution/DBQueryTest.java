@@ -237,12 +237,14 @@ public class DBQueryTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
 		try {
 			marqueQuery.ignoreForeignKeys(wrongMarque.carCompany, wrongMarque.carCompany);
-			throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+			Assert.fail(IncorrectRowProviderInstanceSuppliedException.class.getSimpleName()
+					+" should have been thrown");
 		} catch (IncorrectRowProviderInstanceSuppliedException wrongDBRowEx) {
 		}
 		marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
+		Assert.assertThat(rows.size(), is(0));
 	}
 
 	@Test
@@ -254,12 +256,14 @@ public class DBQueryTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
 		try {
 			marqueQuery.ignoreForeignKeys(marqueQuery.column(wrongMarque.carCompany), marqueQuery.column(wrongMarque.carCompany));
-			throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+			Assert.fail(IncorrectRowProviderInstanceSuppliedException.class.getSimpleName()
+					+" should have been thrown");
 		} catch (IncorrectRowProviderInstanceSuppliedException wrongDBRowEx) {
 		}
 		marqueQuery.ignoreForeignKeys(marqueQuery.column(marqueQuery.carCompany), marqueQuery.column(marqueQuery.carCompany));
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
+		Assert.assertThat(rows.size(), is(0));
 	}
 
 	@Test

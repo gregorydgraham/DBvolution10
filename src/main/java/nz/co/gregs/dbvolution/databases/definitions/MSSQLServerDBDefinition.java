@@ -138,7 +138,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
 			}
 		}
-		return selectableName;
+		return super.doColumnTransformForSelect(qdt, selectableName);
+//		return selectableName;
 	}
 
 	@Override
@@ -1457,7 +1458,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 //				+ " DAY(18) TO SECOND(9)'";
 //		return intervalString;
 //	}
-	
 	@Override
 	public boolean supportsDurationNatively() {
 		return false;

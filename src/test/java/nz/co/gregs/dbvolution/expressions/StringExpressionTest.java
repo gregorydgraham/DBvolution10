@@ -156,7 +156,7 @@ public class StringExpressionTest extends AbstractTest {
 
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(20, rowsByExample.size());
 		} else {
 			Assert.assertEquals(1, rowsByExample.size());

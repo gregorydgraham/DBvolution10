@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import net.sourceforge.tedhi.DateRange;
 import net.sourceforge.tedhi.FlexibleDateFormat;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -144,13 +145,29 @@ public class DBDatabaseGetTest extends AbstractTest {
 	public void testIsNull() throws SQLException {
 		Marque literalQuery = new Marque();
 		literalQuery.individualAllocationsAllowed.permittedValues((Object) null);
+		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> gotMarques = database.get(literalQuery);
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		database.setPrintSQLBeforeExecuting(false);
+		/*if (database instanceof DBDatabaseCluster) {
+			Assert.assertThat(
+					gotMarques.size(),
+					isOneOf(
+							2,
+							21
+					)
+			);
+		} else*/ if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(2, gotMarques.size());
 		} else {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
 		}
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		/*if (database instanceof DBDatabaseCluster) {
+			Assert.assertEquals(
+					true,
+					gotMarques.get(0).individualAllocationsAllowed.isNull()
+					|| gotMarques.get(0).individualAllocationsAllowed.getValue().isEmpty()
+			);
+		} else*/ if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
 		} else {
 			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.getValue().isEmpty());
@@ -159,10 +176,22 @@ public class DBDatabaseGetTest extends AbstractTest {
 
 	@Test
 	public void testIsNotNull() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
 		Marque literalQuery = new Marque();
 		literalQuery.individualAllocationsAllowed.excludedValues((String) null);
 		List<Marque> gotMarques = database.get(literalQuery);
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		database.setPrintSQLBeforeExecuting(false);
+		
+		/*if (database instanceof DBDatabaseCluster) {
+			Assert.assertThat(
+					gotMarques.size(),
+					isOneOf(
+							20,
+							1
+					)
+			);
+		} else*/
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 2);
 		} else {
 			Assert.assertEquals(1, gotMarques.size());

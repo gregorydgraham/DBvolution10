@@ -2460,6 +2460,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return true;
 	}
 
+	public boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return getDefinition().canProduceNullStrings(); //getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
+	}
+
 	public static enum ResponseToException {
 		REPLACECONNECTION(),
 		REQUERY(),

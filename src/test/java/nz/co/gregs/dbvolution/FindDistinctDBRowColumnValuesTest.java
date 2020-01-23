@@ -107,7 +107,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	public void testDBRowMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
 		List<DBString> distinctValuesForColumn = marque.getDistinctValuesOfColumn(database, marque.individualAllocationsAllowed);
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));
 		} else {
 			Assert.assertThat(distinctValuesForColumn.size(), is(2));
@@ -148,7 +148,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 			}
 			foundStrings.add((val.toString()));
 		}
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));
 			Assert.assertThat(foundStrings.size(), is(3));
 			Assert.assertThat(foundStrings.get(0), is(""));
@@ -174,7 +174,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 						.setBlankQueryAllowed(true)
 						.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
 
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(3));
 			Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(marque).isEmptyRow(), is(true));
 			Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque), notNullValue());

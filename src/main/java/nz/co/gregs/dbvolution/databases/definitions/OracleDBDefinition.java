@@ -779,7 +779,7 @@ public class OracleDBDefinition extends DBDefinition {
 	 * @return FALSE.
 	 */
 	@Override
-	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+	public Boolean supportsDifferenceBetweenNullAndEmptyStringNatively() {
 		return false;
 	}
 

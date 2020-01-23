@@ -136,7 +136,7 @@ public class SortingTest extends AbstractTest {
 				).getAllRows();
 		Assert.assertThat(allRows.size(), is(22));
 
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is(""));
 			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), is(""));
 			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
@@ -197,7 +197,7 @@ public class SortingTest extends AbstractTest {
 				).getAllRows();
 		Assert.assertThat(allRows.size(), is(22));
 
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), nullValue());
 			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), nullValue());
 			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
@@ -258,7 +258,7 @@ public class SortingTest extends AbstractTest {
 				).getAllRows();
 		Assert.assertThat(allRows.size(), is(22));
 
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), nullValue());
 			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), nullValue());
 			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is("Y"));
@@ -319,7 +319,7 @@ public class SortingTest extends AbstractTest {
 				).getAllRows();
 		Assert.assertThat(allRows.size(), is(22));
 
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), nullValue());
 			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), nullValue());
 			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));

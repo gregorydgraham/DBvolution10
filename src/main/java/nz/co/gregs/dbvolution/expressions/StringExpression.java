@@ -117,19 +117,20 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		stringNullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
 	}
 
-	/**
-	 * Creates a StringExpression from an arbitrary String object.
-	 *
-	 * <p>
-	 * Essentially the same as {@link StringExpression#value(java.lang.String) }
-	 *
-	 * @param stringVariable	stringVariable
-	 */
-	public StringExpression(String stringVariable) {
-		super(new DBString(stringVariable));
-		stringNullProtectionRequired = stringVariable == null || stringVariable.isEmpty();
-	}
-
+//	/**
+//	 * Creates a StringExpression from an arbitrary String object.
+//	 * 
+//	 * <p>Use {@link StringValue} instead.</p>
+//	 *
+//	 * <p>
+//	 * Essentially the same as {@link StringExpression#value(java.lang.String) }
+//	 *
+//	 * @param stringVariable	stringVariable
+//	 */
+//	protected StringExpression(String stringVariable) {
+//		super(new DBString(stringVariable));
+//		stringNullProtectionRequired = stringVariable == null || stringVariable.isEmpty();
+//	}
 	/**
 	 * Creates a StringExpression from an arbitrary DBString object.
 	 *
@@ -352,7 +353,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	@Override
 	public StringExpression expression(String string) {
-		return new StringExpression(string);
+		return new StringLiteral(string);
 	}
 
 	/**
@@ -451,7 +452,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * StringExpression resolves to NULL.
 	 */
 	public StringExpression ifDBNull(String alternative) {
-		return this.ifDBNull(new StringExpression(alternative));
+		return this.ifDBNull(StringExpression.value(alternative));
 	}
 
 	/**
@@ -2015,7 +2016,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a StringExpression.
 	 */
 	public StringExpression replace(String findString, String replaceWith) {
-		return this.replace(new StringExpression(findString), new StringExpression(replaceWith));
+		return this.replace(StringExpression.value(findString), StringExpression.value(replaceWith));
 	}
 
 	/**
@@ -3462,7 +3463,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.getNull();
+			if (db.requiredToProduceEmptyStringsForNull()) {
+				return db.getEmptyString();
+			} else {
+				return db.getNull();
+			}
 		}
 
 		@Override

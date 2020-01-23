@@ -21,6 +21,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -82,6 +83,7 @@ public class AbstractColumn implements DBExpression, Serializable {
 
 	@Override
 	public String toSQLString(DBDefinition db) {
+		String result = "";
 		RowDefinition rowDefn = this.getRowDefinition();
 		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
 			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
@@ -90,7 +92,7 @@ public class AbstractColumn implements DBExpression, Serializable {
 			for (DBExpression columnExpression : columnExpressions) {
 				toSQLString.append(columnExpression.toSQLString(db));
 			}
-			return toSQLString.toString();
+			result = toSQLString.toString();
 		} else {
 			String formattedColumnName = "";
 			if (useTableAlias) {
@@ -99,8 +101,12 @@ public class AbstractColumn implements DBExpression, Serializable {
 				DBRow dbRow = (DBRow) rowDefn;
 				formattedColumnName = db.formatTableAndColumnName(dbRow, propertyWrapper.columnName());
 			}
-			return propertyWrapper.getPropertyWrapperDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
+			result = propertyWrapper.getPropertyWrapperDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
 		}
+		if ((field instanceof DBString) && (db.requiredToProduceEmptyStringsForNull() && db.supportsDifferenceBetweenNullAndEmptyStringNatively())) {
+			result = db.convertNullToEmptyString(result);
+		}
+		return result;
 	}
 
 	public boolean hasExpression() {
@@ -303,8 +309,12 @@ public class AbstractColumn implements DBExpression, Serializable {
 
 	@Override
 	public String createSQLForFromClause(DBDatabase database) {
-		return toSQLString(database.getDefinition());
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		DBDefinition defn = database.getDefinition();
+		String result = toSQLString(database.getDefinition());
+		if ((field instanceof DBString) && (defn.requiredToProduceEmptyStringsForNull() && defn.supportsDifferenceBetweenNullAndEmptyStringNatively())) {
+			result = defn.convertNullToEmptyString(result);
+		}
+		return result;
 	}
 
 	@Override

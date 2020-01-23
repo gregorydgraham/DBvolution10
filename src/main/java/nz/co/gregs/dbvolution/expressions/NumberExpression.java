@@ -2805,7 +2805,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public StringExpression choose(String... stringsToChooseFrom) {
 		List<StringResult> strResult = new ArrayList<>();
 		for (String str : stringsToChooseFrom) {
-			strResult.add(new StringExpression(str));
+			strResult.add(value(str));
 		}
 		return choose(strResult.toArray(new StringResult[]{}));
 	}
@@ -2859,7 +2859,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public StringExpression chooseWithDefault(String... stringsToChooseFrom) {
 		List<StringResult> strResult = new ArrayList<>();
 		for (String str : stringsToChooseFrom) {
-			strResult.add(new StringExpression(str));
+			strResult.add(value(str));
 		}
 		return chooseWithDefault(strResult.toArray(new StringResult[]{}));
 	}

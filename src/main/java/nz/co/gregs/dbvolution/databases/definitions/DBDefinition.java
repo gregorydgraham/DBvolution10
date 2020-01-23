@@ -65,6 +65,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
@@ -159,7 +160,7 @@ public abstract class DBDefinition implements Serializable {
 //				.add(tzSign,tzHour, tzMinutes);
 //		System.out.println(strings.toString());
 //		final String subsecond = "" + ((0.0 + date.getNano()) / 1000000000.0);
-		final String subsecond = "0."+String.format("%09d", date.getNano());
+		final String subsecond = "0." + String.format("%09d", date.getNano());
 		return getLocalDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), subsecond, tzSign, "" + tzHour, "" + tzMinutes);
 	}
 
@@ -4054,6 +4055,14 @@ public abstract class DBDefinition implements Serializable {
 		return "(CASE WHEN " + booleanTest + " THEN " + thenResult + " ELSE " + elseResult + " END)";
 	}
 
+	public String doIfEmptyStringThenElse(String expressionSQL, String ifResult, String thenResult) {
+		return doIfThenElseTransform("(" + expressionSQL + " = " + getEmptyString() + ")", ifResult, thenResult);
+	}
+
+	public String doIfNullThenElse(String expressionSQL, String ifResult, String thenResult) {
+		return doIfThenElseTransform("(" + expressionSQL + " IS NULL)", ifResult, thenResult);
+	}
+
 	/**
 	 * Extracts the weekday from the date provided as a number from 1 to 7.
 	 *
@@ -4254,7 +4263,11 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
-		return selectableName;
+		String result = selectableName;
+		if ((qdt instanceof DBString) && (requiredToProduceEmptyStringsForNull() && supportsDifferenceBetweenNullAndEmptyStringNatively())) {
+			result = convertNullToEmptyString(result);
+		}
+		return result;
 	}
 
 	/**
@@ -6444,7 +6457,7 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * @return FALSE.
 	 */
-	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+	public Boolean supportsDifferenceBetweenNullAndEmptyStringNatively() {
 		return true;
 	}
 
@@ -6861,5 +6874,28 @@ public abstract class DBDefinition implements Serializable {
 
 	public int getParseDurationPartOffset() {
 		return 1;
+	}
+
+	boolean requiredToProduceEmptyStringsForNull = false;
+
+	public final boolean requiredToProduceEmptyStringsForNull() {
+		return requiredToProduceEmptyStringsForNull;
+	}
+
+	public final void setRequiredToProduceEmptyStringsForNull(boolean required) {
+		requiredToProduceEmptyStringsForNull = required;
+	}
+
+	public final boolean canProduceNullStrings() {
+		return supportsDifferenceBetweenNullAndEmptyStringNatively()
+				&& !requiredToProduceEmptyStringsForNull();
+	}
+
+	public String convertNullToEmptyString(String toSQLString) {
+		return this.doStringIfNullTransform(toSQLString, this.getEmptyString());
+	}
+
+	public String doIsNullTransform(String expressionSQL) {
+		return expressionSQL + " IS NULL ";
 	}
 }

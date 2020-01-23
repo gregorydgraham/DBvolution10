@@ -79,7 +79,7 @@ public class DBUntypedValue extends QueryableDatatype<Object> implements StringR
 	@Override
 	protected String getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
+		if (!database.canProduceNullStrings()) {
 			if (gotString != null && gotString.isEmpty()) {
 				return null;
 			}

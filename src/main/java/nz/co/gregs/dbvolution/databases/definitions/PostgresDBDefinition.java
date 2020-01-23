@@ -572,7 +572,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return "(" + selectableName + ") at time zone 'UTC'";
 //			return "to_char((" + selectableName + ") at time zone 'UTC', 'YYYY-MM-DD HH:MI:SS.US')";
 		} else {
-			return selectableName;
+			return super.doColumnTransformForSelect(qdt, selectableName);
+			//return selectableName;
 		}
 	}
 
@@ -1157,7 +1158,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doInstantEndOfMonthTransform(String dateSQL) {
 //		return super.doInstantEndOfMonthTransform(dateSQL);
-		return "((("+dateSQL+" at time zone 'UTC'+ (( CAST((EXTRACT(DAY FROM "+dateSQL+" AT TIME ZONE 'UTC')) as INTEGER) - 1)  * -1)*INTERVAL '1 DAY' )+ (1)*INTERVAL '1 MONTH')+ (-1)*INTERVAL '1 DAY' ) at time zone 'UTC'";
+		return "(((" + dateSQL + " at time zone 'UTC'+ (( CAST((EXTRACT(DAY FROM " + dateSQL + " AT TIME ZONE 'UTC')) as INTEGER) - 1)  * -1)*INTERVAL '1 DAY' )+ (1)*INTERVAL '1 MONTH')+ (-1)*INTERVAL '1 DAY' ) at time zone 'UTC'";
 	}
 
 	@Override
@@ -1176,7 +1177,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	public DBExpression transformToSelectableType(DBExpression columnExpression) {
 		return super.transformToSelectableType(columnExpression);
 	}
-	
+
 //	public Duration parseDurationFromGetString(String intervalStr) {
 //		if (intervalStr == null || intervalStr.isEmpty()) {
 //			return null;
@@ -1198,7 +1199,6 @@ public class PostgresDBDefinition extends DBDefinition {
 //				.plusNanos(nanos);
 //		return duration;
 //	}
-
 	@Override
 	public int getParseDurationPartOffset() {
 		return 0;

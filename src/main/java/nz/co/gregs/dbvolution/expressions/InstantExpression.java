@@ -2562,7 +2562,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @return a ISO formatted version of this date
 	 */
 	public StringExpression stringResultISOFormat() {
-		StringExpression isoFormatDateTime = new StringExpression("")
+		StringExpression isoFormatDateTime = value("")
 				.append(this.year())
 				.append("-")
 				.append(this.month())
@@ -2591,7 +2591,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @return a USA formatted version of this date
 	 */
 	public StringExpression stringResultUSAFormat() {
-		StringExpression usaFormatDateTime = new StringExpression("")
+		StringExpression usaFormatDateTime = value("")
 				.append(this.month())
 				.append("-")
 				.append(this.day())
@@ -2621,7 +2621,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * around the world
 	 */
 	public StringExpression stringResultCommonFormat() {
-		StringExpression commonFormatDateTime = new StringExpression("")
+		StringExpression commonFormatDateTime = value("")
 				.append(this.day())
 				.append("-")
 				.append(this.month())

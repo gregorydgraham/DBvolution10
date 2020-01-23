@@ -37,7 +37,7 @@ public class DBPermittedPatternIgnoreCaseOperator extends DBLikeCaseInsensitiveO
 	 * @param likeableValue
 	 */
 	public DBPermittedPatternIgnoreCaseOperator(String likeableValue) {
-		super(new StringExpression(likeableValue));
+		super(StringExpression.value(likeableValue));
 	}
 
 	/**

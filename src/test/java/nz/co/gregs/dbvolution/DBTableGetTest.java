@@ -143,7 +143,9 @@ public class DBTableGetTest extends AbstractTest {
 	public void testIsLiterallyNotWithNull() throws SQLException {
 		Marque literalQuery = new Marque();
 		literalQuery.getIntIndividualAllocationsAllowed().excludedValues(null, "YES", "");
+		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
+		database.setPrintSQLBeforeExecuting(false);
 		
 		Assert.assertThat(rowsByExample.size(), is(1));
 	}
@@ -180,7 +182,7 @@ public class DBTableGetTest extends AbstractTest {
 	@Test
 	public void testIsNotLikeStringExpression() throws SQLException {
 		Marque likeQuery = new Marque();
-		likeQuery.name.excludedPattern(new StringExpression("%e%").uppercase());
+		likeQuery.name.excludedPattern(StringExpression.value("%e%").uppercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 		
 		Assert.assertEquals(14, rowsByExample.size());
@@ -199,7 +201,7 @@ public class DBTableGetTest extends AbstractTest {
 	@Test
 	public void testIsWhileIgnoringCaseStringExpression() throws SQLException {
 		Marque literalQuery = new Marque();
-		literalQuery.name.permittedValuesIgnoreCase(new StringExpression("toYOTA").lowercase());
+		literalQuery.name.permittedValuesIgnoreCase(StringExpression.value("toYOTA").lowercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
 		
 		Assert.assertEquals(1, rowsByExample.size());
@@ -241,7 +243,7 @@ public class DBTableGetTest extends AbstractTest {
 		hummerQuery.individualAllocationsAllowed.permittedValues(null, "Y", "YES");
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
 		
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(rowsByExample.size(), is(3));
 		} else {
 			Assert.assertThat(rowsByExample.size(), is(22));
@@ -250,7 +252,7 @@ public class DBTableGetTest extends AbstractTest {
 		hummerQuery.individualAllocationsAllowed.permittedValues(null, "YES");
 		rowsByExample = marquesTable.getRowsByExample(hummerQuery);
 		
-		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(rowsByExample.size(), is(2));
 		} else {
 			Assert.assertThat(rowsByExample.size(), is(21));

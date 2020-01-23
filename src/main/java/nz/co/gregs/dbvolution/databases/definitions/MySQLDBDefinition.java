@@ -142,7 +142,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return "ST_AsText(" + selectableName + ")";
 		} else {
-			return selectableName;
+			return super.doColumnTransformForSelect(qdt, selectableName);
 		}
 	}
 

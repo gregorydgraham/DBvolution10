@@ -35,7 +35,7 @@ public class DBPermittedPatternOperator extends DBLikeOperator {
 	 * @param likeableValue a pattern to be used with the LIKE operator
 	 */
 	public DBPermittedPatternOperator(String likeableValue) {
-		super(new StringExpression(likeableValue));
+		super(StringExpression.value(likeableValue));
 	}
 
 	/**

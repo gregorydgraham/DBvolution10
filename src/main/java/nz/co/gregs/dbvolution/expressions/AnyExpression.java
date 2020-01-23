@@ -408,8 +408,8 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public final static StringExpression value(String string) {
-		return new StringExpression(string);
+	public final static StringLiteral value(String string) {
+		return new StringLiteral(string);
 	}
 
 	/**

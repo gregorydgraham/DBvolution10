@@ -653,7 +653,31 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
-		return new BooleanExpression(new IsNotNullExpression(possibleNullExpression));
+		if (possibleNullExpression instanceof StringExpression) {
+			return isNotNull((StringExpression) possibleNullExpression);
+		} else {
+			return new BooleanExpression(new IsNotNullExpression(possibleNullExpression));
+		}
+	}
+
+	/**
+	 * Returns FALSE if the given {@link StringExpression} evaluates to NULL,
+	 * otherwise TRUE.
+	 *
+	 * <p>
+	 * DBExpression subclasses include
+	 * {@link QueryableDatatype QueryableDatatypes} like {@link DBString} and
+	 * {@link DBInteger} as well as
+	 * {@link NumberExpression}, {@link StringExpression}, {@link DateExpression},
+	 * and {@link LargeObjectExpression}.
+	 *
+	 * @param possibleNullExpression the expression to be tested
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public static BooleanExpression isNotNull(StringExpression possibleNullExpression) {
+		return new BooleanExpression(new IsNotNullStringExpression(possibleNullExpression));
 	}
 
 	/**
@@ -707,7 +731,31 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNull(DBExpression possibleNullExpression) {
-		return new BooleanExpression(new IsNullExpression(possibleNullExpression));
+		if (possibleNullExpression instanceof StringExpression) {
+			return isNull((StringExpression) possibleNullExpression);
+		} else {
+			return new BooleanExpression(new IsNullExpression(possibleNullExpression));
+		}
+	}
+
+	/**
+	 * Returns TRUE if the given {@link StringExpression} evaluates to NULL,
+	 * otherwise FALSE.
+	 *
+	 * <p>
+	 * DBExpression subclasses include
+	 * {@link QueryableDatatype QueryableDatatypes} like {@link DBString} and
+	 * {@link DBInteger} as well as
+	 * {@link NumberExpression}, {@link StringExpression}, {@link DateExpression},
+	 * and {@link LargeObjectExpression}.
+	 *
+	 * @param possibleNullExpression the expression to be tested
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public static BooleanExpression isNull(StringExpression possibleNullExpression) {
+		return new BooleanExpression(new IsNullStringExpression(possibleNullExpression));
 	}
 
 	/**
@@ -775,7 +823,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(String thenExpr, String elseExpr) {
-		return this.ifThenElse(new StringExpression(thenExpr), new StringExpression(elseExpr));
+		return this.ifThenElse(value(thenExpr), value(elseExpr));
 	}
 
 	/**
@@ -1145,8 +1193,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public StringExpression ifTrueFalseNull(String trueValue, String falseValue, String nullValue) {
 		return this.ifTrueFalseNull(
-				new StringExpression(trueValue),
-				new StringExpression(falseValue),
+				value(trueValue),
+				value(falseValue),
 				StringExpression.value(nullValue)
 		);
 	}
@@ -2790,16 +2838,21 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 	}
 
-	protected static class IsNotNullExpression extends DBUnaryBooleanArithmetic {
+	protected static class IsNotNullExpression extends BooleanExpression {
+
+		private final DBExpression onlyBool;
 
 		public IsNotNullExpression(DBExpression bool) {
-			super(bool);
+			onlyBool = bool;
 		}
 		private final static long serialVersionUID = 1l;
 
 		@Override
-		protected String getEquationOperator(DBDefinition db) {
-			return " IS NOT " + db.getNull();
+		public String toSQLString(DBDefinition db) {
+			String returnStr = "";
+			final String onlyBoolStr = onlyBool.toSQLString(db);
+			returnStr = onlyBoolStr + " IS NOT " + db.getNull() + "/*GENERIC*/";
+			return returnStr;
 		}
 
 		@Override
@@ -2813,16 +2866,84 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 	}
 
-	protected static class IsNullExpression extends DBUnaryBooleanArithmetic {
+	protected static class IsNotNullStringExpression extends BooleanExpression {
 
-		public IsNullExpression(DBExpression bool) {
-			super(bool);
+		private final StringExpression onlyBool;
+
+		public IsNotNullStringExpression(StringExpression bool) {
+			onlyBool = bool;
 		}
 		private final static long serialVersionUID = 1l;
 
 		@Override
-		protected String getEquationOperator(DBDefinition db) {
-			return " IS " + db.getNull();
+		public String toSQLString(DBDefinition db) {
+			String returnStr = "";
+			final String onlyBoolStr = onlyBool.toSQLString(db);
+			if (db.requiredToProduceEmptyStringsForNull()) {
+				returnStr = " NOT (" + onlyBoolStr + " IS " + db.getNull() + " OR " + onlyBoolStr + " = '')";
+			} else {
+				returnStr = onlyBoolStr + " IS NOT " + db.getNull() + "/*for strings*/";
+			}
+			return returnStr;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public IsNotNullExpression copy() {
+			return new IsNotNullExpression(onlyBool == null ? null : onlyBool.copy());
+		}
+	}
+
+	protected static class IsNullExpression extends BooleanExpression {
+
+		private final DBExpression onlyBool;
+
+		public IsNullExpression(DBExpression bool) {
+			onlyBool = bool;
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			String returnStr = "";
+			final String onlyBoolStr = onlyBool.toSQLString(db);
+			returnStr = onlyBoolStr + " IS " + db.getNull();
+			return returnStr;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public IsNullExpression copy() {
+			return new IsNullExpression(onlyBool == null ? null : onlyBool.copy());
+		}
+	}
+
+	protected static class IsNullStringExpression extends BooleanExpression {
+
+		private final StringExpression onlyBool;
+
+		public IsNullStringExpression(StringExpression bool) {
+			onlyBool = bool;
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			String returnStr = "";
+			final String onlyBoolStr = onlyBool.toSQLString(db);
+			returnStr = onlyBoolStr + " IS " + db.getNull();
+			if (db.requiredToProduceEmptyStringsForNull()) {
+				returnStr = " (" + returnStr + " OR " + onlyBoolStr + " = '')";
+			}
+			return returnStr;
 		}
 
 		@Override
