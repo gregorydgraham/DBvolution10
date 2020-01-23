@@ -113,8 +113,9 @@ public abstract class AbstractTest {
 			final PostgresDB postgres = PostgreSQLTestDatabase.getFromSettings("postgres");
 			final MySQLTestDatabase mysql = MySQLTestDatabase.getFromSettings("mysql");
 			final MSSQLServerContainerDB sqlserver = getMSSQLServerContainerDatabaseForCluster();
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer",
-				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, postgres, mysql, sqlserver)});
+			final Oracle11XEContainerDB oracle = getOracleContainerDatabaseForCluster();
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle",
+				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, postgres, mysql, sqlserver, oracle)});
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
@@ -245,6 +246,15 @@ public abstract class AbstractTest {
 			ORACLE_CONTAINER_DATABASE = Oracle11XEContainerDB.getInstance();
 		}
 		return ORACLE_CONTAINER_DATABASE;
+	}
+
+	private static Oracle11XEContainerDB ORACLE_CONTAINER_DATABASE_FOR_CLUSTER = null;
+
+	private static Oracle11XEContainerDB getOracleContainerDatabaseForCluster() {
+		if (ORACLE_CONTAINER_DATABASE_FOR_CLUSTER == null) {
+			ORACLE_CONTAINER_DATABASE_FOR_CLUSTER = Oracle11XEContainerDB.getInstance();
+		}
+		return ORACLE_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 
 	public AbstractTest(Object testIterationName, Object db) {
@@ -380,7 +390,7 @@ public abstract class AbstractTest {
 	}
 
 	protected String oracleSafeStrings(String expect) throws NoAvailableDatabaseException {
-		return database.getDefinition().supportsDifferenceBetweenNullAndEmptyString() ? expect : expect == null ? "" : expect;
+		return database.supportsDifferenceBetweenNullAndEmptyString() ? expect : expect == null ? "" : expect;
 	}
 
 	private static class H2TestDatabase extends H2DB {
