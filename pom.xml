@@ -877,9 +877,10 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
+								<testPostgresSQL>true</testPostgresSQL>
 								<testMySQLContainer>true</testMySQLContainer>
 								<testOracleXE>true</testOracleXE>
-								<testMSSQLServer>true</testMSSQLServer>
+								<testMSSQLServerLocal>true</testMSSQLServerLocal>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
