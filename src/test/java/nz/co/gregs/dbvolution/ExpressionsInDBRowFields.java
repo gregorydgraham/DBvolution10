@@ -55,7 +55,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		}
 		Assert.assertThat(sqlForQuery, containsString(ExpressionRow.STRING_VALUE));
 		Assert.assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database.getDefinition())));
-		
+
 		final List<DBQueryRow> allRows = query.getAllRows();
 		for (DBQueryRow row : allRows) {
 			ExpressionRow expressionRow = row.get(exprExample);
@@ -146,8 +146,11 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	@SuppressWarnings("deprecation")
 	public void selectDBRowExpressionAllMarques() throws Exception {
 		final ExpressionRow expressionRow = new ExpressionRow();
-		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow);
+		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow)
+				.setQueryLabel("selectDBRowExpressionAllMarques");
+		database.setPrintSQLBeforeExecuting(true);
 		final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
+		database.setPrintSQLBeforeExecuting(false);
 
 		for (ExpressionRow row : allMarques) {
 			Assert.assertThat(row.uidAndName.stringValue(),
