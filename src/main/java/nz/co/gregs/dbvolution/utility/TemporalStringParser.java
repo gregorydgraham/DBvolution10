@@ -34,11 +34,15 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -51,100 +55,76 @@ public class TemporalStringParser {
 
 	static final Log LOG = LogFactory.getLog(TemporalStringParser.class);
 
+	static final Parser[] INSTANT_FORMATTERS = Parser.generateInstantParsers();
+
+	static final Parser[] LOCALDATE_FORMATTERS = Parser.generateLocalDateParsers();
+
 	private TemporalStringParser() {
 	}
 
-	static final DateTimeFormatter[] INSTANT_FORMATTERS
-			= new DateTimeFormatter[]{
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSVV"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSv"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSz"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSVV"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSv"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSz"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SVV"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.Sv"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SX"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SZ"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.Sz"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssVV"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssv"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz"),
-				DateTimeFormatter.ISO_OFFSET_DATE_TIME,
-				DateTimeFormatter.ISO_ZONED_DATE_TIME,
-				DateTimeFormatter.RFC_1123_DATE_TIME,
-				DateTimeFormatter.ISO_INSTANT
-			};
-
-	static final DateTimeFormatter[] LOCALDATE_FORMATTERS
-			= new DateTimeFormatter[]{
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
-				DateTimeFormatter.ISO_DATE_TIME,
-				DateTimeFormatter.ISO_LOCAL_DATE_TIME,
-				DateTimeFormatter.BASIC_ISO_DATE};
-
-	public static Instant toInstant(String inputFromResultSet) throws ParseException {
-		return toZonedDateTime(inputFromResultSet).toInstant();
+	public static OffsetDateTime toOffsetDateTime(String inputDateString) {
+		final ZonedDateTime toZonedDateTime = toZonedDateTime(inputDateString);
+		return toZonedDateTime == null ? null : toZonedDateTime.toOffsetDateTime();
 	}
 
-	public static ZonedDateTime toZonedDateTime(String inputFromResultSet) throws ParseException {
-		if (inputFromResultSet == null) {
+	public static Instant toInstant(String inputDateString) throws ParseException {
+		final ZonedDateTime toZonedDateTime = toZonedDateTime(inputDateString);
+		return toZonedDateTime == null ? null : toZonedDateTime.toInstant();
+	}
+
+	public static Date toDate(String inputDateString) throws ParseException {
+		final LocalDateTime toLocalDateTime = toLocalDateTime(inputDateString);
+		if (toLocalDateTime == null) {
+			return null;
+		}
+		return Date.from(toLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	public static ZonedDateTime toZonedDateTime(String inputDateString) throws DateTimeParseException {
+		if (inputDateString == null) {
 			return null;
 		}
 		ZonedDateTime zoneddatetime = null;
-		String str = inputFromResultSet;
-		ParseException exception = new ParseException(str, 0);
-		str = inputFromResultSet.replaceFirst(" ", "T");
+		String str = inputDateString;
+		// oracle sometimes produces unpadded time zone offsets
+		str = str.replaceFirst("(.*)([-+])([0-9][:]?[0-9]{2})$", "$1$20$3");
+		DateTimeParseException exception = new DateTimeParseException(str, str.subSequence(0, str.length()), 0);
+		LOG.debug("PROCESSING; " + str);
 		final CharSequence sequence = str.subSequence(0, str.length());
-		for (DateTimeFormatter format : INSTANT_FORMATTERS) {
+		for (Parser format : INSTANT_FORMATTERS) {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				zoneddatetime = ZonedDateTime.from(parsed);
 				LOG.debug("PARSE SUCCEEDED: " + format.toString());
+				LOG.debug("ORIGINAL: " + inputDateString);
 				LOG.debug("PARSED: " + sequence);
 				LOG.debug("TO: " + zoneddatetime);
+				return zoneddatetime;
 			} catch (Exception ex1) {
+				printException(inputDateString, format, exception);
 				LOG.debug("PARSE FAILED: " + format.toString());
 				LOG.debug("MESSAGE: " + ex1.getMessage());
-				if (ex1 instanceof ParseException) {
-					exception = (ParseException) ex1;
+				if (ex1 instanceof DateTimeParseException) {
+					exception = (DateTimeParseException) ex1;
+				} else {
+					exception = new DateTimeParseException(str, sequence, 0, ex1);
 				}
 			}
 		}
-		for (DateTimeFormatter format : LOCALDATE_FORMATTERS) {
+		for (Parser format : LOCALDATE_FORMATTERS) {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				zoneddatetime = ZonedDateTime.of(LocalDateTime.from(parsed), ZoneId.of("Z"));
 				LOG.debug("PARSE SUCCEEDED: " + format.toString());
 				LOG.debug("PARSED: " + sequence);
 				LOG.debug("TO: " + zoneddatetime);
-			} catch (Exception ex1) {
+				return zoneddatetime;
+			} catch (DateTimeParseException ex1) {
 				LOG.debug("PARSE FAILED: " + format.toString());
 				LOG.debug("MESSAGE: " + ex1.getMessage());
-				if (ex1 instanceof ParseException) {
-					exception = (ParseException) ex1;
-				}
+//				if (ex1 instanceof ParseException) {
+				exception = ex1;
+//				}
 			}
 		}
 		try {
@@ -153,46 +133,57 @@ public class TemporalStringParser {
 			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
 			LOG.debug("PARSED: " + str);
 			LOG.debug("TO: " + zoneddatetime);
-		} catch (Exception ex1) {
+			return zoneddatetime;
+		} catch (DateTimeParseException ex1) {
 			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
 			LOG.debug("MESSAGE: " + ex1.getMessage());
-			if (ex1 instanceof ParseException) {
-				exception = (ParseException) ex1;
-			}
+			exception = ex1;
 		}
-		str = inputFromResultSet;
+		str = inputDateString;
 		try {
 			Timestamp timestamp = Timestamp.valueOf(str);
 			zoneddatetime = ZonedDateTime.of(timestamp.toLocalDateTime(), ZoneId.of("Z"));
 			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
 			LOG.debug("PARSED: " + str);
 			LOG.debug("TO: " + zoneddatetime);
-		} catch (Exception ex1) {
+			return zoneddatetime;
+		} catch (DateTimeParseException ex1) {
 			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
 			LOG.debug("MESSAGE: " + ex1.getMessage());
-			if (ex1 instanceof ParseException) {
-				exception = (ParseException) ex1;
+			if (!(ex1 instanceof DateTimeParseException)) {
+				exception = new DateTimeParseException(str, sequence, 0, ex1);
+			} else {
+				exception = ex1;
 			}
 		}
 		if (zoneddatetime != null) {
 			return zoneddatetime;
 		} else {
-			LOG.debug("PARSE FAILED:");
-			LOG.debug("PARSED: " + inputFromResultSet);
-			throw exception;
+			throw new DateTimeParseException(inputDateString, sequence, 0, exception);
 		}
 	}
 
-	public static LocalDateTime toLocalDateTime(String inputFromResultSet) throws ParseException {
+	private static void printException(String inputDateString, Parser format, Exception exception) {
+		LOG.debug("PARSING ORIGINAL: " + inputDateString);
+		LOG.debug("PATTERN: " + format.toString());
+		LOG.debug("PARSE FAILED: " + inputDateString);
+		LOG.debug("EXCEPTION: " + exception.getMessage());
+		StackTraceElement[] stackTrace = exception.getStackTrace();
+		for (int i = 0; i < Math.min(10, stackTrace.length); i++) {
+			LOG.debug(stackTrace[i].toString());
+		}
+	}
+
+	public static LocalDateTime toLocalDateTime(String inputFromResultSet) throws DateTimeParseException {
 		if (inputFromResultSet == null) {
 			return null;
 		}
 		LocalDateTime localdatetime = null;
 		String str = inputFromResultSet;
 		ParseException exception = new ParseException(str, 0);
-		str = inputFromResultSet.replaceFirst(" ", "T");
+//		str = inputFromResultSet.replaceFirst(" ", "T");
 		final CharSequence sequence = str.subSequence(0, str.length());
-		for (DateTimeFormatter format : INSTANT_FORMATTERS) {
+		for (Parser format : INSTANT_FORMATTERS) {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				localdatetime = ZonedDateTime.from(parsed).toLocalDateTime();
@@ -207,7 +198,7 @@ public class TemporalStringParser {
 				}
 			}
 		}
-		for (DateTimeFormatter format : LOCALDATE_FORMATTERS) {
+		for (Parser format : LOCALDATE_FORMATTERS) {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				localdatetime = LocalDateTime.from(parsed);
@@ -254,12 +245,136 @@ public class TemporalStringParser {
 		} else {
 			LOG.debug("PARSE FAILED:");
 			LOG.debug("PARSED: " + inputFromResultSet);
-			throw exception;
+			throw new DateTimeParseException(inputFromResultSet, sequence, 0, exception);
 		}
 	}
-	
-	public static Date toDate(String input) throws ParseException{
-		return Date.from( toLocalDateTime(input).atZone( ZoneId.systemDefault()).toInstant());
-	}
 
+	private static class Parser {
+
+		private final String pattern;
+		private final DateTimeFormatter formatter;
+
+		private Parser(String pattern) {
+			this.pattern = pattern;
+			this.formatter = DateTimeFormatter.ofPattern(pattern);
+		}
+
+		private Parser(DateTimeFormatter formatter) {
+			this.pattern = formatter.toString();
+			this.formatter = formatter;
+		}
+
+		public static Parser ofPattern(String pattern) {
+			return new Parser(pattern);
+		}
+
+		public static Parser ofFormatter(DateTimeFormatter formatter) {
+			return new Parser(formatter);
+		}
+
+		@Override
+		public String toString() {
+			return pattern;
+		}
+
+		public TemporalAccessor parse(String dateString) {
+			return parse(dateString.subSequence(0, dateString.length()));
+		}
+
+		public TemporalAccessor parse(CharSequence dateString) {
+			return formatter.parse(dateString);
+		}
+
+		static String[] yearParts = new String[]{"uuuu", "yyyy"};
+		static String[] monthParts = new String[]{"MM"};
+		static String[] dayParts = new String[]{"dd"};
+		static String[] dayPartDividerParts = new String[]{"-", ""};
+		static String[] dayTimeDividerParts = new String[]{" ", "'T'", ""};
+		static String[] timePartDividerParts = new String[]{":", ""};
+		static String[] timeTimeZoneDividerParts = new String[]{" ", ""};
+		static String[] hourParts = new String[]{"HH"};
+		static String[] minuteParts = new String[]{"mm"};
+		static String[] secondParts = new String[]{"ss"};
+		static String[] subsecondParts = new String[]{"SSSSSSSSS", "SSSSSS", "SSS", "S", ""};
+		static String[] secondPartDividerParts = new String[]{".", ""};
+		static String[] timezoneParts = new String[]{"VV", "zzzz", "OOOO", "XXXXX", "xxxxx", "ZZZZZ", "XXXX", "xxxx", "ZZZZ", "XXX", "xxx", "XX", "xx", "z", "O", "X", "x", "Z"};
+
+		public static Parser[] generateInstantParsers() {
+			List<Parser> parsers = new ArrayList<>();
+			for (String dayPartDividerPart : dayPartDividerParts) {
+				for (String timePartDividerPart : timePartDividerParts) {
+					for (String secondPartDividerPart : secondPartDividerParts) {
+						for (String yearPart : yearParts) {
+							for (String monthPart : monthParts) {
+								for (String dayPart : dayParts) {
+									for (String dayTimeDividerPart : dayTimeDividerParts) {
+										for (String hourPart : hourParts) {
+											for (String minutePart : minuteParts) {
+												for (String secondPart : secondParts) {
+													for (String subsecondPart : subsecondParts) {
+														for (String timeTimeZoneDivider : timeTimeZoneDividerParts) {
+															for (String timezonePart : timezoneParts) {
+																final String pattern = makeInstantPatternFromParts(yearPart, dayPartDividerPart, monthPart, dayPart, dayTimeDividerPart, hourPart, timePartDividerPart, minutePart, secondPart, secondPartDividerPart, subsecondPart, timeTimeZoneDivider, timezonePart);
+																parsers.add(Parser.ofPattern(pattern));
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			parsers.add(Parser.ofFormatter(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+			parsers.add(Parser.ofFormatter(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+			parsers.add(Parser.ofFormatter(DateTimeFormatter.RFC_1123_DATE_TIME));
+			parsers.add(Parser.ofFormatter(DateTimeFormatter.ISO_INSTANT));
+			return parsers.toArray(new Parser[]{});
+		}
+
+		private static String makeInstantPatternFromParts(String yearPart, String dayPartDividerPart, String monthPart, String dayPart, String dayTimeDividerPart, String hourPart, String timePartDividerPart, String minutePart, String secondPart, String secondPartDividerPart, String subsecondPart, String timeTimeZoneDivider, String timezonePart) {
+			return makeLocalDatePatternFromParts(yearPart, dayPartDividerPart, monthPart, dayPart, dayTimeDividerPart, hourPart, timePartDividerPart, minutePart, secondPart, secondPartDividerPart, subsecondPart) + timeTimeZoneDivider + timezonePart;
+		}
+
+		public static Parser[] generateLocalDateParsers() {
+			List<Parser> parsers = new ArrayList<>();
+			for (String dayPartDividerPart : dayPartDividerParts) {
+				for (String timePartDividerPart : timePartDividerParts) {
+					for (String secondPartDividerPart : secondPartDividerParts) {
+						for (String yearPart : yearParts) {
+							for (String monthPart : monthParts) {
+								for (String dayPart : dayParts) {
+									for (String dayTimeDividerPart : dayTimeDividerParts) {
+										for (String hourPart : hourParts) {
+											for (String minutePart : minuteParts) {
+												for (String secondPart : secondParts) {
+													for (String subsecondPart : subsecondParts) {
+														final String pattern = makeLocalDatePatternFromParts(yearPart, dayPartDividerPart, monthPart, dayPart, dayTimeDividerPart, hourPart, timePartDividerPart, minutePart, secondPart, secondPartDividerPart, subsecondPart);
+//														System.out.println("PATTERN: " + pattern);
+														parsers.add(Parser.ofPattern(pattern));
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			parsers.add(Parser.ofFormatter(DateTimeFormatter.ISO_DATE_TIME));
+			parsers.add(Parser.ofFormatter(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+			parsers.add(Parser.ofFormatter(DateTimeFormatter.BASIC_ISO_DATE));
+			return parsers.toArray(new Parser[]{});
+		}
+
+		private static String makeLocalDatePatternFromParts(String yearPart, String dayPartDividerPart, String monthPart, String dayPart, String dayTimeDividerPart, String hourPart, String timePartDividerPart, String minutePart, String secondPart, String secondPartDividerPart, String subsecondPart) {
+			return "" + yearPart + dayPartDividerPart + monthPart + dayPartDividerPart + dayPart + dayTimeDividerPart + hourPart + timePartDividerPart + minutePart + timePartDividerPart + secondPart + secondPartDividerPart + subsecondPart;
+		}
+	}
 }
