@@ -55,7 +55,7 @@ public class MySQLContainerDB extends MySQLDB {
 	static final Log LOG = LogFactory.getLog(MySQLContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
-	protected final MySQLContainer storedContainer;
+	protected final MySQLContainer<?> storedContainer;
 
 	public static MySQLContainerDB getInstance() {
 		final String username = "dbvuser";
@@ -63,7 +63,7 @@ public class MySQLContainerDB extends MySQLDB {
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		JdbcDatabaseContainer container = new MySQLContainerProvider().newInstance("latest");
+		JdbcDatabaseContainer<?> container = new MySQLContainerProvider().newInstance("latest");
 		container.withDatabaseName("some_database");
 		container.withLogConsumer(new ConsumerImpl());
 		container.withStartupTimeout(Duration.ofMinutes(2));
@@ -92,12 +92,12 @@ public class MySQLContainerDB extends MySQLDB {
 		}
 	}
 
-	public MySQLContainerDB(MySQLContainer storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
+	public MySQLContainerDB(MySQLContainer<?> storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
 		super(dcs);
 		this.storedContainer = storedContainer;
 	}
 
-	public MySQLContainerDB(MySQLContainer container) throws SQLException {
+	public MySQLContainerDB(MySQLContainer<?> container) throws SQLException {
 		this(container,
 				new MySQLSettingsBuilder()
 						.fromJDBCURL(container.getJdbcUrl(), "root", "test")
