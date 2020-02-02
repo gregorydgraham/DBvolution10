@@ -51,13 +51,13 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 	static final Log LOG = LogFactory.getLog(MSSQLServerContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
-	protected final MSSQLServerContainer mssqlServerContainer;
+	protected final MSSQLServerContainer<?> mssqlServerContainer;
 
 	public static MSSQLServerContainerDB getInstance() {
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		JdbcDatabaseContainer container = new MSSQLServerContainerProvider().newInstance();
+		JdbcDatabaseContainer<?> container = new MSSQLServerContainerProvider().newInstance();
 		container.addEnv("TZ", ZoneId.systemDefault().getId());
 
 //		MSSQLServerContainer container = new MSSQLServerContainer<>();
