@@ -45,7 +45,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public class PostgresContainerDB extends PostgresDB {
 
 	private static final long serialVersionUID = 1l;
-	protected final PostgreSQLContainer storedContainer;
+	protected final PostgreSQLContainer<?> storedContainer;
 
 	public static PostgresContainerDB getInstance() {
 		/*
@@ -53,7 +53,7 @@ public class PostgresContainerDB extends PostgresDB {
 		SA_PASSWORD=Password23 defines the password so we can login
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
-		PostgreSQLContainer container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance();
+		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance();
 		container.withEnv("TZ", "Pacific/Auckland");
 		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
@@ -66,7 +66,7 @@ public class PostgresContainerDB extends PostgresDB {
 		}
 	}
 
-	public PostgresContainerDB(PostgreSQLContainer container) throws SQLException {
+	public PostgresContainerDB(PostgreSQLContainer<?> container) throws SQLException {
 		super(new PostgresSettingsBuilder()
 				.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
 		);
