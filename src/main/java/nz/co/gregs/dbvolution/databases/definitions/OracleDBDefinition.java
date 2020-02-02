@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -57,6 +59,7 @@ import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 
 /**
  * Defines the features of the Oracle database that differ from the standard
@@ -125,32 +128,38 @@ public class OracleDBDefinition extends DBDefinition {
 	};
 
 	public ZonedDateTime parseZonedDateTimeFromGetString(String inputFromResultSet) throws DateTimeParseException {
-		if (inputFromResultSet == null || inputFromResultSet.isEmpty()) {
-			return null;
-		}
-		ZonedDateTime zdt;
-		DateTimeParseException storedException = new DateTimeParseException(inputFromResultSet, inputFromResultSet, 0);
-		CharSequence subSequence = inputFromResultSet.subSequence(0, inputFromResultSet.length());
-		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
-			try {
-				zdt = ZonedDateTime.parse(subSequence, format);
-				return zdt;
-			} catch (DateTimeParseException ex) {
-				storedException = ex;
-			}
-		}
-		String input = inputFromResultSet;
-		input = input.replaceAll("\\+([0-9]):00", "+0$1:00");
-		subSequence = input.subSequence(0, input.length());
-		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
-			try {
-				zdt = ZonedDateTime.parse(subSequence, format);
-				return zdt;
-			} catch (DateTimeParseException ex) {
-				storedException = ex;
-			}
-		}
-		throw storedException;
+//		try {
+			return TemporalStringParser.toZonedDateTime(inputFromResultSet);
+//		} catch (DateTimeParseException ex) {
+//			Logger.getLogger(OracleDBDefinition.class.getName()).log(Level.INFO, "Failed To Parse supplied date: " + inputFromResultSet, ex);
+//			throw new DateTimeParseException("Parsing of datetime result failed: " + inputFromResultSet, inputFromResultSet, 0, ex);
+//		}
+//		if (inputFromResultSet == null || inputFromResultSet.isEmpty()) {
+//			return null;
+//		}
+//		ZonedDateTime zdt;
+//		DateTimeParseException storedException = new DateTimeParseException(inputFromResultSet, inputFromResultSet, 0);
+//		CharSequence subSequence = inputFromResultSet.subSequence(0, inputFromResultSet.length());
+//		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
+//			try {
+//				zdt = ZonedDateTime.parse(subSequence, format);
+//				return zdt;
+//			} catch (DateTimeParseException ex) {
+//				storedException = ex;
+//			}
+//		}
+//		String input = inputFromResultSet;
+//		input = input.replaceAll("\\+([0-9]):00", "+0$1:00");
+//		subSequence = input.subSequence(0, input.length());
+//		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
+//			try {
+//				zdt = ZonedDateTime.parse(subSequence, format);
+//				return zdt;
+//			} catch (DateTimeParseException ex) {
+//				storedException = ex;
+//			}
+//		}
+//		throw storedException;
 	}
 
 	@Override
