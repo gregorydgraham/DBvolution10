@@ -169,21 +169,25 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 						+ year));
 			} else {
 				if (database.supportsDifferenceBetweenNullAndEmptyString()) {
-					Assert.assertThat(row.uidNameAndYear.stringValue(), isEmptyOrNullString());
+					Assert.assertThat(
+							row.uidNameAndYear.stringValue(),
+							isEmptyOrNullString()
+					);
 					String year = new SimpleDateFormat("yyyy").format(new Date());
-					Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
-							row.uidMarque.stringValue() + "-"
-							+ row.name.stringValue() + "-"
-							+ year));
+					Assert.assertThat(
+							row.uidNameAndNVLYear.stringValue(),
+							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
+					);
 				} else {
-					Assert.assertThat(row.uidNameAndYear.stringValue(), is(
-							row.uidMarque.stringValue() + "-"
-							+ row.name.stringValue() + "-"));
+					Assert.assertThat(
+							row.uidNameAndYear.stringValue(),
+							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
+					);
 					String year = new SimpleDateFormat("yyyy").format(new Date());
-					Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
-							row.uidMarque.stringValue() + "-"
-							+ row.name.stringValue() + "-"
-							+ year));
+					Assert.assertThat(
+							row.uidNameAndNVLYear.stringValue(),
+							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
+					);
 				}
 			}
 		}
