@@ -6878,15 +6878,15 @@ public abstract class DBDefinition implements Serializable {
 
 	boolean requiredToProduceEmptyStringsForNull = false;
 
-	public final boolean requiredToProduceEmptyStringsForNull() {
+	public synchronized final boolean requiredToProduceEmptyStringsForNull() {
 		return requiredToProduceEmptyStringsForNull;
 	}
 
-	public final void setRequiredToProduceEmptyStringsForNull(boolean required) {
+	public synchronized final void setRequiredToProduceEmptyStringsForNull(boolean required) {
 		requiredToProduceEmptyStringsForNull = required;
 	}
 
-	public final boolean canProduceNullStrings() {
+	public synchronized final boolean canProduceNullStrings() {
 		return supportsDifferenceBetweenNullAndEmptyStringNatively()
 				&& !requiredToProduceEmptyStringsForNull();
 	}
