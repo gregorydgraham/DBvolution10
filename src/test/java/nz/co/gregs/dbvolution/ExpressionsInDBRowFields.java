@@ -148,8 +148,8 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		final ExpressionRow expressionRow = new ExpressionRow();
 		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow)
 				.setQueryLabel("selectDBRowExpressionAllMarques");
-		database.getDefinition().setRequiredToProduceEmptyStringsForNull(true);
-		database.getDefinition().setRequiredToProduceEmptyStringsForNull(false);
+//		database.getDefinition().setRequiredToProduceEmptyStringsForNull(true);
+//		database.getDefinition().setRequiredToProduceEmptyStringsForNull(false);
 		database.setPrintSQLBeforeExecuting(true);
 		final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
 		database.setPrintSQLBeforeExecuting(false);
