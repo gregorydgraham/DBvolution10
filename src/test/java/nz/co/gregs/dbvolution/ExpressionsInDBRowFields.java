@@ -41,6 +41,24 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	public ExpressionsInDBRowFields(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
+	
+	@BeforeClass
+	public static void setUpClass() {
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+	}
+
+	@Before
+	public void setUp() {
+		database.setPrintSQLBeforeExecuting(true);
+	}
+
+	@After
+	public void tearDown() {
+		database.setPrintSQLBeforeExecuting(false);
+	}
 
 	@Test
 	public void selectDBRowExpressionWithDBQuery() throws Exception {
