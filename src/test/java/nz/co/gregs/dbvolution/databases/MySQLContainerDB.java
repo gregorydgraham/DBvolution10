@@ -36,15 +36,13 @@ import java.time.ZoneId;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.JdbcDatabaseContainerProvider;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.MySQLContainerProvider;
 import org.testcontainers.containers.output.OutputFrame;
-//import org.testcontainers.utility.MountableFile;
+import org.testcontainers.jdbc.ConnectionUrl;
 
 /**
  *
@@ -55,36 +53,37 @@ public class MySQLContainerDB extends MySQLDB {
 	static final Log LOG = LogFactory.getLog(MySQLContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
-	protected final MySQLContainer<?> storedContainer;
+	protected final FinalisedMySQLContainer storedContainer;
 
 	public static MySQLContainerDB getInstance() {
 		final String username = "dbvuser";
 		final String password = "dbvtest";
-		/*
-		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
-		 */
-		JdbcDatabaseContainer<?> container = new MySQLContainerProvider().newInstance("latest");
+		final FinalisedMySQLContainer newInstance = new FinalisedMySQLContainerProvider().newInstance("latest");
+		FinalisedMySQLContainer container = newInstance;
 		container.withDatabaseName("some_database");
 		container.withLogConsumer(new ConsumerImpl());
-		container.withStartupTimeout(Duration.ofMinutes(2));
+		container.withStartupTimeout(Duration.ofMinutes(5));
 //		MySQLContainer container = (MySQLContainer) new MySQLContainer("mysql:latest")
 //				.withDatabaseName("some_database")
-				// set the log consumer so we see some output
+		// set the log consumer so we see some output
 //				.withLogConsumer(new ConsumerImpl())
-				// there is a problem with the config file in the image so add our own
-				//.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/")
+		// there is a problem with the config file in the image so add our own
+		//.withCopyFileToContainer(MountableFile.forClasspathResource("testMySQL.cnf"), "/etc/mysql/conf.d/")
 //				.withStartupTimeout(Duration.ofMinutes(2))
 //				;
 		container.withEnv("MYSQL_USER", username);
 		container.withEnv("MYSQL_PASSWORD", password);
 		container.withEnv("TZ", ZoneId.systemDefault().toString());
+		/*
+		'TZ=Pacific/Auckland' sets the container timezone to where I do my test
+		 */
 //		container.withEnv("TZ", "Pacific/Auckland");
 //		container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
 
 		try {
 			// create the actual dbdatabase 
-			MySQLContainerDB dbdatabase = new MySQLContainerDB((MySQLContainer) container);
+			MySQLContainerDB dbdatabase = new MySQLContainerDB(container);
 			return dbdatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -92,13 +91,23 @@ public class MySQLContainerDB extends MySQLDB {
 		}
 	}
 
-	public MySQLContainerDB(MySQLContainer<?> storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
+	@Override
+	public synchronized void stop() {
+		super.stop();
+		storedContainer.stop();
+	}
+
+	protected MySQLContainerDB(FinalisedMySQLContainer storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
 		super(dcs);
 		this.storedContainer = storedContainer;
 	}
 
+	public MySQLContainerDB(MySQLContainer<?> storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
+		this((FinalisedMySQLContainer) storedContainer, dcs);
+	}
+
 	public MySQLContainerDB(MySQLContainer<?> container) throws SQLException {
-		this(container,
+		this((FinalisedMySQLContainer) container,
 				new MySQLSettingsBuilder()
 						.fromJDBCURL(container.getJdbcUrl(), "root", "test")
 						// set the database name because apparently it's not in the URL
@@ -110,18 +119,55 @@ public class MySQLContainerDB extends MySQLDB {
 		);
 	}
 
-	@Override
-	public synchronized void stop() {
-		super.stop();
-		storedContainer.stop();
-	}
-
 	private static class ConsumerImpl implements Consumer<OutputFrame> {
 
 		@Override
 		public void accept(OutputFrame t) {
 			LOG.info("" + t.getUtf8String().replaceAll("\n$", ""));
 		}
+	}
+
+	protected static class FinalisedMySQLContainer extends MySQLContainer<FinalisedMySQLContainer> {
+
+		public FinalisedMySQLContainer(String dockerImageName) {
+			super(dockerImageName);
+		}
+	}
+
+	protected static class FinalisedMySQLContainerProvider extends JdbcDatabaseContainerProvider {
+
+		private static final String USER_PARAM = "user";
+
+		private static final String PASSWORD_PARAM = "password";
+
+		@Override
+		public boolean supports(String databaseType) {
+			return databaseType.equals(MySQLContainer.NAME);
+		}
+
+		@Override
+		public FinalisedMySQLContainer newInstance() {
+			return newDefaultInstance();
+		}
+
+		private FinalisedMySQLContainer newDefaultInstance() {
+			return new FinalisedMySQLContainer(MySQLContainer.DEFAULT_TAG);
+		}
+
+		@Override
+		public FinalisedMySQLContainer newInstance(String tag) {
+			if (tag != null) {
+				return new FinalisedMySQLContainer(MySQLContainer.IMAGE + ":" + tag);
+			} else {
+				return newDefaultInstance();
+			}
+		}
+
+		@Override
+		public FinalisedMySQLContainer newInstance(ConnectionUrl connectionUrl) {
+			return (FinalisedMySQLContainer) newInstanceFromConnectionUrl(connectionUrl, USER_PARAM, PASSWORD_PARAM);
+		}
+
 	}
 
 }
