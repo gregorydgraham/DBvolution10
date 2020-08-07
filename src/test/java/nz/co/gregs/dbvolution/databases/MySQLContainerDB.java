@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.generic;
+package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.time.Duration;

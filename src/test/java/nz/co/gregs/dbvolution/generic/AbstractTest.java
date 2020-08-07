@@ -15,6 +15,10 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
+import nz.co.gregs.dbvolution.databases.MSSQLServerContainerDB;
+import nz.co.gregs.dbvolution.databases.PostgresContainerDB;
+import nz.co.gregs.dbvolution.databases.Oracle11XEContainerDB;
+import nz.co.gregs.dbvolution.databases.MySQLContainerDB;
 import java.io.File;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
