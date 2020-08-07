@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import net.sourceforge.tedhi.DateRange;
 import net.sourceforge.tedhi.FlexibleDateFormat;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
