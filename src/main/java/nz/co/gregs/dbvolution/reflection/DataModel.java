@@ -56,8 +56,8 @@ public class DataModel {
 	}
 
 	/**
-	 * Scans all known classes and returns a set of all DBDatabase instances that
-	 * could be found.
+	 * Scans all known classes and returns a set of all non-builtin DBDatabase
+	 * instances that could be found.
 	 *
 	 * <p>
 	 * Excludes the standard DBDatabases in nz.co.gregs.dbvolution.databases.
@@ -81,6 +81,62 @@ public class DataModel {
 				usefulDBDatabases.add(known);
 			}
 		}
+		return usefulDBDatabases;
+	}
+
+	/**
+	 * Scans all known classes and returns a set of all builtin DBDatabase
+	 * instances that could be found.
+	 *
+	 * <p>
+	 * Only includes the standard DBDatabases in nz.co.gregs.dbvolution.databases.
+	 *
+	 * <p>
+	 * The intent of this method is to help provide access to classes that might
+	 * define database connections.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a set of {@link DBDatabase} classes.
+	 */
+	protected static Set<Class<? extends DBDatabase>> getBuiltinDBDatabaseClasses() {
+		Reflections reflections = new Reflections("");
+		final Set<Class<? extends DBDatabase>> allKnownDBDatabases = reflections.getSubTypesOf(DBDatabase.class);
+
+		final Set<Class<? extends DBDatabase>> usefulDBDatabases = new HashSet<Class<? extends DBDatabase>>();
+		for (Class<? extends DBDatabase> known : allKnownDBDatabases) {
+			if (known.getPackage().getName().equals("nz.co.gregs.dbvolution.databases")) {
+				usefulDBDatabases.add(known);
+			}
+		}
+		return usefulDBDatabases;
+	}
+
+	/**
+	 * Scans all known classes and returns a set of all builtin DBDatabase
+	 * instances that could be found.
+	 *
+	 * <p>
+	 * Only includes the standard DBDatabases in nz.co.gregs.dbvolution.databases.
+	 *
+	 * <p>
+	 * The intent of this method is to help provide access to classes that might
+	 * define database connections.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a set of {@link DBDatabase} classes.
+	 */
+	protected static Set<Class<? extends DBDatabase>> getAllDBDatabaseClasses() {
+		Reflections reflections = new Reflections("");
+		final Set<Class<? extends DBDatabase>> allKnownDBDatabases = reflections.getSubTypesOf(DBDatabase.class);
+
+		final Set<Class<? extends DBDatabase>> usefulDBDatabases = new HashSet<Class<? extends DBDatabase>>();
+		allKnownDBDatabases.forEach(known -> {
+			usefulDBDatabases.add(known);
+		});
 		return usefulDBDatabases;
 	}
 
