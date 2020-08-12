@@ -115,6 +115,22 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	}
 
 	@Override
+	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		String result = "PARSEDATETIME("
+				+ "''||"+years
+				+ "||'-'||" + doLeftPadTransform(months, "'0'", "2")
+				+ "||'-'||" + doLeftPadTransform(days, "'0'","2")
+				+ "||' '||" + doLeftPadTransform(hours,"'0'","2")
+				+ "||':'||" + doLeftPadTransform(minutes, "'0'","2")
+				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
+				+ "||" + seconds
+				+ ", '"+ "yyyy-M-d HH:mm:ss"+"'"
+				+")";
+		result = "TIMESTAMPADD('NANOSECOND', ("+ subsecond+"*1000000000), "+result+")";
+		return result;
+	}
+
+	@Override
 	public String formatTableName(DBRow table) {
 		return table.getTableName().toUpperCase();
 	}
