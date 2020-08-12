@@ -41,7 +41,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	public ExpressionsInDBRowFields(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@BeforeClass
 	public static void setUpClass() {
 	}
@@ -51,13 +51,17 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	}
 
 	@Before
-	public void setUp() {
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
 		database.setPrintSQLBeforeExecuting(true);
 	}
 
 	@After
-	public void tearDown() {
+	@Override
+	public void tearDown() throws Exception {
 		database.setPrintSQLBeforeExecuting(false);
+		super.tearDown();
 	}
 
 	@Test
@@ -163,6 +167,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void selectDBRowExpressionAllMarques() throws Exception {
+		System.out.println("nz.co.gregs.dbvolution.ExpressionsInDBRowFields.selectDBRowExpressionAllMarques()");
 		final ExpressionRow expressionRow = new ExpressionRow();
 		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow)
 				.setQueryLabel("selectDBRowExpressionAllMarques");
@@ -188,6 +193,9 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 						+ row.name.stringValue() + "-"
 						+ year));
 			} else {
+				System.out.println("supportsDifferenceBetweenNullAndEmptyString: " + database.supportsDifferenceBetweenNullAndEmptyString());
+				System.out.println("supportsDifferenceBetweenNullAndEmptyStringNatively: " + database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively());
+				System.out.println("NOT requiredToProduceEmptyStringsForNull: NOT " + database.getDefinition().requiredToProduceEmptyStringsForNull());
 				if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 					Assert.assertThat(
 							row.uidNameAndYear.stringValue(),
@@ -199,6 +207,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 					);
 				} else {
+					System.out.println("" + row.uidMarque + "-" + row.name + "-" + row.creationDate.stringValue());
 					Assert.assertThat(
 							row.uidNameAndYear.stringValue(),
 							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
