@@ -2882,7 +2882,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			if (db.requiredToProduceEmptyStringsForNull()) {
 				returnStr = " NOT (" + onlyBoolStr + " IS " + db.getNull() + " OR " + onlyBoolStr + " = '')";
 			} else {
-				returnStr = onlyBoolStr + " IS NOT " + db.getNull() + "/*for strings*/";
+				returnStr = onlyBoolStr + " IS NOT " + db.getNull();// for strings
 			}
 			return returnStr;
 		}
