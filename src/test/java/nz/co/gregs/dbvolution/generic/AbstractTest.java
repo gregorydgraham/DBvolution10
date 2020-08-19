@@ -264,6 +264,7 @@ public abstract class AbstractTest {
 	public AbstractTest(Object testIterationName, Object db) {
 		if (db instanceof DBDatabase) {
 			this.database = (DBDatabase) db;
+			database.setLabel("Actual Test Database ("+db.getClass().getSimpleName()+")");
 		}
 	}
 
