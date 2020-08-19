@@ -33,7 +33,6 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
 import org.testcontainers.containers.OracleContainer;
 
@@ -47,24 +46,37 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 	private OracleContainer container;
 
 	public static Oracle11XEContainerDB getInstance() {
+		return getLabelledInstance("");
+	}
+
+	public static Oracle11XEContainerDB getLabelledInstance(String label) {
 		OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
 		container.start();
 
 		try {
-			return new Oracle11XEContainerDB(container);
+			return new Oracle11XEContainerDB(container, label);
 		} catch (SQLException ex) {
 			Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.SEVERE, null, ex);
 			throw new RuntimeException("Unable To Create Oracle Database in Docker Container", ex);
 		}
 	}
 
-	public Oracle11XEContainerDB(OracleContainer container) throws SQLException {
+	protected Oracle11XEContainerDB(OracleContainer container) throws SQLException {
+		this(container, "", container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
+	}
+
+	protected Oracle11XEContainerDB(OracleContainer container, String label) throws SQLException {
+		this(container, label, container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
+	}
+
+	protected Oracle11XEContainerDB(OracleContainer container, String label, String host, int port, String sid, String username, String password) throws SQLException {
 		super(new Oracle11XESettingsBuilder()
-						.setHost(container.getContainerIpAddress())
-						.setPort(container.getOraclePort())
-						.setInstance(container.getSid())
-						.setUsername(container.getUsername())
-						.setPassword(container.getPassword())
+				.setLabel(label)
+				.setHost(host)
+				.setPort(port)
+				.setInstance(sid)
+				.setUsername(username)
+				.setPassword(password)
 		);
 		this.container = container;
 		Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.INFO, "ORACLE: {0}", container.getJdbcUrl());
