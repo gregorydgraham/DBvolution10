@@ -21,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.databases.Oracle11XEContainerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -207,19 +208,168 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 					);
 				} else {
-					System.out.println("" + row.uidMarque + "-" + row.name + "-" + row.creationDate.stringValue());
+					if (row.creationDate.isNull()) {
+						Assert.assertThat(
+								row.uidNameAndYear.stringValue(),
+								isEmptyOrNullString()
+						);
+					} else {
+						System.out.println("" + row.uidMarque + "-" + row.name + "-" + row.creationDate.stringValue());
+						Assert.assertThat(
+								row.uidNameAndYear.stringValue(),
+								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
+						);
+						String year = new SimpleDateFormat("yyyy").format(new Date());
+						Assert.assertThat(
+								row.uidNameAndNVLYear.stringValue(),
+								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
+						);
+					}
+				}
+			}
+		}
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void selectDBRowExpressionAllMarquesWithinOracleCluster() throws Exception {
+		System.out.println("nz.co.gregs.dbvolution.ExpressionsInDBRowFields.selectDBRowExpressionAllMarques()");
+
+		final Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("Oracle DB:selectDBRowExpressionAllMarquesWithinOracleCluster");
+		var cluster = new DBDatabaseCluster("test required empty for null cluster", oracle, database);
+
+		final ExpressionRow expressionRow = new ExpressionRow();
+		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow)
+				.setQueryLabel("selectDBRowExpressionAllMarques");
+
+		database.setPrintSQLBeforeExecuting(true);
+		final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
+		database.setPrintSQLBeforeExecuting(false);
+
+		for (ExpressionRow row : allMarques) {
+			Assert.assertThat(row.uidAndName.stringValue(),
+					is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
+			final Date dateValue = row.creationDate.dateValue();
+
+			if (dateValue != null) {
+				String year = new SimpleDateFormat("yyyy").format(dateValue);
+				Assert.assertThat(row.uidNameAndYear.stringValue(), is(
+						row.uidMarque.stringValue() + "-"
+						+ row.name.stringValue() + "-"
+						+ year));
+				Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+						row.uidMarque.stringValue() + "-"
+						+ row.name.stringValue() + "-"
+						+ year));
+			} else {
+				System.out.println("supportsDifferenceBetweenNullAndEmptyString: " + database.supportsDifferenceBetweenNullAndEmptyString());
+				System.out.println("supportsDifferenceBetweenNullAndEmptyStringNatively: " + database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively());
+				System.out.println("NOT requiredToProduceEmptyStringsForNull: NOT " + database.getDefinition().requiredToProduceEmptyStringsForNull());
+				if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 					Assert.assertThat(
 							row.uidNameAndYear.stringValue(),
-							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
+							isEmptyOrNullString()
 					);
 					String year = new SimpleDateFormat("yyyy").format(new Date());
 					Assert.assertThat(
 							row.uidNameAndNVLYear.stringValue(),
 							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 					);
+				} else {
+					System.out.println("" + row.uidMarque + "-" + row.name + "-" + row.creationDate.stringValue());
+					if (row.creationDate.isNull()) {
+						Assert.assertThat(
+								row.uidNameAndYear.stringValue(),
+								isEmptyOrNullString()
+						);
+					} else {
+						Assert.assertThat(
+								row.uidNameAndYear.stringValue(),
+								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
+						);
+						String year = new SimpleDateFormat("yyyy").format(new Date());
+						Assert.assertThat(
+								row.uidNameAndNVLYear.stringValue(),
+								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
+						);
+					}
 				}
 			}
 		}
+		System.out.println(cluster.getLabel());
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase() throws Exception {
+		System.out.println("nz.co.gregs.dbvolution.ExpressionsInDBRowFields.selectDBRowExpressionAllMarques()");
+
+		final Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("Oracle DB:selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase");
+		var cluster = new DBDatabaseCluster("test required empty for null cluster", database);
+		cluster.addDatabase(oracle);
+
+		final ExpressionRow expressionRow = new ExpressionRow();
+		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow)
+				.setQueryLabel("selectDBRowExpressionAllMarques");
+
+		database.setPrintSQLBeforeExecuting(true);
+		final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
+		database.setPrintSQLBeforeExecuting(false);
+
+		for (ExpressionRow row : allMarques) {
+			Assert.assertThat(row.uidAndName.stringValue(),
+					is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
+			final Date dateValue = row.creationDate.dateValue();
+
+			if (dateValue != null) {
+				String year = new SimpleDateFormat("yyyy").format(dateValue);
+				Assert.assertThat(row.uidNameAndYear.stringValue(), is(
+						row.uidMarque.stringValue() + "-"
+						+ row.name.stringValue() + "-"
+						+ year));
+				Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+						row.uidMarque.stringValue() + "-"
+						+ row.name.stringValue() + "-"
+						+ year));
+			} else {
+				System.out.println("supportsDifferenceBetweenNullAndEmptyString: " + database.supportsDifferenceBetweenNullAndEmptyString());
+				System.out.println("supportsDifferenceBetweenNullAndEmptyStringNatively: " + database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively());
+				System.out.println("NOT requiredToProduceEmptyStringsForNull: NOT " + database.getDefinition().requiredToProduceEmptyStringsForNull());
+				System.out.println("uidNameAndYear: " + row.uidNameAndYear);
+				System.out.println("uidNameAndYear: " + row.uidNameAndYear.stringValue());
+				if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+					Assert.assertThat(
+							row.uidNameAndYear.stringValue(),
+							isEmptyOrNullString()
+					);
+					String year = new SimpleDateFormat("yyyy").format(new Date());
+					Assert.assertThat(
+							row.uidNameAndNVLYear.stringValue(),
+							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
+					);
+				} else {
+					System.out.println(row);
+					System.out.println("" + row.uidMarque + "-" + row.name + "-" + row.creationDate.stringValue());
+					if (row.creationDate.isNull()) {
+						Assert.assertThat(
+								row.uidNameAndYear.stringValue(),
+								isEmptyOrNullString()
+						);
+					} else {
+						Assert.assertThat(
+								row.uidNameAndYear.stringValue(),
+								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
+						);
+						String year = new SimpleDateFormat("yyyy").format(new Date());
+						Assert.assertThat(
+								row.uidNameAndNVLYear.stringValue(),
+								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
+						);
+					}
+				}
+			}
+		}
+		System.out.println(cluster.getLabel());
 	}
 
 	@DBTableName("marque")
