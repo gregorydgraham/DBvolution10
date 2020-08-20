@@ -162,48 +162,48 @@ public class DBDatabaseCluster extends DBDatabase {
 		this("", new Configuration(true, true));
 	}
 
-	public DBDatabaseCluster(String clusterName, Configuration config) {
+	public DBDatabaseCluster(String clusterLabel, Configuration config) {
 		super();
 		clusterStatement = new DBStatementCluster(this);
 		details = new ClusterDetails();
-		details.setClusterName(clusterName);
+		details.setClusterLabel(clusterLabel);
 		details.setAutoRebuild(config.isUseAutoRebuild());
 		details.setAutoReconnect(config.useAutoReconnect);
-		setDatabaseName(clusterName);
+		setLabel(clusterLabel);
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
 		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
 		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
 		addRegularProcess(reconnectionProcessor);
 	}
 
-	public DBDatabaseCluster(String clusterName) {
-		this(clusterName, new Configuration(true, true));
+	public DBDatabaseCluster(String clusterLabel) {
+		this(clusterLabel, new Configuration(true, true));
 	}
 
-	public DBDatabaseCluster(String clusterName, Configuration config, DBDatabase... databases) throws SQLException {
-		this(clusterName, config);
+	public DBDatabaseCluster(String clusterLabel, Configuration config, DBDatabase... databases) throws SQLException {
+		this(clusterLabel, config);
 		details.addAll(databases);
 		setDefinition(new ClusterDatabaseDefinition());
 		synchronizeSecondaryDatabases();
 	}
 
-	public DBDatabaseCluster(String clusterName, Configuration config, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
-		this(clusterName, config);
+	public DBDatabaseCluster(String clusterLabel, Configuration config, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		this(clusterLabel, config);
 		setDefinition(new ClusterDatabaseDefinition());
 		for (DatabaseConnectionSettings setting : settings) {
 			this.addDatabase(setting.createDBDatabase());
 		}
 	}
 
-	public DBDatabaseCluster(String clusterName, DBDatabase... databases) throws SQLException {
-		this(clusterName);
+	public DBDatabaseCluster(String clusterLabel, DBDatabase... databases) throws SQLException {
+		this(clusterLabel);
 		details.addAll(databases);
 		setDefinition(new ClusterDatabaseDefinition());
 		synchronizeSecondaryDatabases();
 	}
 
-	public DBDatabaseCluster(String clusterName, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
-		this(clusterName);
+	public DBDatabaseCluster(String clusterLabel, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		this(clusterLabel);
 		setDefinition(new ClusterDatabaseDefinition());
 		for (DatabaseConnectionSettings setting : settings) {
 			this.addDatabase(setting.createDBDatabase());
@@ -262,7 +262,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	final public synchronized void setDatabaseName(String databaseName) {
 		super.setDatabaseName(databaseName);
-		details.setClusterName(databaseName);
+		details.setClusterLabel(databaseName);
 	}
 
 	private synchronized DBStatement getClusterStatement() {
