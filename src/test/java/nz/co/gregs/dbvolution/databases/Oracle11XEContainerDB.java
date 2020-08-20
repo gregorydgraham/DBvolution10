@@ -70,7 +70,7 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 	}
 
 	protected Oracle11XEContainerDB(OracleContainer container, String label, String host, int port, String sid, String username, String password) throws SQLException {
-		super(new Oracle11XESettingsBuilder()
+		this(container, new Oracle11XESettingsBuilder()
 				.setLabel(label)
 				.setHost(host)
 				.setPort(port)
@@ -78,6 +78,10 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 				.setUsername(username)
 				.setPassword(password)
 		);
+	}
+
+	protected Oracle11XEContainerDB(OracleContainer container, Oracle11XESettingsBuilder settings) throws SQLException {
+		super(settings);
 		this.container = container;
 		Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.INFO, "ORACLE: {0}", container.getJdbcUrl());
 	}
