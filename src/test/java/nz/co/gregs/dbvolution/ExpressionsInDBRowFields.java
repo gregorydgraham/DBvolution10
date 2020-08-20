@@ -235,7 +235,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	public void selectDBRowExpressionAllMarquesWithinOracleCluster() throws Exception {
 		System.out.println("nz.co.gregs.dbvolution.ExpressionsInDBRowFields.selectDBRowExpressionAllMarques()");
 
-		final Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("Oracle DB:selectDBRowExpressionAllMarquesWithinOracleCluster");
+		final Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("Oracle DB:selectDBRowExpressionAllMarquesWithinOracleCluster"+Math.random());
 		var cluster = new DBDatabaseCluster("test required empty for null cluster", oracle, database);
 
 		final ExpressionRow expressionRow = new ExpressionRow();
@@ -304,7 +304,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	public void selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase() throws Exception {
 		System.out.println("nz.co.gregs.dbvolution.ExpressionsInDBRowFields.selectDBRowExpressionAllMarques()");
 
-		final Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("Oracle DB:selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase");
+		final Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("Oracle DB:selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase"+Math.random());
 		var cluster = new DBDatabaseCluster("test required empty for null cluster", database);
 		cluster.addDatabase(oracle);
 
