@@ -76,14 +76,14 @@ public class ClusterDetails implements Serializable {
 	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
 	private final Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-	private String clusterName = "NotDefined";
+	private String clusterLabel = "NotDefined";
 	private boolean useAutoRebuild = false;
 	private boolean autoreconnect = false;
 	private boolean supportsDifferenceBetweenNullAndEmptyString = false;
 
 	public ClusterDetails(String clusterName) {
 		this();
-		this.clusterName = clusterName;
+		this.clusterLabel = clusterName;
 	}
 
 	public ClusterDetails(String clusterName, boolean autoRebuild) {
@@ -95,8 +95,9 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public final synchronized boolean add(DBDatabase database) {
-		boolean result = getSupportsDifferenceBetweenNullAndEmptyString() && database.supportsDifferenceBetweenNullAndEmptyString();
-		if (result == false) {
+		final boolean supportsDifferenceBetweenNullAndEmptyString1 = getSupportsDifferenceBetweenNullAndEmptyString();
+		boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
+		if (result != supportsDifferenceBetweenNullAndEmptyString1) {
 			setSupportsDifferenceBetweenNullAndEmptyString(result);
 			database.getDefinition().setRequiredToProduceEmptyStringsForNull(result);
 		}
@@ -306,7 +307,7 @@ public class ClusterDetails implements Serializable {
 	private synchronized void setAuthoritativeDatabase() {
 		if (useAutoRebuild) {
 			for (DBDatabase db : allDatabases) {
-				final String name = getClusterName();
+				final String name = getClusterLabel();
 				if (!db.isMemoryDatabase() && name != null && !name.isEmpty()) {
 					final String encode = db.getSettings().encode();
 					try {
@@ -322,13 +323,13 @@ public class ClusterDetails implements Serializable {
 	}
 
 	private synchronized void removeAuthoritativeDatabase() {
-		prefs.remove(getClusterName());
+		prefs.remove(getClusterLabel());
 	}
 
 	public DatabaseConnectionSettings getAuthoritativeDatabaseConnectionSettings() {
 		if (useAutoRebuild) {
 			String encodedSettings = "";
-			final String rawPrefsValue = prefs.get(getClusterName(), null);
+			final String rawPrefsValue = prefs.get(getClusterLabel(), null);
 			if (rawPrefsValue != null) {
 				try {
 					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
@@ -370,17 +371,17 @@ public class ClusterDetails implements Serializable {
 	}
 
 	/**
-	 * @return the clusterName
+	 * @return the clusterLabel
 	 */
-	public String getClusterName() {
-		return clusterName;
+	public String getClusterLabel() {
+		return clusterLabel;
 	}
 
 	/**
-	 * @param clusterName the clusterName to set
+	 * @param clusterLabel the clusterLabel to set
 	 */
-	public void setClusterName(String clusterName) {
-		this.clusterName = clusterName;
+	public void setClusterLabel(String clusterLabel) {
+		this.clusterLabel = clusterLabel;
 		setAuthoritativeDatabase();
 	}
 
