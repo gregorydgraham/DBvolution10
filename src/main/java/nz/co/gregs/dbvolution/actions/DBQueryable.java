@@ -35,7 +35,6 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 
 /**
  *
