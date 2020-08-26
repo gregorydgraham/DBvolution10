@@ -82,7 +82,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
  *
  * @author Gregory Graham
  */
-public abstract class DBDatabase implements Serializable, Cloneable {
+public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseable {
 
 	private static final long serialVersionUID = 1l;
 	static final private Log LOG = LogFactory.getLog(DBDatabase.class);
@@ -110,6 +110,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
+	}
+
+	@Override
+	public void close() {
+		stop();
 	}
 
 	@Override
@@ -329,7 +334,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?,?> dcs) throws SQLException {
+	public DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?, ?> dcs) throws SQLException {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
@@ -2034,10 +2039,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	final public String getLabel() {
 		final String label = settings.getLabel();
-		return 
-				label==null||label.isEmpty()
-				?"Unlabelled "+this.getClass().getSimpleName()
-				:label;
+		return label == null || label.isEmpty()
+				? "Unlabelled " + this.getClass().getSimpleName()
+				: label;
 	}
 
 	/**
@@ -2382,7 +2386,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		throw exp;
 	}
 
-	protected abstract SettingsBuilder<?,?> getURLInterpreter();
+	protected abstract SettingsBuilder<?, ?> getURLInterpreter();
 
 	public final String getUrlFromSettings(DatabaseConnectionSettings oldSettings) {
 		return getURLInterpreter().generateJDBCURL(oldSettings);
@@ -2467,7 +2471,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public static enum ResponseToException {
 		REPLACECONNECTION(),
 		REQUERY(),
-		SKIPQUERY(), 
+		SKIPQUERY(),
 		EMULATE_RECURSIVE_QUERY();
 
 		ResponseToException() {
