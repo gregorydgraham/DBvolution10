@@ -31,6 +31,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
@@ -73,6 +77,8 @@ public abstract class AbstractTest {
 	public static String secondDateStr = "2/April/2011 1:02:03";
 	public static Date march23rd2013 = (new GregorianCalendar(2013, 2, 23, 12, 34, 56)).getTime();
 	public static Date april2nd2011 = (new GregorianCalendar(2011, 3, 2, 1, 2, 3)).getTime();
+	private static Future<Oracle11XEContainerDB> __oracleDatabaseFuture = Oracle11XEContainerDB.getLabelledInstanceInFuture("Oracle Static Reference Database");
+	private static Oracle11XEContainerDB __oracleDatabase = null;
 
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -84,6 +90,19 @@ public abstract class AbstractTest {
 			System.out.println("Processing: Database " + database[0]);
 		}
 		return databases;
+	}
+	
+	public Oracle11XEContainerDB getOracleReferenceDatabase(){
+		if (__oracleDatabase==null) {
+			try {
+				__oracleDatabase = __oracleDatabaseFuture.get();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (ExecutionException ex) {
+				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		return __oracleDatabase;
 	}
 
 	protected synchronized static void getDatabasesFromSettings() throws InvocationTargetException, IllegalArgumentException, IOException, InstantiationException, SQLException, IllegalAccessException, ClassNotFoundException, SecurityException, NoSuchMethodException {
