@@ -53,6 +53,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.Oracle11XEContainerDB;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -112,8 +113,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
 			Assert.assertThat(soloDB.getDBTable(testTable).count(), is(22l));
 //
-			H2MemoryDB slowSynchingDB = new H2MemoryDB("SlowSynchingDB", "who", "what", true) {
-
+			H2MemoryDB slowSynchingDB = new H2MemoryDB(
+					new H2MemorySettingsBuilder().setLabel("SlowSynchingDB").setUsername("who").setPassword("what")
+			) {
 				private static final long serialVersionUID = 1l;
 
 				@Override
@@ -378,7 +380,12 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
 			cluster.setAutoRebuild(false);
 			cluster.createTableNoExceptions(new TableThatDoesExistOnTheCluster());
-			H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest6", "who", "what", true) {
+			H2MemoryDB soloDB2 = new H2MemoryDB(
+					new H2MemorySettingsBuilder()
+							.setLabel("DBDatabaseClusterTest6")
+							.setUsername("who")
+							.setPassword("what")
+			) {
 				private static final long serialVersionUID = 1l;
 
 				@Override
@@ -603,7 +610,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				Assert.assertThat(cluster.size(), is(2));
 				Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 
-				Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
+//				Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
+				Oracle11XEContainerDB oracle = getOracleReferenceDatabase();
 				cluster.addDatabaseAndWait(oracle);
 				Assert.assertThat(cluster.size(), is(3));
 				Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(false));
@@ -630,7 +638,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		try (H2MemoryDB soloDB1 = H2MemoryDB.randomDatabase();
 				H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
-				Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");) {
+//				Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
+				) {
 			{
 				DBDatabaseCluster cluster
 						= DBDatabaseCluster.randomManualCluster(soloDB1);
@@ -638,7 +647,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				Assert.assertThat(cluster.size(), is(2));
 				Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 
-				cluster.addDatabaseAndWait(oracle);
+				cluster.addDatabaseAndWait(getOracleReferenceDatabase());
 				Assert.assertThat(cluster.size(), is(3));
 				Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(false));
 				Assert.assertThat(soloDB1.supportsDifferenceBetweenNullAndEmptyString(), is(true));
@@ -663,13 +672,14 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			Assert.assertThat(cluster.size(), is(2));
 			Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 
-			Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
+//			Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
+			Oracle11XEContainerDB oracle = getOracleReferenceDatabase();
 			cluster.addDatabaseAndWait(oracle);
 			Assert.assertThat(cluster.size(), is(3));
 			Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(false));
 			Assert.assertThat(soloDB1.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 			Assert.assertThat(soloDB2.supportsDifferenceBetweenNullAndEmptyString(), is(true));
-			
+
 			for (DBDatabase db : cluster.getDatabases()) {
 				Assert.assertThat(db.supportsDifferenceBetweenNullAndEmptyString(), is(false));
 			}
