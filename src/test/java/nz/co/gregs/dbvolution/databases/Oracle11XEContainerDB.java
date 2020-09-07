@@ -31,6 +31,9 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
@@ -44,6 +47,7 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 
 	private static final long serialVersionUID = 1l;
 	private OracleContainer container;
+	private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public static Oracle11XEContainerDB getInstance() {
 		return getLabelledInstance("");
@@ -59,6 +63,12 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 			Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.SEVERE, null, ex);
 			throw new RuntimeException("Unable To Create Oracle Database in Docker Container", ex);
 		}
+	}
+
+	public static Future<Oracle11XEContainerDB> getLabelledInstanceInFuture(String label) {
+		return executor.submit(() -> {
+			return getLabelledInstance(label);
+		});
 	}
 
 	protected Oracle11XEContainerDB(OracleContainer container) throws SQLException {
