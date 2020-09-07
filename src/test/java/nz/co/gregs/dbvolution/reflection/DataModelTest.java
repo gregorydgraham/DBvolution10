@@ -113,8 +113,8 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder) throws java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder) throws java.io.IOException,java.sql.SQLException");
-		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
-		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean) throws java.sql.SQLException");
+		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
+		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
