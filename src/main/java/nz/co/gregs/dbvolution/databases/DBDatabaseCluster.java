@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.lang.ref.Cleaner;
 import nz.co.gregs.dbvolution.utility.ReconnectionProcess;
 import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
@@ -174,6 +175,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
 		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
 		addRegularProcess(reconnectionProcessor);
+		addCleaner();
 	}
 
 	public DBDatabaseCluster(String clusterLabel) {
@@ -1512,6 +1514,61 @@ public class DBDatabaseCluster extends DBDatabase {
 		LOG.info("STOPPING: removing all databases");
 		details.removeAllDatabases();
 		super.stop();
+	}
+	
+	@Override
+	public void close(){
+		dismantle();
+	}
+
+	/**
+	 * Cleans up the cluster's databases after the cluster exits scope.
+	 *
+	 * <p>
+	 * Removes all databases from the cluster without terminating them and
+	 * shutdown all cluster processes.
+	 *
+	 * <p>
+	 * Dismantling the cluster is only needed in a small number of scenarios,
+	 * mostly testing.
+	 *
+	 * <p>
+	 * Dismantling the cluster ends all threads, removes all databases, and
+	 * removes the authoritative database configuration.
+	 *
+	 * <p>
+	 * This process is similar to {@link DBDatabaseCluster#stop()
+	 * } but does not stop or dismantle the individual databases.
+	 */
+	private static final Cleaner cleaner = Cleaner.create();
+
+	private static class ClusterCleanupActions implements Runnable {
+
+		private final ClusterDetails details;
+		private final Log log;
+		private final ExecutorService actionThreadPool;
+
+		private ClusterCleanupActions(ClusterDetails details, Log log, ExecutorService actionThreadPool) {
+			this.details = details;
+			this.log = log;
+			this.actionThreadPool = actionThreadPool;
+		}
+
+		@Override
+		public void run() {
+			log.info("CLEANING UP CLUSTER...");
+			System.out.println("CLEANING UP CLUSTER...");
+			actionThreadPool.shutdown();
+			details.removeAllDatabases();
+		}
+	}
+
+	private ClusterCleanupActions clusterCleanupActions;
+	private Cleaner.Cleanable cleanable;
+
+	private void addCleaner() {
+		clusterCleanupActions = new ClusterCleanupActions(details, LOG, ACTION_THREAD_POOL);
+		cleanable = cleaner.register(this, clusterCleanupActions);
 	}
 
 	/**
