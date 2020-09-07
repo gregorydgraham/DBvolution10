@@ -175,23 +175,13 @@ public class DBDatabaseGetTest extends AbstractTest {
 
 	@Test
 	public void testIsNotNull() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
 		Marque literalQuery = new Marque();
 		literalQuery.individualAllocationsAllowed.excludedValues((String) null);
 		List<Marque> gotMarques = database.get(literalQuery);
-		database.setPrintSQLBeforeExecuting(false);
-		
-		/*if (database instanceof DBDatabaseCluster) {
-			Assert.assertThat(
-					gotMarques.size(),
-					isOneOf(
-							20,
-							1
-					)
-			);
-		} else*/
+		final Long fullTableCount = database.getDBTable(new Marque()).count();
+
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
-			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 2);
+			Assert.assertEquals(gotMarques.size(), fullTableCount - 2);
 		} else {
 			Assert.assertEquals(1, gotMarques.size());
 		}
