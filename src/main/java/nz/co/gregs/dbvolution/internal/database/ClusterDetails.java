@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.internal.database;
 
+import nz.co.gregs.dbvolution.databases.ClusteredDatabase;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
@@ -66,11 +67,11 @@ public class ClusterDetails implements Serializable {
 
 	private static final Log LOG = LogFactory.getLog(ClusterDetails.class);
 
-	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> unsynchronizedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> pausedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> quarantinedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final List<ClusteredDatabase> allDatabases = Collections.synchronizedList(new ArrayList<ClusteredDatabase>(0));
+	private final List<ClusteredDatabase> unsynchronizedDatabases = Collections.synchronizedList(new ArrayList<ClusteredDatabase>(0));
+	private final List<ClusteredDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<ClusteredDatabase>(0));
+	private final List<ClusteredDatabase> pausedDatabases = Collections.synchronizedList(new ArrayList<ClusteredDatabase>(0));
+	private final List<ClusteredDatabase> quarantinedDatabases = Collections.synchronizedList(new ArrayList<ClusteredDatabase>(0));
 
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
 	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
@@ -79,7 +80,8 @@ public class ClusterDetails implements Serializable {
 	private String clusterLabel = "NotDefined";
 	private boolean useAutoRebuild = false;
 	private boolean autoreconnect = false;
-	private boolean supportsDifferenceBetweenNullAndEmptyString = false;
+	private boolean supportsDifferenceBetweenNullAndEmptyString = true;
+	private final ArrayList<String> allAddedDatabases = new ArrayList<String>();
 
 	public ClusterDetails(String clusterName) {
 		this();
@@ -94,23 +96,29 @@ public class ClusterDetails implements Serializable {
 	public ClusterDetails() {
 	}
 
-	public final synchronized boolean add(DBDatabase database) {
-		final boolean supportsDifferenceBetweenNullAndEmptyString1 = getSupportsDifferenceBetweenNullAndEmptyString();
-		boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
-		if (result != supportsDifferenceBetweenNullAndEmptyString1) {
-			setSupportsDifferenceBetweenNullAndEmptyString(result);
-			database.getDefinition().setRequiredToProduceEmptyStringsForNull(result);
-		}
+	public final synchronized boolean add(DBDatabase databaseToAdd) {
+		if (databaseToAdd != null) {
+			ClusteredDatabase database = new ClusteredDatabase(databaseToAdd);
+//			DBDatabase database = databaseToAdd;
+			final boolean supportsDifferenceBetweenNullAndEmptyString1 = getSupportsDifferenceBetweenNullAndEmptyString();
+			boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
+			if (result != supportsDifferenceBetweenNullAndEmptyString1) {
+				setSupportsDifferenceBetweenNullAndEmptyString(result);
+				database.getDefinition().setRequiredToProduceEmptyStringsForNull(result);
+			}
 
-		if (clusterContainsDatabase(database)) {
-			readyDatabases.remove(database);
-			pausedDatabases.remove(database);
-			quarantinedDatabases.remove(database);
-			return unsynchronizedDatabases.add(database);
-		} else {
-			unsynchronizedDatabases.add(database);
-			return allDatabases.add(database);
+			if (clusterContainsDatabase(database)) {
+				readyDatabases.remove(database);
+				pausedDatabases.remove(database);
+				quarantinedDatabases.remove(database);
+				return unsynchronizedDatabases.add(database);
+			} else {
+				allAddedDatabases.add(database.getSettings().encode());
+				unsynchronizedDatabases.add(database);
+				return allDatabases.add(database);
+			}
 		}
+		return false;
 	}
 
 	public DBDatabase[] getAllDatabases() {
@@ -119,7 +127,8 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase db) {
+	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase getStatusOfThisDatabase) {
+		ClusteredDatabase db = new ClusteredDatabase(getStatusOfThisDatabase);
 		final boolean ready = readyDatabases.contains(db);
 		final boolean paused = pausedDatabases.contains(db);
 		final boolean quarantined = quarantinedDatabases.contains(db);
@@ -139,7 +148,8 @@ public class ClusterDetails implements Serializable {
 		return DBDatabaseCluster.Status.UNKNOWN;
 	}
 
-	public synchronized void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
+	public synchronized void quarantineDatabase(DBDatabase databaseToQuarantine, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
+		ClusteredDatabase database = new ClusteredDatabase(databaseToQuarantine);
 		if (hasTooFewReadyDatabases() && readyDatabases.contains(database)) {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
@@ -158,7 +168,8 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized boolean removeDatabase(DBDatabase database) {
+	public synchronized boolean removeDatabase(DBDatabase databaseToRemove) {
+		ClusteredDatabase database = new ClusteredDatabase(databaseToRemove);
 		if (hasTooFewReadyDatabases() && readyDatabases.contains(database)) {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
@@ -166,6 +177,7 @@ public class ClusterDetails implements Serializable {
 			final boolean result = removeDatabaseFromAllLists(database);
 			if (result) {
 				setAuthoritativeDatabase();
+				checkSupportForDifferenceBetweenNullAndEmptyString();
 			}
 			return result;
 		}
@@ -175,8 +187,9 @@ public class ClusterDetails implements Serializable {
 		return readyDatabases.size() < 2;
 	}
 
-	private synchronized boolean removeDatabaseFromAllLists(DBDatabase database) {
+	private synchronized boolean removeDatabaseFromAllLists(ClusteredDatabase database) {
 		LOG.info("REMOVING: " + database.getLabel());
+		database.getDefinition().setRequiredToProduceEmptyStringsForNull(false);
 		boolean result = queuedActions.containsKey(database) ? queuedActions.remove(database) != null : true;
 		result = result && quarantinedDatabases.contains(database) ? quarantinedDatabases.remove(database) : true;
 		result = result && unsynchronizedDatabases.contains(database) ? unsynchronizedDatabases.remove(database) : true;
@@ -190,8 +203,9 @@ public class ClusterDetails implements Serializable {
 		return unsynchronizedDatabases.toArray(new DBDatabase[]{});
 	}
 
-	public synchronized void synchronizingDatabase(DBDatabase db) {
-		unsynchronizedDatabases.remove(db);
+	public synchronized void synchronizingDatabase(DBDatabase datbaseIsSynchronized) {
+		ClusteredDatabase database = new ClusteredDatabase(datbaseIsSynchronized);
+		unsynchronizedDatabases.remove(database);
 	}
 
 	public Queue<DBAction> getActionQueue(DBDatabase db) {
@@ -211,7 +225,8 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized void readyDatabase(DBDatabase secondary) {
+	public synchronized void readyDatabase(DBDatabase databaseToReady) {
+		ClusteredDatabase secondary = new ClusteredDatabase(databaseToReady);
 		unsynchronizedDatabases.remove(secondary);
 		pausedDatabases.remove(secondary);
 		try {
@@ -241,10 +256,11 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized void pauseDatabase(DBDatabase template) {
-		if (template != null) {
-			readyDatabases.remove(template);
-			pausedDatabases.add(template);
+	public synchronized void pauseDatabase(DBDatabase databaseToPause) {
+		if (databaseToPause != null) {
+			ClusteredDatabase database = new ClusteredDatabase(databaseToPause);
+			readyDatabases.remove(database);
+			pausedDatabases.add(database);
 		}
 	}
 
@@ -386,13 +402,17 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public List<DBDatabase> getQuarantinedDatabases() {
-		return quarantinedDatabases;
+		return quarantinedDatabases
+				.stream()
+				.map(ClusteredDatabase::getInternalDatabase)
+				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 	}
 
 	public synchronized void removeAllDatabases() {
-		DBDatabase[] dbs = allDatabases.toArray(new DBDatabase[]{});
-		for (DBDatabase db : dbs) {
+		ClusteredDatabase[] dbs = allDatabases.toArray(new ClusteredDatabase[]{});
+		for (ClusteredDatabase db : dbs) {
 			removeDatabaseFromAllLists(db);
+			db.stopClustering();
 		}
 	}
 
@@ -424,5 +444,19 @@ public class ClusterDetails implements Serializable {
 
 	public synchronized boolean getSupportsDifferenceBetweenNullAndEmptyString() {
 		return supportsDifferenceBetweenNullAndEmptyString;
+	}
+
+	private void checkSupportForDifferenceBetweenNullAndEmptyString() {
+		boolean supportsDifference = true;
+		for (DBDatabase database : getAllDatabases()) {
+			supportsDifference = supportsDifference && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
+		}
+		setSupportsDifferenceBetweenNullAndEmptyString(supportsDifference);
+	}
+
+	public void printAllFormerDatabases() {
+		allAddedDatabases.forEach(db -> {
+			System.out.println("DB: " + db);
+		});
 	}
 }
