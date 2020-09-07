@@ -4264,8 +4264,11 @@ public abstract class DBDefinition implements Serializable {
 	 */
 	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		String result = selectableName;
-		if ((qdt instanceof DBString) && (requiredToProduceEmptyStringsForNull() && supportsDifferenceBetweenNullAndEmptyStringNatively())) {
-			result = convertNullToEmptyString(result);
+		if ((qdt instanceof DBString) // if it's a string 
+				&& requiredToProduceEmptyStringsForNull() // and it needs to be compatible with Oracle
+				&& supportsDifferenceBetweenNullAndEmptyStringNatively() // and it isn't compatible normally
+				) {
+			result = convertNullToEmptyString(result); // make all the nulls into empty strings
 		}
 		return result;
 	}
