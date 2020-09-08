@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
  */
 public class SQLiteDB extends DBDatabase {
 
-	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
+	public static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;
 //	private String derivedURL;
 //	private static final SettingsBuilder URL_PROCESSOR = new SQLiteSettingsBuilder();

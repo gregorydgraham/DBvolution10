@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
  */
 public class JavaDB extends DBDatabase {
 
-	private static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
+	public static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
 	public static final long serialVersionUID = 1l;
 
 	/**

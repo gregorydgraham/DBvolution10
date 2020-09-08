@@ -23,7 +23,6 @@ import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Use this class to work with an in-memory JavaDB.
@@ -36,7 +35,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 public class JavaDBMemoryDB extends DBDatabase {
 
 	public static final long serialVersionUID = 1l;
-	private static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
+	public static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
 	private String derivedURL;
 
 	/**

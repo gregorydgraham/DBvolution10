@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
  */
 public class MariaClusterDB extends DBDatabase {
 
-	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
+	public final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 	public static final long serialVersionUID = 1l;
 	private String derivedURL;
 

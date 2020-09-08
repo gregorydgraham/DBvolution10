@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 public class NuoDB extends DBDatabase {
 
 	private static final int NUODB_DEFAULT_PORT = 48004;
-	private static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
+	public static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
 	private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
 	public static final long serialVersionUID = 1l;
 

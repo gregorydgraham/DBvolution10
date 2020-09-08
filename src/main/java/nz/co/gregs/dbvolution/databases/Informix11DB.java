@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
  */
 public class Informix11DB extends InformixDB {
 
-	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
+	public static final String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
 	private static final long serialVersionUID = 1l;
 
 	/**
