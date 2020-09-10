@@ -34,6 +34,9 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.Informix11DB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 
 /**
  *
@@ -41,17 +44,28 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @param <SELF>
  * @param <DATABASE>
  */
-public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
+		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements InstanceCapableSettingsBuilder<SELF, DATABASE>,
 		RemoteCapableSettingsBuilder<SELF, DATABASE>,
 		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
-		ExtrasCapableSettingsBuilder<SELF, DATABASE>{
+		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;
+	}
+
+	@Override
+	public String getDefaultDriverName() {
+		return Informix11DB.INFORMIXDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new Informix11DBDefinition();
 	}
 
 	@Override
@@ -94,7 +108,6 @@ public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInfor
 //	public Class<? extends DBDatabase> generatesURLForDatabase() {
 //		return InformixDB.class;
 //	}
-
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;

@@ -31,6 +31,8 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.OracleAWS11DBDefinition;
 
 /**
  *
@@ -39,6 +41,15 @@ import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
 public class OracleAWS11SettingsBuilder extends AbstractOracleSettingsBuilder<OracleAWS11SettingsBuilder, OracleAWS11DB> {
 	
 	public OracleAWS11SettingsBuilder() {
+	}
+	@Override
+	public String getDefaultDriverName() {
+		return OracleAWS11DB.ORACLE_JDBC_DRIVER;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new OracleAWS11DBDefinition();
 	}
 
 	@Override

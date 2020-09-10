@@ -34,6 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
+import nz.co.gregs.dbvolution.databases.OracleDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 
 /**
  *
@@ -41,13 +46,24 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @param <SELF>
  * @param <DATABASE>
  */
-public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
+		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements
-		InstanceCapableSettingsBuilder<SELF, DATABASE>, 
-		SchemaCapableSettingsBuilder<SELF, DATABASE>, 
+		InstanceCapableSettingsBuilder<SELF, DATABASE>,
+		SchemaCapableSettingsBuilder<SELF, DATABASE>,
 		RemoteCapableSettingsBuilder<SELF, DATABASE> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+
+	@Override
+	public String getDefaultDriverName() {
+		return OracleDB.ORACLE_JDBC_DRIVER;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new OracleDBDefinition();
+	}
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -117,7 +133,7 @@ public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleS
 				+ settings.getInstance();
 	}
 
-	public AbstractOracleSettingsBuilder<?,?> setSID(String sid) {
+	public AbstractOracleSettingsBuilder<?, ?> setSID(String sid) {
 		return this.setInstance(sid);
 	}
 

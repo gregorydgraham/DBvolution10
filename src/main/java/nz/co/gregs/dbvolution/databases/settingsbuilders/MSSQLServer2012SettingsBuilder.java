@@ -31,6 +31,8 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.MSSQLServer2012DB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MSSQLServer2012DBDefinition;
 
 /**
  *
@@ -47,5 +49,15 @@ implements InstanceCapableSettingsBuilder<MSSQLServer2012SettingsBuilder, MSSQLS
 	@Override
 	public MSSQLServer2012DB getDBDatabase() throws Exception {
 		return new MSSQLServer2012DB(this);
+	}
+
+	@Override
+	public String getDefaultDriverName() {
+		return MSSQLServer2012DB.SQLSERVERDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new MSSQLServer2012DBDefinition();
 	}
 }

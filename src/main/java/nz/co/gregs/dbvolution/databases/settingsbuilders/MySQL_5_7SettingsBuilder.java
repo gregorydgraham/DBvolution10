@@ -31,9 +31,21 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.MySQLDB_5_7;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 
 public class MySQL_5_7SettingsBuilder extends AbstractMySQLSettingsBuilder<MySQL_5_7SettingsBuilder, MySQLDB_5_7> {
 
+	@Override
+	public String getDefaultDriverName() {
+		return MySQLDB_5_7.MYSQLDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new MySQLDBDefinition_5_7();
+	}
+	
 	@Override
 	public Class<MySQLDB_5_7> generatesURLForDatabase() {
 		return MySQLDB_5_7.class;

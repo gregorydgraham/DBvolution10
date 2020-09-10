@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.PostgresDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 
 /**
  *
@@ -43,7 +46,8 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @param <SELF>
  * @param <DATABASE>
  */
-public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostgresSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostgresSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
+		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements ClusterCapableSettingsBuilder<SELF, DATABASE>,
 		InstanceCapableSettingsBuilder<SELF, DATABASE>,
 		RemoteCapableSettingsBuilder<SELF, DATABASE>,
@@ -58,11 +62,22 @@ public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostg
 	}
 
 	@Override
+	public String getDefaultDriverName() {
+		return PostgresDB.POSTGRES_DRIVER_NAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new PostgresDBDefinition();
+	}
+
+	@Override
 	protected DatabaseConnectionSettings generateSettingsInternal(String jdbcURL, DatabaseConnectionSettings settings) {
 		String noPrefix = jdbcURL.replaceAll("^" + getJDBCURLPreamble(), "");
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split("\\?", 2)[1];
+		if (noPrefix.contains("?")) {
+			String extrasString = noPrefix.split("\\?", 2)[1];
 			settings.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
+			noPrefix = noPrefix.split("\\?", 2)[0];
 		}
 		settings.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
 		settings.setHost(noPrefix.split("/", 2)[0].split(":")[0]);

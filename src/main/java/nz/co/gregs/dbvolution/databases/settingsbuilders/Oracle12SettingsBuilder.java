@@ -31,6 +31,8 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.Oracle12DB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 
 /**
  *
@@ -39,6 +41,16 @@ import nz.co.gregs.dbvolution.databases.Oracle12DB;
 public class Oracle12SettingsBuilder extends AbstractOracleSettingsBuilder<Oracle12SettingsBuilder, Oracle12DB> {
 
 	public Oracle12SettingsBuilder() {
+	}
+	
+	@Override
+	public String getDefaultDriverName() {
+		return Oracle12DB.ORACLE_JDBC_DRIVER;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new Oracle12DBDefinition();
 	}
 
 	@Override

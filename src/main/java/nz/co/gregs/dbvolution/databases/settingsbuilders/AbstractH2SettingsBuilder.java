@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
 /**
@@ -45,13 +48,23 @@ import nz.co.gregs.dbvolution.utility.DefaultString;
  * @param <DATABASE>
  */
 public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
-		extends AbstractSettingsBuilder<SELF, DATABASE>
+		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements ClusterCapableSettingsBuilder<SELF, DATABASE>,
 		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
 	public AbstractH2SettingsBuilder() {
+	}
+
+	@Override
+	public String getDefaultDriverName() {
+		return H2DB.DRIVER_NAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new H2DBDefinition();
 	}
 
 	@Override

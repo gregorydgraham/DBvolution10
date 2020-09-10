@@ -33,6 +33,8 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.JavaDBMemoryDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 
 
 public class JavaDBMemorySettingsBuilder extends AbstractJavaDBSettingsBuilder<JavaDBMemorySettingsBuilder, JavaDBMemoryDB> {
@@ -52,6 +54,16 @@ public class JavaDBMemorySettingsBuilder extends AbstractJavaDBSettingsBuilder<J
 	@Override
 	public JavaDBMemoryDB getDBDatabase() throws Exception {
 		return new JavaDBMemoryDB(this);
+	}
+
+	@Override
+	public String getDefaultDriverName() {
+		return JavaDBMemoryDB.DRIVER_NAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new JavaDBMemoryDBDefinition();
 	}
 	
 }

@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**
  *
@@ -43,7 +46,8 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @param <SELF> the type returned by all SELF methods
  * @param <DATABASE>
  */
-public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
+		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements ClusterCapableSettingsBuilder<SELF, DATABASE>,
 		InstanceCapableSettingsBuilder<SELF, DATABASE>,
 		RemoteCapableSettingsBuilder<SELF, DATABASE>,
@@ -60,6 +64,16 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 			put("useSSL", "true");
 		}
 	};
+
+	@Override
+	public String getDefaultDriverName() {
+		return MySQLDB.MYSQLDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new MySQLDBDefinition();
+	}
 
 	@Override
 	protected Map<String, String> getDefaultConfigurationExtras() {

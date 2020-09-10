@@ -31,8 +31,11 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.Informix11DB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 
-public class Informix11SettingsBuilder extends AbstractInformixSettingsBuilder<Informix11SettingsBuilder, Informix11DB> {
+public class Informix11SettingsBuilder 
+		extends AbstractInformixSettingsBuilder<Informix11SettingsBuilder, Informix11DB> {
 
 	@Override
 	public Class<Informix11DB> generatesURLForDatabase() {
@@ -42,6 +45,16 @@ public class Informix11SettingsBuilder extends AbstractInformixSettingsBuilder<I
 	@Override
 	public Informix11DB getDBDatabase() throws Exception {
 		return new Informix11DB(this);
+	}
+
+	@Override
+	public String getDefaultDriverName() {
+		return Informix11DB.INFORMIXDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new Informix11DBDefinition();
 	}
 
 }

@@ -34,6 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.Informix11DB;
+import nz.co.gregs.dbvolution.databases.JavaDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 
 /**
  *
@@ -41,7 +46,8 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @param <SELF>
  * @param <DATABASE>
  */
-public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
+		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements InstanceCapableSettingsBuilder<SELF, DATABASE>,
 		RemoteCapableSettingsBuilder<SELF, DATABASE>,
 		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
@@ -52,6 +58,16 @@ public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBS
 			put("create", "true");
 		}
 	};
+
+	@Override
+	public String getDefaultDriverName() {
+		return JavaDB.DRIVER_NAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new JavaDBDefinition();
+	}
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -94,7 +110,6 @@ public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBS
 //	public Class<? extends DBDatabase> generatesURLForDatabase() {
 //		return JavaDB.class;
 //	}
-
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		return settings;

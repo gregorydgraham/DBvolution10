@@ -32,6 +32,8 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.H2FileDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 
 public class H2FileSettingsBuilder extends AbstractH2SettingsBuilder<H2FileSettingsBuilder, H2FileDB>
 		implements FileBasedSettingsBuilder<H2FileSettingsBuilder, H2FileDB> {
@@ -44,6 +46,16 @@ public class H2FileSettingsBuilder extends AbstractH2SettingsBuilder<H2FileSetti
 	@Override
 	public H2FileDB getDBDatabase() throws SQLException {
 		return new H2FileDB(this);
+	}
+
+	@Override
+	public String getDefaultDriverName() {
+		return H2FileDB.DRIVER_NAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new H2DBDefinition();
 	}
 
 }

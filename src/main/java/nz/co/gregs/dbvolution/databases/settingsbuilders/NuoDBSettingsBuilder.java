@@ -36,12 +36,14 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.NuoDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 
 /**
  *
  * @author gregorygraham
  */
-public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsBuilder, NuoDB>
+public class NuoDBSettingsBuilder extends AbstractVendorSettingsBuilder<NuoDBSettingsBuilder, NuoDB>
 		implements
 		InstanceCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
 		NamedDatabaseCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
@@ -51,6 +53,15 @@ public class NuoDBSettingsBuilder extends AbstractSettingsBuilder<NuoDBSettingsB
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
 
+	@Override
+	public String getDefaultDriverName() {
+		return NuoDB.NUODB_DRIVER;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new NuoDBDefinition();
+	}
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;

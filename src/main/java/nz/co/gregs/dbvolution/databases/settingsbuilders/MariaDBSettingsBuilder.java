@@ -32,20 +32,32 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MariaDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
 /**
  *
  * @author gregorygraham
  */
-public class MariaDBSettingsBuilder extends AbstractSettingsBuilder<MariaDBSettingsBuilder, MariaDB>
+public class MariaDBSettingsBuilder
+		extends AbstractVendorSettingsBuilder<MariaDBSettingsBuilder, MariaDB>
 		implements InstanceCapableSettingsBuilder<MariaDBSettingsBuilder, MariaDB>,
 		RemoteCapableSettingsBuilder<MariaDBSettingsBuilder, MariaDB>,
 		NamedDatabaseCapableSettingsBuilder<MariaDBSettingsBuilder, MariaDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+
+	@Override
+	public String getDefaultDriverName() {
+		return MariaDB.MARIADBDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new MariaDBDefinition();
+	}
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {

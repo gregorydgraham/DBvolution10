@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**
  *
@@ -47,6 +49,16 @@ public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQ
 			put("server.initialize-user", "true");
 		}
 	};
+	
+	@Override
+	public String getDefaultDriverName() {
+		return MySQLMXJDB.MYSQLDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new MySQLDBDefinition();
+	}
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {

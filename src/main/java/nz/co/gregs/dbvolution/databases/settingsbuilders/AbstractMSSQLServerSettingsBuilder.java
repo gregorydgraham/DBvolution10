@@ -34,6 +34,9 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 
 /**
  *
@@ -41,7 +44,8 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
  * @param <SELF>
  * @param <DATABASE>
  */
-public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE>
+public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMSSQLServerSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
+		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements InstanceCapableSettingsBuilder<SELF, DATABASE>,
 		RemoteCapableSettingsBuilder<SELF, DATABASE>,
 		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
@@ -52,6 +56,16 @@ public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMS
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;
+	}
+
+	@Override
+	public String getDefaultDriverName() {
+		return MSSQLServerDB.SQLSERVERDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new MSSQLServerDBDefinition();
 	}
 
 	@Override

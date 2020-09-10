@@ -31,6 +31,8 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 
 /**
  *
@@ -39,6 +41,15 @@ import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 public class Oracle11XESettingsBuilder extends AbstractOracleSettingsBuilder<Oracle11XESettingsBuilder, Oracle11XEDB> {
 
 	public Oracle11XESettingsBuilder() {
+	}
+	@Override
+	public String getDefaultDriverName() {
+		return Oracle11XEDB.ORACLE_JDBC_DRIVER;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new Oracle11XEDBDefinition();
 	}
 
 	@Override

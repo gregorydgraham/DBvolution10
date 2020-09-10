@@ -32,21 +32,33 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MariaClusterDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
 /**
  *
  * @author gregorygraham
  */
-public class MariaClusterDBSettingsBuilder extends AbstractSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB>
+public class MariaClusterDBSettingsBuilder 
+		extends AbstractVendorSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB>
 		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB>,
 		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB>,
 		NamedDatabaseCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
+
+	@Override
+	public String getDefaultDriverName() {
+		return MariaClusterDB.MARIADBDRIVERNAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new MariaDBDefinition();
+	}
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;

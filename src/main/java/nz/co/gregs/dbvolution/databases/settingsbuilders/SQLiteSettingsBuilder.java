@@ -34,17 +34,36 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 
 /**
  *
  * @author gregorygraham
  */
-public class SQLiteSettingsBuilder extends AbstractSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB>
+public class SQLiteSettingsBuilder extends AbstractVendorSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB>
 		implements FileBasedSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB>,
-		NamedDatabaseCapableSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB> {
+		UniqueDatabaseCapableSettingsBuilder<SQLiteSettingsBuilder, SQLiteDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 
+	@Override
+	public String getDefaultDriverName() {
+		return SQLiteDB.SQLITE_DRIVER_NAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new SQLiteDefinition();
+	}
+
+	@Override
+	public SQLiteSettingsBuilder withUniqueDatabaseName() {
+		UniqueDatabaseCapableSettingsBuilder.super.withUniqueDatabaseName();
+		this.setFilename(this.getDatabaseName()+".sqlite");
+		return this;
+	}
+	
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;

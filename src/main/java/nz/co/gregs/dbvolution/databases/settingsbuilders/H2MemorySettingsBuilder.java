@@ -33,10 +33,24 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 
-public class H2MemorySettingsBuilder extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder, H2MemoryDB>
-implements NamedDatabaseCapableSettingsBuilder<H2MemorySettingsBuilder, H2MemoryDB>{
+public class H2MemorySettingsBuilder
+		extends AbstractH2SettingsBuilder<H2MemorySettingsBuilder, H2MemoryDB>
+		implements
+		UniqueDatabaseCapableSettingsBuilder<H2MemorySettingsBuilder, H2MemoryDB> {
+
+	@Override
+	public String getDefaultDriverName() {
+		return H2MemoryDB.DRIVER_NAME;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new H2DBDefinition();
+	}
 
 	@Override
 	public Class<H2MemoryDB> generatesURLForDatabase() {
