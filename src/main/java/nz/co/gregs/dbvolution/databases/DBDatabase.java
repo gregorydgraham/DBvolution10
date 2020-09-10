@@ -46,6 +46,7 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.NamedDatabaseCapableSettingsBuilder;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
@@ -55,6 +56,7 @@ import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.RegularProcess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.VendorSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
@@ -295,7 +297,8 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, String driverName, DatabaseConnectionSettings dcs) throws SQLException {
+	@Deprecated
+	private DBDatabase(DBDefinition definition, String driverName, DatabaseConnectionSettings dcs) throws SQLException {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
@@ -334,12 +337,54 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?, ?> dcs) throws SQLException {
+	@Deprecated
+	private DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?, ?> dcs) throws SQLException {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
 		this.settings.copy(dcs.toSettings());
 		this.setDatabaseName(settings.getDatabaseName());
+		setDBDatabaseClassInSettings();
+		createRequiredTables();
+	}
+
+	/**
+	 * Define a new DBDatabase.
+	 *
+	 * <p>
+	 * Most programmers should not call this constructor directly. Check the
+	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
+	 * database.
+	 *
+	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
+	 *
+	 * @param settings - a DatabaseConnectionSettings for the required database.
+	 * @throws java.sql.SQLException database errors
+	 * @see DBDefinition
+	 * @see OracleDB
+	 * @see MSSQLServerDB
+	 * @see MySQLDB
+	 * @see PostgresDB
+	 * @see H2DB
+	 * @see H2MemoryDB
+	 * @see InformixDB
+	 * @see MariaDB
+	 * @see MariaClusterDB
+	 * @see NuoDB
+	 */
+	public DBDatabase(VendorSettingsBuilder<?, ?> settings) throws SQLException {
+		this();
+		this.definition = settings.getDefinition();
+		initDriver(settings.getDriverName());
+		this.settings.copy(settings.toSettings());
+		if (settings instanceof NamedDatabaseCapableSettingsBuilder) {
+			this.setDatabaseName(
+					((NamedDatabaseCapableSettingsBuilder) settings).getDatabaseName()
+			);
+		}
 		setDBDatabaseClassInSettings();
 		createRequiredTables();
 	}
@@ -372,7 +417,7 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * @see PostgresDB
 	 */
 	@Deprecated
-	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
+	private DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
