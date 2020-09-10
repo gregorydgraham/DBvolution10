@@ -258,6 +258,8 @@ public class CaseExpression {
 
 		protected static class BooleanExpressionNonStatement extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 			public BooleanExpressionNonStatement(AnyResult<?> booleanResult) {
 				super(booleanResult);
 			}
