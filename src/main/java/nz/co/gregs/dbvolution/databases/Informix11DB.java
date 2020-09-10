@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Informix11SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for Informix 11 and higher.
@@ -77,11 +76,12 @@ public class Informix11DB extends InformixDB {
 	 *
 	 * 1 Database exceptions may be thrown
 	 *
+	 * @param dcs
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 * @throws java.sql.SQLException database errors
 	 */
-	public Informix11DB(DatabaseConnectionSettings settings) throws ClassNotFoundException, SQLException {
-		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, settings);
+	public Informix11DB(DatabaseConnectionSettings dcs) throws ClassNotFoundException, SQLException {
+		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, dcs);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class Informix11DB extends InformixDB {
 	}
 
 	public Informix11DB(Informix11SettingsBuilder builder) throws ClassNotFoundException, SQLException {
-		this(builder.toSettings());
+		super(builder);
 	}
 
 	@Override

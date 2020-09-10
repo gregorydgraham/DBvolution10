@@ -75,7 +75,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDBOverSSL(DatabaseConnectionSettings ds) throws SQLException {
-		super(ds);
+		this(new PostgresOverSSLSettingsBuilder().fromSettings(ds));
 	}
 
 	/**
@@ -98,7 +98,6 @@ public class PostgresDBOverSSL extends PostgresDB {
 				.setUsername(username)
 				.setPassword(password)
 				.setExtras(extras)
-				.toSettings()
 		);
 		//		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
 	}
@@ -122,21 +121,10 @@ public class PostgresDBOverSSL extends PostgresDB {
 				.setDatabaseName(databaseName)
 				.setUsername(username)
 				.setPassword(password)
-				.toSettings()
 		);
 		//		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:postgresql://"
-//					+ settings.getHost() + ":"
-//					+ settings.getPort() + "/"
-//					+ settings.getDatabaseName()
-//					+ "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
-//					+ settings.formatExtras("&", "=", "&", "");
-//	}
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
@@ -154,13 +142,12 @@ public class PostgresDBOverSSL extends PostgresDB {
 				.setDatabaseName(databaseName)
 				.setUsername(username)
 				.setPassword(password)
-				.toSettings()
 		);
 //		this(hostname, port, databaseName, username, password, "");
 	}
 
 	public PostgresDBOverSSL(PostgresOverSSLSettingsBuilder builder) throws SQLException {
-		this(builder.toSettings());
+		super(builder);
 	}
 
 	@Override

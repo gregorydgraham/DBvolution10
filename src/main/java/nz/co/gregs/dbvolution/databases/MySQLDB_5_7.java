@@ -38,7 +38,6 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 	private static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 3306;
-//	private String derivedURL;
 	private final MySQL_5_7SettingsBuilder urlProcessor = new MySQL_5_7SettingsBuilder();
 
 	/**
@@ -58,7 +57,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(MySQL_5_7SettingsBuilder ds) throws SQLException {
-		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, ds.toSettings());
+		super(ds);
 	}
 
 	/**
@@ -68,7 +67,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(DatabaseConnectionSettings dcs) throws SQLException {
-		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, dcs);
+		this(new MySQL_5_7SettingsBuilder().fromSettings(dcs));
 	}
 
 	/**
@@ -96,8 +95,7 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(String server, long port, String databaseName, String username, String password) throws SQLException {
-		this(//				new MySQLDBDefinition_5_7(),
-//				MYSQLDRIVERNAME,
+		this(
 new MySQL_5_7SettingsBuilder()
 						.setHost(server)
 						.setPort(port)
@@ -105,22 +103,9 @@ new MySQL_5_7SettingsBuilder()
 						.setUsername(username)
 						.setPassword(password)
 		//				"jdbc:mysql://" + server + ":" + port + "/" + databaseName + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
-		//				username,
-		//				password
 		);
-//		this.setDatabaseName(databaseName);
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:mysql://"
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getDatabaseName()
-//				+ "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true"
-//				+ settings.formatExtras("&", "=", "&", "");
-//	}
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -133,60 +118,6 @@ new MySQL_5_7SettingsBuilder()
 		}
 	}
 
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("?", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0];
-//		
-//	}
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		return getExtras().get("instance");
-//	}
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:+", "");
-//	}
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
-//		set.setPort(noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:+", ""));
-//		set.setHost(noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0]);
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("\\?", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 3306;
@@ -205,10 +136,6 @@ new MySQL_5_7SettingsBuilder()
 		return super.addFeatureToFixException(exp, intent);
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return MySQLDB_5_7.class;
-//	}
 	@Override
 	protected MySQL_5_7SettingsBuilder getURLInterpreter() {
 		return urlProcessor;

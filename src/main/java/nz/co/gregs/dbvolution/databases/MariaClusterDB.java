@@ -39,7 +39,6 @@ public class MariaClusterDB extends DBDatabase {
 
 	public final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 	public static final long serialVersionUID = 1l;
-	private String derivedURL;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -50,6 +49,7 @@ public class MariaClusterDB extends DBDatabase {
 	public MariaClusterDB(DataSource ds) throws SQLException {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
+
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
@@ -57,8 +57,9 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(DatabaseConnectionSettings ds) throws SQLException {
-		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
+		this(new MariaClusterDBSettingsBuilder().fromSettings(ds));
 	}
+
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
@@ -66,7 +67,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(MariaClusterDBSettingsBuilder ds) throws SQLException {
-		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
+		super(ds);
 	}
 
 	/**
@@ -80,8 +81,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(String jdbcURL, String username, String password) throws SQLException {
-		this(new MariaClusterDBSettingsBuilder().fromJDBCURL(jdbcURL, username, password)
-		);
+		this(new MariaClusterDBSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -100,15 +100,15 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(String server, long port, String databaseName, String username, String password) throws SQLException {
-		super(new MariaDBDefinition(), 
-				MARIADBDRIVERNAME, 
+		this(//new MariaDBDefinition(), 
+				//MARIADBDRIVERNAME, 
 				new MariaClusterDBSettingsBuilder()
-				.setHost(server)
-				.setPort(port)
-				.setDatabaseName(databaseName)
-				.setUsername(username)
-				.setPassword(password)
-				.toSettings()
+						.setHost(server)
+						.setPort(port)
+						.setDatabaseName(databaseName)
+						.setUsername(username)
+						.setPassword(password)
+		//				.toSettings()
 		);
 	}
 

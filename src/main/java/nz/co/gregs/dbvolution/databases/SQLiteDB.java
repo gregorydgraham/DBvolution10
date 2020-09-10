@@ -29,7 +29,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * Creates a DBDatabase for an SQLite database.
@@ -90,7 +89,7 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(DatabaseConnectionSettings ds) throws SQLException {
-		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
+		this(new SQLiteSettingsBuilder().fromSettings(ds));
 	}
 
 	/**
@@ -101,7 +100,7 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(SQLiteSettingsBuilder ds) throws SQLException {
-		this(ds.toSettings());
+		super(ds);
 	}
 
 	/**
@@ -129,19 +128,13 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(File databaseFile, String username, String password) throws IOException, SQLException {
-		super(new SQLiteDefinition(),
-				SQLITE_DRIVER_NAME,
+		this(
 				new SQLiteSettingsBuilder()
 						.setFilename(databaseFile.getCanonicalFile().toString())
 						.setDatabaseName(databaseFile.getCanonicalFile().toString())
 						.setUsername(username)
 						.setPassword(password)
-						.toSettings()
-		//				"jdbc:sqlite:" + databaseFile.getCanonicalFile(),
-		//				username,
-		//				password
 		);
-//		setDatabaseName(databaseFile.getCanonicalFile().toString());
 	}
 
 	/**
@@ -156,27 +149,15 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException, SQLException {
-		super(new SQLiteDefinition(),
-				SQLITE_DRIVER_NAME,
+		this(
 				new SQLiteSettingsBuilder()
 						.setFilename(filename)
 						.setDatabaseName(new File(filename).getCanonicalFile().toString())
 						.setUsername(username)
 						.setPassword(password)
-						.toSettings()
-		//				"jdbc:sqlite:" + filename,
-		//				username,
-		//				password
 		);
-//		setDatabaseName(new File(filename).getCanonicalFile().toString());
 	}
-
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:sqlite:"
-//				+ settings.getDatabaseName();
-//	}
+	
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		SQLiteConfig config = new SQLiteConfig();

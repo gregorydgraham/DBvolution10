@@ -36,7 +36,6 @@ public class JavaDBMemoryDB extends DBDatabase {
 
 	public static final long serialVersionUID = 1l;
 	public static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
-	private String derivedURL;
 
 	/**
 	 * Default Constructor.
@@ -58,11 +57,11 @@ public class JavaDBMemoryDB extends DBDatabase {
 	/**
 	 * Creates a new JavaDB instance that will connect to the DataSource.
 	 *
-	 * @param dataSource	dataSource
+	 * @param settings	dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	public JavaDBMemoryDB(JavaDBMemorySettingsBuilder dataSource) throws SQLException {
-		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, dataSource);
+	public JavaDBMemoryDB(JavaDBMemorySettingsBuilder settings) throws SQLException {
+		super(settings);
 	}
 
 	/**
@@ -75,10 +74,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDBMemoryDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new JavaDBMemoryDBDefinition(),
-				DRIVER_NAME,
-				new JavaDBMemorySettingsBuilder().fromJDBCURL(jdbcURL, username, password)
-		//				jdbcURL, username, password
+		this(new JavaDBMemorySettingsBuilder().fromJDBCURL(jdbcURL, username, password)
 		);
 	}
 
@@ -93,7 +89,6 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
-//		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
 		this(new JavaDBMemorySettingsBuilder()
 						.setHost(host)
 						.setPort(port)
@@ -103,14 +98,6 @@ public class JavaDBMemoryDB extends DBDatabase {
 		);
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:derby://"
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/memory:"
-//				+ settings.getDatabaseName() + ";create=true";
-//	}
 	@Override
 	public JavaDBMemoryDB clone() throws CloneNotSupportedException {
 		return (JavaDBMemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -125,74 +112,12 @@ public class JavaDBMemoryDB extends DBDatabase {
 	public boolean isMemoryDatabase() {
 		return true;
 	}
-
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0];
-//		
-//	}
-//
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		return getExtras().get("instance");
-//	}
-//
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:", "");
-//	}
-//
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:derby://", "");
-//		set.setPort(noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:", ""));
-//		set.setHost(noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0]);
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
+	
 	@Override
 	public Integer getDefaultPort() {
 		return 1527;
 	}
-
-//	@Override
-//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return JavaDBMemoryDB.class;
-//	}
+	
 	@Override
 	protected JavaDBMemorySettingsBuilder getURLInterpreter() {
 		return new JavaDBMemorySettingsBuilder();

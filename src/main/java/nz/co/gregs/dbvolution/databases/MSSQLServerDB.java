@@ -72,11 +72,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
-	 * @param settings	a DataSource to an MS SQLServer database
+	 * @param dcs	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MSSQLServerDB(DatabaseConnectionSettings settings) throws SQLException {
-		super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, settings);
+	public MSSQLServerDB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new MSSQLServerSettingsBuilder().fromSettings(dcs));
 	}
 
 	/**
@@ -86,8 +86,9 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param settings	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, DatabaseConnectionSettings settings) throws SQLException {
-		super(defn, SQLSERVERDRIVERNAME, settings);
+		super(new MSSQLServerSettingsBuilder().fromSettings(settings).setDefinition(defn));
 	}
 
 	/**
@@ -99,7 +100,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, DatabaseConnectionSettings settings) throws SQLException {
-		super(defn, driverName, settings);
+		super(new MSSQLServerSettingsBuilder().fromSettings(settings).setDefinition(defn).setDriverName(driverName));
 	}
 
 	/**
@@ -119,7 +120,18 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MSSQLServerDB(MSSQLServerSettingsBuilder builder) throws SQLException {
-		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, builder.toSettings());
+		this((AbstractMSSQLServerSettingsBuilder<?, ?>) builder);
+//		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, builder.toSettings());
+	}
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
+	 *
+	 * @param builder	a configured SettingsBuilder for a MS SQLServer database
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected MSSQLServerDB(AbstractMSSQLServerSettingsBuilder<?, ?> builder) throws SQLException {
+		super(builder);
 	}
 
 	/**
@@ -129,6 +141,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param ds	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, MSSQLServerSettingsBuilder ds) throws SQLException {
 		this(defn, SQLSERVERDRIVERNAME, ds.toSettings());
 	}
@@ -141,6 +154,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param ds	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, MSSQLServerSettingsBuilder ds) throws SQLException {
 		this(defn, driverName, ds.toSettings());
 	}
@@ -159,6 +173,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password password
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(),
 				driverName,
@@ -166,6 +181,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		);
 	}
 
+	@Deprecated
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
@@ -186,6 +202,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		this(new MSSQLServerSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
+	@Deprecated
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String jdbcURL, String username, String password) throws SQLException {
 		this(defn, SQLSERVERDRIVERNAME, new MSSQLServerSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
@@ -204,17 +221,19 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password the password to identify username.
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(new MSSQLServerSettingsBuilder()
-						.setHost(hostname)
-						.setPort(portNumber)
-						.setInstance(instanceName)
-						.setDatabaseName(databaseName)
-						.setUsername(username)
-						.setPassword(password)
+				.setHost(hostname)
+				.setPort(portNumber)
+				.setInstance(instanceName)
+				.setDatabaseName(databaseName)
+				.setUsername(username)
+				.setPassword(password)
 		);
 	}
 
+	@Deprecated
 	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(defn,
 				new MSSQLServerSettingsBuilder()
@@ -226,7 +245,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 						.setPassword(password)
 		);
 	}
-	
+
 	/**
 	 * Connect to an MS SQLServer database using the connection details specified
 	 * and Microsoft's driver.
@@ -242,6 +261,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password the password to identify username.
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(),
 				driverName,
@@ -255,6 +275,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		);
 	}
 
+	@Deprecated
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String hostname, String instanceName, String databaseName, Integer portNumber, String username, String password) throws SQLException {
 		this(defn,
 				driverName,
@@ -323,7 +344,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	@Override
-	protected AbstractMSSQLServerSettingsBuilder<?,?> getURLInterpreter() {
+	protected AbstractMSSQLServerSettingsBuilder<?, ?> getURLInterpreter() {
 		return new MSSQLServerSettingsBuilder();
 	}
 }

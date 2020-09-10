@@ -34,7 +34,6 @@ public class MariaDB extends DBDatabase {
 
 	public final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 	public static final long serialVersionUID = 1l;
-	private String derivedURL;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -49,11 +48,21 @@ public class MariaDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
+	 * @param dcs
+	 * @throws java.sql.SQLException database errors
+	 */
+	public MariaDB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new MariaDBSettingsBuilder().fromSettings(dcs));
+	}
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
 	 * @param ds	ds
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(MariaDBSettingsBuilder ds) throws SQLException {
-		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds.toSettings());
+		super(ds);
 	}
 
 	/**

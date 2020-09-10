@@ -64,7 +64,7 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(DatabaseConnectionSettings dataSource) throws SQLException {
-		super(new JavaDBDefinition(), DRIVER_NAME, dataSource);
+		this(new JavaDBSettingsBuilder().fromSettings(dataSource));
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(JavaDBSettingsBuilder dataSource) throws SQLException {
-		this(dataSource.toSettings());
+		super(dataSource);
 	}
 
 	/**

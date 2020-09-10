@@ -110,7 +110,17 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(DatabaseConnectionSettings dcs) throws SQLException {
-		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, dcs);
+		this(new PostgresSettingsBuilder().fromSettings(dcs));
+	}
+
+	/**
+	 * Creates a PostgreSQL connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected PostgresDB(AbstractPostgresSettingsBuilder<?, ?> dcs) throws SQLException {
+		super(dcs);
 	}
 
 	/**
@@ -120,7 +130,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(PostgresSettingsBuilder dcs) throws SQLException {
-		this(dcs.toSettings());
+		super(dcs);
 	}
 
 	/**
@@ -132,11 +142,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new PostgresDBDefinition(),
-				POSTGRES_DRIVER_NAME,
-				new PostgresSettingsBuilder().fromJDBCURL(jdbcURL, username, password)
-		//				jdbcURL, username, password
-		);
+		this(new PostgresSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -150,6 +156,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param password password
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
 		this(new PostgresSettingsBuilder()
 				.setHost(hostname)
@@ -177,6 +184,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param urlExtras urlExtras
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, Map<String, String> urlExtras) throws SQLException {
 		this(new PostgresSettingsBuilder()
 				.setHost(hostname)
@@ -207,12 +215,19 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	@Deprecated
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
-		super(new PostgresDBDefinition(),
-				POSTGRES_DRIVER_NAME,
-				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
-				username, password
+		super(
+				new PostgresSettingsBuilder()
+						.fromJDBCURL(
+								"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
+								username,
+								password
+						)
 		);
-//		this.setDatabaseName(databaseName);
+//		super(new PostgresDBDefinition(),
+//				POSTGRES_DRIVER_NAME,
+//				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
+//				username, password
+//		);
 	}
 
 	/**
@@ -270,7 +285,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public int loadFromCSVFile(DBRow table, File file, String delimiter, String nullValue, String escapeCharacter, String quoteCharacter) throws SQLException {
 		int returnValue;
-		try (DBStatement dbStatement = this.getDBStatement()) {
+		try ( DBStatement dbStatement = this.getDBStatement()) {
 			returnValue = dbStatement.executeUpdate("COPY " + table.getTableName().replaceAll("\\\"", "") + " FROM '" + file.getAbsolutePath().replaceAll("\\\"", "") + "' WITH (DELIMITER '" + delimiter.replaceAll("\\\"", "") + "', NULL '" + nullValue.replaceAll("\\\"", "") + "', ESCAPE '" + escapeCharacter.replaceAll("\\\"", "") + "', FORMAT csv, QUOTE '" + quoteCharacter.replaceAll("\\\"", "") + "');");
 		}
 		return returnValue;
@@ -290,7 +305,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public void createDatabase(String databaseName) throws SQLException {
 		String sqlString = "CREATE DATABASE " + databaseName.replaceAll("\\\"", "") + ";";
-		try (DBStatement dbStatement = getDBStatement()) {
+		try ( DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString, QueryIntention.CREATE_DATABASE);
 		}
 	}
@@ -310,7 +325,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public void createUser(String username, String password) throws SQLException {
 		String sqlString = "CREATE USER \"" + username.replaceAll("\\\"", "") + "\" WITH PASSWORD '" + password.replaceAll("'", "") + "';";
-		try (DBStatement dbStatement = getDBStatement()) {
+		try ( DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString, QueryIntention.CREATE_USER);
 		}
 	}

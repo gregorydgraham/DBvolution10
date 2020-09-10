@@ -63,11 +63,21 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
+	 * @param settings
+	 * @throws java.sql.SQLException database errors
+	 */
+	public Oracle12DB(Oracle12SettingsBuilder settings) throws SQLException {
+		super(settings);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(DatabaseConnectionSettings dcs) throws SQLException {
-		this(new Oracle12DBDefinition(), dcs);
+		this(new Oracle12SettingsBuilder().fromSettings(dcs));
 	}
 
 	/**
@@ -77,8 +87,9 @@ public class Oracle12DB extends OracleDB {
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public Oracle12DB(Oracle12DBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
-		super(defn, dcs);
+		this(new Oracle12SettingsBuilder().fromSettings(dcs).setDefinition(defn));
 	}
 
 	/**
@@ -90,8 +101,9 @@ public class Oracle12DB extends OracleDB {
 	 * @param username username
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public Oracle12DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
-		super(new Oracle12DBDefinition(), driverName, jdbcURL, username, password);
+		this(new Oracle12SettingsBuilder().fromJDBCURL(jdbcURL, username, password).setDriverName(driverName));
 	}
 
 	/**
@@ -103,7 +115,7 @@ public class Oracle12DB extends OracleDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(String jdbcURL, String username, String password) throws SQLException {
-		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, jdbcURL, username, password);
+		this(new Oracle12SettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -116,6 +128,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param password password
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public Oracle12DB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
@@ -129,6 +142,5 @@ public class Oracle12DB extends OracleDB {
 	protected Oracle12SettingsBuilder getURLInterpreter() {
 		return new Oracle12SettingsBuilder();
 	}
-
 
 }

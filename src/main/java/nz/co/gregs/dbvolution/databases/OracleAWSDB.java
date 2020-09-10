@@ -100,6 +100,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public OracleAWSDB(OracleAWSDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
 		super(defn, dcs);
 	}
@@ -111,6 +112,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public OracleAWSDB(OracleAWSDBDefinition defn, AbstractOracleSettingsBuilder<?,?> dcs) throws SQLException {
 		super(defn, dcs);
 	}
@@ -130,6 +132,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param username username
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public OracleAWSDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}

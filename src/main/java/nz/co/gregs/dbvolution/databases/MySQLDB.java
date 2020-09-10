@@ -64,7 +64,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB(DatabaseConnectionSettings dcs) throws SQLException {
-		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, dcs);
+		super(new MySQLSettingsBuilder().fromSettings(dcs));
 	}
 
 	/**
@@ -74,7 +74,17 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB(MySQLSettingsBuilder dcs) throws SQLException {
-		this(dcs.toSettings());
+		super(dcs);
+	}
+
+	/**
+	 * Creates a MySQL connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException database errors
+	 */
+	protected MySQLDB(AbstractMySQLSettingsBuilder<?, ?> dcs) throws SQLException {
+		super(dcs);
 	}
 
 	/**
@@ -107,6 +117,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public MySQLDB(String server, int port, String databaseName, String username, String password) throws SQLException {
 		this(new MySQLSettingsBuilder()
+				//				.setLabel(databaseName)
 				.setHost(server)
 				.setPort(port)
 				.setDatabaseName(databaseName)
@@ -117,7 +128,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected AbstractMySQLSettingsBuilder<?,?> getURLInterpreter() {
+	protected AbstractMySQLSettingsBuilder<?, ?> getURLInterpreter() {
 		return new MySQLSettingsBuilder();
 	}
 
@@ -155,8 +166,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		try {
 			if (metaData.getDatabaseMajorVersion() < 4
-					|| (metaData.getDatabaseMajorVersion() == 5 && metaData.getDatabaseMinorVersion() < 8)
-					) {
+					|| (metaData.getDatabaseMajorVersion() == 5 && metaData.getDatabaseMinorVersion() < 8)) {
 				setDefinition(new MySQLDBDefinition_5_7());
 			} else {
 				setDefinition(new MySQLDBDefinition());

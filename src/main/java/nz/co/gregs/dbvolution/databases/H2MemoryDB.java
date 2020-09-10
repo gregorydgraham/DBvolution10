@@ -126,8 +126,7 @@ public class H2MemoryDB extends H2DB {
 	}
 
 	public static H2MemoryDB randomDatabase() throws SQLException {
-		final String dbName = ("RandomH2MemoryDB-" + Math.random()).replaceFirst("0\\.", "");
-		return new H2MemoryDB(new H2MemorySettingsBuilder().setDatabaseName(dbName));
+		return new H2MemoryDB(new H2MemorySettingsBuilder().withUniqueDatabaseName());
 	}
 
 	/**

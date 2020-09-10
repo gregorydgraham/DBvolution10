@@ -73,7 +73,7 @@ public class H2SharedDB extends H2DB {
 	}
 
 	public H2SharedDB(H2SharedSettingsBuilder settingsBuilder) throws SQLException {
-		this(settingsBuilder.toSettings());
+		super(settingsBuilder);
 	}
 
 	@Override

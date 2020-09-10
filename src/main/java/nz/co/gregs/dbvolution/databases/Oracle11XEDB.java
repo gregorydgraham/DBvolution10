@@ -89,7 +89,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle11XEDB(DatabaseConnectionSettings dcs) throws SQLException {
-		this(new Oracle11XEDBDefinition(), dcs);
+		this(new Oracle11XESettingsBuilder().fromSettings(dcs));
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle11XEDB(Oracle11XESettingsBuilder dcs) throws SQLException {
-		this(new Oracle11XEDBDefinition(), dcs.toSettings());
+		super(dcs);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle11XEDB(Oracle11XEDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
-		super(defn, dcs);
+		this(new Oracle11XESettingsBuilder().fromSettings(dcs).setDefinition(defn));
 	}
 
 	/**
@@ -123,6 +123,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param username the database account's username
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public Oracle11XEDB(OracleDBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}
@@ -136,6 +137,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param password password
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public Oracle11XEDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle11XEDBDefinition(), driverName, jdbcURL, username, password);
 	}
@@ -149,7 +151,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle11XEDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new Oracle11XEDBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
+		this(new Oracle11XESettingsBuilder().fromJDBCURL(jdbcURL, username, password));
 	}
 
 	/**
@@ -162,6 +164,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param username username
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public Oracle11XEDB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new Oracle11XEDBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}

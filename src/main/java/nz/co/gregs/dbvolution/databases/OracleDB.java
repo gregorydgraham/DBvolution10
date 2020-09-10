@@ -50,7 +50,6 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	public static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 	public static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 1521;
-	private String derivedURL;
 
 	/**
 	 *
@@ -88,7 +87,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param builder
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(AbstractOracleSettingsBuilder<?,?> builder) throws SQLException {
+	public OracleDB(AbstractOracleSettingsBuilder<?, ?> builder) throws SQLException {
 		this(builder.toSettings());
 	}
 
@@ -98,6 +97,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public OracleDB(DatabaseConnectionSettings dcs) throws SQLException {
 		this(new OracleDBDefinition(), dcs);
 	}
@@ -109,8 +109,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public OracleDB(OracleDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
-		super(defn, ORACLE_JDBC_DRIVER, dcs);
+		super(new Oracle11XESettingsBuilder().fromSettings(dcs).setDefinition(defn));
 	}
 
 	/**
@@ -128,8 +129,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param username username
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Deprecated
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		this(definition, driverName, new Oracle11XESettingsBuilder().fromJDBCURL(jdbcURL, username, password));
+		this(new Oracle11XESettingsBuilder().fromJDBCURL(jdbcURL, username, password).setDefinition(definition).setDriverName(driverName));
 	}
 
 	/**
@@ -150,7 +152,8 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, AbstractOracleSettingsBuilder<?,?> dataSource) throws SQLException {
+	@Deprecated
+	public OracleDB(DBDefinition dbDefinition, AbstractOracleSettingsBuilder<?, ?> dataSource) throws SQLException {
 		this(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
 	}
 
@@ -162,8 +165,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public OracleDB(DBDefinition dbDefinition, String driverName, AbstractOracleSettingsBuilder<?,?> dataSource) throws SQLException {
-		super(dbDefinition, driverName, dataSource.toSettings());
+	@Deprecated
+	public OracleDB(DBDefinition dbDefinition, String driverName, AbstractOracleSettingsBuilder<?, ?> dataSource) throws SQLException {
+		super(dataSource.setDefinition(dbDefinition).setDriverName(driverName));
 	}
 
 	@Override
@@ -230,7 +234,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.DROP_TABLE))) {
 //			System.out.println("HANDLED: NO RESPONSE REQUIRED");
 			return ResponseToException.SKIPQUERY;
-		} else if (LOOP_IN_RECURSIVE_QUERY.matcher(message).lookingAt()){
+		} else if (LOOP_IN_RECURSIVE_QUERY.matcher(message).lookingAt()) {
 			return ResponseToException.EMULATE_RECURSIVE_QUERY;
 		} else {
 //			System.out.println("!!! NO RESPONSE CONFIGURED !!!");
@@ -258,11 +262,10 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		final String formattedTableName = definition.formatTableName(tableRow);
 		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'", QueryIntention.DELETE_ROW);
 	}
-	
+
 	@Override
 	public Integer getDefaultPort() {
 		return 1521;
 	}
-
 
 }

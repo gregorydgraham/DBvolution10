@@ -47,16 +47,16 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLMXJDB(MySQLMXJDBSettingsBuilder ds) throws SQLException {
-		this(ds.toSettings());
+		super(ds);
 	}
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	ds
+	 * @param dcs	dcs
 	 * @throws java.sql.SQLException database errors
 	 */
-	public MySQLMXJDB(DatabaseConnectionSettings ds) throws SQLException {
-		super(ds);
+	public MySQLMXJDB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new MySQLMXJDBSettingsBuilder().fromSettings(dcs));
 	}
 
 	/**
@@ -104,11 +104,6 @@ public class MySQLMXJDB extends MySQLDB {
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
-
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return MySQLMXJDB.class;
-//	}
 
 	@Override
 	protected MySQLMXJDBSettingsBuilder getURLInterpreter() {

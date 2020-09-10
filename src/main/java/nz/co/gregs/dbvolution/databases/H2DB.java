@@ -130,11 +130,12 @@ public class H2DB extends DBDatabase {
 	 * <p>
 	 * Database exceptions may be thrown
 	 *
-	 * @param dataSource dataSource
+	 * @param dcs dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	public H2DB(DatabaseConnectionSettings dataSource) throws SQLException {
-		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
+	public H2DB(DatabaseConnectionSettings dcs) throws SQLException {
+		super(new H2SettingsBuilder().fromSettings(dcs));
+//		super(new H2DBDefinition(), DRIVER_NAME, dcs);
 	}
 
 	/**
@@ -143,11 +144,11 @@ public class H2DB extends DBDatabase {
 	 * <p>
 	 * Database exceptions may be thrown
 	 *
-	 * @param dataSource dataSource
+	 * @param settings dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	protected H2DB(AbstractH2SettingsBuilder<?,?> dataSource) throws SQLException {
-		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
+	protected H2DB(AbstractH2SettingsBuilder<?,?> settings) throws SQLException {
+		super(settings);
 	}
 
 	/**

@@ -23,7 +23,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractInformixSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.
@@ -72,12 +71,12 @@ public class InformixDB extends DBDatabase {
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(definition, driverName,
 				new InformixSettingsBuilder()
-				.fromJDBCURL(jdbcURL)
-				.setUsername(username)
-				.setPassword(password)
-				.toSettings()
-//				jdbcURL, username, password
-				);
+						.fromJDBCURL(jdbcURL)
+						.setUsername(username)
+						.setPassword(password)
+						.toSettings()
+		//				jdbcURL, username, password
+		);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
 	}
@@ -94,7 +93,7 @@ public class InformixDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected InformixDB(DBDefinition definition, String driverName, DatabaseConnectionSettings settings) throws SQLException {
-		super(definition, driverName, settings	);
+		super(new InformixSettingsBuilder().fromSettings(settings));
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
 	}
@@ -152,8 +151,17 @@ public class InformixDB extends DBDatabase {
 		this(new InformixDBDefinition(), dataSource);
 	}
 
+	/**
+	 *
+	 * @param builder
+	 * @throws SQLException
+	 */
+	protected InformixDB(AbstractInformixSettingsBuilder<?, ?> builder) throws SQLException {
+		super(builder);
+	}
+
 	public InformixDB(InformixSettingsBuilder builder) throws SQLException {
-		this(builder.toSettings());
+		super(builder);
 	}
 
 	@Override
@@ -177,7 +185,6 @@ public class InformixDB extends DBDatabase {
 //				+ settings.getInstance()
 //				+ settings.formatExtras(":", "=", ";", "");
 //	}
-
 //	@Override
 //	protected Map<String, String> getExtras() {
 //		String jdbcURL = getJdbcURL();
@@ -230,7 +237,6 @@ public class InformixDB extends DBDatabase {
 //		set.setInstance(getExtras().get("INFORMIXSERVER"));
 //		return set;
 //	}
-
 	@Override
 	public Integer getDefaultPort() {
 		return 1526;
@@ -240,11 +246,9 @@ public class InformixDB extends DBDatabase {
 //	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return InformixDB.class;
 //	}
-
 	@Override
-	protected AbstractInformixSettingsBuilder<?,?> getURLInterpreter() {
+	protected AbstractInformixSettingsBuilder<?, ?> getURLInterpreter() {
 		return new InformixSettingsBuilder();
 	}
-	
-	
+
 }

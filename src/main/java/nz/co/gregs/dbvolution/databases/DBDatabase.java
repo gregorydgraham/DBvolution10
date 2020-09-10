@@ -375,7 +375,7 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(VendorSettingsBuilder<?, ?> settings) throws SQLException {
+	protected DBDatabase(VendorSettingsBuilder<?, ?> settings) throws SQLException {
 		this();
 		this.definition = settings.getDefinition();
 		initDriver(settings.getDriverName());

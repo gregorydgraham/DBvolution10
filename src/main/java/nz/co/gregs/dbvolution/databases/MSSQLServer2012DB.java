@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServer2012SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServer2012DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 
 public class MSSQLServer2012DB extends MSSQLServerDB {
 
@@ -43,27 +42,31 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 	}
 	
 	public MSSQLServer2012DB(DatabaseConnectionSettings dcs) throws SQLException {
-		super(new MSSQLServer2012DBDefinition(), dcs);
+		this(new MSSQLServer2012SettingsBuilder().fromSettings(dcs));
 	}
 
+	@Deprecated
 	public MSSQLServer2012DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), driverName, jdbcURL, username, password);
 	}
 
+	@Deprecated
 	public MSSQLServer2012DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), jdbcURL, username, password);
 	}
 
+	@Deprecated
 	public MSSQLServer2012DB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), hostname, instanceName, databaseName, portNumber, username, password);
 	}
 
+	@Deprecated
 	public MSSQLServer2012DB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), driverName, hostname, instanceName, databaseName, portNumber, username, password);
 	}
 
 	public MSSQLServer2012DB(MSSQLServer2012SettingsBuilder builder) throws SQLException {
-		this(builder.toSettings());
+		super(builder);
 	}
 
 //	@Override
