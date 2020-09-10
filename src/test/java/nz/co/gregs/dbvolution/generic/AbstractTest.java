@@ -45,6 +45,8 @@ import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
@@ -653,7 +655,15 @@ public abstract class AbstractTest {
 		}
 
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) throws SQLException {
-			return new PostgresDB(host, Integer.valueOf(port), database, username, password);
+			return new PostgresDB(
+					new PostgresSettingsBuilder()
+							.setHost(host)
+							.setPort(Integer.valueOf(port))
+							.setDatabaseName(database)
+							.setUsername(username)
+							.setPassword(password)
+			);
+//host, Integer.valueOf(port), database, username, password);
 		}
 	}
 
@@ -701,7 +711,14 @@ public abstract class AbstractTest {
 		}
 
 		public Oracle11XETestDB(String host, String port, String instance, String username, String password) throws SQLException {
-			super(host, Integer.parseInt(port), instance, username, password);
+			super(
+					new Oracle11XESettingsBuilder()
+							.setHost(host)
+							.setPort(Integer.parseInt(port))
+							.setInstance(instance)
+							.setUsername(username)
+							.setPassword(password)
+			);
 //			this.setPrintSQLBeforeExecuting(true);
 		}
 	}
