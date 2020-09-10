@@ -55,6 +55,8 @@ import nz.co.gregs.dbvolution.results.UUIDResult;
  */
 public class DBUUID extends QueryableDatatype<UUID> implements UUIDResult {
 
+	private static final long serialVersionUID = 1L;
+
 	public DBUUID() {
 	}
 
