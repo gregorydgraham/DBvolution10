@@ -792,7 +792,7 @@
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
 								<testMySQLContainer>true</testMySQLContainer>
-								<testPostgresSQL>true</testPostgresSQL>
+								<testPostgresContainer>true</testPostgresContainer>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -815,12 +815,13 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<!--<testMySQLContainer>true</testMySQLContainer>-->
-								<testMySQL>true</testMySQL>
-								<testPostgresSQL>true</testPostgresSQL>
+								<testMySQLContainer>true</testMySQLContainer>
+								<!--<testMySQL>true</testMySQL>-->
+								<testPostgresContainer>true</testPostgresContainer>
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
 								<testMSSQLServerContainer>true</testMSSQLServerContainer>
+								<testOracleXEContainer>true</testOracleXEContainer>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -877,10 +878,10 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<testPostgresSQL>true</testPostgresSQL>
+								<testPostgresContainer>true</testPostgresContainer>
 								<testMySQLContainer>true</testMySQLContainer>
-								<testOracleXE>true</testOracleXE>
-								<testMSSQLServerLocal>true</testMSSQLServerLocal>
+								<testOracleXEContainer>true</testOracleXEContainer>
+								<testMSSQLServerContainer>true</testMSSQLServerContainer>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
