@@ -39,6 +39,8 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
  */
 public class StringLiteral extends StringExpression {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a StringExpression from an arbitrary String object.
 	 *
