@@ -80,12 +80,12 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		}
 	}
 
-	public MSSQLServerContainerDB(MSSQLServerContainer container, MSSQLServerSettingsBuilder interpreter) throws SQLException {
+	public MSSQLServerContainerDB(MSSQLServerContainer<?> container, MSSQLServerSettingsBuilder interpreter) throws SQLException {
 		super(interpreter);
 		this.mssqlServerContainer = container;
 	}
 
-	public MSSQLServerContainerDB(MSSQLServerContainer container, String label) throws SQLException {
+	public MSSQLServerContainerDB(MSSQLServerContainer<?> container, String label) throws SQLException {
 		this(container,
 				new MSSQLServerSettingsBuilder()
 						.fromJDBCURL(
