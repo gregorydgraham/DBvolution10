@@ -45,6 +45,8 @@ import nz.co.gregs.dbvolution.results.UUIDResult;
 
 public class UUIDExpression extends InExpression<UUID, UUIDResult, DBUUID> implements InComparable<UUID, UUIDResult>, UUIDResult {
 
+	private static final long serialVersionUID = 1L;
+
 	public UUIDExpression() {
 		super();
 	}
