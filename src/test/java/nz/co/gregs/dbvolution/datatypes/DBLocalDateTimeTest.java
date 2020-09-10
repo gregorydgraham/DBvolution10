@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -50,12 +49,10 @@ public class DBLocalDateTimeTest extends AbstractTest {
 	 * @throws java.sql.SQLException database errors
 	 */
 	@Test
-	@SuppressWarnings("deprecation")
 	public void testGetSQLDatatype() throws SQLException {
 
 		DBLocalDateTimeTable dateOnlyTest = new DBLocalDateTimeTable();
 		LocalDateTime then = LocalDateTime.now();
-//		System.out.println("THEN: " + then);
 		dateOnlyTest.dateOnly.setValue(then);
 
 		database.preventDroppingOfTables(false);
@@ -63,7 +60,6 @@ public class DBLocalDateTimeTest extends AbstractTest {
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DBLocalDateTimeTable> allRows = database.getDBTable(new DBLocalDateTimeTable()).setBlankQueryAllowed(true).getAllRows();
-//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 
 		// Protect against SQLite's low precision problems
@@ -109,27 +105,6 @@ public class DBLocalDateTimeTest extends AbstractTest {
 
 		@DBColumn
 		DBLocalDateTime dateOnly = new DBLocalDateTime();
-
-//		@DBColumn
-//		DBInteger year = this.column(this.dateOnly).year().asExpressionColumn();
-//		
-//		@DBColumn
-//		DBInteger month = this.column(this.dateOnly).month().asExpressionColumn();
-//		
-//		@DBColumn
-//		DBInteger day = this.column(this.dateOnly).day().asExpressionColumn();
-//		
-//		@DBColumn
-//		DBInteger hour = this.column(this.dateOnly).hour().asExpressionColumn();
-//		
-//		@DBColumn
-//		DBInteger minute = this.column(this.dateOnly).minute().asExpressionColumn();
-//		
-//		@DBColumn
-//		DBInteger second = this.column(this.dateOnly).second().asExpressionColumn();
-//		
-//		@DBColumn
-//		DBNumber subsecond = this.column(this.dateOnly).subsecond().asExpressionColumn();
 	}
 
 }
