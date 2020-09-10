@@ -38,7 +38,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class UUIDColumn extends UUIDExpression implements ColumnProvider {
 
-	private AbstractColumn column;
+	private static final long serialVersionUID = 1L;
+
+	private final AbstractColumn column;
 
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
