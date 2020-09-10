@@ -102,21 +102,4 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF, DATABASE>, D
 
 	SELF setPassword(String password);
 
-//	String getDatabaseName();
-//	Map<String, String> getExtras();
-//	SELF setDatabaseName(String databaseName);
-//	SELF setExtras(Map<String, String> extras);
-//	String getHost(String host);
-//
-//	String getPort();
-//
-//	String getProtocol();
-//
-//	SELF setHost(String host);
-//
-//	SELF setPort(int port);
-//
-//	SELF setPort(long port);
-//
-//	SELF setProtocol(String protocol);
 }
