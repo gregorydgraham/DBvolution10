@@ -32,7 +32,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +46,6 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 
 	private static final long serialVersionUID = 1l;
 	private OracleContainer container;
-	private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public static Oracle11XEContainerDB getInstance() {
 		return getLabelledInstance("");
@@ -55,6 +53,7 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 
 	public static Oracle11XEContainerDB getLabelledInstance(String label) {
 		OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
+		container.withConnectTimeoutSeconds(300);
 		container.start();
 
 		try {
@@ -65,7 +64,7 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 		}
 	}
 
-	public static Future<Oracle11XEContainerDB> getLabelledInstanceInFuture(String label) {
+	public static Future<Oracle11XEContainerDB> getLabelledInstanceInFuture(ExecutorService executor, String label) {
 		return executor.submit(() -> {
 			return getLabelledInstance(label);
 		});

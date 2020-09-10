@@ -32,9 +32,10 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.time.ZoneId;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,25 +48,31 @@ import org.testcontainers.containers.MSSQLServerContainerProvider;
  * @author gregorygraham
  */
 public class MSSQLServerContainerDB extends MSSQLServerDB {
-	
+
 	static final Log LOG = LogFactory.getLog(MSSQLServerContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
-	protected final MSSQLServerContainer<?> mssqlServerContainer;
 
-	public static MSSQLServerContainerDB getInstance() {
+	protected final MSSQLServerContainer<?> mssqlServerContainer;
+	
+	public static MSSQLServerContainerDB getInstance(){
+		return getLabelledInstance("Unlabelled");
+	}
+
+	public static MSSQLServerContainerDB getLabelledInstance(String label) {
 		/*
 		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
 		 */
 		JdbcDatabaseContainer<?> container = new MSSQLServerContainerProvider().newInstance();
 		container.addEnv("TZ", ZoneId.systemDefault().getId());
+		container.withConnectTimeoutSeconds(300);
 
 //		MSSQLServerContainer container = new MSSQLServerContainer<>();
 ////		container.withEnv("TZ", "Pacific/Auckland");
 //		container.withEnv("TZ", ZoneId.systemDefault().getId());
 		container.start();
 		try {
-			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB((MSSQLServerContainer)container);
+			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB((MSSQLServerContainer) container, label);
 			return staticDatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MSSQLServerContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,7 +85,7 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 		this.mssqlServerContainer = container;
 	}
 
-	public MSSQLServerContainerDB(MSSQLServerContainer container) throws SQLException {
+	public MSSQLServerContainerDB(MSSQLServerContainer container, String label) throws SQLException {
 		this(container,
 				new MSSQLServerSettingsBuilder()
 						.fromJDBCURL(
@@ -88,6 +95,7 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 						)
 						.setHost(container.getContainerIpAddress())
 						.setPort(container.getFirstMappedPort())
+						.setLabel(label)
 		);
 	}
 

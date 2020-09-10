@@ -31,9 +31,10 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
 import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -48,6 +49,10 @@ public class PostgresContainerDB extends PostgresDB {
 	protected final PostgreSQLContainer<?> storedContainer;
 
 	public static PostgresContainerDB getInstance() {
+		return getLabelledInstance("Unlabelled");
+	}
+
+	public static PostgresContainerDB getLabelledInstance(String label) {
 		/*
 		ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
 		SA_PASSWORD=Password23 defines the password so we can login
@@ -56,9 +61,11 @@ public class PostgresContainerDB extends PostgresDB {
 		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance();
 		container.withEnv("TZ", "Pacific/Auckland");
 		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
+
+		container.withConnectTimeoutSeconds(300);
 		container.start();
 		try {
-			PostgresContainerDB dbdatabase = new PostgresContainerDB(container);
+			PostgresContainerDB dbdatabase = new PostgresContainerDB(container, label);
 			return dbdatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(PostgresContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -66,10 +73,15 @@ public class PostgresContainerDB extends PostgresDB {
 		}
 	}
 
-	public PostgresContainerDB(PostgreSQLContainer<?> container) throws SQLException {
-		super(new PostgresSettingsBuilder()
+	public PostgresContainerDB(PostgreSQLContainer<?> container, String label) throws SQLException {
+		this(container, new PostgresSettingsBuilder()
 				.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
+				.setLabel(label)
 		);
+	}
+
+	public PostgresContainerDB(PostgreSQLContainer<?> container, PostgresSettingsBuilder settings) throws SQLException {
+		super(settings);
 		this.storedContainer = container;
 	}
 

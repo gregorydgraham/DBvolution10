@@ -33,6 +33,8 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.ZoneId;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,6 +58,10 @@ public class MySQLContainerDB extends MySQLDB {
 	protected final FinalisedMySQLContainer storedContainer;
 
 	public static MySQLContainerDB getInstance() {
+		return getLabelledInstance("Unlabelled");
+	}
+
+	public static MySQLContainerDB getLabelledInstance(String label) {
 		final String username = "dbvuser";
 		final String password = "dbvtest";
 		final FinalisedMySQLContainer newInstance = new FinalisedMySQLContainerProvider().newInstance("latest");
@@ -79,11 +85,12 @@ public class MySQLContainerDB extends MySQLDB {
 		 */
 //		container.withEnv("TZ", "Pacific/Auckland");
 //		container.withEnv("TZ", ZoneId.systemDefault().getId());
+		container.withConnectTimeoutSeconds(300);
 		container.start();
 
 		try {
 			// create the actual dbdatabase 
-			MySQLContainerDB dbdatabase = new MySQLContainerDB(container);
+			MySQLContainerDB dbdatabase = new MySQLContainerDB(container, label);
 			return dbdatabase;
 		} catch (SQLException ex) {
 			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,16 +104,16 @@ public class MySQLContainerDB extends MySQLDB {
 		storedContainer.stop();
 	}
 
-	protected MySQLContainerDB(FinalisedMySQLContainer storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
-		super(dcs);
+	protected MySQLContainerDB(FinalisedMySQLContainer storedContainer, MySQLSettingsBuilder settings) throws SQLException {
+		super(settings);
 		this.storedContainer = storedContainer;
 	}
 
-	public MySQLContainerDB(MySQLContainer<?> storedContainer, MySQLSettingsBuilder dcs) throws SQLException {
-		this((FinalisedMySQLContainer) storedContainer, dcs);
+	public MySQLContainerDB(MySQLContainer<?> storedContainer, MySQLSettingsBuilder settings) throws SQLException {
+		this((FinalisedMySQLContainer) storedContainer, settings);
 	}
 
-	public MySQLContainerDB(MySQLContainer<?> container) throws SQLException {
+	public MySQLContainerDB(MySQLContainer<?> container, String label) throws SQLException {
 		this((FinalisedMySQLContainer) container,
 				new MySQLSettingsBuilder()
 						.fromJDBCURL(container.getJdbcUrl(), "root", "test")
@@ -116,6 +123,7 @@ public class MySQLContainerDB extends MySQLDB {
 						.setUseSSL(false)
 						// allowPublicKeyRetrieval=true
 						.setAllowPublicKeyRetrieval(true)
+						.setLabel(label)
 		);
 	}
 
