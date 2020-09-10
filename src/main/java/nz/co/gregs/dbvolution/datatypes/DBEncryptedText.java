@@ -36,6 +36,8 @@ import nz.co.gregs.dbvolution.utility.encryption.Encrypted;
 
 public class DBEncryptedText extends DBLargeText {
 
+	private static final long serialVersionUID = 1L;
+
 	public DBEncryptedText() {
 	}
 
