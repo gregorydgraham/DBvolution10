@@ -28,8 +28,6 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 
