@@ -1329,11 +1329,6 @@ class ClusteredDefinition extends DBDefinition{
 	}
 
 	@Override
-	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
-		return internalDefinition.doColumnTransformForSelect(qdt, selectableName);
-	}
-
-	@Override
 	public String transformPeriodIntoDateRepeat(Period interval) {
 		return internalDefinition.transformPeriodIntoDateRepeat(interval);
 	}
