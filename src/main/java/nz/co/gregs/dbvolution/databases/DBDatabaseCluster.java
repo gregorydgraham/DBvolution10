@@ -116,6 +116,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
 //	private final SettingsBuilder urlProcessor = new DBDatabaseClusterSettingsBuilder();
+//	private boolean requiredToProduceEmptyStringsForNull;
 
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
 		this(builder.getDatabaseName(), new Configuration(builder.getAutoRebuild(), builder.getAutoReconnect()));
@@ -184,9 +185,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config, DBDatabase... databases) throws SQLException {
 		this(clusterLabel, config);
-		details.addAll(databases);
-		setDefinition(new ClusterDatabaseDefinition());
-		synchronizeSecondaryDatabases();
+		initDatabase(databases);
 	}
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
@@ -199,9 +198,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public DBDatabaseCluster(String clusterLabel, DBDatabase... databases) throws SQLException {
 		this(clusterLabel);
-		details.addAll(databases);
-		setDefinition(new ClusterDatabaseDefinition());
-		synchronizeSecondaryDatabases();
+		initDatabase(databases);
 	}
 
 	public DBDatabaseCluster(String clusterLabel, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
@@ -210,6 +207,14 @@ public class DBDatabaseCluster extends DBDatabase {
 		for (DatabaseConnectionSettings setting : settings) {
 			this.addDatabase(setting.createDBDatabase());
 		}
+	}
+
+	private void initDatabase(DBDatabase[] databases) throws SQLException {
+		for (DBDatabase database : databases) {
+			details.add(new ClusteredDatabase(database));
+		}
+		setDefinition(new ClusterDatabaseDefinition());
+		synchronizeSecondaryDatabases();
 	}
 
 	public static DBDatabaseCluster randomCluster(Configuration config, DBDatabase databases) throws SQLException {
@@ -307,7 +312,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private boolean addDatabaseWithWaiting(DBDatabase database, boolean wait) throws SQLException {
-		boolean add = details.add(database);
+		boolean add = details.add(new ClusteredDatabase(database));
 		synchronizeAddedDatabases(wait);
 		return add;
 	}
@@ -324,8 +329,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getAllDatabases();
 	}
 
-	public Status getDatabaseStatus(DBDatabase db) {
+	protected Status getDatabaseStatus(ClusteredDatabase db) {
 		return details.getStatusOf(db);
+	}
+
+	public Status getDatabaseStatus(DBDatabase db) {
+		return getDatabaseStatus(new ClusteredDatabase(db));
 	}
 
 	/**
@@ -423,6 +432,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
 	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
+		return removeDatabase(new ClusteredDatabase(database));
+	}
+
+	protected boolean removeDatabase(ClusteredDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
 		return details.removeDatabase(database);
 	}
 
@@ -445,7 +458,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the
 	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
-	protected void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
+	public void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
+		quarantineDatabase(new ClusteredDatabase(database), except);
+	}
+	protected void quarantineDatabase(ClusteredDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
 		details.quarantineDatabase(database, except);
 	}
 
@@ -457,6 +473,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * cluster is current unable to service requests
 	 */
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
+		return details.getReadyDatabase().getInternalDatabase();
+	}
+	
+	public ClusteredDatabase getReadyClusteredDatabase() throws NoAvailableDatabaseException {
 		return details.getReadyDatabase();
 	}
 
@@ -469,16 +489,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		throw new UnsupportedOperationException("DBDatabase.addDatabaseSpecificFeatures(Statement) should not be called");
 	}
-
-//	@Override
-//	public synchronized void discardConnection(DBConnection connection) {
-//		throw new UnsupportedOperationException("DBDatabase.discardConnection() should not be called");
-//	}
-//
-//	@Override
-//	public synchronized void unusedConnection(DBConnection connection) throws SQLException {
-//		throw new UnsupportedOperationException("DBDatabase.unusedConnection() should not be called");
-//	}
+	
 	@Override
 	public Connection getConnectionFromDriverManager() throws SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnectionFromDriverManager() should not be called");
@@ -578,7 +589,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException {
-		return getReadyDatabase().willCreateBlankQuery(row);
+		return getReadyClusteredDatabase().willCreateBlankQuery(row);
 	}
 
 	@Override
@@ -813,7 +824,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
-		final DBDatabase readyDatabase = getReadyDatabase();
+		final DBDatabase readyDatabase = getReadyClusteredDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.test(script);
 		}
@@ -821,7 +832,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
-		final DBDatabase readyDatabase = getReadyDatabase();
+		final DBDatabase readyDatabase = getReadyClusteredDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.doReadOnlyTransaction(dbTransaction);
 		}
@@ -895,7 +906,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getRows(report, examples);
@@ -914,7 +925,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getAllRows(report, examples);
@@ -933,7 +944,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(report, examples);
@@ -952,7 +963,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, row, rows);
@@ -971,7 +982,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExamples(row, rows);
@@ -990,7 +1001,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(row, rows);
@@ -1009,7 +1020,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
@@ -1028,7 +1039,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, exampleRow);
@@ -1047,7 +1058,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExample(exampleRow);
@@ -1066,7 +1077,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-			readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(exampleRow);
@@ -1096,9 +1107,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void synchronizeSecondaryDatabases() throws SQLException {
-		DBDatabase[] addedDBs;
+		ClusteredDatabase[] addedDBs;
 		addedDBs = details.getUnsynchronizedDatabases();
-		for (DBDatabase db : addedDBs) {
+		for (ClusteredDatabase db : addedDBs) {
 			details.synchronizingDatabase(db);
 
 			//Do The Synchronising...
@@ -1112,7 +1123,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
 		try {
-			DBDatabase readyDatabase = getReadyDatabase();
+			ClusteredDatabase readyDatabase = getReadyClusteredDatabase();
 			boolean finished = false;
 			do {
 				try {
@@ -1130,9 +1141,9 @@ public class DBDatabaseCluster extends DBDatabase {
 					}
 				}
 			} while (!finished && size() > 1);
-			final DBDatabase[] readyDatabases = details.getReadyDatabases();
+			final ClusteredDatabase[] readyDatabases = details.getReadyDatabases();
 			// Now execute on all the other databases
-			for (DBDatabase next : readyDatabases) {
+			for (ClusteredDatabase next : readyDatabases) {
 				if (action.runOnDatabaseDuringCluster(readyDatabase, next)) {
 					final ActionTask task = new ActionTask(this, next, action);
 					tasks.add(task);
@@ -1155,7 +1166,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBQueryable actionsPerformed = query;
 		boolean finished = false;
 		while (!finished) {
-			final DBDatabase readyDatabase = getReadyDatabase();
+			final DBDatabase readyDatabase = getReadyClusteredDatabase();
 			synchronized (readyDatabase) {
 				try {
 					actionsPerformed = readyDatabase.executeDBQuery(query);
@@ -1213,7 +1224,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
-		final DBDatabase readyDatabase = this.getReadyDatabase();
+		final DBDatabase readyDatabase = this.getReadyClusteredDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.getSQLForDBQuery(query);
 		}
@@ -1232,7 +1243,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public DBDefinition getDefinition() throws NoAvailableDatabaseException {
-		final DBDatabase readyDatabase = getReadyDatabase();
+		final DBDatabase readyDatabase = getReadyClusteredDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.getDefinition();
 		}
@@ -1287,13 +1298,13 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void addActionToQueue(DBAction action) {
-		for (DBDatabase db : details.getAllDatabases()) {
+		for (ClusteredDatabase db : details.getAllDatabases()) {
 			Queue<DBAction> queue = details.getActionQueue(db);
 			queue.add(action);
 		}
 	}
 
-	private void removeActionFromQueue(DBDatabase database, DBAction action) {
+	private void removeActionFromQueue(ClusteredDatabase database, DBAction action) {
 		final Queue<DBAction> queue = details.getActionQueue(database);
 		synchronized (queue) {
 			if (queue != null) {
@@ -1302,9 +1313,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	private void synchronizeSecondaryDatabase(ClusteredDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		try {
-			DBDatabase template = null;
+			ClusteredDatabase template = null;
 			try {
 				template = getTemplateDatabase();
 			} catch (NoAvailableDatabaseException except) {
@@ -1369,7 +1380,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private synchronized void synchronizeActions(DBDatabase db) throws SQLException, NoAvailableDatabaseException, NoAvailableDatabaseException {
+	private synchronized void synchronizeActions(ClusteredDatabase db) throws SQLException, NoAvailableDatabaseException, NoAvailableDatabaseException {
 		if (db != null) {
 			Queue<DBAction> queue = details.getActionQueue(db);
 			while (queue != null && !queue.isEmpty()) {
@@ -1382,11 +1393,11 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private synchronized void synchronizeAddedDatabases(boolean blocking) throws SQLException {
 		boolean block = blocking || (details.getReadyDatabases().length < 2);
-		final DBDatabase[] dbs = details.getUnsynchronizedDatabases();
-		for (DBDatabase addedDatabase : dbs) {
+		final ClusteredDatabase[] dbs = details.getUnsynchronizedDatabases();
+		for (ClusteredDatabase addedDatabase : dbs) {
 			SynchroniseTask task = new SynchroniseTask(this, addedDatabase) {
 				@Override
-				public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException {
+				public Void synchronise(DBDatabaseCluster cluster, ClusteredDatabase database) throws SQLException {
 					cluster.synchronizeSecondaryDatabase(database);
 					return null;
 				}
@@ -1438,7 +1449,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getReadyDatabases().length;
 	}
 
-	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws SQLException, NoAvailableDatabaseException {
+	private synchronized void releaseTemplateDatabase(ClusteredDatabase primary) throws SQLException, NoAvailableDatabaseException {
 		if (primary != null) {
 			if (details.clusterContainsDatabase(primary)) {
 				synchronizeActions(primary);
@@ -1448,7 +1459,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
+	private ClusteredDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
 		return details.getTemplateDatabase();
 	}
 
@@ -1474,8 +1485,8 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public String getDatabaseStatuses() {
 		StringBuilder result = new StringBuilder();
-		final DBDatabase[] all = details.getAllDatabases();
-		for (DBDatabase db : all) {
+		final ClusteredDatabase[] all = details.getAllDatabases();
+		for (ClusteredDatabase db : all) {
 			result.append(this.getDatabaseStatus(db).name())
 					.append(": ")
 					.append(db.getSettings().toString().replaceAll("DATABASECONNECTIONSETTINGS: ", ""))
@@ -1515,9 +1526,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		details.removeAllDatabases();
 		super.stop();
 	}
-	
+
 	@Override
-	public void close(){
+	public void close() {
 		dismantle();
 	}
 
@@ -1602,6 +1613,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		return !details.getAutoRebuild() || !details.hasAuthoritativeDatabase();
 	}
 
+	@Override
+	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
+		getClusterDetails().setSupportsDifferenceBetweenNullAndEmptyString(!required);
+		super.setRequiredToProduceEmptyStringsForNull(required);
+	}
+
 	private static class ActionTask implements Callable<DBActionList> {
 
 		private final DBDatabase database;
@@ -1643,9 +1660,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	private static abstract class SynchroniseTask implements Callable<Void> {
 
 		private final DBDatabaseCluster cluster;
-		private final DBDatabase database;
+		private final ClusteredDatabase database;
 
-		public SynchroniseTask(DBDatabaseCluster cluster, DBDatabase db) {
+		public SynchroniseTask(DBDatabaseCluster cluster, ClusteredDatabase db) {
 			this.cluster = cluster;
 			this.database = db;
 		}
@@ -1665,11 +1682,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		/**
 		 * @return the database
 		 */
-		public DBDatabase getDatabase() {
+		public ClusteredDatabase getDatabase() {
 			return database;
 		}
 
-		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
+		public abstract Void synchronise(DBDatabaseCluster cluster, ClusteredDatabase database) throws SQLException;
 	}
 
 	public String reconnectQuarantinedDatabases() {
