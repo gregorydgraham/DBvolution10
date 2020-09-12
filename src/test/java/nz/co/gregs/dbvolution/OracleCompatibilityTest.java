@@ -57,12 +57,12 @@ public class OracleCompatibilityTest extends AbstractTest {
 
 	@Before
 	public void requireOracleCompatibility() {
-		database.getDefinition().setRequiredToProduceEmptyStringsForNull(true);
+		database.setRequiredToProduceEmptyStringsForNull(true);
 	}
 
 	@After
 	public void removeOracleCompatibility() {
-		database.getDefinition().setRequiredToProduceEmptyStringsForNull(false);
+		database.setRequiredToProduceEmptyStringsForNull(false);
 	}
 
 	@Test
