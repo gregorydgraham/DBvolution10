@@ -2731,6 +2731,10 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 		return settings.getSchema();
 	}
 
+	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
+		getDefinition().setRequiredToProduceEmptyStringsForNull(required);
+	}
+
 	/**
 	 * Closes all threads, connections, and resources used by the database.
 	 *
