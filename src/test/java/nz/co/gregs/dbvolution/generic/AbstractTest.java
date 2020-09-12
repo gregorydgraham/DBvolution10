@@ -31,16 +31,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
@@ -75,7 +68,6 @@ public abstract class AbstractTest {
 	DBTable<CarCompany> carCompanies;
 	public List<Marque> marqueRows = new ArrayList<>();
 	public List<CarCompany> carTableRows = new ArrayList<>();
-//	public static final FlexibleDateFormat TEDHI_FORMAT = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
 	public static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
 	public static final DateTimeFormatter LOCALDATETIME_FORMAT = DateTimeFormatter.ofPattern("dd/MMMM/y HH:mm:ss");
 	public static final FlexibleDateRangeFormat TEDHI_RANGE_FORMAT = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
@@ -84,15 +76,6 @@ public abstract class AbstractTest {
 	public static Date march23rd2013 = (new GregorianCalendar(2013, 2, 23, 12, 34, 56)).getTime();
 	public static Date april2nd2011 = (new GregorianCalendar(2011, 3, 2, 1, 2, 3)).getTime();
 
-//	private static ExecutorService executor = Executors.newCachedThreadPool();
-//	private static Future<Oracle11XEContainerDB> __oracleDatabaseFuture = Oracle11XEContainerDB.getLabelledInstanceInFuture(executor, "Oracle Static Reference Database");
-//	private static Oracle11XEContainerDB __oracleDatabase = null;
-//	private static Future<MSSQLServerContainerDB> __mssqlserverDatabaseFuture = MSSQLServerContainerDB.getLabelledInstanceInFuture(executor, "MSSQLServer Static Reference Database");
-//	private static MSSQLServerContainerDB __mssqlserverDatabase = null;
-//	private static Future<MySQLContainerDB> __mysqlDatabaseFuture = MySQLContainerDB.getLabelledInstanceInFuture(executor, "MySQL Static Reference Database");
-//	private static MySQLContainerDB __mysqlDatabase = null;
-//	private static Future<PostgresContainerDB> __postgresDatabaseFuture = PostgresContainerDB.getLabelledInstanceInFuture(executor, "Postgres Static Reference Database");
-//	private static PostgresContainerDB __postgresDatabase = null;
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -105,53 +88,6 @@ public abstract class AbstractTest {
 		return databases;
 	}
 
-//	public synchronized Oracle11XEContainerDB getOracleReferenceDatabase() {
-//		if (__oracleDatabase == null) {
-//			try {
-//				__oracleDatabase = __oracleDatabaseFuture.get();
-//			} catch (InterruptedException ex) {
-//				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-//			} catch (ExecutionException ex) {
-//				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-//		}
-//		return __oracleDatabase;
-//	}
-//
-//	public synchronized MSSQLServerContainerDB getMSSQLServerReferenceDatabase() {
-//		if (__mssqlserverDatabase == null) {
-//			try {
-//				__mssqlserverDatabase = __mssqlserverDatabaseFuture.get();
-//			} catch (InterruptedException | ExecutionException ex) {
-//				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-//		}
-//		return __mssqlserverDatabase;
-//	}
-//
-//	public synchronized MySQLContainerDB getMySQLReferenceDatabase() {
-//		if (__mysqlDatabase == null) {
-//			try {
-//				__mysqlDatabase = __mysqlDatabaseFuture.get();
-//			} catch (InterruptedException ex) {
-//				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-//			} catch (ExecutionException ex) {
-//				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-//		}
-//		return __mysqlDatabase;
-//	}
-//
-//	public synchronized PostgresContainerDB getPostgresReferenceDatabase() {
-//		if (__postgresDatabase == null) {
-//			try {
-//				__postgresDatabase = __postgresDatabaseFuture.get();
-//			} catch (InterruptedException | ExecutionException ex) {
-//				Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-//		}
-//		return __postgresDatabase;
-//	}
 	public DBDatabase getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull() throws SQLException {
 		final String name = "DatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull" + (Math.random());
 		return new H2MemoryDB(
@@ -190,9 +126,7 @@ public abstract class AbstractTest {
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
 				getPostgresContainerDatabaseForCluster(),
-				//				PostgreSQLTestDatabase.getFromSettings("postgres"),
 				getMySQLContainerDatabaseForCluster()
-				//				MySQLTestDatabase.getFromSettings("mysql")
 				)});
 		}
 		if (System.getProperty("testFullCluster") != null) {
@@ -211,9 +145,7 @@ public abstract class AbstractTest {
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				getPostgresContainerDatabaseForCluster(),
-				//				PostgreSQLTestDatabase.getFromSettings("postgres"),
 				getMySQLContainerDatabaseForCluster()
-				//MySQLTestDatabase.getFromSettings("mysql")
 				)});
 			databases.add(new Object[]{"MySQL",
 				MySQLTestDatabase.getFromSettings("mysql")
@@ -529,7 +461,6 @@ public abstract class AbstractTest {
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
 			if (file != null && !file.equals("")) {
-//				System.out.println("MAKING H2DB with FILENAME: " + file);
 				return H2TestDatabaseFromFilename(file + "-cluster.h2db", username, password);
 			} else {
 				return new H2TestDatabase(url, username, password);
@@ -630,16 +561,15 @@ public abstract class AbstractTest {
 		private final static long serialVersionUID = 1l;
 
 		public static PostgresDB getFromSettings(String prefix) throws SQLException {
-			return getPostgresContainerDatabase();
-//			String url = System.getProperty("" + prefix + ".url");
-//			String host = System.getProperty("" + prefix + ".host");
-//			String port = System.getProperty("" + prefix + ".port");
-//			String instance = System.getProperty("" + prefix + ".instance");
-//			String database = System.getProperty("" + prefix + ".database");
-//			String username = System.getProperty("" + prefix + ".username");
-//			String password = System.getProperty("" + prefix + ".password");
-//			String schema = System.getProperty("" + prefix + ".schema");
-//			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, database, username, password, schema);
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
+			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, database, username, password, schema);
 		}
 
 		public static PostgresDB getClusterDBFromSettings(String prefix) throws SQLException {
@@ -663,7 +593,6 @@ public abstract class AbstractTest {
 							.setUsername(username)
 							.setPassword(password)
 			);
-//host, Integer.valueOf(port), database, username, password);
 		}
 	}
 
@@ -719,7 +648,6 @@ public abstract class AbstractTest {
 							.setUsername(username)
 							.setPassword(password)
 			);
-//			this.setPrintSQLBeforeExecuting(true);
 		}
 	}
 
@@ -728,25 +656,11 @@ public abstract class AbstractTest {
 		private final static long serialVersionUID = 1l;
 
 		public static MSSQLServerLocalTestDB getFromSettings(String prefix) throws SQLException {
-//			String url = System.getProperty("" + prefix + ".url");
-//			String host = System.getProperty("" + prefix + ".host");
-//			String port = System.getProperty("" + prefix + ".port");
-//			String instance = System.getProperty("" + prefix + ".instance");
-//			String database = System.getProperty("" + prefix + ".database");
-//			String username = System.getProperty("" + prefix + ".username");
-//			String password = System.getProperty("" + prefix + ".password");
-//			String schema = System.getProperty("" + prefix + ".schema");
-//			System.out.println("nz.co.gregs.dbvolution.generic.AbstractTest.MSSQLServerLocalTestDB.getFromSettings()");
-//			System.out.println("" + host + " : " + instance + " : " + database + " : " + port + " : " + username + " : " + password);
-//			return new MSSQLServerLocalTestDB(host, instance, database, port, username, password);
 			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
 			MSSQLServerSettingsBuilder builder = new MSSQLServerSettingsBuilder().fromSettings(settings);
 			return new MSSQLServerLocalTestDB(builder);
 		}
 
-//		public MSSQLServerLocalTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
-//			super(host, instance, database, Integer.parseInt(port), username, password);
-//		}
 		private MSSQLServerLocalTestDB(MSSQLServerSettingsBuilder builder) throws SQLException {
 			super(builder);
 		}
