@@ -497,11 +497,6 @@ public class ClusteredDatabase extends DBDatabase {
 		return internalDatabase.executeDBAction(action);
 	}
 
-	@Override
-	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		return internalDatabase.executeDBQuery(query);
-	}
-
 	/* TODO Probably need to change this to use this database rather than the internal one*/
 	@Override
 	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
