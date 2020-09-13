@@ -88,7 +88,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleDB(AbstractOracleSettingsBuilder<?, ?> builder) throws SQLException {
-		this(builder.toSettings());
+		super(builder);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		for (StringFunctions fn : StringFunctions.values()) {
 			try {
 				fn.add(statement);
@@ -187,7 +187,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	}
 
 	@Override
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
+	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
 
 		dropAnyTriggerBasedPrimaryKeyObject(dbStatement, tableRow);
 		removeSpatialMetadata(dbStatement, tableRow);

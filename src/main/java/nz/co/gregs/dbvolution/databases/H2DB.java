@@ -209,7 +209,7 @@ public class H2DB extends DBDatabase {
 	}
 
 	@Override
-	protected synchronized void addDatabaseSpecificFeatures(final Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+	public synchronized void addDatabaseSpecificFeatures(final Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
 		DataTypes.addAll(stmt);
 		if (dataTypesNotProcessed) {
 			for (DataTypes datatype : DataTypes.values()) {
@@ -313,17 +313,18 @@ public class H2DB extends DBDatabase {
 		return getJdbcURL().contains(":mem:");
 	}
 
-	protected String getFileFromJdbcURL() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
-		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
-			return noPrefix
-					.replaceAll("tcp://", "")
-					.replaceAll("ssl://", "").split("/", 2)[1];
-		} else {
-			return noPrefix.replaceAll("^file:", "").split(";", 2)[0];
-		}
-	}
+//	@Override
+//	public String getFileFromJdbcURL() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
+//		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
+//			return noPrefix
+//					.replaceAll("tcp://", "")
+//					.replaceAll("ssl://", "").split("/", 2)[1];
+//		} else {
+//			return noPrefix.replaceAll("^file:", "").split(";", 2)[0];
+//		}
+//	}
 
 //	@Override
 //	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
@@ -374,7 +375,7 @@ public class H2DB extends DBDatabase {
 	private final static H2SettingsBuilder URL_PROCESSOR = new H2SettingsBuilder();
 
 	@Override
-	protected AbstractH2SettingsBuilder<?,?> getURLInterpreter() {
+	 public AbstractH2SettingsBuilder<?,?> getURLInterpreter() {
 		return URL_PROCESSOR;
 	}
 }

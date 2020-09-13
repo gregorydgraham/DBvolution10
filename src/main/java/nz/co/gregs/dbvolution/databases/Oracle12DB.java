@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle12SettingsBuilder;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 
 /**
@@ -139,7 +138,7 @@ public class Oracle12DB extends OracleDB {
 	}
 
 	@Override
-	protected Oracle12SettingsBuilder getURLInterpreter() {
+	public Oracle12SettingsBuilder getURLInterpreter() {
 		return new Oracle12SettingsBuilder();
 	}
 

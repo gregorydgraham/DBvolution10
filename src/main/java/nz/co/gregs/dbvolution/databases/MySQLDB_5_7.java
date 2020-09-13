@@ -112,7 +112,7 @@ new MySQL_5_7SettingsBuilder()
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		for (MigrationFunctions fn : MigrationFunctions.values()) {
 			fn.add(statement);
 		}
@@ -137,7 +137,7 @@ new MySQL_5_7SettingsBuilder()
 	}
 
 	@Override
-	protected MySQL_5_7SettingsBuilder getURLInterpreter() {
+	public MySQL_5_7SettingsBuilder getURLInterpreter() {
 		return urlProcessor;
 	}
 

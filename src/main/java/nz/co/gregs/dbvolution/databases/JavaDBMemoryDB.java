@@ -104,7 +104,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 
@@ -119,7 +119,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	}
 	
 	@Override
-	protected JavaDBMemorySettingsBuilder getURLInterpreter() {
+	public JavaDBMemorySettingsBuilder getURLInterpreter() {
 		return new JavaDBMemorySettingsBuilder();
 	}
 }

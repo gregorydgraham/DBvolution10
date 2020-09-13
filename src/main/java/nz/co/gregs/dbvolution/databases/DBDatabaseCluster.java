@@ -145,7 +145,7 @@ public class DBDatabaseCluster extends DBDatabase {
 //		return DBDatabaseCluster.class;
 //	}
 	@Override
-	protected DBDatabaseClusterSettingsBuilder getURLInterpreter() {
+	public DBDatabaseClusterSettingsBuilder getURLInterpreter() {
 		return new DBDatabaseClusterSettingsBuilder();
 	}
 
@@ -486,7 +486,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		throw new UnsupportedOperationException("DBDatabase.addDatabaseSpecificFeatures(Statement) should not be called");
 	}
 	

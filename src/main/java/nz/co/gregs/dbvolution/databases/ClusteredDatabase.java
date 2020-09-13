@@ -84,12 +84,12 @@ public class ClusteredDatabase extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		internalDatabase.addDatabaseSpecificFeatures(statement);
 	}
 
 	@Override
-	protected SettingsBuilder<?, ?> getURLInterpreter() {
+	public SettingsBuilder<?, ?> getURLInterpreter() {
 		return internalDatabase.getURLInterpreter();
 	}
 
@@ -413,12 +413,12 @@ public class ClusteredDatabase extends DBDatabase {
 	}
 
 	@Override
-	protected Connection getConnectionFromDriverManager() throws SQLException {
+	public Connection getConnectionFromDriverManager() throws SQLException {
 		return internalDatabase.getConnectionFromDriverManager();
 	}
 
 	@Override
-	protected <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
+	public <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
 		internalDatabase.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 	}
 
@@ -438,7 +438,7 @@ public class ClusteredDatabase extends DBDatabase {
 	}
 
 	@Override
-	protected ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		return internalDatabase.addFeatureToFixException(exp, intent);
 	}
 
@@ -463,7 +463,7 @@ public class ClusteredDatabase extends DBDatabase {
 	}
 
 	@Override
-	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
+	public void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		internalDatabase.setDefinitionBasedOnConnectionMetaData(clientInfo, metaData);
 	}
 

@@ -75,7 +75,7 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 //	}
 
 	@Override
-	protected MSSQLServer2012SettingsBuilder getURLInterpreter() {
+	 public MSSQLServer2012SettingsBuilder getURLInterpreter() {
 		return new MSSQLServer2012SettingsBuilder();
 	}
 	

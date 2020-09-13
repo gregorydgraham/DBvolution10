@@ -340,7 +340,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement stmnt) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement stmnt) throws ExceptionDuringDatabaseFeatureSetup {
 		setTimeZone(stmnt);
 		createPostGISExtension(stmnt);
 		if (postGISInstalled) {
@@ -466,7 +466,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 //		return PostgresDB.class;
 //	}
 	@Override
-	protected AbstractPostgresSettingsBuilder<?, ?> getURLInterpreter() {
+	public AbstractPostgresSettingsBuilder<?, ?> getURLInterpreter() {
 		return new PostgresSettingsBuilder();
 	}
 }

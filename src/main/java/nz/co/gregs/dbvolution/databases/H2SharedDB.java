@@ -77,7 +77,7 @@ public class H2SharedDB extends H2DB {
 	}
 
 	@Override
-	protected synchronized void addDatabaseSpecificFeatures(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
+	public synchronized void addDatabaseSpecificFeatures(Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(stmt);
 	}
 
@@ -160,7 +160,7 @@ public class H2SharedDB extends H2DB {
 //	}
 
 	@Override
-	protected H2SharedSettingsBuilder getURLInterpreter() {
+	public H2SharedSettingsBuilder getURLInterpreter() {
 		return new H2SharedSettingsBuilder();
 	}
 	

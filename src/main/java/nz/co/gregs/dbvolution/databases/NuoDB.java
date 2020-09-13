@@ -150,7 +150,7 @@ public class NuoDB extends DBDatabase {
 //	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 
@@ -225,7 +225,7 @@ public class NuoDB extends DBDatabase {
 //	}
 
 	@Override
-	protected NuoDBSettingsBuilder getURLInterpreter() {
+	public NuoDBSettingsBuilder getURLInterpreter() {
 		return new NuoDBSettingsBuilder();
 	}
 }

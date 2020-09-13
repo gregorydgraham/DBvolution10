@@ -110,7 +110,7 @@ public class MariaDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 
@@ -120,7 +120,7 @@ public class MariaDB extends DBDatabase {
 	}
 
 	@Override
-	protected MariaDBSettingsBuilder getURLInterpreter() {
+	public MariaDBSettingsBuilder getURLInterpreter() {
 		return new MariaDBSettingsBuilder();
 	}
 

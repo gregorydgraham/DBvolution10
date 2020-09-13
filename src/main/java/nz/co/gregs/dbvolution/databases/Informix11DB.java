@@ -115,7 +115,7 @@ public class Informix11DB extends InformixDB {
 //		return Informix11DB.class;
 //	}
 	@Override
-	protected Informix11SettingsBuilder getURLInterpreter() {
+	public Informix11SettingsBuilder getURLInterpreter() {
 		return new Informix11SettingsBuilder();
 	}
 

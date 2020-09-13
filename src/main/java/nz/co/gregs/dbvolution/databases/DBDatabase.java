@@ -84,7 +84,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
  *
  * @author Gregory Graham
  */
-public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseable {
+public abstract class DBDatabase implements DBDatabaseInterface, Serializable, Cloneable, AutoCloseable {
 
 	private static final long serialVersionUID = 1l;
 	static final private Log LOG = LogFactory.getLog(DBDatabase.class);
@@ -361,7 +361,7 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * syntax of the database in the DBDefinition and the connection details from
 	 * a DataSource.
 	 *
-	 * @param settings - a DatabaseConnectionSettings for the required database.
+	 * @param settings - a SettingsBuilder for the required database.
 	 * @throws java.sql.SQLException database errors
 	 * @see DBDefinition
 	 * @see OracleDB
@@ -2264,7 +2264,8 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	protected Connection getConnectionFromDriverManager() throws SQLException {
+	@Override
+	public Connection getConnectionFromDriverManager() throws SQLException {
 		if (terminated) {
 			return null;
 		} else {
@@ -2316,7 +2317,8 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("empty-statement")
-	protected <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
+	@Override
+	public <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
 		;
 	}
 
@@ -2408,7 +2410,8 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * @see MSSQLServerDB
 	 * @see MySQLDB
 	 */
-	abstract protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup;
+//	@Override
+//	public abstract void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup;
 
 	/**
 	 * Used to add features in a just-in-time manner.
@@ -2427,11 +2430,10 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 	 * @return the preferred response to the exception
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
-	protected ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	@Override
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		throw exp;
 	}
-
-	protected abstract SettingsBuilder<?, ?> getURLInterpreter();
 
 	public final String getUrlFromSettings(DatabaseConnectionSettings oldSettings) {
 		return getURLInterpreter().generateJDBCURL(oldSettings);
@@ -2497,7 +2499,8 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 		return this.exception;
 	}
 
-	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
+	@Override
+	public void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		;
 	}
 
@@ -2688,6 +2691,15 @@ public abstract class DBDatabase implements Serializable, Cloneable, AutoCloseab
 //	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
 //	
 //	protected abstract DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL);
+
+	/**
+	 * Returns the port number usually assign to instances of this database.
+	 * 
+	 * <p>There is no guarantee that the particular database instance uses this port, check with your DBA.</p>
+	 *
+	 * @return
+	 */
+	@Override
 	public abstract Integer getDefaultPort();
 
 	public DatabaseConnectionSettings getSettings() {

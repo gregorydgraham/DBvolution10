@@ -159,7 +159,7 @@ public class SQLiteDB extends DBDatabase {
 	}
 	
 	@Override
-	protected Connection getConnectionFromDriverManager() throws SQLException {
+	 public Connection getConnectionFromDriverManager() throws SQLException {
 		SQLiteConfig config = new SQLiteConfig();
 		config.enableCaseSensitiveLike(true);
 		Connection connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
@@ -184,7 +184,7 @@ public class SQLiteDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 
@@ -269,7 +269,7 @@ public class SQLiteDB extends DBDatabase {
 //		return SQLiteDB.class;
 //	}
 	@Override
-	protected SQLiteSettingsBuilder getURLInterpreter() {
+	public SQLiteSettingsBuilder getURLInterpreter() {
 		return new SQLiteSettingsBuilder();
 	}
 

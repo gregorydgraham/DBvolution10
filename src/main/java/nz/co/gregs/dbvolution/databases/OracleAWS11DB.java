@@ -169,7 +169,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	}
 
 	@Override
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
+	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
 
 		if (tableRow.getPrimaryKeys() != null) {
 			DBDefinition definition = getDefinition();
@@ -188,17 +188,17 @@ public class OracleAWS11DB extends OracleAWSDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	protected Connection getConnectionFromDriverManager() throws SQLException {
-		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	protected Connection getConnectionFromDriverManager() throws SQLException {
+//		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 //	@Override
 //	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 //		return OracleAWS11DB.class;
 //	}
 	@Override
-	protected OracleAWS11SettingsBuilder getURLInterpreter() {
+	public OracleAWS11SettingsBuilder getURLInterpreter() {
 		return new OracleAWS11SettingsBuilder();
 	}
 

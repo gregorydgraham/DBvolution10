@@ -170,7 +170,7 @@ public class InformixDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		// none implemented so far
 		;
 	}
@@ -247,7 +247,7 @@ public class InformixDB extends DBDatabase {
 //		return InformixDB.class;
 //	}
 	@Override
-	protected AbstractInformixSettingsBuilder<?, ?> getURLInterpreter() {
+	public AbstractInformixSettingsBuilder<?, ?> getURLInterpreter() {
 		return new InformixSettingsBuilder();
 	}
 

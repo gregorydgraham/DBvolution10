@@ -113,7 +113,7 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 
@@ -123,7 +123,7 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	protected AbstractJavaDBSettingsBuilder<?,?> getURLInterpreter() {
+	public AbstractJavaDBSettingsBuilder<?,?> getURLInterpreter() {
 		return new JavaDBSettingsBuilder();
 	}
 }

@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -170,7 +169,7 @@ public class Oracle11XEDB extends OracleDB {
 	}
 
 	@Override
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
+	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
 
 		if (tableRow.getPrimaryKeys() != null) {
 			DBDefinition definition = getDefinition();
@@ -189,13 +188,13 @@ public class Oracle11XEDB extends OracleDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	protected Connection getConnectionFromDriverManager() throws SQLException {
-		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	protected Connection getConnectionFromDriverManager() throws SQLException {
+//		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(statement);
 //		this.setPrintSQLBeforeExecuting(true);
 		for (GeometryFunctions fn : GeometryFunctions.values()) {
@@ -213,7 +212,7 @@ public class Oracle11XEDB extends OracleDB {
 	}
 
 	@Override
-	protected Oracle11XESettingsBuilder getURLInterpreter() {
+	public Oracle11XESettingsBuilder getURLInterpreter() {
 		return new Oracle11XESettingsBuilder();
 	}
 

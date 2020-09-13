@@ -154,7 +154,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(statement);
 
 		for (Line2DFunctions fn : Line2DFunctions.values()) {

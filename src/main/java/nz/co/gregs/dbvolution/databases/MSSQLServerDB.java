@@ -295,7 +295,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		for (MigrationFunctions fn : MigrationFunctions.values()) {
 			fn.add(statement);
 		}
@@ -344,7 +344,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	@Override
-	protected AbstractMSSQLServerSettingsBuilder<?, ?> getURLInterpreter() {
+	public AbstractMSSQLServerSettingsBuilder<?, ?> getURLInterpreter() {
 		return new MSSQLServerSettingsBuilder();
 	}
 }

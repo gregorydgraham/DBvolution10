@@ -171,7 +171,7 @@ public class H2MemoryDB extends H2DB {
 //	}
 //	private final static H2MemorySettingsBuilder URL_PROCESSOR = new H2MemorySettingsBuilder();
 	@Override
-	protected H2MemorySettingsBuilder getURLInterpreter() {
+	public H2MemorySettingsBuilder getURLInterpreter() {
 		return new H2MemorySettingsBuilder();
 	}
 

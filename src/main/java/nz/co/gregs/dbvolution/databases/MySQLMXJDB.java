@@ -106,7 +106,7 @@ public class MySQLMXJDB extends MySQLDB {
 	}
 
 	@Override
-	protected MySQLMXJDBSettingsBuilder getURLInterpreter() {
+	public MySQLMXJDBSettingsBuilder getURLInterpreter() {
 		return new MySQLMXJDBSettingsBuilder();
 	}
 }

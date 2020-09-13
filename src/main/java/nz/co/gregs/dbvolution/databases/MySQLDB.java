@@ -128,7 +128,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected AbstractMySQLSettingsBuilder<?, ?> getURLInterpreter() {
+	public AbstractMySQLSettingsBuilder<?, ?> getURLInterpreter() {
 		return new MySQLSettingsBuilder();
 	}
 
@@ -138,7 +138,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
+	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		for (MigrationFunctions fn : MigrationFunctions.values()) {
 			fn.add(statement);
 		}
@@ -163,7 +163,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
+	public void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		try {
 			if (metaData.getDatabaseMajorVersion() < 4
 					|| (metaData.getDatabaseMajorVersion() == 5 && metaData.getDatabaseMinorVersion() < 8)) {

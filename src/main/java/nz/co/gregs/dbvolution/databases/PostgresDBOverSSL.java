@@ -160,7 +160,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 //		return PostgresDBOverSSL.class ;
 //	}
 	@Override
-	protected PostgresOverSSLSettingsBuilder getURLInterpreter() {
+	public PostgresOverSSLSettingsBuilder getURLInterpreter() {
 		return new PostgresOverSSLSettingsBuilder();
 	}
 
