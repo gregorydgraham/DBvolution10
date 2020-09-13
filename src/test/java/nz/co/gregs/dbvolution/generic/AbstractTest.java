@@ -217,18 +217,16 @@ public abstract class AbstractTest {
 
 	private static PostgresContainerDB getPostgresContainerDatabase() {
 		if (POSTGRES_CONTAINER_DATABASE == null) {
-			POSTGRES_CONTAINER_DATABASE = PostgresContainerDB.getInstance();
+			POSTGRES_CONTAINER_DATABASE = PostgresContainerDB.getLabelledInstance("Postgres for Testing");
 		}
-		POSTGRES_CONTAINER_DATABASE.setLabel("Postgres for Testing");
 		return POSTGRES_CONTAINER_DATABASE;
 	}
 	private static PostgresContainerDB POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER = null;
 
 	private static PostgresContainerDB getPostgresContainerDatabaseForCluster() {
 		if (POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER == null) {
-			POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER = PostgresContainerDB.getInstance();
+			POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER = PostgresContainerDB.getLabelledInstance("Postgres for Cluster");
 		}
-		POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER.setLabel("Postgres for Cluster");
 		return POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 	private static MySQLContainerDB MySQL_CONTAINER_DATABASE = null;
