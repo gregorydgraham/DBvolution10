@@ -52,7 +52,7 @@ import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 public class ClusteredDatabase extends DBDatabase {
 
 	private static final long serialVersionUID = 1L;
-	private DBDatabase internalDatabase;
+	private final DBDatabase internalDatabase;
 
 	public ClusteredDatabase(DBDatabase database) throws SQLException {
 		super();
@@ -174,11 +174,13 @@ public class ClusteredDatabase extends DBDatabase {
 		internalDatabase.createTable(newTableRow, includeForeignKeyClauses);
 	}
 
+	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return query.query(this.internalDatabase);
 	}
 
+	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
-		return action.execute(this.internalDatabase);
+		return internalDatabase.executeDBAction(action);
 	}
 }
