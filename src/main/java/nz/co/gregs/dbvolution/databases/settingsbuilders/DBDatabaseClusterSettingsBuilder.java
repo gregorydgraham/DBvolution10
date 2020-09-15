@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -45,6 +47,7 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 	private boolean useAutoRebuild = false;
 	private boolean useAutoReconnect = false;
+	private DBDefinition defn;
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
@@ -122,5 +125,21 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 
 	public boolean getAutoReconnect() {
 		return this.useAutoReconnect;
+	}
+
+	@Override
+	public DBDefinition getDefinition() {
+		return this.defn;
+	}
+
+	@Override
+	public DBDefinition getDefaultDefinition() {
+		return new ClusterDatabaseDefinition();
+	}
+
+	@Override
+	public DBDatabaseClusterSettingsBuilder setDefinition(DBDefinition defn) {
+		this.defn = defn;
+		return this;
 	}
 }
