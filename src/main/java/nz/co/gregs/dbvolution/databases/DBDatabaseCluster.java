@@ -333,8 +333,8 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getStatusOf(db);
 	}
 
-	public Status getDatabaseStatus(DBDatabase db) {
-		return getDatabaseStatus(new ClusteredDatabase(db));
+	public Status getDatabaseStatus(DBDatabase db) throws SQLException {
+			return getDatabaseStatus(new ClusteredDatabase(db));
 	}
 
 	/**
@@ -374,7 +374,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the quarantineDatabase operation
 	 * is not supported by this list
 	 */
-	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException {
+	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		return removeDatabases(databases.toArray(new DBDatabase[]{}));
 	}
 
@@ -401,7 +401,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the quarantineDatabase operation
 	 * is not supported by this list
 	 */
-	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException {
+	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		for (DBDatabase database : databases) {
 			removeDatabase(database);
 		}
@@ -431,7 +431,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the
 	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
-	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
+	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		return removeDatabase(new ClusteredDatabase(database));
 	}
 
@@ -458,9 +458,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the
 	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
-	public void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
+	public void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		quarantineDatabase(new ClusteredDatabase(database), except);
 	}
+
 	protected void quarantineDatabase(ClusteredDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
 		details.quarantineDatabase(database, except);
 	}
@@ -475,24 +476,24 @@ public class DBDatabaseCluster extends DBDatabase {
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
 		return details.getReadyDatabase().getInternalDatabase();
 	}
-	
+
 	public ClusteredDatabase getReadyClusteredDatabase() throws NoAvailableDatabaseException {
 		return details.getReadyDatabase();
 	}
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
-		throw new UnsupportedOperationException("DBDatabase.addFeatureToFixException(Exception) should not be called");
+		throw new UnsupportedOperationException("DBDatabaseCluster.addFeatureToFixException(Exception) should not be called");
 	}
 
 	@Override
 	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
-		throw new UnsupportedOperationException("DBDatabase.addDatabaseSpecificFeatures(Statement) should not be called");
+		throw new UnsupportedOperationException("DBDatabaseCluster.addDatabaseSpecificFeatures(Statement) should not be called");
 	}
-	
+
 	@Override
 	public Connection getConnectionFromDriverManager() throws SQLException {
-		throw new UnsupportedOperationException("DBDatabase.getConnectionFromDriverManager() should not be called");
+		throw new UnsupportedOperationException("DBDatabaseCluster.getConnectionFromDriverManager() should not be called");
 	}
 
 	@Override
@@ -716,14 +717,17 @@ public class DBDatabaseCluster extends DBDatabase {
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		boolean finished = false;
 		do {
-			DBDatabase[] dbs = details.getReadyDatabases();
-			for (DBDatabase next : dbs) {
+			ClusteredDatabase[] dbs = details.getReadyDatabases();
+			for (ClusteredDatabase next : dbs) {
 				synchronized (next) {
 					try {
 						next.createTable(newTableRow);
 						finished = true;
 					} catch (Exception e) {
+						System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(): "+e.getLocalizedMessage());
+						e.printStackTrace();
 						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(): "+e.getLocalizedMessage());
 							throw e;
 						}
 					}
@@ -1689,7 +1693,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		public abstract Void synchronise(DBDatabaseCluster cluster, ClusteredDatabase database) throws SQLException;
 	}
 
-	public String reconnectQuarantinedDatabases() {
+	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] ejecta = details.getQuarantinedDatabases().toArray(new DBDatabase[]{});
 		for (DBDatabase ejected : ejecta) {
