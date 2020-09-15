@@ -36,10 +36,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.actions.DBAction;
+import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 
 /**
  *
@@ -122,5 +128,13 @@ interface DBDatabaseInterface {
 	boolean supportsNanosecondPrecision();
 
 	void stop();
+
+	public boolean tableExists(DBRow table) throws SQLException;
+
+	void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException;
+
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException;
+
+	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException;
 
 }

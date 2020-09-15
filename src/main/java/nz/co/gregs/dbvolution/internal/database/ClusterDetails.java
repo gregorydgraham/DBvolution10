@@ -31,6 +31,7 @@ package nz.co.gregs.dbvolution.internal.database;
 import nz.co.gregs.dbvolution.databases.ClusteredDatabase;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,8 +99,7 @@ public class ClusterDetails implements Serializable {
 
 	public final synchronized boolean add(ClusteredDatabase databaseToAdd) {
 		if (databaseToAdd != null) {
-			ClusteredDatabase database = new ClusteredDatabase(databaseToAdd);
-//			DBDatabase database = databaseToAdd;
+			ClusteredDatabase database = databaseToAdd;
 			final boolean supportsDifferenceBetweenNullAndEmptyString1 = getSupportsDifferenceBetweenNullAndEmptyString();
 			boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
 			if (result != supportsDifferenceBetweenNullAndEmptyString1) {
@@ -305,7 +305,7 @@ public class ClusterDetails implements Serializable {
 			if (authoritativeDCS != null) {
 				try {
 					return new ClusteredDatabase(authoritativeDCS.createDBDatabase());
-				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SQLException ex) {
 					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
 					throw new NoAvailableDatabaseException();
 				}

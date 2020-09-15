@@ -30,8 +30,12 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 
 /**
  *
@@ -55,7 +59,13 @@ public class ReconnectionProcess extends RegularProcess {
 				String msg = database.getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... \n";
 				System.out.println(msg);
 				str = msg;
-				str += cluster.reconnectQuarantinedDatabases();
+				try {
+					str += cluster.reconnectQuarantinedDatabases();
+				} catch (UnableToRemoveLastDatabaseFromClusterException ex) {
+					Logger.getLogger(ReconnectionProcess.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (SQLException ex) {
+					Logger.getLogger(ReconnectionProcess.class.getName()).log(Level.SEVERE, null, ex);
+				}
 				msg = database.getDatabaseName() + ": FINISHED RECONNECTING DATABASES...";
 				System.out.println(msg);
 				str += "\n" + msg;

@@ -109,6 +109,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
 	private Exception exception = null;
 	private ScheduledFuture<?> regularThreadPoolFuture;
+	private boolean hasCreatedRequiredTables = false;
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -323,7 +324,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
 	 * @param driverName the class name of the database driver
-	 * @param dcs - a DatabaseConnectionSettings for the required database.
+	 * @param settingsBuilder - a DatabaseConnectionSettings for the required
+	 * database.
 	 * @throws java.sql.SQLException database errors
 	 * @see DBDefinition
 	 * @see OracleDB
@@ -338,13 +340,13 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @see NuoDB
 	 */
 	@Deprecated
-	private DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?, ?> dcs) throws SQLException {
+	private DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?, ?> settingsBuilder) throws SQLException {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
-		this.settings.copy(dcs.toSettings());
+		this.settings.copy(settingsBuilder.toSettings());
 		this.setDatabaseName(settings.getDatabaseName());
-		setDBDatabaseClassInSettings();
+		setDBDatabaseClassInSettings(settingsBuilder);
 		createRequiredTables();
 	}
 
@@ -375,17 +377,19 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	protected DBDatabase(VendorSettingsBuilder<?, ?> settings) throws SQLException {
+	protected DBDatabase(SettingsBuilder<?, ?> settings) throws SQLException {
 		this();
-		this.definition = settings.getDefinition();
-		initDriver(settings.getDriverName());
-		this.settings.copy(settings.toSettings());
-		if (settings instanceof NamedDatabaseCapableSettingsBuilder) {
-			this.setDatabaseName(
-					((NamedDatabaseCapableSettingsBuilder) settings).getDatabaseName()
-			);
+		initDatabase(settings);
+	}
+
+	protected final void initDatabase(SettingsBuilder<?, ?> suppliedSettings) throws SQLException {
+		this.definition = suppliedSettings.getDefinition();
+		initDriver(suppliedSettings);
+		this.settings.copy(suppliedSettings.toSettings());
+		if (suppliedSettings instanceof NamedDatabaseCapableSettingsBuilder) {
+			this.setDatabaseName(((NamedDatabaseCapableSettingsBuilder) suppliedSettings).getDatabaseName());
 		}
-		setDBDatabaseClassInSettings();
+		setDBDatabaseClassInSettings(suppliedSettings);
 		createRequiredTables();
 	}
 
@@ -424,24 +428,20 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		settings.copy(this.getSettingsFromJDBCURL(jdbcURL));
 		settings.setUsername(username);
 		settings.setPassword(password);
-//		setDBDatabaseClassInSettings();
-//		settings.setUrl(jdbcURL);
-//		settings.setDatabaseName(set.getDatabaseName());
-//		settings.setExtras(set.getExtras());
-//		settings.setHost(set.getHost());
-//		settings.setInstance(set.getInstance());
-//		settings.setLabel(set.getLabel());
-//		settings.setPort(set.getPort());
-//		settings.setProtocol(set.getProtocol());
-//		settings.setSchema(set.getSchema());
-//		settings.setPort(set.getPort());
 		createRequiredTables();
 	}
 
-	private void initDriver(String driverName1) {
-		this.driverName = driverName1;
+	private void initDriver(SettingsBuilder<?, ?> settings) {
+		if (settings instanceof VendorSettingsBuilder) {
+			final String newDriverName = ((VendorSettingsBuilder<?, ?>) settings).getDriverName();
+			initDriver(newDriverName);
+		}
+	}
+
+	private void initDriver(final String driverName1) {
+		driverName = driverName1;
 		try {
-			Class.forName(this.driverName);
+			Class.forName(driverName);
 		} catch (ClassNotFoundException ex) {
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -569,8 +569,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			synchronized (getConnectionSynchronizeObject) {
 				if (this.getDataSource() == null) {
 					try {
-						// load the driver
-						Class.forName(getDriverName());
+						if (getDriverName() != null && !getDriverName().isEmpty()) {
+							// load the driver
+							Class.forName(getDriverName());
+						}
 					} catch (ClassNotFoundException noDriver) {
 						throw new UnableToFindJDBCDriver(getDriverName(), noDriver);
 					}
@@ -606,7 +608,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 			synchronized (this) {
 				if (needToAddDatabaseSpecificFeatures) {
-					try (DBStatement createStatement = connection.createDBStatement()) {
+					try ( DBStatement createStatement = connection.createDBStatement()) {
 						try {
 							addDatabaseSpecificFeatures(createStatement.getInternalStatement());
 						} catch (ExceptionDuringDatabaseFeatureSetup exceptionDuringDBCreation) {
@@ -1672,7 +1674,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return sqlScript.toString();
 	}
 
-	private synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+	@Override
+	public synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 
@@ -1680,7 +1683,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
 
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
-		try (DBStatement dbStatement = getDBStatement()) {
+		try ( DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString, QueryIntention.CREATE_TABLE);
 
 			//Oracle style trigger based auto-increment keys
@@ -1739,7 +1742,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				}
 			}
 			if (fkClauses.size() > 0) {
-				try (DBStatement statement = getDBStatement()) {
+				try ( DBStatement statement = getDBStatement()) {
 					for (String fkClause : fkClauses) {
 						statement.execute(fkClause, QueryIntention.CREATE_FOREIGN_KEY);
 					}
@@ -1783,7 +1786,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 		}
 		if (fkClauses.size() > 0) {
-			try (DBStatement statement = getDBStatement()) {
+			try ( DBStatement statement = getDBStatement()) {
 				for (String fkClause : fkClauses) {
 					statement.execute(fkClause, QueryIntention.DROP_FOREIGN_KEY);
 				}
@@ -1825,7 +1828,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 		//Create indexes
 		if (indexClauses.size() > 0) {
-			try (DBStatement statement = getDBStatement()) {
+			try ( DBStatement statement = getDBStatement()) {
 				for (String indexClause : indexClauses) {
 					statement.execute(indexClause, QueryIntention.CREATE_INDEX);
 				}
@@ -1863,7 +1866,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
 		String sqlString = sqlScript.toString();
-		try (DBStatement dbStatement = getDBStatement()) {
+		try ( DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString, QueryIntention.DROP_TABLE);
 			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 		}
@@ -2057,6 +2060,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param databaseName	databaseName
 	 */
+	/* TODO - can this be final?*/
 	public synchronized void setDatabaseName(String databaseName) {
 		settings.setDatabaseName(databaseName);
 	}
@@ -2398,22 +2402,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	/**
-	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
-	 *
-	 * @param statement the statement to use when adding features, DO NOT CLOSE
-	 * THIS STATEMENT.
-	 * @throws ExceptionDuringDatabaseFeatureSetup database exceptions may occur
-	 * @see PostgresDB
-	 * @see H2DB
-	 * @see SQLiteDB
-	 * @see OracleDB
-	 * @see MSSQLServerDB
-	 * @see MySQLDB
-	 */
-//	@Override
-//	public abstract void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup;
-
-	/**
 	 * Used to add features in a just-in-time manner.
 	 *
 	 * <p>
@@ -2504,16 +2492,26 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		;
 	}
 
+	@Override
 	public boolean supportsMicrosecondPrecision() {
 		return true;
 	}
 
+	@Override
 	public boolean supportsNanosecondPrecision() {
 		return true;
 	}
 
 	public boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return getDefinition().canProduceNullStrings(); //getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
+	}
+
+	protected boolean hasCreatedRequiredTables() {
+		return hasCreatedRequiredTables;
+	}
+
+	protected void setHasCreatedRequiredTables(boolean b) {
+		hasCreatedRequiredTables = b;
 	}
 
 	public static enum ResponseToException {
@@ -2554,10 +2552,12 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return new DBMigration<>(this, mapper);
 	}
 
+	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		return action.execute(this);
 	}
 
+	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return query.query(this);
 	}
@@ -2566,6 +2566,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return query.toSQLString(this);
 	}
 
+	@Override
 	@SuppressFBWarnings(
 			value = "REC_CATCH_EXCEPTION",
 			justification = "Database vendors throw all sorts of silly exceptions")
@@ -2573,7 +2574,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		boolean tableExists = false;
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
-			try (DBStatement dbStatement = getDBStatement()) {
+			try ( DBStatement dbStatement = getDBStatement()) {
 				DBConnection conn = dbStatement.getConnection();
 				ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
 				if (rset.next()) {
@@ -2582,7 +2583,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 		} else {
 			String testQuery = getDefinition().getTableExistsSQL(table);
-			try (DBStatement dbStatement = getDBStatement()) {
+			try ( DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(
 						testQuery,
 						"CHECK FOR TABLE " + table.getTableName(),
@@ -2605,9 +2606,12 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private void createRequiredTables() throws SQLException {
-		Set<DBRow> tables = DataModel.getRequiredTables();
-		for (DBRow table : tables) {
-			updateTableToMatchDBRow(table);
+		if (!hasCreatedRequiredTables()) {
+			Set<DBRow> tables = DataModel.getRequiredTables();
+			for (DBRow table : tables) {
+				updateTableToMatchDBRow(table);
+			}
+			setHasCreatedRequiredTables(true);
 		}
 	}
 
@@ -2633,8 +2637,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				.setQueryTimeout(10000)
 				.setBlankQueryAllowed(true)
 				.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
-		try (DBStatement dbStatement = getDBStatement()) {
-			try (ResultSet resultSet = dbStatement.executeQuery(
+		try ( DBStatement dbStatement = getDBStatement()) {
+			try ( ResultSet resultSet = dbStatement.executeQuery(
 					testQuery,
 					"CHECK TABLE STRUCTURE FOR " + table.getTableName(),
 					QueryIntention.SIMPLE_SELECT_QUERY)) {
@@ -2675,27 +2679,27 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
 
-		try (DBStatement dbStatement = getDBStatement()) {
+		try ( DBStatement dbStatement = getDBStatement()) {
 			try {
 				boolean execute = dbStatement.execute(sqlString, QueryIntention.ADD_COLUMN_TO_TABLE);
+
 			} catch (SQLException ex) {
-//				System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
-				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DBDatabase.class
+						.getName()).log(Level.SEVERE, null, ex);
 			}
+
 		} catch (SQLException ex) {
-//			System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DBDatabase.class
+					.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
-//	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
-//	
-//	protected abstract DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL);
-
 	/**
 	 * Returns the port number usually assign to instances of this database.
-	 * 
-	 * <p>There is no guarantee that the particular database instance uses this port, check with your DBA.</p>
+	 *
+	 * <p>
+	 * There is no guarantee that the particular database instance uses this port,
+	 * check with your DBA.</p>
 	 *
 	 * @return
 	 */
@@ -2715,10 +2719,15 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		settings.setDbdatabaseClass(getBaseDBDatabaseClass().getCanonicalName());
 	}
 
+	private void setDBDatabaseClassInSettings(SettingsBuilder<?, ?> suppliedSettings) {
+		settings.setDbdatabaseClass(suppliedSettings.generatesURLForDatabase().getCanonicalName());
+	}
+
 	protected void startServerIfRequired() {
 		;
 	}
 
+	@Override
 	public boolean isMemoryDatabase() {
 		return false;
 	}
@@ -2763,6 +2772,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * }
 	 *
 	 */
+	@Override
 	public synchronized void stop() {
 		terminated = true;
 		for (RegularProcess regularProcessor : getRegularProcessors()) {
@@ -2854,6 +2864,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	protected final Class<? extends DBDatabase> getBaseDBDatabaseClass() {
 		return getURLInterpreter().generatesURLForDatabase();
+
 	}
 
 	protected class RunRegularProcessors implements Runnable {

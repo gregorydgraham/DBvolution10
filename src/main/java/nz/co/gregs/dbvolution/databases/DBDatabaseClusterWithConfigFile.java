@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -208,7 +209,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		parseYAMLAndAddDatabases(yamlConfigFile, yamlConfigFilename);
 	}
 
-	public void reloadConfiguration() throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
+	public void reloadConfiguration() throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster, UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		this.removeDatabases(details.getAllDatabases());
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
