@@ -32,6 +32,7 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -101,5 +102,11 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF, DATABASE>, D
 	String getPassword();
 
 	SELF setPassword(String password);
+
+	DBDefinition getDefinition();
+
+	DBDefinition getDefaultDefinition();
+
+	SELF setDefinition(DBDefinition defn);
 
 }
