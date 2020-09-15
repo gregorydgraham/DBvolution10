@@ -33,8 +33,6 @@ import nz.co.gregs.dbvolution.internal.sqlite.*;
 /**
  * Creates a DBDatabase for an SQLite database.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -42,8 +40,6 @@ public class SQLiteDB extends DBDatabase {
 
 	public static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;
-//	private String derivedURL;
-//	private static final SettingsBuilder URL_PROCESSOR = new SQLiteSettingsBuilder();
 
 	/**
 	 *
@@ -114,7 +110,6 @@ public class SQLiteDB extends DBDatabase {
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
 		this(new SQLiteSettingsBuilder().fromJDBCURL(jdbcURL, username, password));
-//		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -188,67 +183,6 @@ public class SQLiteDB extends DBDatabase {
 		;
 	}
 
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("?", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-//		return noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0];
-//
-//	}
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		return getExtras().get("instance");
-//	}
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-//		return noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:+", "");
-//	}
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-//	private void setDatabasenameFromURL() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-//		String name = noPrefix.split(":", 3)[2];
-//		setDatabaseName(name);
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-//		if (jdbcURL.contains(";")) {
-//			String extrasString = jdbcURL.split("\\?", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setDatabaseName(noPrefix.split(":", 3)[2]);
-//		set.setPort(noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:+", ""));
-//		set.setHost(noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0]);
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 5432;
@@ -264,10 +198,6 @@ public class SQLiteDB extends DBDatabase {
 		return super.addFeatureToFixException(exp, intent);
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return SQLiteDB.class;
-//	}
 	@Override
 	public SQLiteSettingsBuilder getURLInterpreter() {
 		return new SQLiteSettingsBuilder();
