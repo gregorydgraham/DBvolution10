@@ -392,11 +392,11 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				private static final long serialVersionUID = 1l;
 
 				@Override
-				public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+				public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 					if (newTableRow instanceof TableThatDoesExistOnTheCluster) {
 						throw new SQLException("DELIBERATE EXCEPTION");
 					} else {
-						super.createTable(newTableRow);
+						super.createTable(newTableRow, includeForeignKeyClauses);
 					}
 				}
 
