@@ -31,7 +31,6 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -46,11 +45,5 @@ public interface VendorSettingsBuilder<SELF extends VendorSettingsBuilder<SELF, 
 	String getDefaultDriverName();
 
 	SELF setDriverName(String driverName);
-
-	DBDefinition getDefinition();
-
-	DBDefinition getDefaultDefinition();
-
-	SELF setDefinition(DBDefinition defn);
 
 }
