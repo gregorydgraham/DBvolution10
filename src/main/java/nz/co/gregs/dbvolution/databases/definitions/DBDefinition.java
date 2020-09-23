@@ -56,6 +56,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -64,6 +65,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -6928,7 +6931,7 @@ public abstract class DBDefinition implements Serializable {
 		return requiredToProduceEmptyStringsForNull;
 	}
 
-	public synchronized final void setRequiredToProduceEmptyStringsForNull(boolean required) {
+	private synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
 		requiredToProduceEmptyStringsForNull = required;
 	}
 
@@ -6943,5 +6946,16 @@ public abstract class DBDefinition implements Serializable {
 
 	public String doIsNullTransform(String expressionSQL) {
 		return expressionSQL + " IS NULL ";
+	}
+
+	public DBDefinition getOracleCompatibleVersion() {
+		try {
+			DBDefinition newInstance = this.getClass().getConstructor().newInstance();
+			newInstance.setRequiredToProduceEmptyStringsForNull(true);
+			return newInstance;
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			Logger.getLogger(DBDefinition.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return this;
 	}
 }

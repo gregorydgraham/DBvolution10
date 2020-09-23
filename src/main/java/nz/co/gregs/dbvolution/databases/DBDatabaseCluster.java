@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -128,7 +129,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	public ClusterDetails getClusterDetails() {
 		return details;
 	}
-	
+
 	@Override
 	public Integer getDefaultPort() {
 		throw new UnsupportedOperationException("DBDatabaseCluster does not support getDefaultPort() yet.");
@@ -202,21 +203,64 @@ public class DBDatabaseCluster extends DBDatabase {
 	private void initDatabase(DBDatabase[] databases) throws SQLException {
 		for (DBDatabase database : databases) {
 			final DBDatabase databaseToAdd;
-				databaseToAdd = database;
+			databaseToAdd = database;
 			details.add(databaseToAdd);
 		}
 		setDefinition(new ClusterDatabaseDefinition());
 		synchronizeSecondaryDatabases();
 	}
 
+	/**
+	 * Creates a new cluster with the configuration supplied.
+	 *
+	 * <p>
+	 * Use this method to ensure that the new cluster will not clash with any
+	 * existing clusters.</p>
+	 *
+	 * @param config
+	 * @param databases
+	 * @return
+	 * @throws SQLException
+	 */
 	public static DBDatabaseCluster randomCluster(Configuration config, DBDatabase databases) throws SQLException {
-		final String dbName = ("RandomClusterDB-" + Math.random()).replaceFirst("0\\.", "");
+		final String dbName = getRandomClusterName();
 		return new DBDatabaseCluster(dbName, config, databases);
 	}
 
+	/**
+	 * Creates a new cluster without auto-rebuild or auto-reconnect.
+	 *
+	 * <p>
+	 * Use this method to ensure that the new cluster will not clash with any
+	 * existing clusters.</p>
+	 *
+	 * @param databases
+	 * @return
+	 * @throws SQLException
+	 */
 	public static DBDatabaseCluster randomManualCluster(DBDatabase databases) throws SQLException {
-		final String dbName = ("RandomClusterDB-" + Math.random()).replaceFirst("0\\.", "");
+		final String dbName = getRandomClusterName();
 		return new DBDatabaseCluster(dbName, Configuration.manual(), databases);
+	}
+
+	/**
+	 * Creates a new cluster with auto-rebuild and auto-reconnect.
+	 *
+	 * <p>
+	 * Use this method to ensure that the new cluster will not clash with any
+	 * existing clusters.</p>
+	 *
+	 * @param databases
+	 * @return
+	 * @throws SQLException
+	 */
+	public static DBDatabaseCluster randomAutomaticCluster(DBDatabase databases) throws SQLException {
+		final String dbName = getRandomClusterName();
+		return new DBDatabaseCluster(dbName, Configuration.autoRebuildAndReconnect(), databases);
+	}
+
+	private static String getRandomClusterName() {
+		return "RandomClusterDB-" + UUID.randomUUID();
 	}
 
 	/**
@@ -1462,7 +1506,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		return result.toString();
 	}
-	
+
 	public final boolean getAutoRebuild() {
 		return details.getAutoRebuild();
 	}
@@ -1589,10 +1633,10 @@ public class DBDatabaseCluster extends DBDatabase {
 		return !details.getAutoRebuild() || !details.hasAuthoritativeDatabase();
 	}
 
-	@Override
+//	@Override
 	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
 		getClusterDetails().setSupportsDifferenceBetweenNullAndEmptyString(!required);
-		super.setRequiredToProduceEmptyStringsForNull(required);
+//		super.setRequiredToProduceEmptyStringsForNull(required);
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {

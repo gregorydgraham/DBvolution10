@@ -2752,9 +2752,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return settings.getSchema();
 	}
 
-	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
-		getDefinition().setRequiredToProduceEmptyStringsForNull(required);
-	}
+//	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
+//		getDefinition().setRequiredToProduceEmptyStringsForNull(required);
+//	}
 
 	/**
 	 * Closes all threads, connections, and resources used by the database.

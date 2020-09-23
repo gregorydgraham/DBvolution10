@@ -57,18 +57,19 @@ public class OracleCompatibilityTest extends AbstractTest {
 
 	@Before
 	public void requireOracleCompatibility() {
-		database.setRequiredToProduceEmptyStringsForNull(true);
+//		database.setRequiredToProduceEmptyStringsForNull(true);
 	}
 
 	@After
 	public void removeOracleCompatibility() {
-		database.setRequiredToProduceEmptyStringsForNull(false);
+//		database.setRequiredToProduceEmptyStringsForNull(false);
 	}
 
 	@Test
 	public void testDBRowMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
-		List<DBString> distinctValuesForColumn = marque.getDistinctValuesOfColumn(database, marque.individualAllocationsAllowed);
+		DBQuery query = database.getDBQuery().add(marque).setReturnEmptyStringForNullString(true);
+		List<DBString> distinctValuesForColumn = query.getDistinctValuesOfColumn(marque.column(marque.individualAllocationsAllowed));
 		Assert.assertThat(distinctValuesForColumn.size(), is(2));
 
 		List<String> foundStrings = new ArrayList<>();
@@ -92,7 +93,8 @@ public class OracleCompatibilityTest extends AbstractTest {
 	@Test
 	public void testDBTableMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
-		final DBTable<Marque> dbTable = database.getDBTable(marque);
+		final DBTable<Marque> dbTable = database.getDBTable(marque)
+				.setReturnEmptyStringForNullString(true);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBString val : distinctValuesForColumn) {
@@ -122,6 +124,7 @@ public class OracleCompatibilityTest extends AbstractTest {
 				= database
 						.getDBQuery(carCo, marque)
 						.setBlankQueryAllowed(true)
+						.setReturnEmptyStringForNullString(true)
 						.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
 
 		Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(2));
@@ -135,13 +138,15 @@ public class OracleCompatibilityTest extends AbstractTest {
 	@Test
 	public void sortingNullsHighest() throws SQLException {
 		Marque marque = new Marque();
-		List<Marque> allRows = database
-				.getDBTable(marque)
-				.setBlankQueryAllowed(true)
-				.setSortOrder(marque.column(marque.individualAllocationsAllowed)
-						.descending()
-						.nullsHighest()
-				).getAllRows();
+		List<Marque> allRows
+				= database
+						.getDBTable(marque)
+						.setBlankQueryAllowed(true)
+						.setReturnEmptyStringForNullString(true)
+						.setSortOrder(marque.column(marque.individualAllocationsAllowed)
+								.descending()
+								.nullsHighest()
+						).getAllRows();
 		Assert.assertThat(allRows.size(), is(22));
 
 		Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is(""));
@@ -171,13 +176,15 @@ public class OracleCompatibilityTest extends AbstractTest {
 	@Test
 	public void sortingNullsLast() throws SQLException {
 		Marque marque = new Marque();
-		List<Marque> allRows = database
-				.getDBTable(marque)
-				.setBlankQueryAllowed(true)
-				.setSortOrder(marque.column(marque.individualAllocationsAllowed)
-						.ascending()
-						.nullsLast()
-				).getAllRows();
+		List<Marque> allRows
+				= database
+						.getDBTable(marque)
+						.setReturnEmptyStringForNullString(true)
+						.setBlankQueryAllowed(true)
+						.setSortOrder(marque.column(marque.individualAllocationsAllowed)
+								.ascending()
+								.nullsLast()
+						).getAllRows();
 		Assert.assertThat(allRows.size(), is(22));
 
 		Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is("Y"));
@@ -210,7 +217,10 @@ public class OracleCompatibilityTest extends AbstractTest {
 		final StringExpression nullExpr = StringExpression.nullString();
 		likeQuery.individualAllocationsAllowed.excludedValues(nullExpr);
 
-		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+		List<Marque> rowsByExample
+				= DBTable.getInstance(database, new Marque())
+						.setReturnEmptyStringForNullString(true)
+						.getRowsByExample(likeQuery);
 
 		Assert.assertEquals(1, rowsByExample.size());
 	}

@@ -227,6 +227,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void selectDBRowExpressionAllMarquesWithinOracleCluster() throws Exception {
+		boolean supportsDifferenceBetweenNullAndEmptyString = database.supportsDifferenceBetweenNullAndEmptyString();
 		DBDatabase oracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
 		try (var cluster = new DBDatabaseCluster("test required empty for null cluster", oracle)) {
 			cluster.addDatabaseAndWait(database);
@@ -253,7 +254,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 							+ row.name.stringValue() + "-"
 							+ year));
 				} else {
-					if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+					if (supportsDifferenceBetweenNullAndEmptyString) {
 						Assert.assertThat(
 								row.uidNameAndYear.stringValue(),
 								isEmptyOrNullString()
@@ -300,11 +301,11 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 			cluster.addDatabaseAndWait(oracle);
 
 			final ExpressionRow expressionRow = new ExpressionRow();
-			final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow)
-					.setQueryLabel("selectDBRowExpressionAllMarques");
+			final DBTable<ExpressionRow> expressionTable = cluster.getDBTable(expressionRow)
+					.setQueryLabel("selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase");
 
 			final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
-
+			
 			for (ExpressionRow row : allMarques) {
 				Assert.assertThat(row.uidAndName.stringValue(),
 						is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));

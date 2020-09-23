@@ -118,7 +118,6 @@ public class DBQuery implements Serializable {
 
 	protected DBQuery(DBDatabase database) {
 		this.database = database;
-//		this.details.setDefinition(database.getDefinition());
 		blankResults();
 	}
 
@@ -605,7 +604,7 @@ public class DBQuery implements Serializable {
 				QueryableDatatype<?> qdt = entry.getValue();
 				string.append(separator);
 				string.append(" ");
-				string.append(qdt.getColumnExpression()[0].toSQLString(database.getDefinition()));
+				string.append(qdt.getColumnExpression()[0].toSQLString(getDatabaseDefinition()));
 				string.append(":");
 				string.append(qdt.getValue().toString());
 				separator = ",";
@@ -681,7 +680,7 @@ public class DBQuery implements Serializable {
 					final List<QueryableDatatype<?>> primaryKeys = rowPart.getPrimaryKeys();
 					for (QueryableDatatype<?> primaryKey : primaryKeys) {
 						if (primaryKey != null) {
-							String rowPartStr = primaryKey.toSQLString(getReadyDatabase().getDefinition());
+							String rowPartStr = primaryKey.toSQLString(getDatabaseDefinition());
 							ps.print(" " + rowPart.getPrimaryKeyColumnNames() + ": " + rowPartStr);
 						}
 					}
@@ -1863,7 +1862,7 @@ public class DBQuery implements Serializable {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow exampleWithOrWithoutCriteria) {
-		if (exampleWithOrWithoutCriteria.willCreateBlankQuery(getReadyDatabase().getDefinition())) {
+		if (exampleWithOrWithoutCriteria.willCreateBlankQuery(getDatabaseDefinition())) {
 			addOptional(exampleWithOrWithoutCriteria);
 		} else {
 			add(exampleWithOrWithoutCriteria);
@@ -2097,7 +2096,7 @@ public class DBQuery implements Serializable {
 	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
 		List<DBQueryRow> returnList = new ArrayList<>();
 
-		DBQuery distinctQuery = database.getDBQuery();
+		DBQuery distinctQuery = database.getDBQuery().setReturnEmptyStringForNullString(details.getReturnEmptyStringForNullString());
 		for (DBRow row : details.getRequiredQueryTables()) {
 			final DBRow copyDBRow = DBRow.copyDBRow(row);
 			copyDBRow.removeAllFieldsFromResults();
@@ -2594,5 +2593,59 @@ public class DBQuery implements Serializable {
 	public DBQuery setQueryLabel(String newLabel) {
 		this.details.setLabel(newLabel);
 		return this;
+	}
+
+	public DBQuery setReturnEmptyStringForNullString(boolean b) {
+		this.details.setReturnEmptyStringForNullString(b);
+		return this;
+	}
+
+	public boolean getReturnEmptyStringForNullString() {
+		return this.details.getReturnEmptyStringForNullString();
+	}
+
+	@SuppressWarnings("unchecked")
+	public <A> List<A> getDistinctValuesOfColumn(DBRow example, A fieldOfTheExample) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+		return getDistinctValuesOfColumn(example.column(fieldOfTheExample));
+//		List<A> results = new ArrayList<>();
+//		DBRow queryRow = DBRow.copyDBRow(example);
+//		final PropertyWrapper fieldProp = queryRow.getPropertyWrapperOf(fieldOfTheExample);
+//		queryRow.setReturnFields(fieldOfTheExample);
+//		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(queryRow);
+//		final ColumnProvider columnProvider = queryRow.column(thisQDT);
+//		DBExpression expr = columnProvider.getColumn().asExpression();
+//		DBQuery dbQuery = this.add(queryRow).addGroupByColumn(queryRow, expr);
+//		dbQuery.setSortOrder(columnProvider.getSortProvider().nullsLowest());
+//		dbQuery.setBlankQueryAllowed(true);
+//		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//		allRows.stream().map(row -> row.get(queryRow)).forEachOrdered(got -> {
+//			results.add(got == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(got));
+//		});
+//		return results;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <A> List<A> getDistinctValuesOfColumn(ColumnProvider column) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+		List<A> results = new ArrayList<>();
+		final AbstractColumn column1 = column.getColumn();
+		DBRow queryRow = DBRow.copyDBRow(column1.getInstanceOfRow());
+		final PropertyWrapper fieldProp = column1.getPropertyWrapper();
+		queryRow.setReturnFields(column);
+		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(queryRow);
+		final ColumnProvider columnProvider = queryRow.column(thisQDT);
+		DBExpression expr = columnProvider.getColumn().asExpression();
+		DBQuery dbQuery 
+				= database
+						.getDBQuery()
+						.setReturnEmptyStringForNullString(details.getReturnEmptyStringForNullString())
+						.add(queryRow)
+						.addGroupByColumn(queryRow, expr);
+		dbQuery.setSortOrder(columnProvider.getSortProvider().nullsLowest());
+		dbQuery.setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		allRows.stream().map(row -> row.get(queryRow)).forEachOrdered(got -> {
+			results.add(got == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(got));
+		});
+		return results;
 	}
 }

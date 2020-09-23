@@ -103,7 +103,6 @@ public class ClusterDetails implements Serializable {
 			boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
 			if (result != supportsDifferenceBetweenNullAndEmptyString1) {
 				setSupportsDifferenceBetweenNullAndEmptyString(result);
-				database.getDefinition().setRequiredToProduceEmptyStringsForNull(result);
 			}
 
 			if (clusterContainsDatabase(database)) {
@@ -195,7 +194,6 @@ public class ClusterDetails implements Serializable {
 	private synchronized boolean removeDatabaseFromAllLists(DBDatabase databaseToRemove) throws SQLException {
 		DBDatabase database = getClusteredVersionOfDatabase(databaseToRemove);
 		LOG.info("REMOVING: " + database.getLabel());
-		database.getDefinition().setRequiredToProduceEmptyStringsForNull(false);
 		boolean result = queuedActions.containsKey(database) ? queuedActions.remove(database) != null : true;
 		result = result && quarantinedDatabases.contains(database) ? quarantinedDatabases.remove(database) : true;
 		result = result && unsynchronizedDatabases.contains(database) ? unsynchronizedDatabases.remove(database) : true;
@@ -210,7 +208,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized void synchronizingDatabase(DBDatabase datbaseIsSynchronized) throws SQLException {
-		DBDatabase database = getClusteredVersionOfDatabase(datbaseIsSynchronized); //new DBDatabase(datbaseIsSynchronized);
+		DBDatabase database = getClusteredVersionOfDatabase(datbaseIsSynchronized); 
 		unsynchronizedDatabases.remove(database);
 	}
 
@@ -442,11 +440,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized void setSupportsDifferenceBetweenNullAndEmptyString(boolean result) {
-		boolean changeRequired = result != supportsDifferenceBetweenNullAndEmptyString;
-		if (changeRequired) {
 			supportsDifferenceBetweenNullAndEmptyString = result;
-			allDatabases.forEach((db) -> db.setRequiredToProduceEmptyStringsForNull(!result));
-		}
 	}
 
 	public synchronized boolean getSupportsDifferenceBetweenNullAndEmptyString() {

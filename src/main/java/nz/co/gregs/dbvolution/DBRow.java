@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -1825,21 +1826,22 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		List<A> results = new ArrayList<>();
-		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
-		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(this);
-		this.setReturnFields(fieldOfThisInstance);
-		final ColumnProvider columnProvider = this.column(thisQDT);
-		DBExpression expr = columnProvider.getColumn().asExpression();
-		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, expr);
-		dbQuery.setSortOrder(columnProvider.getSortProvider().nullsLowest());
-		dbQuery.setBlankQueryAllowed(true);
-		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		for (DBQueryRow row : allRows) {
-			DBRow get = row.get(this);
-			results.add(get == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(get));
-		}
-		return results;
+		return database.getDBQuery().getDistinctValuesOfColumn(this, fieldOfThisInstance);
+//		List<A> results = new ArrayList<>();
+//		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
+//		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(this);
+//		this.setReturnFields(fieldOfThisInstance);
+//		final ColumnProvider columnProvider = this.column(thisQDT);
+//		DBExpression expr = columnProvider.getColumn().asExpression();
+//		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, expr);
+//		dbQuery.setSortOrder(columnProvider.getSortProvider().nullsLowest());
+//		dbQuery.setBlankQueryAllowed(true);
+//		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//		for (DBQueryRow row : allRows) {
+//			DBRow get = row.get(this);
+//			results.add(get == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(get));
+//		}
+//		return results;
 	}
 
 	/**

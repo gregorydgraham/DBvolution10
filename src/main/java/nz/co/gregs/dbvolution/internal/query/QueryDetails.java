@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
@@ -98,6 +99,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 //	private ArrayList<PropertyWrapper> sortOrder;
 	private List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
+	private boolean returnEmptyStringForNullString = false;
 
 	/**
 	 * <p style="color: #F90;">Support DBvolution at
@@ -171,9 +173,17 @@ public class QueryDetails implements DBQueryable, Serializable {
 	public synchronized List<BooleanExpression> getAllConditions(DBDatabase database) {
 		List<BooleanExpression> allConditions = new ArrayList<>();
 		for (DBRow entry : allQueryTables) {
-			allConditions.addAll(entry.getWhereClauseExpressions(database.getDefinition(), true));
+			allConditions.addAll(entry.getWhereClauseExpressions(getDatabaseDefinition(database), true));
 		}
 		return allConditions;
+	}
+
+	private DBDefinition getDatabaseDefinition(DBDatabase database) throws NoAvailableDatabaseException {
+		if (this.returnEmptyStringForNullString && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively()) {
+			DBDefinition newInstance = database.getDefinition().getOracleCompatibleVersion();
+			return newInstance;
+		}
+		return database.getDefinition();
 	}
 
 	/**
@@ -385,12 +395,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	private synchronized String getSQLForCount(DBDatabase database, QueryDetails details) {
-		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
+		if (!getDatabaseDefinition(database).supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM ("
 					+ getSQLForQuery(database, new QueryState(details), QueryType.SELECT, details.getOptions())
 							.replaceAll("; *$", "")
 					+ ") A"
-					+ database.getDefinition().endSQLStatement();
+					+ getDatabaseDefinition(database).endSQLStatement();
 		} else {
 			return getSQLForQuery(database, new QueryState(details), QueryType.COUNT, details.getOptions());
 		}
@@ -404,7 +414,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 				initialiseQueryGraph();
 
-				DBDefinition defn = database.getDefinition();
+				DBDefinition defn = getDatabaseDefinition(database);
 				StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
 				int columnIndex = 1;
 				boolean groupByIsRequired = false;
@@ -903,7 +913,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private synchronized String getHavingClause(DBDatabase database, QueryOptions options) {
 		BooleanExpression[] having = getHavingColumns();
-		final DBDefinition defn = database.getDefinition();
+		final DBDefinition defn = getDatabaseDefinition(database);
 		String havingClauseStart = defn.getHavingClauseStart();
 		if (having.length == 1) {
 			return havingClauseStart + having[0].toSQLString(defn);
@@ -943,7 +953,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private synchronized String getSQLForFakeFullOuterJoin(DBDatabase database, String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
 		String sqlForQuery;
 		String unionOperator;
-		DBDefinition defn = database.getDefinition();
+		DBDefinition defn = getDatabaseDefinition(database);
 		if (defn.supportsUnionDistinct()) {
 			unionOperator = defn.getUnionDistinctOperator();
 		} else {
@@ -1070,7 +1080,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	public synchronized void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
 		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
-		final DBDefinition defn = database.getDefinition();
+		final DBDefinition defn = getDatabaseDefinition(database);
 
 		if (defn.supportsPagingNatively(opts)) {
 			opts.setPageIndex(pageNumber);
@@ -1116,7 +1126,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	protected synchronized void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
 		prepareForQuery(db, options);
 
-		final DBDefinition defn = db.getDefinition();
+		final DBDefinition defn = getDatabaseDefinition(db);
 
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db) && details.getRawSQLClause().isEmpty()) {
 			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), willCreateBlankQuery(db), details.getRawSQLClause().isEmpty());
@@ -1249,10 +1259,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 	public synchronized boolean willCreateBlankQuery(DBDatabase db) {
 		boolean willCreateBlankQuery = true;
 		for (DBRow table : getAllQueryTables()) {
-			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(db.getDefinition());
+			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(getDatabaseDefinition(db));
 		}
 		for (DBRow table : getExtraExamples()) {
-			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(db.getDefinition());
+			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(getDatabaseDefinition(db));
 		}
 		willCreateBlankQuery = willCreateBlankQuery && getHavingColumns().length == 0;
 		return willCreateBlankQuery && (getConditions().isEmpty());
@@ -1520,6 +1530,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	public String getLabel() {
 		return this.label;
+	}
+
+	public void setReturnEmptyStringForNullString(boolean b) {
+		this.returnEmptyStringForNullString = b;
+	}
+
+	public boolean getReturnEmptyStringForNullString() {
+		return returnEmptyStringForNullString;
 	}
 
 	private static class OrderByClause {

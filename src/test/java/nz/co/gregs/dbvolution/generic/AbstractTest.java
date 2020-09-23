@@ -88,7 +88,7 @@ public abstract class AbstractTest {
 		return databases;
 	}
 
-	public DBDatabase getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull() throws SQLException {
+	public final DBDatabase getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull() throws SQLException {
 		final String name = "DatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull" + (Math.random());
 		return new H2MemoryDB(
 				new H2MemorySettingsBuilder()

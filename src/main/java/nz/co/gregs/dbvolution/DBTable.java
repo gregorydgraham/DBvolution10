@@ -86,7 +86,7 @@ public class DBTable<E extends DBRow> {
 		this.original = exampleRow;
 		exemplar = DBRow.copyDBRow(exampleRow);
 		this.database = database;
-		this.query = database.getDBQuery(exemplar);
+		this.query = database.getDBQuery(exemplar).setReturnEmptyStringForNullString(!database.supportsDifferenceBetweenNullAndEmptyString());
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class DBTable<E extends DBRow> {
 	 */
 	public List<E> getRowsByExample(E example) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		this.exemplar = DBRow.copyDBRow(example);
-		this.query = database.getDBQuery(exemplar);
+		this.query = database.getDBQuery(exemplar).setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
 		return getAllRows();
 	}
 
@@ -333,7 +333,7 @@ public class DBTable<E extends DBRow> {
 				throw new ClassNotFoundException("The value supplied is not in a supported class or it does not match the primary key class.");
 			}
 		}
-		this.query = database.getDBQuery(newInstance);
+		this.query = database.getDBQuery(newInstance).setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
 		return getAllRows();
 	}
 
@@ -502,7 +502,7 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public String getSQLForQuery(DBRow exemplar) throws SQLException {
-		return database.getDBQuery(exemplar).getSQLForQuery();
+		return database.getDBQuery(exemplar).setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString()).getSQLForQuery();
 	}
 
 	/**
@@ -1234,7 +1234,10 @@ public class DBTable<E extends DBRow> {
 		final PropertyWrapperDefinition fieldDefn = fieldProp.getPropertyWrapperDefinition();
 		QueryableDatatype<?> thisQDT = fieldDefn.getQueryableDatatype(exemplar);
 		exemplar.setReturnFields(thisQDT);
-		DBQuery distinctQuery = database.getDBQuery(exemplar);
+		DBQuery distinctQuery 
+				= database
+						.getDBQuery(exemplar)
+						.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
 		distinctQuery.setBlankQueryAllowed(true);
 		final ColumnProvider column = exemplar.column(thisQDT);
 		distinctQuery.setSortOrder(column.getSortProvider().nullsLowest());
@@ -1300,6 +1303,11 @@ public class DBTable<E extends DBRow> {
 
 	public DBTable<E> setQueryLabel(String queryLabel) {
 		this.query.setQueryLabel(queryLabel);
+		return this;
+	}
+
+	DBTable<E> setReturnEmptyStringForNullString(boolean b) {
+		query.setReturnEmptyStringForNullString(b);
 		return this;
 	}
 }
