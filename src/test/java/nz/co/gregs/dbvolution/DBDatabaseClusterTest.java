@@ -201,7 +201,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			row = soloDB.getDBTable(example).getOnlyRow();
 			Assert.assertThat(row.isUsedForTAFROs.getValue(), is("ANYTHING"));
 
-//			cluster.setPrintSQLBeforeExecuting(true);
 			cluster.addDatabaseAndWait(soloDB);
 
 			Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
@@ -244,8 +243,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			try {
 				List<DBQueryRow> allRows = query.getAllRows();
 			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
-//				System.out.println("nz.co.gregs.dbvolution.DBDatabaseClusterTest.testLastDatabaseCannotBeRemovedAfterErrorInQuery()");
-//				System.out.println(e.getMessage());
 			}
 			Assert.assertThat(cluster.size(), is(1));
 		} finally {
@@ -611,7 +608,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				Assert.assertThat(cluster.size(), is(2));
 				Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 
-//				Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
 				DBDatabase oracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
 				cluster.addDatabaseAndWait(oracle);
 				Assert.assertThat(cluster.size(), is(3));
@@ -634,34 +630,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 	}
 
-//	@Test
-//	public synchronized void testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemovedWithoutDismantling() throws SQLException {
-//
-//		try ( H2MemoryDB soloDB1 = H2MemoryDB.randomDatabase();  H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase(); //				Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
-//				) {
-//			{
-//				DBDatabaseCluster cluster
-//						= DBDatabaseCluster.randomManualCluster(soloDB1);
-//				cluster.addDatabase(soloDB2);
-//				Assert.assertThat(cluster.size(), is(2));
-//				Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
-//
-//				DBDatabase oracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
-//				cluster.addDatabaseAndWait(oracle);
-//				Assert.assertThat(cluster.size(), is(3));
-//				Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(false));
-//				Assert.assertThat(soloDB1.supportsDifferenceBetweenNullAndEmptyString(), is(true));
-//				Assert.assertThat(soloDB2.supportsDifferenceBetweenNullAndEmptyString(), is(true));
-//				final DBDatabase[] databases = cluster.getDatabases();
-//				for (DBDatabase db : databases) {
-//					Assert.assertThat(db.supportsDifferenceBetweenNullAndEmptyString(), is(false));
-//				}
-//			}
-//			Assert.assertThat(soloDB1.supportsDifferenceBetweenNullAndEmptyString(), is(true));
-//			Assert.assertThat(soloDB2.supportsDifferenceBetweenNullAndEmptyString(), is(true));
-//		}
-//	}
-
 	@Test
 	public synchronized void testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndClusterDismantled() throws SQLException {
 
@@ -672,7 +640,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			Assert.assertThat(cluster.size(), is(2));
 			Assert.assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 
-//			Oracle11XEContainerDB oracle = Oracle11XEContainerDB.getLabelledInstance("testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved");
 			DBDatabase oracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
 			cluster.addDatabaseAndWait(oracle);
 			Assert.assertThat(cluster.size(), is(3));
@@ -856,7 +823,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		public DBInteger pkid = new DBInteger();
 	}
 
-//	@DBRequiredTable
 	public static class TableThatDoesExistOnTheCluster extends DBRow {
 
 		private static final long serialVersionUID = 1L;
