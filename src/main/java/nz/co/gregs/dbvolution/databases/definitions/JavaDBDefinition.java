@@ -328,7 +328,7 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doNumberToStringTransform(String numberExpression) {
+	protected String doNumberToStringTransformUnsafe(String numberExpression) {
 		return "trim(cast(cast(" + numberExpression + " as char(38)) as varchar(1000)))";
 	}
 

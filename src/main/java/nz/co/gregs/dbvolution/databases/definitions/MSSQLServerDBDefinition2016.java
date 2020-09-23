@@ -18,8 +18,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -85,12 +83,8 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 				+ "||'-'||" + days
 				+ "||' '||" + hours
 				+ "||':'||" + minutes
-				+ "||':'||(" + seconds+"+"+subsecond+")"
-//				+ "||' '||" + timeZoneSign
-//				+ "||" + timeZoneHourOffset
-//				+ "||':'||" + timeZoneMinuteOffSet
+				+ "||':'||(" + seconds + "+" + subsecond + ")"
 				+ " as DATETIMEOFFSET)";
-		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -311,15 +305,6 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 		return " GETDATE";
 	}
 
-//	@Override
-//	public String doBooleanToIntegerTransform(String booleanExpression) {
-//		return "(case when (" + booleanExpression + ") then 1 else 0 end)";
-//	}
-
-//	@Override
-//	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-//		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
-//	}
 	@Override
 	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
@@ -526,7 +511,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	 * a character or String type.
 	 */
 	@Override
-	public String doNumberToStringTransform(String numberExpression) {
+	protected String doNumberToStringTransformUnsafe(String numberExpression) {
 		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
 	}
 
@@ -535,13 +520,11 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	 * expression for this database.
 	 *
 	 * @param numberExpression	numberExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL required to transform the number supplied into
 	 * a character or String type.
 	 */
 	@Override
-	public String doIntegerToStringTransform(String numberExpression) {
+	public String doIntegerToStringTransformUnsafe(String numberExpression) {
 		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
 	}
 
@@ -989,7 +972,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 			} else if (geometry instanceof Point) {
 				Point point = (Point) geometry;
 				mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
-			} else if ((geometry instanceof GeometryCollection) && (geometry.isEmpty())){
+			} else if ((geometry instanceof GeometryCollection) && (geometry.isEmpty())) {
 				mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{});
 			} else {
 				throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
@@ -1200,13 +1183,13 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	@Override
 	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
 		return doStringAccumulateTransform(
-					columnToAccumulate.toSQLString(this),
-					separator.getInnerResult().toSQLString(this), // separator needs to be a literal for SQLServer
-					orderBy.toSQLString(this),
-					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
-			);
+				columnToAccumulate.toSQLString(this),
+				separator.getInnerResult().toSQLString(this), // separator needs to be a literal for SQLServer
+				orderBy.toSQLString(this),
+				columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
+		);
 	}
-	
+
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
 		return "CAST(stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " order by " + orderByColumnName + " for xml path('')),1,2,'') as VARCHAR(1000))";

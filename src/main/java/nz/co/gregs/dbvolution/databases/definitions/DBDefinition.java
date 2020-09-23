@@ -3416,18 +3416,39 @@ public abstract class DBDefinition implements Serializable {
 	 * for this database.
 	 *
 	 * @param numberExpression	numberExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL required to transform the number supplied into
 	 * a character or String type.
 	 */
-	public String doNumberToStringTransform(String numberExpression) {
+	protected String doNumberToStringTransformUnsafe(String numberExpression) {
 		return doConcatTransform(getEmptyString(), numberExpression);
+	}
+
+	/**
+	 * Transforms a SQL snippet of a number expression into a character expression
+	 * for this database.
+	 *
+	 * <p>
+	 * This method performs necessary processing to ensure compatibility</p>
+	 *
+	 * @param numberExpression	numberExpression
+	 * @return a String of the SQL required to transform the number supplied into
+	 * a character or String type.
+	 */
+	public final String doNumberToStringTransform(String numberExpression) {
+		final String transformed = doNumberToStringTransformUnsafe(numberExpression);
+		if (requiredToProduceEmptyStringsForNull) {
+			return doStringIfNullUseEmptyStringTransform(transformed);
+		} else {
+			return transformed;
+		}
 	}
 
 	/**
 	 * Transforms a SQL snippet of a integer expression into a character
 	 * expression for this database.
+	 *
+	 * <p>
+	 * This method performs necessary processing to ensure compatibility</p>
 	 *
 	 * @param integerExpression	numberExpression
 	 * <p style="color: #F90;">Support DBvolution at
@@ -3435,15 +3456,29 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a String of the SQL required to transform the number supplied into
 	 * a character or String type.
 	 */
-	public String doIntegerToStringTransform(String integerExpression) {
+	public final String doIntegerToStringTransform(String integerExpression) {
+		final String transformed = doIntegerToStringTransformUnsafe(integerExpression);
+		if (requiredToProduceEmptyStringsForNull) {
+			return doStringIfNullUseEmptyStringTransform(transformed);
+		} else {
+			return transformed;
+		}
+	}
+
+	/**
+	 * Transforms a SQL snippet of a integer expression into a character
+	 * expression for this database.
+	 *
+	 * @param integerExpression	numberExpression
+	 * @return a String of the SQL required to transform the number supplied into
+	 * a character or String type.
+	 */
+	protected String doIntegerToStringTransformUnsafe(String integerExpression) {
 		return doConcatTransform(getEmptyString(), integerExpression);
 	}
 
 	/**
 	 * Creates the CURRENTDATE function for this database.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a String of the SQL required to get the CurrentDateOnly value.
 	 */
@@ -3455,8 +3490,6 @@ public abstract class DBDefinition implements Serializable {
 	 * Convert the boolean array of bit values into the SQL equivalent.
 	 *
 	 * @param booleanArray	booleanArray
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL snippet.
 	 */
 	public String doBitsValueTransform(boolean[] booleanArray) {
@@ -3610,6 +3643,16 @@ public abstract class DBDefinition implements Serializable {
 				+ ","
 				+ (alternativeIfNull == null ? "NULL" : alternativeIfNull)
 				+ ")";
+	}
+
+	/**
+	 * Produce SQL that will provide return the empty string if the value is NULL.
+	 *
+	 * @param possiblyNullValue
+	 * @return SQL
+	 */
+	public String doStringIfNullUseEmptyStringTransform(String possiblyNullValue) {
+		return doStringIfNullTransform(possiblyNullValue, getEmptyString());
 	}
 
 	/**
