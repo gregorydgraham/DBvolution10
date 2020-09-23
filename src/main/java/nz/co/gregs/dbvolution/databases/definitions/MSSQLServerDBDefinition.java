@@ -608,7 +608,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * a character or String type.
 	 */
 	@Override
-	public String doNumberToStringTransform(String numberExpression) {
+	protected String doNumberToStringTransformUnsafe(String numberExpression) {
 		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
 	}
 
@@ -623,7 +623,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * a character or String type.
 	 */
 	@Override
-	public String doIntegerToStringTransform(String numberExpression) {
+	protected String doIntegerToStringTransformUnsafe(String numberExpression) {
 		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
 	}
 
