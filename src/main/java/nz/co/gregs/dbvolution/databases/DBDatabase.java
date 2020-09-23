@@ -473,7 +473,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * transaction statement.
 	 * @throws java.sql.SQLException interacts with the database layer.
 	 */
-	public final DBStatement getDBStatement() throws SQLException {
+	public DBStatement getDBStatement() throws SQLException {
 		DBStatement statement;
 		synchronized (getStatementSynchronizeObject) {
 			if (isInATransaction) {
@@ -2510,7 +2510,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return hasCreatedRequiredTables;
 	}
 
-	protected void setHasCreatedRequiredTables(boolean b) {
+	protected final void setHasCreatedRequiredTables(boolean b) {
 		hasCreatedRequiredTables = b;
 	}
 
