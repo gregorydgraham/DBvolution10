@@ -88,7 +88,7 @@ public class TemporalStringParser {
 		String str = inputDateString;
 		// oracle sometimes produces unpadded time zone offsets
 		str = str.replaceFirst("(.*)([-+])([0-9][:]?[0-9]{2})$", "$1$20$3");
-		DateTimeParseException exception = new DateTimeParseException(str, str.subSequence(0, str.length()), 0);
+		Exception exception = new DateTimeParseException(str, str.subSequence(0, str.length()), 0);
 		LOG.debug("PROCESSING; " + str);
 		final CharSequence sequence = str.subSequence(0, str.length());
 		for (Parser format : INSTANT_FORMATTERS) {
@@ -105,7 +105,7 @@ public class TemporalStringParser {
 				LOG.debug("PARSE FAILED: " + format.toString());
 				LOG.debug("MESSAGE: " + ex1.getMessage());
 				if (ex1 instanceof DateTimeParseException) {
-					exception = (DateTimeParseException) ex1;
+					exception = ex1;
 				} else {
 					exception = new DateTimeParseException(str, sequence, 0, ex1);
 				}
@@ -119,12 +119,9 @@ public class TemporalStringParser {
 				LOG.debug("PARSED: " + sequence);
 				LOG.debug("TO: " + zoneddatetime);
 				return zoneddatetime;
-			} catch (DateTimeParseException ex1) {
+			} catch (Exception ex1) {
 				LOG.debug("PARSE FAILED: " + format.toString());
 				LOG.debug("MESSAGE: " + ex1.getMessage());
-//				if (ex1 instanceof ParseException) {
-				exception = ex1;
-//				}
 			}
 		}
 		try {
@@ -134,10 +131,9 @@ public class TemporalStringParser {
 			LOG.debug("PARSED: " + str);
 			LOG.debug("TO: " + zoneddatetime);
 			return zoneddatetime;
-		} catch (DateTimeParseException ex1) {
+		} catch (Exception ex1) {
 			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
 			LOG.debug("MESSAGE: " + ex1.getMessage());
-			exception = ex1;
 		}
 		str = inputDateString;
 		try {
@@ -147,7 +143,7 @@ public class TemporalStringParser {
 			LOG.debug("PARSED: " + str);
 			LOG.debug("TO: " + zoneddatetime);
 			return zoneddatetime;
-		} catch (DateTimeParseException ex1) {
+		} catch (Exception ex1) {
 			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
 			LOG.debug("MESSAGE: " + ex1.getMessage());
 			if (!(ex1 instanceof DateTimeParseException)) {
