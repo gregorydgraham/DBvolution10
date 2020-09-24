@@ -365,7 +365,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getAllDatabases();
 	}
 
-	public Status getDatabaseStatus(DBDatabase db) throws SQLException {
+	public Status getDatabaseStatus(DBDatabase db) {
 		return details.getStatusOf(db);
 	}
 
@@ -1495,7 +1495,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return (new Date()).toString() + "Active Databases: " + ready.length + " of " + details.getAllDatabases().length;
 	}
 
-	public String getDatabaseStatuses() throws SQLException {
+	public String getDatabaseStatuses() {
 		StringBuilder result = new StringBuilder();
 		final DBDatabase[] all = details.getAllDatabases();
 		for (DBDatabase db : all) {

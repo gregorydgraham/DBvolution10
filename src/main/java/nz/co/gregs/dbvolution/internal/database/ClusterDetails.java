@@ -125,7 +125,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase getStatusOfThisDatabase) throws SQLException {
+	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase getStatusOfThisDatabase) {
 		DBDatabase db = getClusteredVersionOfDatabase(getStatusOfThisDatabase);
 		final boolean ready = readyDatabases.contains(db);
 		final boolean paused = pausedDatabases.contains(db);
@@ -146,7 +146,7 @@ public class ClusterDetails implements Serializable {
 		return DBDatabaseCluster.Status.UNKNOWN;
 	}
 
-	private DBDatabase getClusteredVersionOfDatabase(DBDatabase getStatusOfThisDatabase) throws SQLException {
+	private DBDatabase getClusteredVersionOfDatabase(DBDatabase getStatusOfThisDatabase) {
 		DBDatabase db;
 		db = getStatusOfThisDatabase;
 		return db;
@@ -309,7 +309,7 @@ public class ClusterDetails implements Serializable {
 			if (authoritativeDCS != null) {
 				try {
 					return getClusteredVersionOfDatabase(authoritativeDCS.createDBDatabase());
-				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SQLException ex) {
+				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException  ex) {
 					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
 					throw new NoAvailableDatabaseException();
 				}
