@@ -53,8 +53,10 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 
 	public static Oracle11XEContainerDB getLabelledInstance(String label) {
 		OracleContainer container = new OracleContainer("oracleinanutshell/oracle-xe-11g");
-		container.withConnectTimeoutSeconds(300);
-		container.start();
+		ContainerUtils.startContainer(container);
+//		container.withConnectTimeoutSeconds(300);
+//		container.addEnv("TZ", ZoneId.systemDefault().getId());
+//		container.start();
 
 		try {
 			return new Oracle11XEContainerDB(container, label);
@@ -74,8 +76,17 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 		this(container, "", container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
 	}
 
+//	protected Oracle11XEContainerDB(OracleContainer container, String label) throws SQLException {
+//		this(container, label, container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
+//	}
 	protected Oracle11XEContainerDB(OracleContainer container, String label) throws SQLException {
-		this(container, label, container.getContainerIpAddress(), container.getOraclePort(), container.getSid(), container.getUsername(), container.getPassword());
+		this(
+				container, 
+				ContainerUtils.getContainerSettings(new Oracle11XESettingsBuilder(), container, label)
+				.setHost(container.getContainerIpAddress())
+				.setPort(container.getOraclePort())
+				.setSID(container.getSid())
+		);
 	}
 
 	protected Oracle11XEContainerDB(OracleContainer container, String label, String host, int port, String sid, String username, String password) throws SQLException {

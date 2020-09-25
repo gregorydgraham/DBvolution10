@@ -31,9 +31,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
-import java.time.ZoneId;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
@@ -54,23 +51,17 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 	private static final long serialVersionUID = 1l;
 
 	protected final MSSQLServerContainer<?> mssqlServerContainer;
-	
-	public static MSSQLServerContainerDB getInstance(){
+
+	public static MSSQLServerContainerDB getInstance() {
 		return getLabelledInstance("Unlabelled");
 	}
 
 	public static MSSQLServerContainerDB getLabelledInstance(String label) {
-		/*
-		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
-		 */
 		JdbcDatabaseContainer<?> container = new MSSQLServerContainerProvider().newInstance();
-		container.addEnv("TZ", ZoneId.systemDefault().getId());
-		container.withConnectTimeoutSeconds(300);
-
-//		MSSQLServerContainer container = new MSSQLServerContainer<>();
-////		container.withEnv("TZ", "Pacific/Auckland");
-//		container.withEnv("TZ", ZoneId.systemDefault().getId());
-		container.start();
+		ContainerUtils.startContainer(container);
+//		container.addEnv("TZ", ZoneId.systemDefault().getId());
+//		container.withConnectTimeoutSeconds(300);
+//		container.start();
 		try {
 			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB((MSSQLServerContainer) container, label);
 			return staticDatabase;
@@ -87,15 +78,16 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 
 	public MSSQLServerContainerDB(MSSQLServerContainer<?> container, String label) throws SQLException {
 		this(container,
-				new MSSQLServerSettingsBuilder()
-						.fromJDBCURL(
-								container.getJdbcUrl(),
-								container.getUsername(),
-								container.getPassword()
-						)
-						.setHost(container.getContainerIpAddress())
-						.setPort(container.getFirstMappedPort())
-						.setLabel(label)
+				ContainerUtils.getContainerSettings(new MSSQLServerSettingsBuilder(), container, label)
+		//				new MSSQLServerSettingsBuilder()
+		//						.fromJDBCURL(
+		//								container.getJdbcUrl(),
+		//								container.getUsername(),
+		//								container.getPassword()
+		//						)
+		//						.setHost(container.getContainerIpAddress())
+		//						.setPort(container.getFirstMappedPort())
+		//						.setLabel(label)
 		);
 	}
 

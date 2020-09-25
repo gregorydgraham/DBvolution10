@@ -41,7 +41,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
  *
  * @author gregorygraham
  */
-public class PostgresContainerDB extends PostgresDB {
+public class PostgresContainerDB extends PostgresDB{
 
 	private static final long serialVersionUID = 1l;
 	protected final PostgreSQLContainer<?> storedContainer;
@@ -51,17 +51,8 @@ public class PostgresContainerDB extends PostgresDB {
 	}
 
 	public static PostgresContainerDB getLabelledInstance(String label) {
-		/*
-		ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
-		SA_PASSWORD=Password23 defines the password so we can login
-		'TZ=Pacific/Auckland' sets the container timezone to where I do my test (TODO set to server location)
-		 */
 		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance();
-		container.withEnv("TZ", "Pacific/Auckland");
-		//			container.withEnv("TZ", ZoneId.systemDefault().getId());
-
-		container.withConnectTimeoutSeconds(300);
-		container.start();
+		ContainerUtils.startContainer(container);
 		try {
 			PostgresContainerDB dbdatabase = new PostgresContainerDB(container, label);
 			return dbdatabase;
@@ -72,9 +63,9 @@ public class PostgresContainerDB extends PostgresDB {
 	}
 
 	public PostgresContainerDB(PostgreSQLContainer<?> container, String label) throws SQLException {
-		this(container, new PostgresSettingsBuilder()
-				.fromJDBCURL(container.getJdbcUrl(), container.getUsername(), container.getPassword())
-				.setLabel(label)
+		this(
+				container, 
+				ContainerUtils.getContainerSettings(new PostgresSettingsBuilder(), container, label)
 		);
 	}
 
