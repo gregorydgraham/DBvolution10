@@ -32,17 +32,18 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.time.Duration;
 import java.time.ZoneId;
+import java.util.function.Consumer;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractMSSQLServerSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractMySQLSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractVendorSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.JdbcDatabaseContainerProvider;
 import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.containers.output.OutputFrame;
 
 /**
  *
@@ -50,12 +51,28 @@ import org.testcontainers.containers.OracleContainer;
  */
 public class ContainerUtils {
 
-	protected static void startContainer(JdbcDatabaseContainer<?> container) {
+	static final Log LOG = LogFactory.getLog(ContainerUtils.class);
+
+	private static void setStandardContainerSettings(JdbcDatabaseContainer<?> container) {
 		container.withEnv("TZ", ZoneId.systemDefault().toString());
-//		container.withEnv("TZ", "Pacific/Auckland");
 		container.setStartupAttempts(3);
 		container.withStartupTimeout(Duration.ofMinutes(5));
 		container.withConnectTimeoutSeconds(300);
+	}
+
+	protected static void startContainer(JdbcDatabaseContainer<?> container) {
+		setStandardContainerSettings(container);
+		container.start();
+	}
+
+	protected static void startContainer(MySQLContainer<?> container) {
+		setStandardContainerSettings(container);
+		container.withDatabaseName("some_database");
+		container.withLogConsumer(new ConsumerImpl());
+		final String username = "dbvuser";
+		final String password = "dbvtest";
+		container.withEnv("MYSQL_USER", username);
+		container.withEnv("MYSQL_PASSWORD", password);
 		container.start();
 	}
 
@@ -102,7 +119,14 @@ public class ContainerUtils {
 	 */
 	protected static <BUILDER extends AbstractMySQLSettingsBuilder<?, ?>, CONTAINER extends MySQLContainer<?>> BUILDER getContainerSettings(BUILDER builder, CONTAINER container, String label) {
 		getStandardSettings(builder, container, label)
-				.setDatabaseName(container.getDatabaseName());
+				.setDatabaseName(container.getDatabaseName())
+				// we require super user access
+				.setUsername("root")
+				.setPassword("test")
+				// The test container doesn't use SSL so we need to turn that off
+				.setUseSSL(false)
+				// allowPublicKeyRetrieval=true
+				.setAllowPublicKeyRetrieval(true);
 		return builder;
 	}
 
@@ -114,5 +138,13 @@ public class ContainerUtils {
 	}
 
 	private ContainerUtils() {
+	}
+
+	private static class ConsumerImpl implements Consumer<OutputFrame> {
+
+		@Override
+		public void accept(OutputFrame t) {
+			LOG.info("" + t.getUtf8String().replaceAll("\n$", ""));
+		}
 	}
 }
