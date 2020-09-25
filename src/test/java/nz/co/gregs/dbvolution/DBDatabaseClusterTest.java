@@ -103,7 +103,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
 
-			H2MemoryDB soloDB = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB = H2MemoryDB.createANewRandomDatabase();
 
 			Assert.assertTrue(soloDB.tableExists(testTable));
 			Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
@@ -182,7 +182,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
 
-			H2MemoryDB soloDB = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB = H2MemoryDB.createANewRandomDatabase();
 
 			Assert.assertTrue(soloDB.tableExists(testTable));
 			Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
@@ -218,7 +218,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
-			H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
 
 			DBQuery query = cluster.getDBQuery(new Marque());
@@ -235,7 +235,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testLastDatabaseCannotBeRemovedAfterErrorInQuery() throws SQLException {
 		DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database);
 		try {
-			H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
 
@@ -264,7 +264,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 								DBDatabaseCluster.Configuration.autoRebuild(),
 								database);
 				boolean dismantleCluster = true;
-				H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 				try {
 					cluster.addDatabase(soloDB2);
 					Assert.assertThat(cluster.size(), is(2));
@@ -285,7 +285,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 						= new DBDatabaseCluster(nameOfCluster, DBDatabaseCluster.Configuration.autoRebuild());
 
 				try {
-					H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+					H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 					Assert.assertThat(
 							soloDB2.getDBTable(new DBDatabaseClusterTestTable()).setBlankQueryAllowed(true).count(),
 							is(0l));
@@ -307,7 +307,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testLastDatabaseCannotBeRemovedDirectly() throws SQLException {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
-			H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
 
@@ -327,7 +327,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInDelete() throws SQLException {
 		try (DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
-			H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
 			tab.pkid.permittedValues(1);
@@ -343,7 +343,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInInsert() throws SQLException {
 		try (DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
-			H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
@@ -360,7 +360,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInUpdate() throws SQLException {
 		try (DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
-			H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
@@ -412,7 +412,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemainsInClusterAfterCreatingExistingTable() throws SQLException {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
 			cluster.setAutoRebuild(false);
-			H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
 			try {
@@ -601,10 +601,10 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndRemoved() throws SQLException {
 
-		try (H2MemoryDB soloDB1 = H2MemoryDB.randomDatabase()) {
+		try (H2MemoryDB soloDB1 = H2MemoryDB.createANewRandomDatabase()) {
 			Assert.assertThat(soloDB1.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 			try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(soloDB1)) {
-				try (H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase()) {
+				try (H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase()) {
 					Assert.assertThat(soloDB2.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 					cluster.addDatabase(soloDB2);
 					Assert.assertThat(cluster.size(), is(2));
@@ -638,8 +638,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testClusterSwitchsSupportForNullStringsWhenOracleIsAddedAndWhenClusterDismantled() throws SQLException {
 
-		H2MemoryDB soloDB1 = H2MemoryDB.randomDatabase();
-		H2MemoryDB soloDB2 = H2MemoryDB.randomDatabase();
+		H2MemoryDB soloDB1 = H2MemoryDB.createANewRandomDatabase();
+		H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(soloDB1)) {
 			cluster.addDatabase(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
