@@ -125,7 +125,16 @@ public class H2MemoryDB extends H2DB {
 		this(new H2MemorySettingsBuilder().setDatabaseName(databaseName).setUsername(username).setPassword(password));
 	}
 
-	public static H2MemoryDB randomDatabase() throws SQLException {
+	/**
+	 * Creates a new database with random (UUID based name).
+	 *
+	 * <p>
+	 * Great for we you just need to make a database and don't need to keep
+	 * it.</p>
+	 *
+	 * @return @throws SQLException
+	 */
+	public static H2MemoryDB createANewRandomDatabase() throws SQLException {
 		return new H2MemoryDB(new H2MemorySettingsBuilder().withUniqueDatabaseName());
 	}
 
