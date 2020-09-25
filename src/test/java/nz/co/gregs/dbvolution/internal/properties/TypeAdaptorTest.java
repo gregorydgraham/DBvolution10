@@ -35,7 +35,7 @@ public class TypeAdaptorTest {
 
 	@Before
 	public void setup() throws SQLException {
-		this.db = H2MemoryDB.randomDatabase();
+		this.db = H2MemoryDB.createANewRandomDatabase();
 //		this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
 
 		db.preventDroppingOfTables(false);
