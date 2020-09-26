@@ -143,7 +143,7 @@ public class MySQLContainerDB extends MySQLDB {
 
 		public FinalisedMySQLContainer newInstance(Versions tag) {
 			if (tag != null) {
-				return new FinalisedMySQLContainer(MySQLContainer.IMAGE + ":" + tag);
+				return newInstance(tag.toString());
 			} else {
 				return newDefaultInstance();
 			}
@@ -155,7 +155,8 @@ public class MySQLContainerDB extends MySQLDB {
 
 		@Override
 		public FinalisedMySQLContainer newInstance(ConnectionUrl connectionUrl) {
-			return (FinalisedMySQLContainer) newInstanceFromConnectionUrl(connectionUrl, USER_PARAM, PASSWORD_PARAM);
+//			return (FinalisedMySQLContainer) newInstanceFromConnectionUrl(connectionUrl, USER_PARAM, PASSWORD_PARAM);
+			return (FinalisedMySQLContainer) super.newInstance(connectionUrl);
 		}
 
 	}
