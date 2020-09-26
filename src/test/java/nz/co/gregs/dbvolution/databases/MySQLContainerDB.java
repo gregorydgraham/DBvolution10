@@ -118,8 +118,9 @@ public class MySQLContainerDB extends MySQLDB {
 				LOG.info("Trying to create MySQL:" + actualVersion);
 				container = new FinalisedMySQLContainerProvider().newInstance(actualVersion);
 				ContainerUtils.startContainer(container);
-			} catch (IllegalStateException exc) {
+			} catch (Exception exc) {
 				LOG.warn("FAILED TO CREATE MySQL:" + actualVersion);
+				exc.printStackTrace();
 				container = null;
 			}
 		}
