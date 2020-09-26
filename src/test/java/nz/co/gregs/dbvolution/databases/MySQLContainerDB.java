@@ -54,24 +54,6 @@ public class MySQLContainerDB extends MySQLDB {
 
 	static final private Log LOG = LogFactory.getLog(MySQLContainerDB.class);
 
-	public static enum Versions {
-		v5,
-		v5_6,
-		v5_6_49,
-		v5_7,
-		v5_7_31,
-		v8,
-		v8_0,
-		v8_0_21,
-		latest;
-
-		@Override
-		public String toString() {
-			return super.toString().replaceAll("_", ".").replaceFirst("v", "");
-		}
-
-	}
-
 	public static MySQLContainerDB getInstance() {
 		if (staticDatabase == null) {
 			staticDatabase = createNewInstance("Unlabelled");
@@ -79,66 +61,36 @@ public class MySQLContainerDB extends MySQLDB {
 		return staticDatabase;
 	}
 
-//	public static MySQLContainerDB getLabelledInstance(String label) {
-//		final FinalisedMySQLContainer newInstance = new FinalisedMySQLContainerProvider().newInstance("latest");
-//		FinalisedMySQLContainer container = newInstance;
-//		container.getEnv().stream().forEach(t -> LOG.info("ENV: " + t));
-//		container.getEnvMap().entrySet().stream().forEach(t -> LOG.info("ENV: " + t.getKey() + "=>" + t.getValue()));
-//
-//		ContainerUtils.startContainer(container);
-//		try {
-//			container.execInContainer(
-//					"sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/",
-//					"sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld");
-//		} catch (UnsupportedOperationException | IOException | InterruptedException ex) {
-//			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-//		try {
-//			// create the actual dbdatabase 
-//			MySQLContainerDB dbdatabase
-//					= new MySQLContainerDB(container,
-//							ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
-//					);
-//			return dbdatabase;
-//		} catch (SQLException ex) {
-//			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
-//			throw new RuntimeException("Unable To Create MySQL Database in Docker Container", ex);
-//		}
-//	}
 	public static MySQLContainerDB createNewInstance(String label) {
-		List<Versions> versions = Arrays.asList(Versions.values());
-		Collections.reverse(versions);
-		Iterator<Versions> versionsIterator = versions.iterator();
+		MySQLContainerDB dbdatabase = null;
+		Iterator<Versions> versionsIterator = Versions.getIteratorLatestFirst();
 
+		final FinalisedMySQLContainerProvider provider = new FinalisedMySQLContainerProvider();
 		FinalisedMySQLContainer container = null;
 		Versions actualVersion = Versions.latest;
 		while (container == null && versionsIterator.hasNext()) {
 			try {
 				actualVersion = versionsIterator.next();
 				LOG.info("Trying to create MySQL:" + actualVersion);
-				container = new FinalisedMySQLContainerProvider().newInstance(actualVersion);
+				container = provider.newInstance(actualVersion);
 				ContainerUtils.startContainer(container);
-			} catch (Exception exc) {
+				// create the actual dbdatabase
+				dbdatabase = new MySQLContainerDB(container,
+						ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
+				);
+			} catch (Throwable exc) {
 				LOG.warn("FAILED TO CREATE MySQL:" + actualVersion);
 				exc.printStackTrace();
 				container = null;
+				dbdatabase = null;
 			}
 		}
-		if (container == null) {
+		if (dbdatabase == null) {
 			throw new RuntimeException("FAILED TO CREATE MYSQL CONTAINER");
 		} else {
 			LOG.info("CREATED MySQL " + actualVersion);
 		}
-		// create the actual dbdatabase
-		MySQLContainerDB dbdatabase = null;
 
-		try {
-			dbdatabase = new MySQLContainerDB(container,
-					ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
-			);
-		} catch (SQLException ex) {
-			LOG.fatal("Unable to create MySQL database from container", ex);
-		}
 		return dbdatabase;
 	}
 
@@ -208,4 +160,34 @@ public class MySQLContainerDB extends MySQLDB {
 
 	}
 
+	public static enum Versions {
+		v5,
+		v5_6,
+		v5_6_49,
+		v5_7,
+		v5_7_31,
+		v8,
+		v8_0,
+		v8_0_21,
+		latest;
+
+		@Override
+		public String toString() {
+			return super.toString().replaceAll("_", ".").replaceFirst("v", "");
+		}
+
+		public static Iterator<Versions> getIteratorLatestFirst() {
+			List<Versions> versions = Arrays.asList(Versions.values());
+			Collections.reverse(versions);
+			Iterator<Versions> versionsIterator = versions.iterator();
+			return versionsIterator;
+		}
+
+		public static Iterator<Versions> getIteratorLatestLast() {
+			List<Versions> versions = Arrays.asList(Versions.values());
+			Iterator<Versions> versionsIterator = versions.iterator();
+			return versionsIterator;
+		}
+
+	}
 }
