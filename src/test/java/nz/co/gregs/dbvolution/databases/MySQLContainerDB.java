@@ -30,11 +30,11 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.databases.MySQLContainerDB.Versions;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,39 +49,96 @@ import org.testcontainers.jdbc.ConnectionUrl;
 public class MySQLContainerDB extends MySQLDB {
 
 	private static final long serialVersionUID = 1l;
+	private static MySQLContainerDB staticDatabase = null;
 	protected final MySQLContainer<?> storedContainer;
 
 	static final private Log LOG = LogFactory.getLog(MySQLContainerDB.class);
 
-	public static MySQLContainerDB getInstance() {
-		return getLabelledInstance("Unlabelled");
+	public static enum Versions {
+		v5,
+		v5_6,
+		v5_6_49,
+		v5_7,
+		v5_7_31,
+		v8,
+		v8_0,
+		v8_0_21,
+		latest;
+
+		@Override
+		public String toString() {
+			return super.toString().replaceAll("_", ".").replaceFirst("v", "");
+		}
+
 	}
 
-	public static MySQLContainerDB getLabelledInstance(String label) {
-		final FinalisedMySQLContainer newInstance = new FinalisedMySQLContainerProvider().newInstance("latest");
-		FinalisedMySQLContainer container = newInstance;
-		container.getEnv().stream().forEach(t -> LOG.info("ENV: " + t));
-		container.getEnvMap().entrySet().stream().forEach(t -> LOG.info("ENV: " + t.getKey() + "=>" + t.getValue()));
+	public static MySQLContainerDB getInstance() {
+		if (staticDatabase == null) {
+			staticDatabase = createNewInstance("Unlabelled");
+		}
+		return staticDatabase;
+	}
 
-		ContainerUtils.startContainer(container);
-		try {
-			container.execInContainer(
-					"sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/",
-					"sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld");
-		} catch (UnsupportedOperationException | IOException | InterruptedException ex) {
-			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
+//	public static MySQLContainerDB getLabelledInstance(String label) {
+//		final FinalisedMySQLContainer newInstance = new FinalisedMySQLContainerProvider().newInstance("latest");
+//		FinalisedMySQLContainer container = newInstance;
+//		container.getEnv().stream().forEach(t -> LOG.info("ENV: " + t));
+//		container.getEnvMap().entrySet().stream().forEach(t -> LOG.info("ENV: " + t.getKey() + "=>" + t.getValue()));
+//
+//		ContainerUtils.startContainer(container);
+//		try {
+//			container.execInContainer(
+//					"sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/",
+//					"sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld");
+//		} catch (UnsupportedOperationException | IOException | InterruptedException ex) {
+//			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
+//		}
+//		try {
+//			// create the actual dbdatabase 
+//			MySQLContainerDB dbdatabase
+//					= new MySQLContainerDB(container,
+//							ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
+//					);
+//			return dbdatabase;
+//		} catch (SQLException ex) {
+//			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
+//			throw new RuntimeException("Unable To Create MySQL Database in Docker Container", ex);
+//		}
+//	}
+	public static MySQLContainerDB createNewInstance(String label) {
+		List<Versions> versions = Arrays.asList(Versions.values());
+		Collections.reverse(versions);
+		Iterator<Versions> versionsIterator = versions.iterator();
+
+		FinalisedMySQLContainer container = null;
+		Versions actualVersion = Versions.latest;
+		while (container == null && versionsIterator.hasNext()) {
+			try {
+				actualVersion = versionsIterator.next();
+				LOG.info("Trying to create MySQL:" + actualVersion);
+				container = new FinalisedMySQLContainerProvider().newInstance(actualVersion);
+				ContainerUtils.startContainer(container);
+			} catch (IllegalStateException exc) {
+				LOG.warn("FAILED TO CREATE MySQL:" + actualVersion);
+				container = null;
+			}
 		}
+		if (container == null) {
+			throw new RuntimeException("FAILED TO CREATE MYSQL CONTAINER");
+		} else {
+			LOG.info("CREATED MySQL " + actualVersion);
+		}
+		// create the actual dbdatabase
+		MySQLContainerDB dbdatabase = null;
+
 		try {
-			// create the actual dbdatabase 
-			MySQLContainerDB dbdatabase
-					= new MySQLContainerDB(container,
-							ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
-					);
-			return dbdatabase;
+			dbdatabase = new MySQLContainerDB(container,
+					ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
+			);
 		} catch (SQLException ex) {
-			Logger.getLogger(MySQLContainerDB.class.getName()).log(Level.SEVERE, null, ex);
-			throw new RuntimeException("Unable To Create MySQL Database in Docker Container", ex);
+			LOG.fatal("Unable to create MySQL database from container", ex);
 		}
+		return dbdatabase;
 	}
 
 	@Override
@@ -129,6 +186,18 @@ public class MySQLContainerDB extends MySQLDB {
 			} else {
 				return newDefaultInstance();
 			}
+		}
+
+		public FinalisedMySQLContainer newInstance(Versions tag) {
+			if (tag != null) {
+				return new FinalisedMySQLContainer(MySQLContainer.IMAGE + ":" + tag);
+			} else {
+				return newDefaultInstance();
+			}
+		}
+
+		public FinalisedMySQLContainer newInstanceOfLatestVersion() {
+			return new FinalisedMySQLContainer(MySQLContainer.IMAGE + ":latest");
 		}
 
 		@Override
