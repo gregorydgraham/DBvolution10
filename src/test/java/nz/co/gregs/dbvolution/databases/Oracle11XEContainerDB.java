@@ -45,10 +45,18 @@ import org.testcontainers.containers.OracleContainer;
 public class Oracle11XEContainerDB extends Oracle11XEDB {
 
 	private static final long serialVersionUID = 1l;
-	private OracleContainer container;
+	private static Oracle11XEContainerDB staticDatabase;
+	private static OracleContainer container = null;
 
 	public static Oracle11XEContainerDB getInstance() {
-		return getLabelledInstance("");
+		if (staticDatabase == null) {
+			staticDatabase = getLabelledInstance("");
+		}
+		return staticDatabase;
+	}
+
+	public static Oracle11XEContainerDB getInstance(String label) {
+		return getLabelledInstance(label);
 	}
 
 	public static Oracle11XEContainerDB getLabelledInstance(String label) {
@@ -81,11 +89,11 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 //	}
 	protected Oracle11XEContainerDB(OracleContainer container, String label) throws SQLException {
 		this(
-				container, 
+				container,
 				ContainerUtils.getContainerSettings(new Oracle11XESettingsBuilder(), container, label)
-				.setHost(container.getContainerIpAddress())
-				.setPort(container.getOraclePort())
-				.setSID(container.getSid())
+						.setHost(container.getContainerIpAddress())
+						.setPort(container.getOraclePort())
+						.setSID(container.getSid())
 		);
 	}
 
