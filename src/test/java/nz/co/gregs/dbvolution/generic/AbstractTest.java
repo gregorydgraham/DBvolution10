@@ -603,14 +603,12 @@ public abstract class AbstractTest {
 		}
 
 		public static SQLiteTestDB getFromSettings(String prefix) throws IOException, SQLException {
-			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
-			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSettings(settings);
+			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSystemUsingPrefix(prefix);
 			return new SQLiteTestDB(builder);
 		}
 
 		public static SQLiteTestDB getClusterDBFromSettings(String prefix, String name) throws IOException, SQLException {
-			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
-			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSettings(settings);
+			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSystemUsingPrefix(prefix);
 			builder.setFilename(builder.getFilename() + "-" + name + "cluster.sqlite");
 			return new SQLiteTestDB(builder);
 
@@ -654,8 +652,7 @@ public abstract class AbstractTest {
 		private final static long serialVersionUID = 1l;
 
 		public static MSSQLServerLocalTestDB getFromSettings(String prefix) throws SQLException {
-			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
-			MSSQLServerSettingsBuilder builder = new MSSQLServerSettingsBuilder().fromSettings(settings);
+			MSSQLServerSettingsBuilder builder = new MSSQLServerSettingsBuilder().fromSystemUsingPrefix(prefix);
 			return new MSSQLServerLocalTestDB(builder);
 		}
 
@@ -669,14 +666,14 @@ public abstract class AbstractTest {
 		public static final long serialVersionUID = 1l;
 
 		public static H2MemoryTestDB getFromSettings(String prefix) throws SQLException {
-			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
-			H2MemorySettingsBuilder builder = new H2MemorySettingsBuilder().fromSettings(settings);
+//			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+			H2MemorySettingsBuilder builder = new H2MemorySettingsBuilder().fromSystemUsingPrefix(prefix);
 			return new H2MemoryTestDB(builder);
 		}
 
 		public static H2MemoryTestDB getClusterDBFromSettings(String prefix) throws SQLException {
-			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
-			H2MemorySettingsBuilder builder = new H2MemorySettingsBuilder().fromSettings(settings);
+//			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+			H2MemorySettingsBuilder builder = new H2MemorySettingsBuilder().fromSystemUsingPrefix(prefix);
 			String file = builder.getDatabaseName();
 			if (file != null && !file.equals("")) {
 				builder.setDatabaseName(file + "-cluster.h2db");

@@ -87,6 +87,8 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF, DATABASE>, D
 
 	public SELF fromSettings(DatabaseConnectionSettings settingsfromSystemUsingPrefix);
 
+	public SELF fromSystemUsingPrefix(String prefix);
+
 	public DatabaseConnectionSettings toSettings();
 
 	public String toJDBCURL();

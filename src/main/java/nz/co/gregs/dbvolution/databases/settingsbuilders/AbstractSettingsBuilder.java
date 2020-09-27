@@ -129,6 +129,14 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public final SELF fromSystemUsingPrefix(String prefix) {
+		DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
+		getStoredSettings().copy(settings);
+		return (SELF) this;
+	}
+
+	@Override
 	public final DatabaseConnectionSettings toSettings() {
 		DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
 		newSettings.copy(getStoredSettings());
