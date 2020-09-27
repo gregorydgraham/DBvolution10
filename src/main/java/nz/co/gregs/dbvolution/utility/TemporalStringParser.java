@@ -87,7 +87,7 @@ public class TemporalStringParser {
 		ZonedDateTime zoneddatetime = null;
 		String str = inputDateString;
 		// oracle sometimes produces unpadded time zone offsets
-		str = str.replaceFirst("(.*)([-+])([0-9][:]?[0-9]{2})$", "$1$20$3");
+		str = str.replaceFirst("(.*)([-+])([0-9][:]?[0-9]{2})$", "$1$20$3").replace("+0:00", "+00:00");
 		Exception exception = new DateTimeParseException(str, str.subSequence(0, str.length()), 0);
 		LOG.debug("PROCESSING; " + str);
 		final CharSequence sequence = str.subSequence(0, str.length());
@@ -120,6 +120,7 @@ public class TemporalStringParser {
 				LOG.debug("TO: " + zoneddatetime);
 				return zoneddatetime;
 			} catch (Exception ex1) {
+				printException(sequence, format, exception);
 				LOG.debug("PARSE FAILED: " + format.toString());
 				LOG.debug("MESSAGE: " + ex1.getMessage());
 			}
@@ -132,6 +133,7 @@ public class TemporalStringParser {
 			LOG.debug("TO: " + zoneddatetime);
 			return zoneddatetime;
 		} catch (Exception ex1) {
+			printException(str, "Timestamp.valueOf: yyyy-[m]m-[d]d hh:mm:ss[.f...]", exception);
 			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
 			LOG.debug("MESSAGE: " + ex1.getMessage());
 		}
@@ -144,6 +146,7 @@ public class TemporalStringParser {
 			LOG.debug("TO: " + zoneddatetime);
 			return zoneddatetime;
 		} catch (Exception ex1) {
+			printException(str, "Timestamp.valueOf: yyyy-[m]m-[d]d hh:mm:ss[.f...]", exception);
 			LOG.debug("PARSE FAILED: Timestamp.valueOf(" + str + ")");
 			LOG.debug("MESSAGE: " + ex1.getMessage());
 			if (!(ex1 instanceof DateTimeParseException)) {
@@ -159,9 +162,17 @@ public class TemporalStringParser {
 		}
 	}
 
-	private static void printException(String inputDateString, Parser format, Exception exception) {
+	private static void printException(CharSequence input, Parser format, Exception exception) {
+		printException(input.toString(), format, exception);
+	}
+
+	private static void printException(String input, Parser format, Exception exception) {
+		printException(input, format.toString(), exception);
+	}
+
+	private static void printException(String inputDateString, String format, Exception exception) {
 		LOG.debug("PARSING ORIGINAL: " + inputDateString);
-		LOG.debug("PATTERN: " + format.toString());
+		LOG.debug("PATTERN: " + format);
 		LOG.debug("PARSE FAILED: " + inputDateString);
 		LOG.debug("EXCEPTION: " + exception.getMessage());
 		StackTraceElement[] stackTrace = exception.getStackTrace();
