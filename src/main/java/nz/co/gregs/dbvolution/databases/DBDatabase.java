@@ -2755,7 +2755,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 //	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
 //		getDefinition().setRequiredToProduceEmptyStringsForNull(required);
 //	}
-
 	/**
 	 * Closes all threads, connections, and resources used by the database.
 	 *
@@ -2902,7 +2901,11 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		@Override
 		public void run() {
-			db.stop();
+			try {
+				db.stop();
+			} catch (Exception e) {
+				LOG.info("Exception while stopping database "+db.getLabel(), e);
+			}
 		}
 	}
 
