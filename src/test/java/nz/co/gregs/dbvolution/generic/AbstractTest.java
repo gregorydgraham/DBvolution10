@@ -126,14 +126,14 @@ public abstract class AbstractTest {
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
 				getPostgresContainerDatabaseForCluster(),
-				getMySQLContainerDatabaseForCluster()
+				MySQLTestDatabase.getFromSettings("mysql")
 				)});
 		}
 		if (System.getProperty("testFullCluster") != null) {
 			final H2MemoryTestDB h2Mem = H2MemoryTestDB.getFromSettings("h2memory");
 			final SQLiteTestDB sqlite = SQLiteTestDB.getClusterDBFromSettings("sqlite", "full");
 			final PostgresDB postgres = getPostgresContainerDatabase();//PostgreSQLTestDatabase.getFromSettings("postgres");
-			final MySQLContainerDB mysql = getMySQLContainerDatabase();//MySQLTestDatabase.getFromSettings("mysql");
+			final MySQLTestDatabase mysql = MySQLTestDatabase.getFromSettings("mysql");
 			final MSSQLServerContainerDB sqlserver = getMSSQLServerContainerDatabaseForCluster();
 			final Oracle11XEContainerDB oracle = getOracleContainerDatabaseForCluster();
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle",
