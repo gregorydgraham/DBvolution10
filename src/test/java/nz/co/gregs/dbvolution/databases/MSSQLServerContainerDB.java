@@ -59,9 +59,6 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 	public static MSSQLServerContainerDB getLabelledInstance(String label) {
 		JdbcDatabaseContainer<?> container = new MSSQLServerContainerProvider().newInstance();
 		ContainerUtils.startContainer(container);
-//		container.addEnv("TZ", ZoneId.systemDefault().getId());
-//		container.withConnectTimeoutSeconds(300);
-//		container.start();
 		try {
 			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB((MSSQLServerContainer) container, label);
 			return staticDatabase;
@@ -79,23 +76,20 @@ public class MSSQLServerContainerDB extends MSSQLServerDB {
 	public MSSQLServerContainerDB(MSSQLServerContainer<?> container, String label) throws SQLException {
 		this(container,
 				ContainerUtils.getContainerSettings(new MSSQLServerSettingsBuilder(), container, label)
-		//				new MSSQLServerSettingsBuilder()
-		//						.fromJDBCURL(
-		//								container.getJdbcUrl(),
-		//								container.getUsername(),
-		//								container.getPassword()
-		//						)
-		//						.setHost(container.getContainerIpAddress())
-		//						.setPort(container.getFirstMappedPort())
-		//						.setLabel(label)
 		);
 	}
 
 	@Override
 	public synchronized void stop() {
 		super.stop();
-		final String containerId = mssqlServerContainer.getContainerId();
-		mssqlServerContainer.stop();
-		LOG.info("CONTAINER STOPPED: " + containerId);
+		if (mssqlServerContainer != null) {
+			try {
+				final String containerId = mssqlServerContainer.getContainerId();
+				mssqlServerContainer.stop();
+				LOG.info("CONTAINER STOPPED: " + containerId);
+			} catch (Exception exc) {
+				LOG.info("Exception while closing MSSQLServerContainerDB database " + this.getLabel(), exc);
+			}
+		}
 	}
 }
