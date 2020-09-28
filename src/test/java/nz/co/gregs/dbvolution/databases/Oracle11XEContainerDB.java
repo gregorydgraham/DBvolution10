@@ -116,8 +116,16 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 
 	@Override
 	public synchronized void stop() {
-		super.stop();
-		container.stop();
+		try {
+			super.stop();
+		} catch (Exception e) {
+			Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.INFO, "Exception while stopping Oracle container database "+this.getLabel()+": "+e.getLocalizedMessage());
+		}
+		try {
+			container.stop();
+		} catch (Exception e) {
+			Logger.getLogger(Oracle11XEContainerDB.class.getName()).log(Level.INFO, "Exception while stopping Oracle container database "+this.getLabel()+": "+e.getLocalizedMessage());
+		}
 	}
 
 }

@@ -44,36 +44,36 @@ import org.testcontainers.containers.MSSQLServerContainerProvider;
  *
  * @author gregorygraham
  */
-public class MSSQLServerContainerDB extends MSSQLServerDB {
+public class MSSQLServer2017ContainerDB extends MSSQLServerDB {
 
-	static final Log LOG = LogFactory.getLog(MSSQLServerContainerDB.class);
+	static final Log LOG = LogFactory.getLog(MSSQLServer2017ContainerDB.class);
 
 	private static final long serialVersionUID = 1l;
 
 	protected final MSSQLServerContainer<?> mssqlServerContainer;
 
-	public static MSSQLServerContainerDB getInstance() {
+	public static MSSQLServer2017ContainerDB getInstance() {
 		return getLabelledInstance("Unlabelled");
 	}
 
-	public static MSSQLServerContainerDB getLabelledInstance(String label) {
-		JdbcDatabaseContainer<?> container = new MSSQLServerContainerProvider().newInstance();
+	public static MSSQLServer2017ContainerDB getLabelledInstance(String label) {
+		JdbcDatabaseContainer<?> container = new MSSQLServerContainerProvider().newInstance("2017-CU12");
 		ContainerUtils.startContainer(container);
 		try {
-			MSSQLServerContainerDB staticDatabase = new MSSQLServerContainerDB((MSSQLServerContainer) container, label);
+			MSSQLServer2017ContainerDB staticDatabase = new MSSQLServer2017ContainerDB((MSSQLServerContainer) container, label);
 			return staticDatabase;
 		} catch (SQLException ex) {
-			Logger.getLogger(MSSQLServerContainerDB.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(MSSQLServer2017ContainerDB.class.getName()).log(Level.SEVERE, null, ex);
 			throw new RuntimeException("Unable To Create MSSQLServer Database in Docker Container", ex);
 		}
 	}
 
-	public MSSQLServerContainerDB(MSSQLServerContainer<?> container, MSSQLServerSettingsBuilder interpreter) throws SQLException {
+	public MSSQLServer2017ContainerDB(MSSQLServerContainer<?> container, MSSQLServerSettingsBuilder interpreter) throws SQLException {
 		super(interpreter);
 		this.mssqlServerContainer = container;
 	}
 
-	public MSSQLServerContainerDB(MSSQLServerContainer<?> container, String label) throws SQLException {
+	public MSSQLServer2017ContainerDB(MSSQLServerContainer<?> container, String label) throws SQLException {
 		this(container,
 				ContainerUtils.getContainerSettings(new MSSQLServerSettingsBuilder(), container, label)
 		);

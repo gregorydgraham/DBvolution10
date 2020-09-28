@@ -41,35 +41,35 @@ import org.testcontainers.containers.PostgreSQLContainer;
  *
  * @author gregorygraham
  */
-public class PostgresContainerDB extends PostgresDB{
+public class Postgres10ContainerDB extends PostgresDB{
 
 	private static final long serialVersionUID = 1l;
 	protected final PostgreSQLContainer<?> storedContainer;
 
-	public static PostgresContainerDB getInstance() {
+	public static Postgres10ContainerDB getInstance() {
 		return getLabelledInstance("Unlabelled");
 	}
 
-	public static PostgresContainerDB getLabelledInstance(String label) {
-		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance();
+	public static Postgres10ContainerDB getLabelledInstance(String label) {
+		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance("10");
 		ContainerUtils.startContainer(container);
 		try {
-			PostgresContainerDB dbdatabase = new PostgresContainerDB(container, label);
+			Postgres10ContainerDB dbdatabase = new Postgres10ContainerDB(container, label);
 			return dbdatabase;
 		} catch (SQLException ex) {
-			Logger.getLogger(PostgresContainerDB.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Postgres10ContainerDB.class.getName()).log(Level.SEVERE, null, ex);
 			throw new RuntimeException("Unable To Create Postgres Database in Docker Container", ex);
 		}
 	}
 
-	public PostgresContainerDB(PostgreSQLContainer<?> container, String label) throws SQLException {
+	public Postgres10ContainerDB(PostgreSQLContainer<?> container, String label) throws SQLException {
 		this(
 				container, 
 				ContainerUtils.getContainerSettings(new PostgresSettingsBuilder(), container, label)
 		);
 	}
 
-	public PostgresContainerDB(PostgreSQLContainer<?> container, PostgresSettingsBuilder settings) throws SQLException {
+	public Postgres10ContainerDB(PostgreSQLContainer<?> container, PostgresSettingsBuilder settings) throws SQLException {
 		super(settings);
 		this.storedContainer = container;
 	}

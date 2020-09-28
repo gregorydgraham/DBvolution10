@@ -15,10 +15,10 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
-import nz.co.gregs.dbvolution.databases.MSSQLServerContainerDB;
-import nz.co.gregs.dbvolution.databases.PostgresContainerDB;
+import nz.co.gregs.dbvolution.databases.MSSQLServer2017ContainerDB;
+import nz.co.gregs.dbvolution.databases.Postgres10ContainerDB;
 import nz.co.gregs.dbvolution.databases.Oracle11XEContainerDB;
-import nz.co.gregs.dbvolution.databases.MySQLContainerDB;
+import nz.co.gregs.dbvolution.databases.MySQL8ContainerDB;
 import java.io.File;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
@@ -134,7 +134,7 @@ public abstract class AbstractTest {
 			final SQLiteTestDB sqlite = SQLiteTestDB.getClusterDBFromSettings("sqlite", "full");
 			final PostgresDB postgres = getPostgresContainerDatabase();//PostgreSQLTestDatabase.getFromSettings("postgres");
 			final MySQLTestDatabase mysql = MySQLTestDatabase.getFromSettings("mysql");
-			final MSSQLServerContainerDB sqlserver = getMSSQLServerContainerDatabaseForCluster();
+			final MSSQLServer2017ContainerDB sqlserver = getMSSQLServerContainerDatabaseForCluster();
 			final Oracle11XEContainerDB oracle = getOracleContainerDatabaseForCluster();
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle",
 				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, postgres, mysql, sqlserver, oracle)});
@@ -213,54 +213,54 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static PostgresContainerDB POSTGRES_CONTAINER_DATABASE = null;
+	private static Postgres10ContainerDB POSTGRES_CONTAINER_DATABASE = null;
 
-	private static PostgresContainerDB getPostgresContainerDatabase() {
+	private static Postgres10ContainerDB getPostgresContainerDatabase() {
 		if (POSTGRES_CONTAINER_DATABASE == null) {
-			POSTGRES_CONTAINER_DATABASE = PostgresContainerDB.getLabelledInstance("Postgres for Testing");
+			POSTGRES_CONTAINER_DATABASE = Postgres10ContainerDB.getLabelledInstance("Postgres for Testing");
 		}
 		return POSTGRES_CONTAINER_DATABASE;
 	}
-	private static PostgresContainerDB POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER = null;
+	private static Postgres10ContainerDB POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER = null;
 
-	private static PostgresContainerDB getPostgresContainerDatabaseForCluster() {
+	private static Postgres10ContainerDB getPostgresContainerDatabaseForCluster() {
 		if (POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER == null) {
-			POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER = PostgresContainerDB.getLabelledInstance("Postgres for Cluster");
+			POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER = Postgres10ContainerDB.getLabelledInstance("Postgres for Cluster");
 		}
 		return POSTGRES_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
-	private static MySQLContainerDB MySQL_CONTAINER_DATABASE = null;
-	private static MySQLContainerDB MySQL_CONTAINER_DATABASE_FOR_CLUSTER = null;
+	private static MySQL8ContainerDB MySQL_CONTAINER_DATABASE = null;
+	private static MySQL8ContainerDB MySQL_CONTAINER_DATABASE_FOR_CLUSTER = null;
 
-	private static MySQLContainerDB getMySQLContainerDatabase() {
+	private static MySQL8ContainerDB getMySQLContainerDatabase() {
 		if (MySQL_CONTAINER_DATABASE == null) {
-			MySQL_CONTAINER_DATABASE = MySQLContainerDB.getInstance();
+			MySQL_CONTAINER_DATABASE = MySQL8ContainerDB.getInstance();
 		}
 		MySQL_CONTAINER_DATABASE.setLabel("MySQL Test Database");
 		return MySQL_CONTAINER_DATABASE;
 	}
 
-	private static MySQLContainerDB getMySQLContainerDatabaseForCluster() {
+	private static MySQL8ContainerDB getMySQLContainerDatabaseForCluster() {
 		if (MySQL_CONTAINER_DATABASE_FOR_CLUSTER == null) {
-			MySQL_CONTAINER_DATABASE_FOR_CLUSTER = MySQLContainerDB.getInstance();
+			MySQL_CONTAINER_DATABASE_FOR_CLUSTER = MySQL8ContainerDB.getInstance();
 		}
 		MySQL_CONTAINER_DATABASE_FOR_CLUSTER.setLabel("MySQL for Cluster");
 		return MySQL_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 
-	private static MSSQLServerContainerDB MSSQLSERVER_CONTAINER_DATABASE = null;
-	private static MSSQLServerContainerDB MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = null;
+	private static MSSQLServer2017ContainerDB MSSQLSERVER_CONTAINER_DATABASE = null;
+	private static MSSQLServer2017ContainerDB MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = null;
 
-	private static MSSQLServerContainerDB getMSSQLServerContainerDatabase() {
+	private static MSSQLServer2017ContainerDB getMSSQLServerContainerDatabase() {
 		if (MSSQLSERVER_CONTAINER_DATABASE == null) {
-			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServerContainerDB.getLabelledInstance("MySQL Container DB");
+			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServer2017ContainerDB.getLabelledInstance("MySQL Container DB");
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE;
 	}
 
-	private static MSSQLServerContainerDB getMSSQLServerContainerDatabaseForCluster() {
+	private static MSSQLServer2017ContainerDB getMSSQLServerContainerDatabaseForCluster() {
 		while (MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER == null) {
-			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServerContainerDB.getLabelledInstance("MSSQLServer Container DB for Cluster Testing");
+			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServer2017ContainerDB.getLabelledInstance("MSSQLServer Container DB for Cluster Testing");
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER;
 	}

@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.MySQLContainerDB.Versions;
+import nz.co.gregs.dbvolution.databases.MySQL8ContainerDB.Versions;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,49 +46,49 @@ import org.testcontainers.jdbc.ConnectionUrl;
  *
  * @author gregorygraham
  */
-public class MySQLContainerDB extends MySQLDB {
+public class MySQL8ContainerDB extends MySQLDB {
 
 	private static final long serialVersionUID = 1l;
-	private static MySQLContainerDB staticDatabase = null;
+	private static MySQL8ContainerDB staticDatabase = null;
 	protected final MySQLContainer<?> storedContainer;
 
-	static final private Log LOG = LogFactory.getLog(MySQLContainerDB.class);
+	static final private Log LOG = LogFactory.getLog(MySQL8ContainerDB.class);
 
-	public static MySQLContainerDB getInstance() {
+	public static MySQL8ContainerDB getInstance() {
 		if (staticDatabase == null) {
 			staticDatabase = createNewInstance("Unlabelled");
 		}
 		return staticDatabase;
 	}
 
-	public static MySQLContainerDB createNewInstance(String label) {
-		MySQLContainerDB dbdatabase = null;
-		Iterator<Versions> versionsIterator = Versions.getIteratorLatestFirst();
+	public static MySQL8ContainerDB createNewInstance(String label) {
+		return createNewInstance(label, Versions.v8_0_21);
+	}
+
+	public static MySQL8ContainerDB createNewInstance(String label, Versions tag) {
+		MySQL8ContainerDB dbdatabase = null;
 
 		final FinalisedMySQLContainerProvider provider = new FinalisedMySQLContainerProvider();
 		FinalisedMySQLContainer container = null;
-		Versions actualVersion = Versions.latest;
-		while (container == null && versionsIterator.hasNext()) {
-			try {
-				actualVersion = versionsIterator.next();
-				LOG.info("Trying to create MySQL:" + actualVersion);
-				container = provider.newInstance(actualVersion);
-				ContainerUtils.startContainer(container);
-				// create the actual dbdatabase
-				dbdatabase = new MySQLContainerDB(container,
-						ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
-				);
-			} catch (Throwable exc) {
-				LOG.warn("FAILED TO CREATE MySQL:" + actualVersion);
-				exc.printStackTrace();
-				container = null;
-				dbdatabase = null;
-			}
+//		Versions tag = Versions.v8_0_21;
+		try {
+			LOG.info("Trying to create MySQL:" + tag);
+			container = provider.newInstance(tag);
+			ContainerUtils.startContainer(container);
+			// create the actual dbdatabase
+			dbdatabase = new MySQL8ContainerDB(container,
+					ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
+			);
+		} catch (Throwable exc) {
+			LOG.warn("FAILED TO CREATE MySQL:" + tag);
+			exc.printStackTrace();
+			container = null;
+			dbdatabase = null;
 		}
 		if (dbdatabase == null) {
 			throw new RuntimeException("FAILED TO CREATE MYSQL CONTAINER");
 		} else {
-			LOG.info("CREATED MySQL " + actualVersion);
+			LOG.info("CREATED MySQL " + tag);
 		}
 
 		return dbdatabase;
@@ -100,7 +100,7 @@ public class MySQLContainerDB extends MySQLDB {
 		storedContainer.stop();
 	}
 
-	protected MySQLContainerDB(MySQLContainer<?> storedContainer, MySQLSettingsBuilder settings) throws SQLException {
+	protected MySQL8ContainerDB(MySQLContainer<?> storedContainer, MySQLSettingsBuilder settings) throws SQLException {
 		super(settings);
 		this.storedContainer = storedContainer;
 	}
@@ -113,10 +113,6 @@ public class MySQLContainerDB extends MySQLDB {
 	}
 
 	protected static class FinalisedMySQLContainerProvider extends JdbcDatabaseContainerProvider {
-
-		private static final String USER_PARAM = "user";
-
-		private static final String PASSWORD_PARAM = "password";
 
 		@Override
 		public boolean supports(String databaseType) {
@@ -155,7 +151,6 @@ public class MySQLContainerDB extends MySQLDB {
 
 		@Override
 		public FinalisedMySQLContainer newInstance(ConnectionUrl connectionUrl) {
-//			return (FinalisedMySQLContainer) newInstanceFromConnectionUrl(connectionUrl, USER_PARAM, PASSWORD_PARAM);
 			return (FinalisedMySQLContainer) super.newInstance(connectionUrl);
 		}
 
