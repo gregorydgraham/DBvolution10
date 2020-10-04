@@ -35,6 +35,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
+ * A flexible descriptor of databases that can create a DBDatabase instance, database connection settings, or a JDBC URL.
  *
  * @author gregorygraham
  * @param <SELF> the implement class of this interface
