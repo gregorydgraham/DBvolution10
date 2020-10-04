@@ -41,7 +41,6 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
