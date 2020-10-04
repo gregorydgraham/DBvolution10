@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
@@ -83,6 +84,10 @@ public class DBDatabaseHandle extends DBDatabase {
 		} catch (SQLException ex) {
 			Logger.getLogger(DBDatabaseHandle.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	public DBDatabaseHandle(SettingsBuilder<?, ?> settings) throws SQLException, Exception {
+		wrappedDatabase = settings.getDBDatabase();
 	}
 
 	public DBDatabaseHandle(DBDatabase db) {
