@@ -1190,4 +1190,14 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	public void permitOnlyFutureByDateOnly() {
 		this.setOperator(new DBGreaterThanOperator(InstantExpression.currentDateOnly()));
 	}
+
+	public DBInstant setDefaultInsertValueToNow() {
+		super.setDefaultInsertValue(Instant.now());
+		return this;
+	}
+
+	public DBInstant setDefaultUpdateValueToNow() {
+		super.setDefaultUpdateValue(Instant.now());
+		return this;
+	}
 }
