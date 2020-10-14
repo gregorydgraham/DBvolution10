@@ -39,6 +39,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
@@ -52,6 +53,8 @@ import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
  * @author gregorygraham
  */
 interface DBDatabaseInterface {
+
+	public DBDefinition getDefinition() throws NoAvailableDatabaseException;
 
 	/**
 	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
