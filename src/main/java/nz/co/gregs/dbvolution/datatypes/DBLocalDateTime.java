@@ -946,4 +946,14 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	public void permitOnlyFutureByDateOnly() {
 		this.setOperator(new DBGreaterThanOperator(LocalDateTimeExpression.currentLocalDate()));
 	}
+
+	public DBLocalDateTime setDefaultInsertValueToNow() {
+		setDefaultInsertValue(LocalDateTime.now());
+		return this;
+	}
+
+	public DBLocalDateTime setDefaultUpdateValueToNow() {
+		setDefaultUpdateValue(LocalDateTime.now());
+		return this;
+	}
 }
