@@ -32,6 +32,8 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import java.util.Comparator;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Represents database columns and values that are a 2 dimensional polygon: an
@@ -202,5 +204,11 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 	@Override
 	public Polygon2DColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new Polygon2DColumn(row, this);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Comparator<Polygon> getComparator() {
+		return ComparableComparator.forClass(Polygon.class);
 	}
 }

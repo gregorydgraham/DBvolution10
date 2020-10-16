@@ -19,12 +19,14 @@ import nz.co.gregs.dbvolution.results.DurationResult;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.Comparator;
 import nz.co.gregs.dbvolution.columns.DurationColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DurationExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are differences between dates.
@@ -39,8 +41,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * DBNumber.
  *
  * <p>
- Generally DBDuration is declared inside your DBRow sub-class as:
- {@code @DBColumn public DBDuration myColumn = new DBDuration();}
+ * Generally DBDuration is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBDuration myColumn = new DBDuration();}
  *
  * <p style="color: #F90;">Support DBvolution at
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -268,5 +270,10 @@ public class DBDuration extends QueryableDatatype<Duration> implements DurationR
 	public synchronized DBDuration setDefaultUpdateValue(DurationResult value) {
 		super.setDefaultUpdateValue(value);
 		return this;
+	}
+
+	@Override
+	public Comparator<Duration> getComparator() {
+		return ComparableComparator.forClass(Duration.class);
 	}
 }

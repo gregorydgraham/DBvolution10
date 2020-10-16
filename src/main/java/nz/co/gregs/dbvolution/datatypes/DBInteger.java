@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -33,6 +34,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are Integers.
@@ -874,5 +876,10 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	public synchronized DBInteger setDefaultUpdateValue(IntegerResult value) {
 		super.setDefaultUpdateValue(value);
 		return this;
+	}
+
+	@Override
+	public Comparator<Long> getComparator() {
+		return ComparableComparator.forClass(Long.class);
 	}
 }

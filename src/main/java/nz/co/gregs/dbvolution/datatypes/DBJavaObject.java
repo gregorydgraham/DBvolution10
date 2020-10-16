@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.utility.comparators.HashCodeComparator;
 import java.io.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.sql.*;
@@ -422,6 +423,12 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	@Override
 	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new LargeObjectColumn(row, this);
+	}
+
+
+	@Override
+	public Comparator<O> getComparator() {
+		return new HashCodeComparator<O>();
 	}
 
 }

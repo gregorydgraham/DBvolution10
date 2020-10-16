@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
@@ -43,6 +44,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.LocalDateResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are Dates.
@@ -834,8 +836,8 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * handled using the
 	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
 	 * In particular, setDefaultUpdateValue(new LocalDate()) is probably NOT what
-	 * you want, setDefaultUpdateValue(LocalDateExpression.currentDate()) will produce
-	 * a correct update time value.</p>
+	 * you want, setDefaultUpdateValue(LocalDateExpression.currentDate()) will
+	 * produce a correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -873,8 +875,8 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * handled using the
 	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
 	 * In particular, setDefaultUpdateValue(new LocalDate()) is probably NOT what
-	 * you want, setDefaultUpdateValue(LocalDateExpression.currentDate()) will produce
-	 * a correct update time value.</p>
+	 * you want, setDefaultUpdateValue(LocalDateExpression.currentDate()) will
+	 * produce a correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -965,5 +967,10 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 
 	public void permitOnlyFutureByDateOnly() {
 		this.setOperator(new DBGreaterThanOperator(LocalDateExpression.today()));
+	}
+
+	@Override
+	public Comparator<LocalDate> getComparator() {
+		return ComparableComparator.forClass(LocalDate.class);
 	}
 }

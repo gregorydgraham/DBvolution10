@@ -33,6 +33,7 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.UUID;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.columns.UUIDColumn;
@@ -42,6 +43,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.UUIDExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.UUIDResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * The quick and easy way to add and use universally unique identifiers (UUID)
@@ -340,6 +342,11 @@ public class DBUUID extends QueryableDatatype<UUID> implements UUIDResult {
 	public synchronized DBUUID setDefaultUpdateValueRandomly() {
 		super.setDefaultUpdateValue(UUID.randomUUID());
 		return this;
+	}
+
+	@Override
+	public Comparator<UUID> getComparator() {
+		return ComparableComparator.forClass(UUID.class);
 	}
 
 }

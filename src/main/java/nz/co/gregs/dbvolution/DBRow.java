@@ -159,6 +159,27 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Creates a new blank DBRow of the supplied RowDefinitionClassWrapper.
+	 *
+	 * @param <T> DBRow type
+	 * @param requiredDBRowClass requiredDBRowClass
+	 * @return a new blank version of the specified class
+	 */
+	public static DBRow getDBRow(RowDefinitionClassWrapper requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
+		try {
+			Constructor<?> constructor = requiredDBRowClass.adapteeClass().getConstructor();
+			constructor.setAccessible(true);
+			return (DBRow) constructor.newInstance();
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			try {
+				return (DBRow) requiredDBRowClass.adapteeClass().getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex1) {
+				throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass.adapteeClass(), ex);
+			}
+		}
+	}
+
+	/**
 	 * Returns a new example of the sourceRow with only the primary key set for
 	 * use in a query.
 	 *

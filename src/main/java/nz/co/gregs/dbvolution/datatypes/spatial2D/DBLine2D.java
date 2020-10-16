@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
+import java.util.Comparator;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Represents datatypes and columns that are composed of a series of points
@@ -285,5 +287,11 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	@Override
 	public Line2DColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new Line2DColumn(row, this);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Comparator<LineString> getComparator() {
+		return ComparableComparator.forClass(LineString.class);
 	}
 }

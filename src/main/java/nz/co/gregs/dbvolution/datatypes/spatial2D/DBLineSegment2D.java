@@ -31,6 +31,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
+import java.util.Comparator;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Represents datatypes and columns that are composed of a 2 points connected as
@@ -271,4 +273,10 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 		return new LineSegment2DColumn(row, this);
 	}
 
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Comparator<LineSegment> getComparator() {
+		return ComparableComparator.forClass(LineSegment.class);
+	}
 }

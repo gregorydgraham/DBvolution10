@@ -31,18 +31,20 @@ package nz.co.gregs.dbvolution.datatypes;
 import nz.co.gregs.dbvolution.columns.UntypedColumn;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.utility.comparators.HashCodeComparator;
 
 /**
  * A case to represent values of indeterminate type
  *
  * @author gregorygraham
  */
-public class DBUntypedValue extends QueryableDatatype<Object> implements StringResult{
+public class DBUntypedValue extends QueryableDatatype<Object> implements StringResult {
 
 	private static final long serialVersionUID = 1l;
 
@@ -55,7 +57,7 @@ public class DBUntypedValue extends QueryableDatatype<Object> implements StringR
 	public void setValue(Object obj) {
 		super.setLiteralValue(obj.toString());
 	}
-	
+
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
 		setValue(encodedValue);
@@ -86,7 +88,7 @@ public class DBUntypedValue extends QueryableDatatype<Object> implements StringR
 		}
 		return gotString;
 	}
-	
+
 	@Override
 	public UntypedColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new UntypedColumn(row, this);
@@ -111,5 +113,11 @@ public class DBUntypedValue extends QueryableDatatype<Object> implements StringR
 	public StringExpression stringResult() {
 		throw new UnsupportedOperationException("DBUntypedValue does not support stringResult() yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
+	@Override
+	public Comparator<Object> getComparator() {
+		return untypedDatatypeComparator;
+	}
+	private static final HashCodeComparator<Object> untypedDatatypeComparator = new HashCodeComparator<Object>();
+
 }

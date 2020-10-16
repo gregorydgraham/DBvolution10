@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +43,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are Dates.
@@ -1081,5 +1083,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	public void permitOnlyFutureByDateOnly() {
 		this.setOperator(new DBGreaterThanOperator(DateExpression.currentDateOnly()));
+	}
+
+	@Override
+	public Comparator<Date> getComparator() {
+		return ComparableComparator.forClass(Date.class);
 	}
 }

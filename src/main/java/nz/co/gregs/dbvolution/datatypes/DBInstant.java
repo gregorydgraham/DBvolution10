@@ -26,12 +26,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -52,6 +47,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.InstantResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are Dates.
@@ -1199,5 +1195,10 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	public DBInstant setDefaultUpdateValueToNow() {
 		super.setDefaultUpdateValue(Instant.now());
 		return this;
+	}
+
+	@Override
+	public Comparator<Instant> getComparator() {
+		return ComparableComparator.forClass(Instant.class);
 	}
 }

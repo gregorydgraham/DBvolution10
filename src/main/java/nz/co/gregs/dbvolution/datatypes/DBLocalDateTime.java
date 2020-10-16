@@ -25,10 +25,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.LocalDateTimeColumn;
@@ -48,6 +45,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are Dates.
@@ -955,5 +953,10 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	public DBLocalDateTime setDefaultUpdateValueToNow() {
 		setDefaultUpdateValue(LocalDateTime.now());
 		return this;
+	}
+
+	@Override
+	public Comparator<LocalDateTime> getComparator() {
+		return ComparableComparator.forClass(LocalDateTime.class);
 	}
 }

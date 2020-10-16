@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
@@ -25,6 +26,7 @@ import nz.co.gregs.dbvolution.columns.UntypedColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.HashCodeComparator;
 
 /**
  *
@@ -94,4 +96,10 @@ public class DBUnknownDatatype extends QueryableDatatype<Object> {
 	public ColumnProvider getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new UntypedColumn(row, this);
 	}
+
+	@Override
+	public Comparator<Object> getComparator() {
+		return unknownDatatypeComparator;
+	}
+	private static final HashCodeComparator<Object> unknownDatatypeComparator = new HashCodeComparator<Object>();
 }

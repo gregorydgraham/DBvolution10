@@ -822,4 +822,9 @@ public class PropertyWrapper implements Serializable {
 			throw new RuntimeException("Unable to instantiate instance of " + this.toString(), ex);
 		}
 	}
+
+	public <R extends DBRow> int compareBetweenRows(R o1, R o2) {
+		PropertyWrapperDefinition defn = this.getPropertyWrapperDefinition();
+		return defn.compareBetweenRows(o1, o2);
+	}
 }

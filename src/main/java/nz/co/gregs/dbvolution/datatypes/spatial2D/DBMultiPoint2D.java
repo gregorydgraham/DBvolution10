@@ -22,6 +22,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.columns.MultiPoint2DColumn;
@@ -32,6 +33,7 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Represents database columns and values that are list of 2 dimensional points:
@@ -238,6 +240,12 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	@Override
 	public MultiPoint2DColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new MultiPoint2DColumn(row, this);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Comparator<MultiPoint> getComparator() {
+		return ComparableComparator.forClass(MultiPoint.class);
 	}
 
 }

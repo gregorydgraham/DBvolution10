@@ -17,11 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -29,6 +25,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedExc
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.*;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Like {@link DBString} except that the database value can be easily
@@ -837,5 +834,10 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	@Override
 	public StringColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new StringColumn(row, this);
+	}
+
+	@Override
+	public Comparator<String> getComparator() {
+		return ComparableComparator.forClass(String.class);
 	}
 }

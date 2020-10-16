@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
@@ -32,6 +33,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Like {@link DBInteger} except that the database value can be easily
@@ -776,6 +778,11 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	@Override
 	public IntegerColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new IntegerColumn(row, this);
+	}
+
+	@Override
+	public Comparator<Long> getComparator() {
+		return ComparableComparator.forClass(Long.class);
 	}
 
 }

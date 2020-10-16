@@ -21,6 +21,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.columns.Point2DColumn;
@@ -33,6 +34,7 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Point2DResult;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Represents database columns and values that are a 2 dimensional point: an
@@ -191,6 +193,12 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	@Override
 	public Point2DColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new Point2DColumn(row, this);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Comparator<Point> getComparator() {
+		return ComparableComparator.forClass(Point.class);
 	}
 
 }

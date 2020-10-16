@@ -23,10 +23,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
@@ -52,6 +49,7 @@ import nz.co.gregs.dbvolution.expressions.HasSQLString;
 import nz.co.gregs.dbvolution.results.InstantResult;
 import nz.co.gregs.dbvolution.results.LocalDateResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
+import nz.co.gregs.dbvolution.utility.comparators.HashCodeComparator;
 
 /**
  *
@@ -61,7 +59,7 @@ import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
  * @author Gregory Graham
  * @param <T> the java type of the value to be represent by this QDT
  */
-public abstract class QueryableDatatype<T> extends Object implements Serializable, DBExpression {
+public abstract class QueryableDatatype<T> extends Object implements Serializable, DBExpression, Comparable<QueryableDatatype<T>> {
 
 	private static final long serialVersionUID = 1L;
 	private T literalValue = null;
@@ -1474,5 +1472,14 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	public Boolean isConsistentWithEmptyRow(DBDefinition defn) {
 		return isNull();
+	}
+
+	public Comparator<T> getComparator() {
+		return new HashCodeComparator<>();
+	}
+
+	@Override
+	public int compareTo(QueryableDatatype<T> o) {
+		return this.getComparator().compare(this.getValue(), o.getValue());
 	}
 }

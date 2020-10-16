@@ -17,11 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
@@ -31,6 +27,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.operators.*;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are strings of characters.
@@ -923,5 +920,10 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 		} else {
 			return isEmptyOrNullString();
 		}
+	}
+
+	@Override
+	public Comparator<String> getComparator() {
+		return ComparableComparator.forClass(String.class);
 	}
 }

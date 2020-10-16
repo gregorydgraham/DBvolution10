@@ -41,8 +41,8 @@ public class UnableToInstantiateDBRowSubclassException extends DBRuntimeExceptio
 	 * @param requiredDBRow requiredDBRow
 	 * @param cause cause
 	 */
-	public UnableToInstantiateDBRowSubclassException(Class<? extends DBRow> requiredDBRow, Throwable cause) {
-		super("Unable To Create " + requiredDBRow.getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRow.getSimpleName() + " has no arguments, throws no exceptions, and is public. If you are using an Inner Class, make sure the inner class is \"public static\" as well. Also check that all field names are unique.", cause);
+	public UnableToInstantiateDBRowSubclassException(Class<?> requiredDBRow, Throwable cause) {
+		super("Unable To Create " + requiredDBRow.getSimpleName() + ": Please ensure that " + requiredDBRow.getSimpleName() + " is a DBRow subclass, and that it's constructor has no arguments, throws no exceptions, and is public. If you are using an Inner Class, make sure the inner class is \"public static\" as well. Also check that all field names are unique.", cause);
 	}
 
 }

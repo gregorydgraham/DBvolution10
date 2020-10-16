@@ -3,6 +3,7 @@ package nz.co.gregs.dbvolution.internal.properties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -709,6 +710,14 @@ public class PropertyWrapperDefinition implements Serializable {
 
 	boolean isLargeObject() {
 		return DBLargeObject.class.isAssignableFrom(type());
+	}
+
+	public <R extends DBRow, A> int compareBetweenRows(R o1, R o2) {
+		@SuppressWarnings("unchecked")
+		QueryableDatatype<A> v1 = (QueryableDatatype<A>) getQueryableDatatype(o1);
+		@SuppressWarnings("unchecked")
+		QueryableDatatype<A> v2 = (QueryableDatatype<A>) getQueryableDatatype(o2);
+		return v1.compareTo(v2);
 	}
 
 	public static class ColumnAspects implements Serializable {

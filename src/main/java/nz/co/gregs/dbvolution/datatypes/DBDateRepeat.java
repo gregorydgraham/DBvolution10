@@ -15,9 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.utility.comparators.PeriodComparator;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import nz.co.gregs.dbvolution.columns.DateRepeatColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
@@ -269,4 +271,10 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 		super.setDefaultUpdateValue(value);
 		return this;
 	}
+
+	@Override
+	public Comparator<Period> getComparator() {
+		return PeriodComparator.getInstance();
+	}
+
 }

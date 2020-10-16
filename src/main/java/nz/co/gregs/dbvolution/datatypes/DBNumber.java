@@ -15,9 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.utility.comparators.NumberComparator;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -35,6 +37,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are Numbers.
@@ -817,4 +820,10 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 		super.setDefaultUpdateValue(value);
 		return this;
 	}
+
+	@Override
+	public Comparator<Number> getComparator() {
+		return new NumberComparator();
+	}
+
 }

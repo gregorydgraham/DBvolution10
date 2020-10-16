@@ -15,15 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.utility.comparators.BooleanArrayComparator;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.BooleanArrayColumn;
@@ -348,4 +344,10 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 		super.setDefaultUpdateValue(value);
 		return this;
 	}
+
+	@Override
+	public Comparator<Boolean[]> getComparator() {
+		return new BooleanArrayComparator();
+	}
+
 }

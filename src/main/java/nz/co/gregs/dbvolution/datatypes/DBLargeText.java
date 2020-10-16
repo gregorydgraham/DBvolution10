@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.ByteArrayComparator;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -631,5 +632,10 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				|| (hasBeenSet() && getLiteralValue() == null && newLiteralValue != null && newLiteralValue.length > 0)) {
 			super.setLiteralValue(newLiteralValue);
 		}
+	}
+
+	@Override
+	public Comparator<byte[]> getComparator() {
+		return new ByteArrayComparator();
 	}
 }

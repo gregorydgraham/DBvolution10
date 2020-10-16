@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -31,6 +32,7 @@ import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.operators.DBBooleanPermittedValuesOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
  * Encapsulates database values that are Booleans.
@@ -395,6 +397,11 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	public synchronized DBBoolean setDefaultUpdateValue(DBBoolean value) {
 		super.setDefaultUpdateValue(value);
 		return this;
+	}
+
+	@Override
+	public Comparator<Boolean> getComparator() {
+		return ComparableComparator.forClass(Boolean.class);
 	}
 
 }
