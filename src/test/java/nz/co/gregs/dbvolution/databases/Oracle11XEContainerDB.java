@@ -46,7 +46,7 @@ public class Oracle11XEContainerDB extends Oracle11XEDB {
 
 	private static final long serialVersionUID = 1l;
 	private static Oracle11XEContainerDB staticDatabase;
-	private static OracleContainer container = null;
+	private OracleContainer container = null;
 
 	public static Oracle11XEContainerDB getInstance() {
 		if (staticDatabase == null) {
