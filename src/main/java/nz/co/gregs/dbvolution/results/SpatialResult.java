@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-
 /**
  *
  * <p style="color: #F90;">Support DBvolution at
@@ -25,6 +23,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author gregorygraham
  * @param <B> the base Java type that this result class produces and manipulates, e.g. Polygon
  */
-public interface SpatialResult<B> extends DBExpression, EqualResult<B>, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
+public interface SpatialResult<B> extends EqualResult<B>, ExpressionHasStandardStringResult {
 
 }

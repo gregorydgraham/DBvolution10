@@ -22,12 +22,14 @@ import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
+import nz.co.gregs.dbvolution.columns.LargeTextColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.LargeTextResult;
 import nz.co.gregs.dbvolution.utility.comparators.ByteArrayComparator;
 import org.apache.commons.codec.binary.Base64;
 
@@ -54,7 +56,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author Gregory Graham
  */
-public class DBLargeText extends DBLargeObject<byte[]> {
+public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResult {
 
 	private static final long serialVersionUID = 1;
 	transient InputStream byteStream = null;
@@ -77,8 +79,12 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 *
 	 * @param aThis an expression that will result in a large object value
 	 */
-	public DBLargeText(LargeObjectExpression aThis) {
+	public DBLargeText(LargeTextResult aThis) {
 		super(aThis);
+	}
+
+	public DBLargeText(byte[] blobExpression) {
+		super(blobExpression);
 	}
 
 	/**
@@ -152,7 +158,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
-		try (InputStream inputStream = resultSet.getBinaryStream(fullColumnName)) {
+		try ( InputStream inputStream = resultSet.getBinaryStream(fullColumnName)) {
 			if (resultSet.wasNull()) {
 				this.setToNull();
 				return bytes;
@@ -174,7 +180,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		if (blob == null) {
 			this.setToNull();
 		} else {
-			try (InputStream inputStream = blob.getBinaryStream()) {
+			try ( InputStream inputStream = blob.getBinaryStream()) {
 				bytes = getBytesFromInputStream(inputStream);
 			} catch (IOException ex) {
 				Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
@@ -207,7 +213,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	private byte[] getBytesFromInputStream(InputStream inputStream) throws IOException {
 		byte[] bytes;
 		List<byte[]> byteArrays = new ArrayList<>();
-		try (InputStream input = new BufferedInputStream(inputStream)) {
+		try ( InputStream input = new BufferedInputStream(inputStream)) {
 
 			try {
 				byte[] resultSetBytes;
@@ -393,7 +399,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 */
 	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
 		byte[] bytes = new byte[(int) originalFile.length()];
-		try (InputStream input = new BufferedInputStream(new FileInputStream(originalFile))) {
+		try ( InputStream input = new BufferedInputStream(new FileInputStream(originalFile))) {
 			int totalBytesRead = 0;
 			while (totalBytesRead < bytes.length) {
 				int bytesRemaining = bytes.length - totalBytesRead;
@@ -571,7 +577,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				break;
 			case CHARSTREAM:
 //				try {
-					bytes = getFromCharacterReader(resultSet, fullColumnName);
+				bytes = getFromCharacterReader(resultSet, fullColumnName);
 //				} catch (IOException exp) {
 //					throw new DBRuntimeException(exp);
 //				}
@@ -621,8 +627,8 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
-		return new LargeObjectColumn(row, this);
+	public LargeTextColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new LargeTextColumn(row, this);
 	}
 
 	@Override
@@ -637,5 +643,10 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	@Override
 	public Comparator<byte[]> getComparator() {
 		return new ByteArrayComparator();
+	}
+
+	@Override
+	public DBLargeText copy() {
+		return (DBLargeText) super.copy();
 	}
 }

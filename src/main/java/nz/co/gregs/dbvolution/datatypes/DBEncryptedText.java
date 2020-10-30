@@ -32,9 +32,10 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException;
 import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
+import nz.co.gregs.dbvolution.results.EncryptedTextResult;
 import nz.co.gregs.dbvolution.utility.encryption.Encrypted;
 
-public class DBEncryptedText extends DBLargeText {
+public class DBEncryptedText extends DBLargeText implements EncryptedTextResult {
 
 	private static final long serialVersionUID = 1L;
 

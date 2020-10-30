@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright 2015 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +23,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
+import nz.co.gregs.dbvolution.columns.LargeBinaryColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
@@ -39,17 +40,17 @@ import static org.junit.Assert.*;
  *
  * @author gregorygraham
  */
-public class LargeObjectExpressionTest extends AbstractTest {
+public class LargeBinaryExpressionTest extends AbstractTest {
 
-	public LargeObjectExpressionTest(Object testIterationName, Object db) {
+	public LargeBinaryExpressionTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 
 	@Test
 	public void testCopy() {
 		CompanyLogo companyLogo = new CompanyLogo();
-		LargeObjectExpression instance = new LargeObjectExpression(companyLogo.column(companyLogo.imageBytes));
-		LargeObjectExpression result = instance.copy();
+		LargeBinaryExpression instance = new LargeBinaryExpression(companyLogo.column(companyLogo.imageBytes));
+		LargeBinaryExpression result = instance.copy();
 		final DBDefinition definition = database.getDefinition();
 		assertEquals(instance.toSQLString(definition), result.toSQLString(definition));
 	}
@@ -57,7 +58,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
 		CompanyLogo companyLogo = new CompanyLogo();
-		LargeObjectColumn instance = companyLogo.column(companyLogo.imageBytes);
+		LargeBinaryColumn instance = companyLogo.column(companyLogo.imageBytes);
 		DBLargeBinary expResult = new DBLargeBinary();
 		DBLargeBinary result = instance.getQueryableDatatypeForExpressionValue();
 		assertEquals(expResult.getClass(), result.getClass());
@@ -65,7 +66,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsAggregator() {
-		LargeObjectExpression instance = new LargeObjectExpression();
+		LargeBinaryExpression instance = new LargeBinaryExpression();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
 		assertEquals(expResult, result);
@@ -74,7 +75,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 	@Test
 	public void testGetTablesInvolved() {
 		CompanyLogo companyLogo = new CompanyLogo();
-		LargeObjectExpression instance = new LargeObjectExpression(companyLogo.column(companyLogo.imageBytes));
+		LargeBinaryExpression instance = new LargeBinaryExpression(companyLogo.column(companyLogo.imageBytes));
 		Set<DBRow> result = instance.getTablesInvolved();
 		DBRow[] resultArray = result.toArray(new DBRow[]{});
 		Assert.assertThat(result.size(), is(1));
@@ -86,7 +87,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		CompanyLogo companyLogo = new CompanyLogo();
 
 		DBQuery dbQuery = database.getDBQuery(companyLogo);
-		LargeObjectColumn imageBytesColumn = companyLogo.column(companyLogo.imageBytes);
+		LargeBinaryColumn imageBytesColumn = companyLogo.column(companyLogo.imageBytes);
 		dbQuery.addCondition(imageBytesColumn.isNotNull());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(0));
@@ -116,7 +117,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		CompanyLogo companyLogo = new CompanyLogo();
 
 		DBQuery dbQuery = database.getDBQuery(companyLogo);
-		LargeObjectColumn imageBytesColumn = companyLogo.column(companyLogo.imageBytes);
+		LargeBinaryColumn imageBytesColumn = companyLogo.column(companyLogo.imageBytes);
 		dbQuery.addCondition(imageBytesColumn.isNotNull());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(0));
@@ -143,12 +144,12 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetIncludesNull() {
-		LargeObjectExpression instance = new LargeObjectExpression();
+		LargeBinaryExpression instance = new LargeBinaryExpression();
 		boolean expResult = false;
 		boolean result = instance.getIncludesNull();
 		assertEquals(expResult, result);
 
-		instance = new LargeObjectExpression(null);
+		instance = new LargeBinaryExpression(null);
 		expResult = true;
 		result = instance.getIncludesNull();
 		assertEquals(expResult, result);
@@ -156,12 +157,12 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsPurelyFunctional() {
-		LargeObjectExpression instance = new LargeObjectExpression();
+		LargeBinaryExpression instance = new LargeBinaryExpression();
 		boolean result = instance.isPurelyFunctional();
 		assertEquals(true, instance.isPurelyFunctional());
 
 		CompanyLogo companyLogo = new CompanyLogo();
-		LargeObjectColumn imageBytesColumn = companyLogo.column(companyLogo.imageBytes);
+		LargeBinaryColumn imageBytesColumn = companyLogo.column(companyLogo.imageBytes);
 		assertEquals(false, imageBytesColumn.isPurelyFunctional());
 	}
 

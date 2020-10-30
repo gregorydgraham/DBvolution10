@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
@@ -35,4 +36,31 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public interface AnyComparable<B, A extends DBExpression> extends DBExpression, ExpressionCanHaveNullValues{
 
+	/**
+	 * Tests the expression against the value NULL and returns true if the
+	 * Integer Expression is not NULL.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 */
+	public default BooleanExpression isNotNull() {
+		return BooleanExpression.isNotNull(this);
+	}
+
+	/**
+	 * Tests the expression against the value NULL and returns true if the
+	 * Integer Expression is NULL.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 */
+	public default BooleanExpression isNull() {
+		return BooleanExpression.isNull(this);
+	}
 }

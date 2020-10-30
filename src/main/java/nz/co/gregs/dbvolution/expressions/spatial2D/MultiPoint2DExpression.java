@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.results.AnyComparable;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
@@ -541,7 +542,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 		}
 	}
 
-	private static abstract class SingleArgumentBooleanFunction<A extends DBExpression> extends BooleanExpression {
+	private static abstract class SingleArgumentBooleanFunction<A extends AnyComparable<?,?>> extends BooleanExpression {
 
 		private static final long serialVersionUID = 1L;
 
@@ -1093,9 +1094,9 @@ private class MinYExpression extends MultiPointFunctionWithNumberResult {
 
 	}
 
-	private class HasMagnitudeExpression extends SingleArgumentBooleanFunction<DBExpression> {
+	private class HasMagnitudeExpression extends SingleArgumentBooleanFunction<MultiPoint2DExpression> {
 
-		public HasMagnitudeExpression(DBExpression first) {
+		public HasMagnitudeExpression(MultiPoint2DExpression first) {
 			super(first);
 		}
 		private final static long serialVersionUID = 1l;

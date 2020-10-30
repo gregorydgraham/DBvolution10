@@ -33,11 +33,12 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author greg
+ * @param <BASETYPE>
  * @see DBExpression
  */
-public interface LargeObjectResult extends AnyResult<byte[]> {
+public interface LargeObjectResult<BASETYPE> extends AnyResult<BASETYPE> {
 
-	@Override
-	public LargeObjectResult copy();
+//	@Override
+//	public LargeObjectResult<BASETYPE> copy();
 
 }

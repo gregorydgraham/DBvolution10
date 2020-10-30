@@ -21,12 +21,14 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
+import nz.co.gregs.dbvolution.columns.ByteArrayColumn;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.ByteArrayResult;
 import nz.co.gregs.dbvolution.utility.comparators.ByteArrayComparator;
 import org.apache.commons.codec.binary.Base64;
 
@@ -55,7 +57,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author Gregory Graham
  */
 @Deprecated()
-public class DBByteArray extends DBLargeObject<byte[]> {
+public class DBByteArray extends DBLargeObject<byte[]> implements ByteArrayResult{
 
 	private static final long serialVersionUID = 1;
 	transient InputStream byteStream = null;
@@ -78,7 +80,21 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 *
 	 * @param aThis an expression that will result in a large object value
 	 */
-	public DBByteArray(LargeObjectExpression aThis) {
+	public DBByteArray(ByteArrayResult aThis) {
+		super(aThis);
+	}
+
+	/**
+	 * Creates a column expression with a large object result from the expression
+	 * provided.
+	 *
+	 * <p>
+	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
+	 * data from the database prior to retrieval.
+	 *
+	 * @param aThis an expression that will result in a large object value
+	 */
+	public DBByteArray(byte[] aThis) {
 		super(aThis);
 	}
 
@@ -563,12 +579,17 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException{
-		return new LargeObjectColumn(row, this);
+	public ByteArrayColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException{
+		return new ByteArrayColumn(row, this);
 	}
 
 	@Override
 	public Comparator<byte[]> getComparator() {
 		return new ByteArrayComparator();
+	}
+
+	@Override
+	public DBByteArray copy() {
+		return (DBByteArray) super.copy();
 	}
 }

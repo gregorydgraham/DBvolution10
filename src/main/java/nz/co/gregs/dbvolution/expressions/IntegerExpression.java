@@ -498,10 +498,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
-	@Override
-	public BooleanExpression isNotNull() {
-		return BooleanExpression.isNotNull(this);
-	}
+//	@Override
+//	public BooleanExpression isNotNull() {
+//		return BooleanExpression.isNotNull(this);
+//	}
 
 	/**
 	 * Tests the IntegerExpression against the value NULL and returns true if the
@@ -513,10 +513,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
-	@Override
-	public BooleanExpression isNull() {
-		return BooleanExpression.isNull(this);
-	}
+//	@Override
+//	public BooleanExpression isNull() {
+//		return BooleanExpression.isNull(this);
+//	}
 
 	/**
 	 * Tests the IntegerExpression against the supplied number and returns true if

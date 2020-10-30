@@ -22,12 +22,14 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
+import nz.co.gregs.dbvolution.columns.JavaObjectColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.JavaObjectResult;
+import nz.co.gregs.dbvolution.results.LargeObjectResult;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -41,7 +43,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author Gregory Graham
  * @param <O> the specific type of the objects to be stored.
  */
-public class DBJavaObject<O> extends DBLargeObject<O> {
+public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResult<O>{
 
 	private static final long serialVersionUID = 1;
 	private transient InputStream byteStream = null;
@@ -51,6 +53,17 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	@Override
 	public String getSQLDatatype() {
 		return "JAVA_OBJECT";
+	}
+
+	public DBJavaObject() {
+	}
+
+	public DBJavaObject(LargeObjectResult<O> blobExpression) {
+		super(blobExpression);
+	}
+
+	public DBJavaObject(O blobExpression) {
+		super(blobExpression);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -421,14 +434,19 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	@Override
-	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
-		return new LargeObjectColumn(row, this);
+	public JavaObjectColumn<O> getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new JavaObjectColumn<O>(row, this);
 	}
 
 
 	@Override
 	public Comparator<O> getComparator() {
 		return new HashCodeComparator<O>();
+	}
+
+	@Override
+	public DBJavaObject<O> copy() {
+		return (DBJavaObject<O>) super.copy();
 	}
 
 }

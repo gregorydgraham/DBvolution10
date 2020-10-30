@@ -1189,7 +1189,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		public String toSQLString(DBDefinition db) {
 			BooleanExpression isNull = BooleanExpression.trueExpression();
 			if (this.getIncludesNull()) {
-				for (Point2DResult allPoint : allPoints) {
+				for (Point2DExpression allPoint : allPoints) {
 					isNull = isNull.or(BooleanExpression.isNull(allPoint));
 				}
 				return isNull.toSQLString(db);

@@ -130,7 +130,7 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new LargeObjectColumn instance to help create
+	 * Creates a new ByteArrayColumn instance to help create
 	 * {@link DBExpression expressions}
 	 *
 	 * <p>
@@ -143,12 +143,71 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return A LargeObjectColumn representing the supplied field
+	 * @return A ByteArrayColumn representing the supplied field
 	 */
-	public LargeObjectColumn column(DBLargeObject<?> fieldOfThisInstance) {
-		return new LargeObjectColumn(this, fieldOfThisInstance);
+	@Deprecated
+	public ByteArrayColumn column(DBByteArray fieldOfThisInstance) {
+		return new ByteArrayColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new JavaObjectColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A JavaObjectColumn representing the supplied field
+	 */
+	public <O> JavaObjectColumn<O> column(DBJavaObject<O> fieldOfThisInstance) {
+		return new JavaObjectColumn<>(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new LargeBinaryColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A LargeBinaryColumn representing the supplied field
+	 */
+	public LargeBinaryColumn column(DBLargeBinary fieldOfThisInstance) {
+		return new LargeBinaryColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new LargTextColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A LargeTextColumn representing the supplied field
+	 */
+	public LargeTextColumn column(DBLargeText fieldOfThisInstance) {
+		return new LargeTextColumn(this, fieldOfThisInstance);
 	}
 
 	/**

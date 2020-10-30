@@ -21,6 +21,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
+import nz.co.gregs.dbvolution.columns.LargeBinaryColumn;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
@@ -53,7 +54,10 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author Gregory Graham
  */
-public class DBLargeBinary extends DBLargeObject<byte[]> {
+
+import nz.co.gregs.dbvolution.results.LargeBinaryResult;
+
+public class DBLargeBinary extends DBLargeObject<byte[]> implements LargeBinaryResult{
 
 	private static final long serialVersionUID = 1;
 
@@ -75,7 +79,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 *
 	 * @param aThis an expression that will result in a large object value
 	 */
-	public DBLargeBinary(LargeObjectExpression aThis) {
+	public DBLargeBinary(LargeBinaryResult aThis) {
 		super(aThis);
 	}
 
@@ -617,8 +621,8 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
-		return new LargeObjectColumn(row, this);
+	public LargeBinaryColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new LargeBinaryColumn(row, this);
 	}
 
 	/**

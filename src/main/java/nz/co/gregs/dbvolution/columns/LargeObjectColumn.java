@@ -19,9 +19,11 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Represents a database column storing a large object value.
@@ -43,11 +45,16 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
+ * @param <BASETYPE>
+ * @param <RESULT>
+ * @param <QDT>
  * @see RowDefinition
  * @see AbstractColumn
  * @see LargeObjectExpression
  */
-public class LargeObjectColumn extends LargeObjectExpression implements ColumnProvider {
+public abstract class LargeObjectColumn<BASETYPE extends Object, RESULT extends AnyResult<BASETYPE>, QDT extends QueryableDatatype<BASETYPE>> 
+		extends LargeObjectExpression<BASETYPE, RESULT, QDT> 
+		implements ColumnProvider {
 
 	private final static long serialVersionUID = 1l;
 
@@ -68,11 +75,11 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 		return column.toSQLString(db);
 	}
 
-	@Override
-	public LargeObjectColumn copy() {
-		final DBRow row = column.getInstanceOfRow();
-		return new LargeObjectColumn(row, (DBLargeObject<?>) column.getAppropriateQDTFromRow(row));
-	}
+//	@Override
+//	public LargeObjectColumn copy() {
+//		final DBRow row = column.getInstanceOfRow();
+//		return new LargeObjectColumn(row, (DBLargeObject<?>) column.getAppropriateQDTFromRow(row));
+//	}
 
 	@Override
 	public AbstractColumn getColumn() {

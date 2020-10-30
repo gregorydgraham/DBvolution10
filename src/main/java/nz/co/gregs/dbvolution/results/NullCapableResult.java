@@ -1,6 +1,8 @@
 /*
- * Copyright 2018 gregorygraham.
+ * Copyright 2020 Gregory Graham.
  *
+ * Commercial licenses are available, please contact info@gregs.co.nz for details.
+ * 
  * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ 
  * or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
@@ -29,11 +31,9 @@
 package nz.co.gregs.dbvolution.results;
 
 /**
- * A EqualResult has an equal and a not equal function.
  *
  * @author gregorygraham
- * @param <B> a base type like Integer or String
+ * @param <B>
  */
-public interface EqualResult<B> extends NullCapableResult<B> {
-	
+public interface NullCapableResult<B> extends AnyResult<B> {
 }
