@@ -37,7 +37,7 @@ public class AutoIncrementFieldClassAndDatatypeMismatch extends DBRuntimeExcepti
 	 *
 	 * @param field field
 	 */
-	public AutoIncrementFieldClassAndDatatypeMismatch(PropertyWrapper field) {
+	public AutoIncrementFieldClassAndDatatypeMismatch(PropertyWrapper<?,?> field) {
 		super("Attempt To Create Column Failed Because The QDT Was Inappropriate For The Auto-Increment Datatype: field" + field.javaName() + " was " + field.getRawJavaType());
 	}
 

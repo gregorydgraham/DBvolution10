@@ -158,6 +158,13 @@ public class TemporalStringParser {
 		if (zoneddatetime != null) {
 			return zoneddatetime;
 		} else {
+			System.out.println("nz.co.gregs.dbvolution.utility.TemporalStringParser.toZonedDateTime()");
+			System.out.println("FAILED TO PARSE DATE");
+			System.out.println("INPUTSTRING: "+inputDateString);
+			System.out.println("FINAL VERSION: "+str);
+			LOG.info("FAILED TO PARSE DATE");
+			LOG.info("INPUTSTRING: "+inputDateString);
+			LOG.info("FINAL VERSION: "+str);
 			throw new DateTimeParseException(inputDateString, sequence, 0, exception);
 		}
 	}

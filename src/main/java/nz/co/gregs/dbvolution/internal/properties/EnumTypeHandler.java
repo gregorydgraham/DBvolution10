@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
  *
  * @author Malcolm Lett
  */
-class EnumTypeHandler implements Serializable{
+class EnumTypeHandler<BASETYPE> implements Serializable{
 
 	private static final long serialVersionUID = 1l;
 
@@ -30,7 +30,7 @@ class EnumTypeHandler implements Serializable{
 	private final Class<?> enumLiteralValueType; // null if not present or not able to be inferred
 
 	@SuppressWarnings("unchecked")
-	EnumTypeHandler(JavaProperty javaProperty, ColumnHandler columnHandler) {
+	EnumTypeHandler(JavaProperty<BASETYPE> javaProperty, ColumnHandler<?> columnHandler) {
 		Type type = javaProperty.genericType();
 		Class<?> propertyClass = classOf(type);
 		Class<? extends Enum<?>> identifiedEnumType = null;

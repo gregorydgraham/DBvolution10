@@ -43,7 +43,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author Gregory Graham
  * @param <O> the specific type of the objects to be stored.
  */
-public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResult<O>{
+public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResult<O> {
 
 	private static final long serialVersionUID = 1;
 	private transient InputStream byteStream = null;
@@ -117,7 +117,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 		} else {
 			final BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 			try {
-				try (ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
+				try ( ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
 					returnValue = (O) input.readObject();
 				}
 			} catch (IOException | ClassNotFoundException ex) {
@@ -148,7 +148,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 			} else {
 				final BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 				try {
-					try (ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
+					try ( ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
 						returnValue = (O) input.readObject();
 					}
 				} catch (IOException | ClassNotFoundException ex) {
@@ -168,8 +168,10 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 	private O getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		try {
 			byte[] bytes = resultSet.getBytes(fullColumnName);
-			try (ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
-				return (O) input.readObject();
+			if (bytes != null) {
+				try ( ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+					return (O) input.readObject();
+				}
 			}
 		} catch (IOException | ClassNotFoundException ex) {
 			Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
@@ -207,7 +209,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 			if (resultSet.wasNull()) {
 				this.setToNull();
 			} else {
-				try (BufferedReader input = new BufferedReader(inputReader)) {
+				try ( BufferedReader input = new BufferedReader(inputReader)) {
 					List<byte[]> byteArrays = new ArrayList<>();
 					try {
 						char[] resultSetBytes;
@@ -227,12 +229,12 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 						}
 					} catch (IOException ex) {
 						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-						throw new DBRuntimeException("DBJavaObject.getFromCharacterReader: Unable to get from Character Reader",ex);
+						throw new DBRuntimeException("DBJavaObject.getFromCharacterReader: Unable to get from Character Reader", ex);
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
 					byte[] decodeBuffer = Base64.decodeBase64(bytes);
 
-					try (ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer))) {
+					try ( ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer))) {
 						obj = (O) decodedInput.readObject();
 					} catch (ClassNotFoundException ex) {
 						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
@@ -252,7 +254,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 		} else {
 			try {
 				List<byte[]> byteArrays = new ArrayList<>();
-				try (BufferedReader input = new BufferedReader(clob.getCharacterStream())) {
+				try ( BufferedReader input = new BufferedReader(clob.getCharacterStream())) {
 
 					try {
 
@@ -276,7 +278,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 						throw new DBRuntimeException("Failed to get from BLOB", ex);
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
-					try (ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+					try ( ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
 						returnValue = (O) objectInput.readObject();
 					}
 				}
@@ -379,11 +381,11 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 				break;
 			case CHARSTREAM:
 				try {
-					obj = getFromCharacterReader(resultSet, fullColumnName);
-				} catch (IOException exp) {
-					throw new DBRuntimeException("DBJavaObject.getFromResultSet: Failed to get from Character Reader", exp);
-				}
-				break;
+				obj = getFromCharacterReader(resultSet, fullColumnName);
+			} catch (IOException exp) {
+				throw new DBRuntimeException("DBJavaObject.getFromResultSet: Failed to get from Character Reader", exp);
+			}
+			break;
 			case CLOB:
 				obj = getFromCLOB(resultSet, fullColumnName);
 				break;
@@ -407,11 +409,11 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("DBJavaObject does not support setValueFromStandardStringEncoding(String) yet."); 
+		throw new UnsupportedOperationException("DBJavaObject does not support setValueFromStandardStringEncoding(String) yet.");
 	}
 
 	private O getFromString(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("DBJavaObject does not support getFromString(ResultSet, String) yet."); 
+		throw new UnsupportedOperationException("DBJavaObject does not support getFromString(ResultSet, String) yet.");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -430,14 +432,13 @@ public class DBJavaObject<O> extends DBLargeObject<O> implements JavaObjectResul
 	}
 
 	private O getFromBase64(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("DBJavaObject does not support getFromBase64(ResultSet, String) yet."); 
+		throw new UnsupportedOperationException("DBJavaObject does not support getFromBase64(ResultSet, String) yet.");
 	}
 
 	@Override
 	public JavaObjectColumn<O> getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new JavaObjectColumn<O>(row, this);
 	}
-
 
 	@Override
 	public Comparator<O> getComparator() {

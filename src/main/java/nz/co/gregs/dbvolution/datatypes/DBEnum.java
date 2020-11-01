@@ -251,7 +251,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	@SuppressWarnings("unchecked")
 	private Class<E> getEnumType() {
 		if (enumType == null) {
-			PropertyWrapperDefinition propertyWrapper = getPropertyWrapperDefinition();
+			PropertyWrapperDefinition<?,?> propertyWrapper = getPropertyWrapperDefinition();
 			if (propertyWrapper == null) {
 				throw new IllegalStateException(
 						"Unable to convert literal value to enum: enum type unable to be inferred at this point. "

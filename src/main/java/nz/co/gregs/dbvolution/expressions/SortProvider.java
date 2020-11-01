@@ -402,7 +402,7 @@ public class SortProvider implements DBExpression {
 			return getColumn().getQueryableDatatypeForExpressionValue();
 		}
 
-		public PropertyWrapper getPropertyWrapper() {
+		public PropertyWrapper<?, ?> getPropertyWrapper() {
 			return getColumn().getPropertyWrapper();
 		}
 
@@ -487,9 +487,9 @@ public class SortProvider implements DBExpression {
 		protected abstract String getNullsOrderingStandardSQL(DBDefinition defn);
 
 		protected final String simulateNullsFirst(DBDefinition defn) {
-				return getNullsOrderingSimulatedSQLForNullsFirst(defn)
-						+ " "
-						+ defn.getOrderByAscending();
+			return getNullsOrderingSimulatedSQLForNullsFirst(defn)
+					+ " "
+					+ defn.getOrderByAscending();
 		}
 
 		protected String getNullsOrderingSimulatedSQLForNullsFirst(DBDefinition defn) {
@@ -501,9 +501,9 @@ public class SortProvider implements DBExpression {
 		}
 
 		protected final String simulateNullsLast(DBDefinition defn) {
-				return getNullsOrderingSimulatedSQLForNullsLast(defn)
-						+ " "
-						+ defn.getOrderByAscending();
+			return getNullsOrderingSimulatedSQLForNullsLast(defn)
+					+ " "
+					+ defn.getOrderByAscending();
 		}
 
 		protected String getNullsOrderingSimulatedSQLForNullsLast(DBDefinition defn) {

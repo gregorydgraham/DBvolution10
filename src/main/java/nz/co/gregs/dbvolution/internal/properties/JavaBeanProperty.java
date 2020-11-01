@@ -29,13 +29,14 @@ import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException
 
 /**
  * Implementation over bean properties.
+ * @param <BASETYPE>
  */
-public class JavaBeanProperty implements JavaProperty, Serializable {
+public class JavaBeanProperty<BASETYPE> implements JavaProperty<BASETYPE>, Serializable {
 
 	private static final long serialVersionUID = 1l;
 
 	private final String name;
-	private final Class<?> type;
+	private final Class<BASETYPE> type;
 	private Type genericType;
 	private transient final Method getter;
 	private transient final Method setter;
@@ -45,9 +46,10 @@ public class JavaBeanProperty implements JavaProperty, Serializable {
 	 *
 	 * @param descriptor	descriptor
 	 */
+	@SuppressWarnings("unchecked")
 	public JavaBeanProperty(PropertyDescriptor descriptor) {
 		this.name = descriptor.getName();
-		this.type = descriptor.getPropertyType();
+		this.type = (Class<BASETYPE>) descriptor.getPropertyType();
 		this.getter = descriptor.getReadMethod();
 		this.setter = descriptor.getWriteMethod();
 		if (this.getter != null) {
@@ -109,7 +111,8 @@ public class JavaBeanProperty implements JavaProperty, Serializable {
 		if (!(obj instanceof JavaBeanProperty)) {
 			return false;
 		}
-		JavaBeanProperty other = (JavaBeanProperty) obj;
+		@SuppressWarnings("unchecked")
+		JavaBeanProperty<BASETYPE> other = (JavaBeanProperty<BASETYPE>) obj;
 		if (getter == null) {
 			if (other.getter != null) {
 				return false;
@@ -160,7 +163,7 @@ public class JavaBeanProperty implements JavaProperty, Serializable {
 	}
 
 	@Override
-	public Class<?> type() {
+	public Class<BASETYPE> type() {
 		return type;
 	}
 

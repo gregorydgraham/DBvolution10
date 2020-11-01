@@ -861,7 +861,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
+	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper<?,?> columnPropertyWrapper) {
 		return "ALTER TABLE " + formatTableName(existingTable) + " ADD " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
 	}
 

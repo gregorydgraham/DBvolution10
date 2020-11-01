@@ -101,7 +101,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		final AnyResult<?> inner = getInnerResult();
-		Set<DBRow> result = new HashSet<DBRow>(0);
+		Set<DBRow> result = new HashSet<>(0);
 		if (inner != null) {
 			result = inner.getTablesInvolved();
 		}
@@ -795,7 +795,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public final static DateRepeatExpression value(DateRepeatResult period) {
 		return new DateRepeatExpression(period);
 	}
-	
+
 	public final static DurationExpression value(DurationResult period) {
 		return new DurationExpression(period);
 	}
@@ -983,7 +983,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 * @param expressionsToOrderBy
 	 * @return
 	 */
-	public IntegerExpression runningCount(RangeExpression[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
+	public IntegerExpression runningCount(RangeExpression<?, ?, ?>[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
 		return this.count().over().partition(expressionsToPartitionBy).orderBy(expressionsToOrderBy).withoutFrame();
 	}
 

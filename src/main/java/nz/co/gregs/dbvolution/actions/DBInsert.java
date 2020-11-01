@@ -36,7 +36,6 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBSQLException;
-import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import org.apache.commons.logging.Log;
@@ -114,7 +113,7 @@ public class DBInsert extends DBAction {
 		}
 		if (!dbInsert.generatedKeys.isEmpty() && !pksHaveBeenSet) {
 			final QueryableDatatype<?> pkQDT = primaryKeys.get(0);
-			new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(dbInsert.generatedKeys.get(0));
+			new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(dbInsert.generatedKeys.get(0));
 		}
 		row.setSimpleTypesToUnchanged();
 		return executedActions;
@@ -235,13 +234,13 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql, QueryIntention.INSERT_ROW);
-						final List<PropertyWrapper> primaryKeyWrappers = table.getPrimaryKeyPropertyWrappers();
+						final var primaryKeyWrappers = table.getPrimaryKeyPropertyWrappers();
 						if (primaryKeyWrappers.size() > 0) {
 							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 								try (ResultSet rs = statement.executeQuery(retrieveSQL, "RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT)) {
-									for (PropertyWrapper primaryKeyWrapper : primaryKeyWrappers) {
-										PropertyWrapperDefinition definition = primaryKeyWrapper.getPropertyWrapperDefinition();
+									for (var primaryKeyWrapper : primaryKeyWrappers) {
+										var definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
 										QueryableDatatype<?> rowPK = definition.getQueryableDatatype(table);
 
@@ -292,15 +291,15 @@ public class DBInsert extends DBAction {
 
 	private synchronized void setPrimaryKeyOfStoredRows(final long pkValue, DBRow table, final DBInsert newInsert) {
 		QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
+		new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = this.row.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
+		new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = table.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
+		new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = newInsert.row.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
+		new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = newInsert.originalRow.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
+		new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(pkValue);
 	}
 
 	private InsertFields processAllFieldsForInsert(DBDatabase database, DBRow row) {
@@ -310,12 +309,12 @@ public class DBInsert extends DBAction {
 		StringBuilder allChangedColumns = fields.getAllChangedColumns();
 		StringBuilder allSetValues = fields.getAllSetValues();
 		DBDefinition defn = database.getDefinition();
-		List<PropertyWrapper> props = row.getColumnPropertyWrappers();
+		var props = row.getColumnPropertyWrappers();
 		String allColumnSeparator = "";
 		String columnSeparator = "";
 		String valuesSeparator = defn.beginValueClause();
 		String allValuesSeparator = defn.beginValueClause();
-		for (PropertyWrapper prop : props) {
+		for (var prop : props) {
 			if (prop.isColumn() && !prop.hasColumnExpression()) {
 				final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt != null) {
@@ -423,7 +422,7 @@ public class DBInsert extends DBAction {
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "";
 		for (QueryableDatatype<?> pk : primaryKeys) {
-			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
+			var wrapper = row.getPropertyWrapperOf(pk);
 			String pkValue = pk.toSQLString(db.getDefinition());
 
 			sqlString.append(separator)

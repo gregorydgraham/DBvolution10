@@ -1609,10 +1609,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
-		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper>(), new ArrayList<PropertyWrapper>());
+		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper<?,?>>(), new ArrayList<PropertyWrapper<?,?>>());
 	}
 
-	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields, List<PropertyWrapper> spatial2DFields) {
+	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper<?,?>> pkFields, List<PropertyWrapper<?,?>> spatial2DFields) {
 		StringBuilder sqlScript = new StringBuilder();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
@@ -1622,9 +1622,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		// columns
 		String sep = "";
 		String nextSep = definition.getCreateTableColumnsSeparator();
-		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
+		var fields = newTableRow.getColumnPropertyWrappers();
 		List<String> fkClauses = new ArrayList<>();
-		for (PropertyWrapper field : fields) {
+		for (var field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 				String colName = field.columnName();
 				sqlScript
@@ -1660,7 +1660,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
 			String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
 			String pkSep = pkStart;
-			for (PropertyWrapper field : pkFields) {
+			for (var field : pkFields) {
 				sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
 				pkSep = pkMiddle;
 			}
@@ -1679,8 +1679,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 
-		List<PropertyWrapper> pkFields = new ArrayList<>();
-		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
+		List<PropertyWrapper<?,?>> pkFields = new ArrayList<>();
+		List<PropertyWrapper<?,?>> spatial2DFields = new ArrayList<>();
 
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
 		try ( DBStatement dbStatement = getDBStatement()) {
@@ -1731,9 +1731,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		if (this.definition.supportsAlterTableAddConstraint()) {
-			List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
+			var fields = newTableRow.getColumnPropertyWrappers();
 			List<String> fkClauses = new ArrayList<>();
-			for (PropertyWrapper field : fields) {
+			for (var field : fields) {
 				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 					final String alterTableAddForeignKeyStatement = definition.getAlterTableAddForeignKeyStatement(newTableRow, field);
 					if (!alterTableAddForeignKeyStatement.isEmpty()) {
@@ -1775,9 +1775,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
-		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
+		var fields = newTableRow.getColumnPropertyWrappers();
 		List<String> fkClauses = new ArrayList<>();
-		for (PropertyWrapper field : fields) {
+		for (var field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 				final String alterTableDropForeignKeyStatement = definition.getAlterTableDropForeignKeyStatement(newTableRow, field);
 				if (!alterTableDropForeignKeyStatement.isEmpty()) {
@@ -1815,9 +1815,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 
-		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
+		var fields = newTableRow.getColumnPropertyWrappers();
 		List<String> indexClauses = new ArrayList<>();
-		for (PropertyWrapper field : fields) {
+		for (var field : fields) {
 			final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 			if (field.isColumn() && !qdt.hasColumnExpression() && !(qdt instanceof DBLargeObject)) {
 				String indexClause = definition.getIndexClauseForCreateTable(field);
@@ -2632,7 +2632,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
 
-		List<PropertyWrapper> newColumns = new ArrayList<>();
+		List<PropertyWrapper<?,?>> newColumns = new ArrayList<>();
 		String testQuery = getDBTable(table)
 				.setQueryTimeout(10000)
 				.setBlankQueryAllowed(true)
@@ -2643,8 +2643,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 					"CHECK TABLE STRUCTURE FOR " + table.getTableName(),
 					QueryIntention.SIMPLE_SELECT_QUERY)) {
 				ResultSetMetaData metaData = resultSet.getMetaData();
-				List<PropertyWrapper> columnPropertyWrappers = table.getColumnPropertyWrappers();
-				for (PropertyWrapper columnPropertyWrapper : columnPropertyWrappers) {
+				var columnPropertyWrappers = table.getColumnPropertyWrappers();
+				for (var columnPropertyWrapper : columnPropertyWrappers) {
 					if (!columnPropertyWrapper.hasColumnExpression()) {
 						int columnCount = metaData.getColumnCount();
 						boolean foundColumn = false;
@@ -2669,12 +2669,12 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			// Theoretically this should only need to catch an SQLException 
 			// but databases throw allsorts of weird exceptions
 		}
-		for (PropertyWrapper newColumn : newColumns) {
+		for (var newColumn : newColumns) {
 			alterTableAddColumn(table, newColumn);
 		}
 	}
 
-	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
+	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?,?> columnPropertyWrapper) {
 		preventDDLDuringTransaction("DBDatabase.alterTable()");
 
 		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
@@ -2904,7 +2904,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			try {
 				db.stop();
 			} catch (Exception e) {
-				LOG.info("Exception while stopping database "+db.getLabel(), e);
+				LOG.info("Exception while stopping database " + db.getLabel(), e);
 			}
 		}
 	}

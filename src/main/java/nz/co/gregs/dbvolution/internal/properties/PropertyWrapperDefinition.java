@@ -3,10 +3,7 @@ package nz.co.gregs.dbvolution.internal.properties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -22,11 +19,8 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
  * Abstracts a java field or bean-property as a DBvolution-centric property,
- * which contains values from a specific column in a database table.
- * Transparently handles all annotations associated with the property, including
- * type adaption.
- *
- * <p>
+ * which contains values from a specific column in a database table.Transparently handles all annotations associated with the property, including
+ type adaption.<p>
  * Provides access to the meta-data defined on a single java property of a
  * class, and provides methods for reading and writing the value of the property
  * on target objects. Instances of this class are not bound to specific target
@@ -62,35 +56,37 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * <p>
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
+ * @param <ROW>
+ * @param <BASETYPE>
  */
-public class PropertyWrapperDefinition implements Serializable {
+public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE extends Object > implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
-	private final RowDefinitionClassWrapper classWrapper;
-	private final JavaProperty javaProperty;
+	private final RowDefinitionClassWrapper<ROW> classWrapper;
+	private final JavaProperty<BASETYPE> javaProperty;
 
-	private final ColumnHandler columnHandler;
-	private final PropertyTypeHandler typeHandler;
-	private final ForeignKeyHandler foreignKeyHandler;
-	private final EnumTypeHandler enumTypeHandler;
+	private final ColumnHandler<BASETYPE> columnHandler;
+	private final PropertyTypeHandler<BASETYPE> typeHandler;
+	private final ForeignKeyHandler<?,BASETYPE> foreignKeyHandler;
+	private final EnumTypeHandler<BASETYPE> enumTypeHandler;
 	private boolean checkedForColumnExpression = false;
 	private Integer columnIndex = null;
 	private DBExpression[] columnExpression = new DBExpression[]{}; // empty if not present on propertyf
 	public ArrayList<ColumnAspects> allColumnAspects = null;
 
-	PropertyWrapperDefinition(RowDefinitionClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
+	PropertyWrapperDefinition(RowDefinitionClassWrapper<ROW> classWrapper, JavaProperty<BASETYPE> javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
 		this.javaProperty = javaProperty;
 
 		// handlers
-		this.columnHandler = new ColumnHandler(javaProperty);
-		this.typeHandler = new PropertyTypeHandler(javaProperty, processIdentityOnly);
-		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty, processIdentityOnly);
-		this.enumTypeHandler = new EnumTypeHandler(javaProperty, this.columnHandler);
+		this.columnHandler = new ColumnHandler<>(javaProperty);
+		this.typeHandler = new PropertyTypeHandler<>(javaProperty, processIdentityOnly);
+		this.foreignKeyHandler = new ForeignKeyHandler<>(javaProperty, processIdentityOnly);
+		this.enumTypeHandler = new EnumTypeHandler<>(javaProperty, this.columnHandler);
 	}
 
-	JavaProperty getRawJavaProperty() {
+	JavaProperty<BASETYPE> getRawJavaProperty() {
 		return javaProperty;
 	}
 
@@ -160,7 +156,7 @@ public class PropertyWrapperDefinition implements Serializable {
 		if (!(obj instanceof PropertyWrapperDefinition)) {
 			return false;
 		}
-		PropertyWrapperDefinition other = (PropertyWrapperDefinition) obj;
+		var other = (PropertyWrapperDefinition) obj;
 		if (javaProperty == null) {
 			if (other.javaProperty != null) {
 				return false;
@@ -399,7 +395,7 @@ public class PropertyWrapperDefinition implements Serializable {
 	 * @return the referenced property if this property is a foreign key; null if
 	 * not a foreign key
 	 */
-	public PropertyWrapperDefinition referencedPropertyDefinitionIdentity() {
+	public PropertyWrapperDefinition<?,?> referencedPropertyDefinitionIdentity() {
 		return foreignKeyHandler.getReferencedPropertyDefinitionIdentity();
 	}
 
@@ -487,9 +483,9 @@ public class PropertyWrapperDefinition implements Serializable {
 	 * isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public QueryableDatatype<?> getQueryableDatatype(RowDefinition target) {
-		QueryableDatatype<?> qdt = typeHandler.getJavaPropertyAsQueryableDatatype(target);
-		new InternalQueryableDatatypeProxy(qdt).setPropertyWrapper(this);
+	public QueryableDatatype<BASETYPE> getQueryableDatatype(RowDefinition target) {
+		QueryableDatatype<BASETYPE> qdt = typeHandler.getJavaPropertyAsQueryableDatatype(target);
+		new InternalQueryableDatatypeProxy<BASETYPE>(qdt).setPropertyWrapper(this);
 		return qdt;
 	}
 
@@ -509,8 +505,8 @@ public class PropertyWrapperDefinition implements Serializable {
 	 * isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setQueryableDatatype(RowDefinition target, QueryableDatatype<?> value) {
-		new InternalQueryableDatatypeProxy(value).setPropertyWrapper(this);
+	public void setQueryableDatatype(RowDefinition target, QueryableDatatype<BASETYPE> value) {
+		new InternalQueryableDatatypeProxy<BASETYPE>(value).setPropertyWrapper(this);
 		typeHandler.setJavaPropertyAsQueryableDatatype(target, value);
 	}
 
@@ -597,7 +593,7 @@ public class PropertyWrapperDefinition implements Serializable {
 	 * @return the RowDefinitionClassWrapper representing the enclosing object of
 	 * this property
 	 */
-	public RowDefinitionClassWrapper getRowDefinitionClassWrapper() {
+	public RowDefinitionClassWrapper<ROW> getRowDefinitionClassWrapper() {
 		return classWrapper;
 	}
 
@@ -718,26 +714,5 @@ public class PropertyWrapperDefinition implements Serializable {
 		@SuppressWarnings("unchecked")
 		QueryableDatatype<A> v2 = (QueryableDatatype<A>) getQueryableDatatype(o2);
 		return v1.compareTo(v2);
-	}
-
-	public static class ColumnAspects implements Serializable {
-
-		private static final long serialVersionUID = 1l;
-
-		public final String selectableName;
-		public final String columnAlias;
-		public final DBExpression expression;
-
-		public ColumnAspects(String selectableName, String columnAlias, DBExpression expression) {
-			this.selectableName = selectableName;
-			this.columnAlias = columnAlias;
-			this.expression = expression;
-		}
-
-		public ColumnAspects(String selectableName, String columnAlias) {
-			this.selectableName = selectableName;
-			this.columnAlias = columnAlias;
-			this.expression = null;
-		}
 	}
 }

@@ -33,19 +33,20 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Malcolm Lett
+ * @param <ROW>
  */
-public class RowDefinitionInstanceWrapper implements Serializable{
+public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements Serializable{
 
 	private static final long serialVersionUID = 1l;
 
-	private final RowDefinitionClassWrapper classWrapper;
-	private final RowDefinition rowDefinition;
-	private final List<PropertyWrapper> allProperties;
-	private final List<PropertyWrapper> columnProperties;
-	private final List<PropertyWrapper> autoFillingProperties;
-	private final List<PropertyWrapper> foreignKeyProperties;
-	private final List<PropertyWrapper> recursiveForeignKeyProperties;
-	private final List<PropertyWrapper> primaryKeyProperties;
+	private final RowDefinitionClassWrapper<ROW> classWrapper;
+	private final ROW rowDefinition;
+	private final List<PropertyWrapper<?,?>> allProperties;
+	private final List<PropertyWrapper<?,?>> columnProperties;
+	private final List<PropertyWrapper<?,?>> autoFillingProperties;
+	private final List<PropertyWrapper<?,?>> foreignKeyProperties;
+	private final List<PropertyWrapper<?,?>> recursiveForeignKeyProperties;
+	private final List<PropertyWrapper<?,?>> primaryKeyProperties;
 
 	/**
 	 * Called by
@@ -55,7 +56,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @param rowDefinition the target object of the same type as analyzed by
 	 * {@code classWrapper}
 	 */
-	RowDefinitionInstanceWrapper(RowDefinitionClassWrapper classWrapper, RowDefinition rowDefinition) {
+	RowDefinitionInstanceWrapper(RowDefinitionClassWrapper<ROW> classWrapper, ROW rowDefinition) {
 		if (rowDefinition == null) {
 			throw new DBRuntimeException("Target object is null");
 		}
@@ -71,10 +72,10 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 		// pre-cache commonly used things
 		// (note: if you change this to use lazy-initialisation, you'll have to
 		// add explicit synchronisation, or it won't be thread-safe anymore)
-		this.allProperties = new ArrayList<PropertyWrapper>();
-		this.columnProperties = new ArrayList<PropertyWrapper>();
-		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getColumnPropertyDefinitions()) {
-			final PropertyWrapper propertyWrapper = new PropertyWrapper(this, propertyDefinition, rowDefinition);
+		this.allProperties = new ArrayList<PropertyWrapper<?,?>>();
+		this.columnProperties = new ArrayList<PropertyWrapper<?,?>>();
+		for (var propertyDefinition : classWrapper.getColumnPropertyDefinitions()) {
+			final PropertyWrapper<?,?> propertyWrapper = new PropertyWrapper<>(this, propertyDefinition, rowDefinition);
 			addPropertyWrapperToCollection(columnProperties, propertyWrapper);
 //			this.columnProperties.add(propertyWrapper);
 //			this.allProperties.add(propertyWrapper);
@@ -82,28 +83,28 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 //				autoFillingProperties.add(propertyWrapper);
 //			}
 		}
-		this.autoFillingProperties = new ArrayList<PropertyWrapper>();
-		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getAutoFillingPropertyDefinitions()) {
-			final PropertyWrapper propertyWrapper = new PropertyWrapper(this, propertyDefinition, rowDefinition);
+		this.autoFillingProperties = new ArrayList<PropertyWrapper<?,?>>();
+		for (var propertyDefinition : classWrapper.getAutoFillingPropertyDefinitions()) {
+			final PropertyWrapper<?,?> propertyWrapper = new PropertyWrapper<>(this, propertyDefinition, rowDefinition);
 			addPropertyWrapperToCollection(autoFillingProperties, propertyWrapper);
 		}
 
-		this.foreignKeyProperties = new ArrayList<PropertyWrapper>();
-		this.recursiveForeignKeyProperties = new ArrayList<PropertyWrapper>();
-		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getForeignKeyPropertyDefinitions()) {
-			this.foreignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
+		this.foreignKeyProperties = new ArrayList<PropertyWrapper<?,?>>();
+		this.recursiveForeignKeyProperties = new ArrayList<PropertyWrapper<?,?>>();
+		for (var propertyDefinition : classWrapper.getForeignKeyPropertyDefinitions()) {
+			this.foreignKeyProperties.add(new PropertyWrapper<>(this, propertyDefinition, rowDefinition));
 			if(propertyDefinition.isRecursiveForeignKey()){
-				this.recursiveForeignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
+				this.recursiveForeignKeyProperties.add(new PropertyWrapper<>(this, propertyDefinition, rowDefinition));
 			}
 		}
 
-		this.primaryKeyProperties = new ArrayList<PropertyWrapper>();
-		for (PropertyWrapperDefinition propertyDefinition : classWrapper.primaryKeyDefinitions()) {
-			this.primaryKeyProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
+		this.primaryKeyProperties = new ArrayList<PropertyWrapper<?,?>>();
+		for (var propertyDefinition : classWrapper.primaryKeyDefinitions()) {
+			this.primaryKeyProperties.add(new PropertyWrapper<>(this, propertyDefinition, rowDefinition));
 		}
 	}
 
-	private void addPropertyWrapperToCollection(List<PropertyWrapper> collection, PropertyWrapper propertyWrapper) {
+	private void addPropertyWrapperToCollection(List<PropertyWrapper<?,?>> collection, PropertyWrapper<?,?> propertyWrapper) {
 		collection.add(propertyWrapper);
 		this.allProperties.add(propertyWrapper);
 	}
@@ -146,7 +147,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 		if (!(obj instanceof RowDefinitionInstanceWrapper)) {
 			return false;
 		}
-		RowDefinitionInstanceWrapper other = (RowDefinitionInstanceWrapper) obj;
+		var other = (RowDefinitionInstanceWrapper) obj;
 		if (classWrapper == null) {
 			if (other.classWrapper != null) {
 				return false;
@@ -190,7 +191,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 *
 	 * @return the class-wrapper
 	 */
-	public RowDefinitionClassWrapper getClassWrapper() {
+	public RowDefinitionClassWrapper<ROW> getClassWrapper() {
 		return classWrapper;
 	}
 
@@ -298,7 +299,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 *
 	 * @return the primary key property or null if no primary key
 	 */
-	public List<PropertyWrapper> getPrimaryKeysPropertyWrappers() {
+	public List<PropertyWrapper<?,?>> getPrimaryKeysPropertyWrappers() {
 		return primaryKeyProperties;
 	}
 
@@ -323,9 +324,9 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @return the Java property associated with the column name supplied. Null if
 	 * no such column is found.
 	 */
-	public PropertyWrapper getPropertyByColumn(DBDatabase database, String columnName) {
-		PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByColumn(database, columnName);
-		return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, rowDefinition);
+	public PropertyWrapper<?,?> getPropertyByColumn(DBDatabase database, String columnName) {
+		PropertyWrapperDefinition<ROW,?> classProperty = classWrapper.getPropertyDefinitionByColumn(database, columnName);
+		return (classProperty == null) ? null : new PropertyWrapper<>(this, classProperty, rowDefinition);
 	}
 
 	/**
@@ -339,9 +340,9 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @return property of the wrapped {@link RowDefinition} associated with the
 	 * java field name supplied. Null if no such property is found.
 	 */
-	public PropertyWrapper getPropertyByName(String propertyName) {
-		PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByName(propertyName);
-		return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, rowDefinition);
+	public PropertyWrapper<?,?> getPropertyByName(String propertyName) {
+		var classProperty = classWrapper.getPropertyDefinitionByName(propertyName);
+		return (classProperty == null) ? null : new PropertyWrapper<>(this, classProperty, rowDefinition);
 	}
 
 	/**
@@ -359,7 +360,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 *
 	 * @return the non-null list of properties, empty if none
 	 */
-	public List<PropertyWrapper> getColumnPropertyWrappers() {
+	public List<PropertyWrapper<?,?>> getColumnPropertyWrappers() {
 		return columnProperties;
 	}
 
@@ -378,7 +379,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 *
 	 * @return the non-null list of properties, empty if none
 	 */
-	public List<PropertyWrapper> getAutoFillingPropertyWrappers() {
+	public List<PropertyWrapper<?,?>> getAutoFillingPropertyWrappers() {
 		return autoFillingProperties;
 	}
 
@@ -391,7 +392,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @return non-null list of PropertyWrappers, empty if no foreign key
 	 * properties
 	 */
-	public List<PropertyWrapper> getForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?,?>> getForeignKeyPropertyWrappers() {
 		return foreignKeyProperties;
 	}
 
@@ -404,7 +405,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @return a non-null list of PropertyWrapperDefinitions, empty if no foreign
 	 * key properties
 	 */
-	public List<PropertyWrapperDefinition> getForeignKeyPropertyWrapperDefinitions() {
+	public List<PropertyWrapperDefinition<ROW, ?>> getForeignKeyPropertyWrapperDefinitions() {
 		return classWrapper.getForeignKeyPropertyDefinitions();
 	}
 
@@ -417,7 +418,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @return non-null list of PropertyWrappers, empty if no foreign key
 	 * properties
 	 */
-	public List<PropertyWrapper> getRecursiveForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?,?>> getRecursiveForeignKeyPropertyWrappers() {
 		return recursiveForeignKeyProperties;
 	}
 
@@ -430,7 +431,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @return a non-null list of PropertyWrapperDefinitions, empty if no foreign
 	 * key properties
 	 */
-	public List<PropertyWrapperDefinition> getRecursiveForeignKeyPropertyWrapperDefinitions() {
+	public List<PropertyWrapperDefinition<ROW, ?>> getRecursiveForeignKeyPropertyWrapperDefinitions() {
 //		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper.getRecursiveForeignKeyPropertyWrapperDefinitions()");
 		return classWrapper.getRecursiveForeignKeyPropertyDefinitions();
 	}
@@ -446,7 +447,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * @return a list of PropertyWrapperDefinitions for the PropertyWrappers of
 	 * this RowDefinition
 	 */
-	public List<PropertyWrapperDefinition> getColumnPropertyDefinitions() {
+	public List<PropertyWrapperDefinition<ROW, ?>> getColumnPropertyDefinitions() {
 		return classWrapper.getColumnPropertyDefinitions();
 	}
 

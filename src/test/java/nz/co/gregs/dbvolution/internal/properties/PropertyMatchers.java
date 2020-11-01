@@ -99,15 +99,15 @@ class PropertyMatchers {
 		};
 	}
 
-	public static Matcher<JavaProperty> hasJavaPropertyName(final String name) {
-		return new TypeSafeDiagnosingMatcher<JavaProperty>() {
+	public static Matcher<JavaProperty<?>> hasJavaPropertyName(final String name) {
+		return new TypeSafeDiagnosingMatcher<JavaProperty<?>>() {
 			@Override
 			public void describeTo(Description description) {
 				description.appendText("has name ").appendValue(name);
 			}
 
 			@Override
-			protected boolean matchesSafely(JavaProperty item, Description mismatchDescription) {
+			protected boolean matchesSafely(JavaProperty<?> item, Description mismatchDescription) {
 				if (!name.equals(item.name())) {
 					mismatchDescription.appendText("has name ").appendValue(item.name());
 					return false;
@@ -117,15 +117,15 @@ class PropertyMatchers {
 		};
 	}
 
-	public static Matcher<JavaProperty> isJavaPropertyField() {
-		return new TypeSafeDiagnosingMatcher<JavaProperty>() {
+	public static Matcher<JavaProperty<?>> isJavaPropertyField() {
+		return new TypeSafeDiagnosingMatcher<JavaProperty<?>>() {
 			@Override
 			public void describeTo(Description description) {
 				description.appendText("is field ");
 			}
 
 			@Override
-			protected boolean matchesSafely(JavaProperty item, Description mismatchDescription) {
+			protected boolean matchesSafely(JavaProperty<?> item, Description mismatchDescription) {
 				if (item.isField()) {
 					mismatchDescription.appendText("is bean-property");
 					return false;

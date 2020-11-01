@@ -98,7 +98,7 @@ public class EnumTypeHandlerTest {
 			public DBEnum<MyIntegerEnum, Integer> field;
 		}
 
-		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
+		var enumTypeHandler = typeHandlerOf(TestClass.class, "field");
 		assertThat(enumTypeHandler.getEnumType(), is((Object) MyIntegerEnum.class));
 	}
 
@@ -110,7 +110,7 @@ public class EnumTypeHandlerTest {
 			public DBEnum<MyIntegerEnum, Integer> field;
 		}
 
-		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
+		var enumTypeHandler = typeHandlerOf(TestClass.class, "field");
 		assertThat(enumTypeHandler.getEnumLiteralValueType(), is((Object) Integer.class));
 	}
 
@@ -122,7 +122,7 @@ public class EnumTypeHandlerTest {
 			public DBEnum<MyStringEnum, String> field;
 		}
 
-		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
+		var enumTypeHandler = typeHandlerOf(TestClass.class, "field");
 		assertThat(enumTypeHandler.getEnumLiteralValueType(), is((Object) String.class));
 	}
 
@@ -146,14 +146,15 @@ public class EnumTypeHandlerTest {
 		}
 	}
 
-	private EnumTypeHandler typeHandlerOf(Class<?> clazz, String javaPropertyName) {
-		ColumnHandler columnHandler = new ColumnHandler(propertyOf(clazz, javaPropertyName));
-		return new EnumTypeHandler(propertyOf(clazz, javaPropertyName), columnHandler);
+	private EnumTypeHandler<?> typeHandlerOf(Class<?> clazz, String javaPropertyName) {
+		ColumnHandler<?> columnHandler = new ColumnHandler<>(propertyOf(clazz, javaPropertyName));
+		final JavaProperty<?> prop = propertyOf(clazz, javaPropertyName);
+		return new EnumTypeHandler<>(prop, columnHandler);
 	}
 
-	private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {
-		List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(clazz);
-		JavaProperty property = itemOf(properties, that(hasJavaPropertyName(javaPropertyName)));
+	private JavaProperty<?> propertyOf(Class<?> clazz, String javaPropertyName) {
+		var properties = privateFieldPublicBeanFinder.getPropertiesOf(clazz);
+		var property = itemOf(properties, that(hasJavaPropertyName(javaPropertyName)));
 		if (property == null) {
 			throw new IllegalArgumentException("No property found with java name '" + javaPropertyName + "'");
 		}

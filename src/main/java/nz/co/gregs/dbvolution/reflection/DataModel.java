@@ -547,8 +547,8 @@ public class DataModel {
 				String propertyName = interpreter.getPropertyName(parameter);
 				if (propertyName != null) {
 					String value = interpreter.getPropertyValue(parameter);
-					RowDefinitionInstanceWrapper instanceWrapper = rowDefinitionWrapperFactory.instanceWrapperFor(newInstance);
-					PropertyWrapper propertyWrapper = instanceWrapper.getPropertyByName(propertyName);
+					var instanceWrapper = rowDefinitionWrapperFactory.instanceWrapperFor(newInstance);
+					var propertyWrapper = instanceWrapper.getPropertyByName(propertyName);
 					interpreter.setValue(propertyWrapper.getQueryableDatatype(), value);
 				}
 			}

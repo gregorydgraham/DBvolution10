@@ -2109,7 +2109,7 @@ public class DBQuery implements Serializable {
 		}
 
 		for (Object fieldOfProvidedRow : fieldsOfProvidedRows) {
-			PropertyWrapper fieldProp = null;
+			PropertyWrapper<?,?> fieldProp = null;
 			for (DBRow row : details.getAllQueryTables()) {
 				fieldProp = row.getPropertyWrapperOf(fieldOfProvidedRow);
 				if (fieldProp != null) {
@@ -2119,7 +2119,7 @@ public class DBQuery implements Serializable {
 			if (fieldProp == null) {
 				throw new nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException();
 			} else {
-				final PropertyWrapperDefinition fieldDefn = fieldProp.getPropertyWrapperDefinition();
+				final var fieldDefn = fieldProp.getPropertyWrapperDefinition();
 				DBRow fieldRow = null;
 				Object thisQDT = null;
 				for (DBRow row : distinctQuery.details.getAllQueryTables()) {
@@ -2629,7 +2629,7 @@ public class DBQuery implements Serializable {
 		List<A> results = new ArrayList<>();
 		final AbstractColumn column1 = column.getColumn();
 		DBRow queryRow = DBRow.copyDBRow(column1.getInstanceOfRow());
-		final PropertyWrapper fieldProp = column1.getPropertyWrapper();
+		final var fieldProp = column1.getPropertyWrapper();
 		queryRow.setReturnFields(column);
 		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(queryRow);
 		final ColumnProvider columnProvider = queryRow.column(thisQDT);

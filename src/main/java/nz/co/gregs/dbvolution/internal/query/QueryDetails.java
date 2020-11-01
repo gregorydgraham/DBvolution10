@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
@@ -53,6 +52,7 @@ import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
+import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
@@ -420,7 +420,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				boolean groupByIsRequired = false;
 				String groupByColumnIndex = defn.beginGroupByClause();
 				String groupByColumnIndexSeparator = "";
-				HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<>();
+				HashMap<PropertyWrapperDefinition<?,?>, Integer> indexesOfSelectedColumns = new HashMap<>();
 				HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
 				StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
 				final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
@@ -445,19 +445,19 @@ public class QueryDetails implements DBQueryable, Serializable {
 				for (DBRow tabRow : sortedQueryTables) {
 					tableName = tabRow.getTableNameOrVariantIdentifier();
 
-					List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
-					for (PropertyWrapper propWrapper : tabProps) {
-						final QueryableDatatype<?> qdt = propWrapper.getQueryableDatatype();
-						final List<PropertyWrapperDefinition.ColumnAspects> columnAspectsList = propWrapper.getColumnAspects(defn);
-						for (PropertyWrapperDefinition.ColumnAspects columnAspects : columnAspectsList) {
-							String selectableName = columnAspects.selectableName;
-							String columnAlias = columnAspects.columnAlias;
+					var tabProps = tabRow.getSelectedProperties();
+					for (var propWrapper : tabProps) {
+						final var qdt = propWrapper.getQueryableDatatype();
+						final List<ColumnAspects> columnAspectsList = propWrapper.getColumnAspects(defn);
+						for (ColumnAspects columnAspects : columnAspectsList) {
+							String selectableName = columnAspects.getSelectableName();
+							String columnAlias = columnAspects.getColumnAlias();
 							String selectColumn = defn.doColumnTransformForSelect(qdt, selectableName);
 							selectClause.append(colSep).append(selectColumn).append(" ").append(columnAlias);
 							colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 
 							// Now deal with the GROUP BY and ORDER BY clause requirements
-							DBExpression expression = columnAspects.expression;
+							DBExpression expression = columnAspects.getExpression();
 							if (expression != null && expression.isAggregator()) {
 								setGroupByRequiredByAggregator(true);
 							}
@@ -813,8 +813,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private synchronized void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep, QueryOptions options) {
 
 		for (DBRow otherTab : otherTables) {
-			List<PropertyWrapper> otherTableFks = otherTab.getForeignKeyPropertyWrappers();
-			for (PropertyWrapper otherTableFk : otherTableFks) {
+			var otherTableFks = otherTab.getForeignKeyPropertyWrappers();
+			for (var otherTableFk : otherTableFks) {
 				Class<? extends DBRow> fkReferencedClass = otherTableFk.referencedClass();
 
 				if (fkReferencedClass.isAssignableFrom(tabRow.getClass())) {
@@ -847,7 +847,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return sqlToReturn.toString();
 	}
 
-	private synchronized OrderByClause getOrderByClause(QueryState state, DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
+	private synchronized OrderByClause getOrderByClause(QueryState state, DBDefinition defn, Map<PropertyWrapperDefinition<?,?>, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
 		OrderByClause clause = new OrderByClause();
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
@@ -864,10 +864,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 //						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 					} else {
 						if (prefersIndexBasedOrderByClause) {
-							PropertyWrapperDefinition propDefn;
+							PropertyWrapperDefinition<?,?> propDefn;
 							QueryableDatatype<?> qdt;
 							if (sorter instanceof SortProvider.Column) {
-								PropertyWrapper prop = ((SortProvider.Column) sorter).getPropertyWrapper();
+								var prop = ((SortProvider.Column) sorter).getPropertyWrapper();
 								propDefn = prop.getPropertyWrapperDefinition();
 								qdt = prop.getQueryableDatatype();
 							} else {
@@ -1182,8 +1182,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {
-			List<PropertyWrapper> fields = row.getAutoFillingPropertyWrappers();
-			for (PropertyWrapper field : fields) {
+			var fields = row.getAutoFillingPropertyWrappers();
+			for (var field : fields) {
 				if (field.isAutoFilling()) {
 					Class<?> requiredClass = field.getRawJavaType();
 					if (requiredClass.isArray()) {
@@ -1365,11 +1365,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected void setFieldsFromColumns(DBDefinition defn, DBRow oldInstance, DBRow newInstance, ResultSet resultSet) throws SQLException {
-		List<PropertyWrapper> selectedProperties = oldInstance.getSelectedProperties();
-		List<PropertyWrapper> newProperties = newInstance.getColumnPropertyWrappers();
-		for (PropertyWrapper newProp : newProperties) {
+		var selectedProperties = oldInstance.getSelectedProperties();
+		var newProperties = newInstance.getColumnPropertyWrappers();
+		for (var newProp : newProperties) {
 			QueryableDatatype<?> qdt = newProp.getQueryableDatatype();
-			for (PropertyWrapper propertyWrapper : selectedProperties) {
+			for (var propertyWrapper : selectedProperties) {
 				if (propertyWrapper.getPropertyWrapperDefinition().equals(newProp.getPropertyWrapperDefinition())) {
 					final String[] columnAliases = newProp.getColumnAlias(defn);
 					if (columnAliases.length > 0) {
@@ -1432,8 +1432,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	protected DBRow getOrSetExistingInstanceForRow(DBDefinition defn, DBRow newInstance, Map<String, DBRow> existingInstancesOfThisTableRow) {
 		DBRow existingInstance = newInstance;
 		String keyToSearchFor = "";
-		final List<PropertyWrapper> primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
-		for (PropertyWrapper primaryKey : primaryKeys) {
+		final var primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
+		for (var primaryKey : primaryKeys) {
 			if (primaryKey != null) {
 				final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
 				if (qdt != null) {

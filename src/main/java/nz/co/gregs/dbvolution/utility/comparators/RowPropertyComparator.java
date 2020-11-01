@@ -17,9 +17,9 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class RowPropertyComparator<R extends DBRow> implements Comparator<R> {
 	
-	private final PropertyWrapper prop;
+	private final PropertyWrapper<?,?> prop;
 
-	public RowPropertyComparator(PropertyWrapper prop) {
+	public RowPropertyComparator(PropertyWrapper<?,?> prop) {
 		this.prop = prop;
 	}
 

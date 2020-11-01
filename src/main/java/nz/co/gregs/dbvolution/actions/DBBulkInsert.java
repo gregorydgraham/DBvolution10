@@ -116,12 +116,12 @@ public class DBBulkInsert extends DBAction {
 		StringBuilder allChangedColumns = fields.getAllChangedColumns();
 		StringBuilder allSetValues = fields.getAllSetValues();
 		DBDefinition defn = database.getDefinition();
-		List<PropertyWrapper> props = row.getColumnPropertyWrappers();
+		var props = row.getColumnPropertyWrappers();
 		String allColumnSeparator = "";
 		String columnSeparator = "";
 		String valuesSeparator = isFirstRow ? defn.beginValueClause() : defn.beginValueSeparatorClause();
 		String allValuesSeparator = isFirstRow ? defn.beginValueClause() : defn.beginValueSeparatorClause();
-		for (PropertyWrapper prop : props) {
+		for (var prop : props) {
 			if (prop.isColumn() && !prop.hasColumnExpression()) {
 				final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt != null) {

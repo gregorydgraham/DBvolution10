@@ -24,8 +24,9 @@ import nz.co.gregs.dbvolution.exceptions.FailedToSetPropertyValueOnRowDefinition
 
 /**
  * Implementation over java fields.
+ * @param <BASETYPE>
  */
-public class JavaField implements JavaProperty, Serializable {
+public class JavaField<BASETYPE> implements JavaProperty<BASETYPE>, Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -81,14 +82,16 @@ public class JavaField implements JavaProperty, Serializable {
 		}
 		if (!(second instanceof JavaField)) {
 			return false;
-		}
-		JavaField other = (JavaField) second;
-		if (field == null) {
-			if (other.field != null) {
+		} else {
+			@SuppressWarnings("unchecked")
+			JavaField<BASETYPE> other = (JavaField<BASETYPE>) second;
+			if (field == null) {
+				if (other.field != null) {
+					return false;
+				}
+			} else if (!field.equals(other.field)) {
 				return false;
 			}
-		} else if (!field.equals(other.field)) {
-			return false;
 		}
 		return true;
 	}
@@ -114,8 +117,9 @@ public class JavaField implements JavaProperty, Serializable {
 	}
 
 	@Override
-	public Class<?> type() {
-		return field.getType();
+	@SuppressWarnings("unchecked")
+	public Class<BASETYPE> type() {
+		return (Class<BASETYPE>) field.getType();
 	}
 
 	@Override

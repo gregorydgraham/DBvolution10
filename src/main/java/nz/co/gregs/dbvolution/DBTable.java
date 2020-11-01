@@ -1227,11 +1227,11 @@ public class DBTable<E extends DBRow> {
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws IncorrectRowProviderInstanceSuppliedException, SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<A> returnList = new ArrayList<>();
-		final PropertyWrapper fieldProp = original.getPropertyWrapperOf(fieldOfProvidedRow);
+		final var fieldProp = original.getPropertyWrapperOf(fieldOfProvidedRow);
 		if (fieldProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException();
 		}
-		final PropertyWrapperDefinition fieldDefn = fieldProp.getPropertyWrapperDefinition();
+		final var fieldDefn = fieldProp.getPropertyWrapperDefinition();
 		QueryableDatatype<?> thisQDT = fieldDefn.getQueryableDatatype(exemplar);
 		exemplar.setReturnFields(thisQDT);
 		DBQuery distinctQuery 

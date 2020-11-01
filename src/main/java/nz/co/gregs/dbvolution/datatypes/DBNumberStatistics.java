@@ -291,14 +291,14 @@ public class DBNumberStatistics extends DBNumber {
 			if (dbValue == null) {
 				this.setToNull(database);
 			} else {
-				PropertyWrapperDefinition propertyWrapperDefinition = getPropertyWrapperDefinition();
+				var propertyWrapperDefinition = getPropertyWrapperDefinition();
 				if (propertyWrapperDefinition != null && propertyWrapperDefinition.allColumnAspects != null) {
-					final String averageColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
-					final String maxColumnAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
-					final String minColumnAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
-					final String sumColumnAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
-					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(4).columnAlias;
-					final String stdDevColumnAlias = propertyWrapperDefinition.allColumnAspects.get(5).columnAlias;
+					final String averageColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).getColumnAlias();
+					final String maxColumnAlias = propertyWrapperDefinition.allColumnAspects.get(1).getColumnAlias();
+					final String minColumnAlias = propertyWrapperDefinition.allColumnAspects.get(2).getColumnAlias();
+					final String sumColumnAlias = propertyWrapperDefinition.allColumnAspects.get(3).getColumnAlias();
+					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(4).getColumnAlias();
+					final String stdDevColumnAlias = propertyWrapperDefinition.allColumnAspects.get(5).getColumnAlias();
 					averageNumber = getFromResultSet(database, resultSet, averageColumnAlias);
 					stdDev = getFromResultSet(database, resultSet, stdDevColumnAlias);
 					maxNumber = getFromResultSet(database, resultSet, maxColumnAlias);

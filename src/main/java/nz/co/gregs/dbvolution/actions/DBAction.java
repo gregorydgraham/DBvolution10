@@ -118,7 +118,7 @@ public abstract class DBAction implements Serializable{
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "(";
 		for (QueryableDatatype<?> pk : primaryKeys) {
-			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
+			var wrapper = row.getPropertyWrapperOf(pk);
 			String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(definition) : pk.toSQLString(definition));
 			sqlString.append(separator)
 					.append(definition.formatColumnName(wrapper.columnName()))

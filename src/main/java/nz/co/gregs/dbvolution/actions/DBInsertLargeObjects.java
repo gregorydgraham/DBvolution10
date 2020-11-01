@@ -53,8 +53,8 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	 * @return a list of the interesting DBLargeObjects.
 	 */
 	@Override
-	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
-		ArrayList<PropertyWrapper> returnList = new ArrayList<>();
+	protected ArrayList<PropertyWrapper<?, ?>> getInterestingLargeObjects(DBRow row) {
+		ArrayList<PropertyWrapper<?,?>> returnList = new ArrayList<>();
 		for (QueryableDatatype<?> qdt : row.getLargeObjects()) {
 			returnList.add(row.getPropertyWrapperOf(qdt));
 		}
@@ -73,7 +73,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "";
 		for (QueryableDatatype<?> pk : primaryKeys) {
-			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
+			var wrapper = row.getPropertyWrapperOf(pk);
 			String pkValue = pk.toSQLString(db.getDefinition());
 			//String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
 			sqlString.append(separator)

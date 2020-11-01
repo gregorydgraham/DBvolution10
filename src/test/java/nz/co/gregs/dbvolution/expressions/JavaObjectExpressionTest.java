@@ -137,8 +137,8 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		var joTable = new JavaObjectExpressionTable();
 
 		DBQuery dbQuery = database.getDBQuery(joTable);
-		JavaObjectColumn<SomeClass> imageBytesColumn = joTable.column(joTable.someRandomClass);
-		dbQuery.addCondition(imageBytesColumn.isNotNull());
+		JavaObjectColumn<SomeClass> randomClassColumn = joTable.column(joTable.someRandomClass);
+		dbQuery.addCondition(randomClassColumn.isNotNull());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(0));
 
@@ -154,7 +154,7 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		database.insert(joTable);
 
 		dbQuery = database.getDBQuery(new JavaObjectExpressionTable()).setBlankQueryAllowed(true);
-		dbQuery.addCondition(imageBytesColumn.isNull());
+		dbQuery.addCondition(randomClassColumn.isNull());
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));

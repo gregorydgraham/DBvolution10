@@ -30,7 +30,7 @@ public class DBRowClassWrapperUsabilityTest {
 
 	@Test
 	public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
-		QueryableDatatype<?> qdt = new RowDefinitionClassWrapper(MyExampleTableClass.class)
+		var qdt = new RowDefinitionClassWrapper<>(MyExampleTableClass.class)
 				.instanceWrapperFor(obj)
 				.getPropertyByColumn(database, "column1")
 				.getQueryableDatatype();
@@ -38,24 +38,24 @@ public class DBRowClassWrapperUsabilityTest {
 
 	@Test
 	public void easyToGetSpecificPropertyValueOnObjectWhenDoingVerbosely() {
-		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyExampleTableClass.class);
-		RowDefinitionInstanceWrapper objectWrapper = classWrapper.instanceWrapperFor(obj);
-		PropertyWrapper property = objectWrapper.getPropertyByColumn(database, "column1");
+		var classWrapper = new RowDefinitionClassWrapper<>(MyExampleTableClass.class);
+		var objectWrapper = classWrapper.instanceWrapperFor(obj);
+		var property = objectWrapper.getPropertyByColumn(database, "column1");
 		if (property != null) {
-			QueryableDatatype<?> qdt = property.getQueryableDatatype();
+			var qdt = property.getQueryableDatatype();
 			property.setQueryableDatatype(qdt);
 		}
 	}
 
 	@Test
 	public void easyToGetInstanceWrapperGivenObject() {
-		RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
+		var objectWrapper = factory.instanceWrapperFor(obj);
 	}
 
 	@Test
 	public void easyToIterateOverPropertiesUsingFactory() {
-		RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
-		for (PropertyWrapper property : objectWrapper.getColumnPropertyWrappers()) {
+		RowDefinitionInstanceWrapper<?> objectWrapper = factory.instanceWrapperFor(obj);
+		for (var property : objectWrapper.getColumnPropertyWrappers()) {
 			QueryableDatatype<?> qdt = property.getQueryableDatatype();
 			property.columnName();
 			property.isForeignKey();

@@ -8,6 +8,7 @@ import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumberStatistics;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
@@ -20,10 +21,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 /**
  * Abstracts a java field or bean-property on a target object as a
  * DBvolution-centric property, which contains values from a specific column in
- * a database table. Transparently handles all annotations associated with the
- * property, including type adaption.
- *
- * <p>
+ * a database table.Transparently handles all annotations associated with the
+ * property, including type adaption.<p>
  * Provides access to the meta-data defined on a single java property of a
  * class, and provides methods for reading and writing the value of the property
  * on a single bound object, given a specified database definition.
@@ -53,13 +52,16 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <p>
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
+ *
+ * @param <BASETYPE> the object returned by getValue on the QDT of this property
+ * @param <QDT>
  */
-public class PropertyWrapper implements Serializable {
+public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
-	private final RowDefinitionInstanceWrapper dbRowInstanceWrapper;
-	private final PropertyWrapperDefinition propertyDefinition;
+	private final RowDefinitionInstanceWrapper<?> dbRowInstanceWrapper;
+	private final PropertyWrapperDefinition<?, BASETYPE> propertyDefinition;
 	private final RowDefinition target;
 
 	/**
@@ -67,8 +69,8 @@ public class PropertyWrapper implements Serializable {
 	 * @param classProperty the class-level wrapper
 	 * @param target the target object containing the given property
 	 */
-	public PropertyWrapper(RowDefinitionInstanceWrapper instanceWrapper,
-			PropertyWrapperDefinition classProperty, RowDefinition target) {
+	public PropertyWrapper(RowDefinitionInstanceWrapper<?> instanceWrapper,
+			PropertyWrapperDefinition<?, BASETYPE> classProperty, RowDefinition target) {
 		this.dbRowInstanceWrapper = instanceWrapper;
 		this.propertyDefinition = classProperty;
 		this.target = target;
@@ -170,7 +172,7 @@ public class PropertyWrapper implements Serializable {
 		if (!(obj instanceof PropertyWrapper)) {
 			return false;
 		}
-		PropertyWrapper other = (PropertyWrapper) obj;
+		var other = (PropertyWrapper<?,?>) obj;
 		if (propertyDefinition == null) {
 			if (other.propertyDefinition != null) {
 				return false;
@@ -423,7 +425,7 @@ public class PropertyWrapper implements Serializable {
 	 * @return the referenced property if this property is a foreign key; null if
 	 * not a foreign key
 	 */
-	public PropertyWrapperDefinition referencedPropertyDefinitionIdentity() {
+	public PropertyWrapperDefinition<?, ?> referencedPropertyDefinitionIdentity() {
 		return propertyDefinition.referencedPropertyDefinitionIdentity();
 	}
 
@@ -503,25 +505,20 @@ public class PropertyWrapper implements Serializable {
 	 * Use {@link #isReadable()} beforehand to check whether the property can be
 	 * read.
 	 *
-	 * @param <A> the QDT type
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The queryableDatatype instance representing this property
 	 * @throws IllegalStateException if not readable (you should have called
 	 * isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
 	@SuppressWarnings("unchecked")
-	public <A extends QueryableDatatype<?>> A getQueryableDatatype() {
-		return (A) propertyDefinition.getQueryableDatatype(target);
+	public QDT getQueryableDatatype() {
+		return (QDT) propertyDefinition.getQueryableDatatype(target);
 	}
 
 	/**
-	 * Sets the DBvolution-centric value of the property. The value set may have
-	 * undergone type conversion to the target object's actual property type, if a
-	 * type adaptor is present.
-	 *
-	 * <p>
+	 * Sets the DBvolution-centric value of the property.The value set may have
+ undergone type conversion to the target object's actual property type, if a
+ type adaptor is present.<p>
 	 * Use {@link #isWritable()} beforehand to check whether the property can be
 	 * modified.
 	 *
@@ -530,8 +527,9 @@ public class PropertyWrapper implements Serializable {
 	 * isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
+	@SuppressWarnings("unchecked")
 	public void setQueryableDatatype(QueryableDatatype<?> value) {
-		propertyDefinition.setQueryableDatatype(target, value);
+		propertyDefinition.setQueryableDatatype(target, (QueryableDatatype<BASETYPE>) value);
 	}
 
 	/**
@@ -609,7 +607,7 @@ public class PropertyWrapper implements Serializable {
 	 *
 	 * @return the propertyDefinition
 	 */
-	public PropertyWrapperDefinition getPropertyWrapperDefinition() {
+	public PropertyWrapperDefinition<?, BASETYPE> getPropertyWrapperDefinition() {
 		return propertyDefinition;
 	}
 
@@ -621,7 +619,7 @@ public class PropertyWrapper implements Serializable {
 	 *
 	 * @return the RowDefinitionInstanceWrapper for this property.
 	 */
-	public RowDefinitionInstanceWrapper getRowDefinitionInstanceWrapper() {
+	public RowDefinitionInstanceWrapper<?> getRowDefinitionInstanceWrapper() {
 		return dbRowInstanceWrapper;
 	}
 
@@ -675,7 +673,7 @@ public class PropertyWrapper implements Serializable {
 	 * @return A map of all the selectable name and column aliases for this
 	 * property.
 	 */
-	public List<PropertyWrapperDefinition.ColumnAspects> getColumnAspects(DBDefinition db) {
+	public List<ColumnAspects> getColumnAspects(DBDefinition db) {
 		final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 		return getPropertyWrapperDefinition().getColumnAspects(db, adapteeRowProvider);
 	}
@@ -824,7 +822,19 @@ public class PropertyWrapper implements Serializable {
 	}
 
 	public <R extends DBRow> int compareBetweenRows(R o1, R o2) {
-		PropertyWrapperDefinition defn = this.getPropertyWrapperDefinition();
+		PropertyWrapperDefinition<?, BASETYPE> defn = this.getPropertyWrapperDefinition();
 		return defn.compareBetweenRows(o1, o2);
+	}
+
+	public void setQueryableDatatypeAsUnchanged() {
+		final QueryableDatatype<BASETYPE> qdt = getQueryableDatatype();
+		if (!(qdt instanceof DBLargeObject)) {
+			if (qdt != null && qdt.hasChanged()) {
+				qdt.setUnchanged();
+				
+				// ensure field set when using type adaptors
+				setQueryableDatatype(qdt);
+			}
+		}
 	}
 }

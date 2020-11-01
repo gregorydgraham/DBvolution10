@@ -194,12 +194,12 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	}
 
 	protected <TR extends DBRow> void dropAnyTriggerBasedPrimaryKeyObject(DBStatement dbStatement, TR tableRow) throws SQLException {
-		List<PropertyWrapper> fields = tableRow.getColumnPropertyWrappers();
+		var fields = tableRow.getColumnPropertyWrappers();
 		List<String> triggerBasedIdentitySQL = new ArrayList<>();
 		final DBDefinition definition = this.getDefinition();
 		if (definition.prefersTriggerBasedIdentities()) {
-			List<PropertyWrapper> pkFields = new ArrayList<>();
-			for (PropertyWrapper field : fields) {
+			List<PropertyWrapper<?,?>> pkFields = new ArrayList<>();
+			for (var field : fields) {
 				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 					if (field.isPrimaryKey()) {
 						pkFields.add(field);

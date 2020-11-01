@@ -47,8 +47,8 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 
 	DBUpdateForcedOnSimpleTypesUsingPrimaryKey(DBRow row) {
 		super(row);
-		List<PropertyWrapper>props = this.row.getNonPrimaryKeyPropertyWrappers();
-		for (PropertyWrapper prop : props) {
+		var props = this.row.getNonPrimaryKeyPropertyWrappers();
+		for (var prop : props) {
 			prop.getQueryableDatatype().setChanged();
 		}
 //		try {
@@ -121,7 +121,7 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 				.append(getSetClause(db, table))
 				.append(defn.beginWhereClause())
 				.append(defn.getWhereClauseBeginningCondition());
-		for (PropertyWrapper prop : table.getPrimaryKeyPropertyWrappers()) {
+		for (var prop : table.getPrimaryKeyPropertyWrappers()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
 				sql.append(defn.beginWhereClauseLine())
@@ -152,10 +152,10 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 	protected String getSetClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
 		StringBuilder sql = new StringBuilder();
-		List<PropertyWrapper> fields = row.getColumnPropertyWrappers();
+		var fields = row.getColumnPropertyWrappers();
 
 		String separator = defn.getStartingSetSubClauseSeparator();
-		for (PropertyWrapper field : fields) {
+		for (var field : fields) {
 			if (field.isColumn() && !field.isPrimaryKey()) {
 				final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 				if (qdt != null) {

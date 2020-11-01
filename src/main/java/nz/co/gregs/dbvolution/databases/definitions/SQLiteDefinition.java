@@ -538,7 +538,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	}
 
 	@Override
-	public String getAlterTableAddForeignKeyStatement(DBRow newTableRow, PropertyWrapper field) {
+	public String getAlterTableAddForeignKeyStatement(DBRow newTableRow, PropertyWrapper<?,?> field) {
 		if (field.isForeignKey()) {
 			return "ALTER TABLE " + this.formatTableName(newTableRow) + " ADD " + field.columnName() + " REFERENCES " + field.referencedTableName() + "(" + field.referencedColumnName() + ") ";
 

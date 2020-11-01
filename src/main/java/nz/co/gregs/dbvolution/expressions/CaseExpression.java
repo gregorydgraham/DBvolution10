@@ -107,7 +107,7 @@ public class CaseExpression {
 	protected CaseExpression() {
 	}
 
-	public static class WhenExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> implements AnyResult {
+	public static class WhenExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>, E extends AnyExpression<B, R, D>> implements AnyResult<B> {
 
 		protected final List<WhenClause<B, R>> clauses = new ArrayList<WhenClause<B, R>>();
 		protected R defaultValue;

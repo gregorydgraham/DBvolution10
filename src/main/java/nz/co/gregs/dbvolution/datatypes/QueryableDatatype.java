@@ -91,7 +91,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	public final static Boolean SORT_DESCENDING = Boolean.FALSE;
 	private Boolean sort = SORT_ASCENDING;
-	transient PropertyWrapperDefinition propertyWrapperDefn; // no guarantees whether this gets set
+	transient PropertyWrapperDefinition<?,T> propertyWrapperDefn; // no guarantees whether this gets set
 	private DBExpression[] columnExpression = new DBExpression[]{};
 	private boolean setValueHasBeenCalled = false;
 	private T defaultInsertValue = null;
@@ -1033,7 +1033,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 *
 	 */
-	void setPropertyWrapper(PropertyWrapperDefinition propertyWrapper) {
+	void setPropertyWrapper(PropertyWrapperDefinition<?,T> propertyWrapper) {
 		this.propertyWrapperDefn = propertyWrapper;
 	}
 
@@ -1189,7 +1189,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @return the PropertyWrapperDefinition
 	 */
-	protected PropertyWrapperDefinition getPropertyWrapperDefinition() {
+	protected PropertyWrapperDefinition<?,T> getPropertyWrapperDefinition() {
 		return propertyWrapperDefn;
 	}
 

@@ -61,6 +61,7 @@ import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
+import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
@@ -223,13 +224,13 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
 		String recursiveColumnNames = "";
 		StringBuilder recursiveAliases = new StringBuilder();
-		final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
+		final var rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 		RowDefinition adapteeRowDefinition = rowDefinitionInstanceWrapper.adapteeRowDefinition();
-		List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
+		var propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
 		String separator = "";
-		for (PropertyWrapper propertyWrapper : propertyWrappers) {
-			for (PropertyWrapperDefinition.ColumnAspects entry : propertyWrapper.getColumnAspects(database.getDefinition())) {
-				String alias = entry.columnAlias;
+		for (var propertyWrapper : propertyWrappers) {
+			for (ColumnAspects entry : propertyWrapper.getColumnAspects(database.getDefinition())) {
+				String alias = entry.getColumnAlias();
 				final String columnName = defn.formatColumnName(propertyWrapper.columnName());
 				recursiveColumnNames += separator + columnName;
 				recursiveAliases.append(separator).append(columnName).append(" ").append(alias);
@@ -259,7 +260,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 
 	private synchronized DBQuery getPrimingSubQueryForRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, ColumnProvider foreignKeyToFollow) {
 		DBQuery newQuery = database.getDBQuery();
-		final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
+		final var rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 		final Class<?> originatingClass = rowDefinitionInstanceWrapper.adapteeRowDefinitionClass();
 		final QueryDetails details = recursiveDetails.getOriginalQuery().getQueryDetails();
 
@@ -380,13 +381,13 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		List<DBQueryRow> primingRows = query.getAllRows();
 
 		Map<String, List<String>> pkValues = new HashMap<>();
-		Map<String, PropertyWrapperDefinition> pkDefs = new HashMap<>();
+		Map<String, PropertyWrapperDefinition<?,?>> pkDefs = new HashMap<>();
 
 		for (DBQueryRow row : primingRows) {
 			final T tab = row.get(returnType);
 			List<QueryableDatatype<?>> qdts = tab.getPrimaryKeys();
 			for (QueryableDatatype<?> qdt : qdts) {
-				final PropertyWrapperDefinition propDefn = tab.getPropertyWrapperOf(qdt).getPropertyWrapperDefinition();
+				final PropertyWrapperDefinition<?,?> propDefn = tab.getPropertyWrapperOf(qdt).getPropertyWrapperDefinition();
 				if (!pkValues.containsKey(propDefn.toString())) {
 					pkValues.put(propDefn.toString(), new ArrayList<String>());
 					pkDefs.put(propDefn.toString(), propDefn);
@@ -401,7 +402,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		DBRow instanceOfRow = followKey.getColumn().getInstanceOfRow();
 		for (Map.Entry<String, List<String>> entry : pkValues.entrySet()) {
 			String key = entry.getKey();
-			PropertyWrapperDefinition def = pkDefs.get(key);
+			var def = pkDefs.get(key);
 			List<String> value = entry.getValue();
 			setQDTPermittedValues(def.getQueryableDatatype(instanceOfRow), value);
 		}
@@ -424,7 +425,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 					}
 				} else {
 					List<QueryableDatatype<?>> primaryKeys = tab.getPrimaryKeys();
-					for (QueryableDatatype<?> pk : primaryKeys) {
+					for (var pk : primaryKeys) {
 						if (!pk.isNull()) {
 							recurseValues.add(pk.stringValue());
 						}

@@ -103,8 +103,8 @@ public class DBValidation<R extends DBRow> {
 	}
 
 	private void addDataCheckingColumnsToValidationQuery(DBQuery dbQuery) {
-		List<PropertyWrapper> properties = mapper.getColumnPropertyWrappers();
-		for (PropertyWrapper prop : properties) {
+		var properties = mapper.getColumnPropertyWrappers();
+		for (var prop : properties) {
 			QueryableDatatype<?> qdt = prop.getPropertyWrapperDefinition().getQueryableDatatype(mapper);
 			if (qdt instanceof DBString) {
 				StringColumn column = mapper.column((DBString) qdt);
@@ -175,8 +175,8 @@ public class DBValidation<R extends DBRow> {
 				this.willBeProcessed = ((DBBoolean) expressionColumnValue).booleanValue();
 			}
 
-			List<PropertyWrapper> properties = mapper.getColumnPropertyWrappers();
-			for (PropertyWrapper prop : properties) {
+			var properties = mapper.getColumnPropertyWrappers();
+			for (var prop : properties) {
 				QueryableDatatype<?> propColumnValue = row.getExpressionColumnValue(prop);
 				this.map.put(prop.javaName(), propColumnValue.stringValue());
 			}

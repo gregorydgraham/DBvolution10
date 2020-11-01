@@ -122,12 +122,12 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 		StringBuilder allChangedColumns = new StringBuilder();
 		StringBuilder allSetValues = new StringBuilder();
 		DBDefinition defn = database.getDefinition();
-		List<PropertyWrapper> props = row.getColumnPropertyWrappers();
+		var props = row.getColumnPropertyWrappers();
 		String allColumnSeparator = "";
 		String columnSeparator = "";
 		String valuesSeparator = defn.beginValueClause();
 		String allValuesSeparator = defn.beginValueClause();
-		for (PropertyWrapper prop : props) {
+		for (var prop : props) {
 			// BLOBS are not inserted normally so don't include them
 			if (prop.isColumn()) {
 				final QueryableDatatype<?> qdt = prop.getQueryableDatatype();

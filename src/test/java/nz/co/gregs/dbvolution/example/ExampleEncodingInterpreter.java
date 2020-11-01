@@ -78,8 +78,8 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 		Set<Class<? extends DBRow>> addedAlready = new HashSet<>();
 		for (DBRow row : rows) {
 			Class<? extends DBRow> rowClass = row.getClass();
-			List<PropertyWrapper> props = row.getColumnPropertyWrappers();
-			for (PropertyWrapper prop : props) {
+			var props = row.getColumnPropertyWrappers();
+			for (var prop : props) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt.hasBeenSet()) {
 					String stringValue = qdt.stringValue();

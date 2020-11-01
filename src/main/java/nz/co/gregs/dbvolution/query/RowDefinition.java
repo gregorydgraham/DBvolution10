@@ -55,8 +55,8 @@ public class RowDefinition implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final RowDefinitionWrapperFactory WRAPPER_FACTORY = new RowDefinitionWrapperFactory();
-	private final RowDefinitionInstanceWrapper wrapper = WRAPPER_FACTORY.instanceWrapperFor(this);
-	private transient List<PropertyWrapperDefinition> returnColumns = null;
+	private final RowDefinitionInstanceWrapper<?> wrapper = WRAPPER_FACTORY.instanceWrapperFor(this);
+	private transient List<PropertyWrapperDefinition<?,?>> returnColumns = null;
 
 	/**
 	 * Gets a wrapper for the underlying property (field or method) given the
@@ -75,11 +75,11 @@ public class RowDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the PropertyWrapper associated with the Object suppled or NULL.
 	 */
-	public PropertyWrapper getPropertyWrapperOf(Object qdt) {
-		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
+	public PropertyWrapper<?,?> getPropertyWrapperOf(Object qdt) {
+		var props = getWrapper().getColumnPropertyWrappers();
 
 		Object qdtOfProp;
-		for (PropertyWrapper prop : props) {
+		for (var prop : props) {
 			qdtOfProp = prop.rawJavaValue();
 			if (qdtOfProp == qdt) {
 				return prop;
@@ -100,7 +100,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return a {@link RowDefinitionInstanceWrapper}
 	 */
-	protected RowDefinitionInstanceWrapper getWrapper() {
+	protected RowDefinitionInstanceWrapper<?> getWrapper() {
 		return wrapper;
 	}
 
@@ -113,7 +113,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
-	public List<PropertyWrapper> getColumnPropertyWrappers() {
+	public List<PropertyWrapper<?,?>> getColumnPropertyWrappers() {
 		return getWrapper().getColumnPropertyWrappers();
 	}
 
@@ -125,7 +125,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
-	public List<PropertyWrapper> getAutoFillingPropertyWrappers() {
+	public List<PropertyWrapper<?,?>> getAutoFillingPropertyWrappers() {
 		return getWrapper().getAutoFillingPropertyWrappers();
 	}
 
@@ -1353,11 +1353,11 @@ public class RowDefinition implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
+		var fields = getWrapper().getColumnPropertyWrappers();
 
 		String separator = "" + this.getClass().getSimpleName();
 
-		for (PropertyWrapper field : fields) {
+		for (var field : fields) {
 			if (field.isColumn()) {
 				string.append(separator);
 				string.append(" ");
@@ -1393,7 +1393,7 @@ public class RowDefinition implements Serializable {
 	 */
 	public List<String> getFieldNames() {
 		List<String> returnList = new ArrayList<String>();
-		List<PropertyWrapperDefinition> fieldDefns = this.getReturnColumns();
+		var fieldDefns = this.getReturnColumns();
 		fieldDefns.forEach((prop) -> {
 			returnList.add(prop.javaName());
 		});
@@ -1420,7 +1420,7 @@ public class RowDefinition implements Serializable {
 	 */
 	public Collection<String> getFieldValues(SimpleDateFormat dateFormat) {
 		List<String> returnList = new ArrayList<>();
-		for (PropertyWrapperDefinition prop : this.getReturnColumns()) {
+		for (var prop : this.getReturnColumns()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype(this);
 			if (dateFormat != null && DBDate.class.isAssignableFrom(qdt.getClass())) {
 				DBDate dBDate = (DBDate) qdt;
@@ -1451,7 +1451,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return a list of the columns to be selected and returned in the query.
 	 */
-	protected List<PropertyWrapperDefinition> getReturnColumns() {
+	protected List<PropertyWrapperDefinition<?,?>> getReturnColumns() {
 		if (returnColumns == null) {
 			returnColumns = this.getColumnPropertyWrapperDefinitions();
 		}
@@ -1463,7 +1463,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param returnColumns a list of all the columns to be included in the returned data from the database.  Other columns will be DBNull REGARDLESS of there actual value in the database.
 	 */
-	protected void setReturnColumns(List<PropertyWrapperDefinition> returnColumns) {
+	protected void setReturnColumns(List<PropertyWrapperDefinition<?,?>> returnColumns) {
 		this.returnColumns = returnColumns;
 	}
 
@@ -1477,10 +1477,10 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return a list of the PropertyWrapperDefinition for columns.
 	 */
-	protected List<PropertyWrapperDefinition> getColumnPropertyWrapperDefinitions() {
-		List<PropertyWrapperDefinition> columns = new ArrayList<PropertyWrapperDefinition>();
-		List<PropertyWrapper> propertyWrappers = this.getColumnPropertyWrappers();
-		for (PropertyWrapper propertyWrapper : propertyWrappers) {
+	protected List<PropertyWrapperDefinition<?,?>> getColumnPropertyWrapperDefinitions() {
+		List<PropertyWrapperDefinition<?,?>> columns = new ArrayList<PropertyWrapperDefinition<?,?>>();
+		var propertyWrappers = this.getColumnPropertyWrappers();
+		for (var propertyWrapper : propertyWrappers) {
 			columns.add(propertyWrapper.getPropertyWrapperDefinition());
 		}
 		return columns;

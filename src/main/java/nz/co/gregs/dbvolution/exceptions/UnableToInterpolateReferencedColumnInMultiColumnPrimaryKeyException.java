@@ -23,7 +23,7 @@ public class UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException
 
 	private static final long serialVersionUID = 1L;
 
-	public UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(JavaProperty adaptee, RowDefinitionClassWrapper referencedClassWrapper, PropertyWrapperDefinition[] primaryKeys) {
+	public UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(JavaProperty<?> adaptee, RowDefinitionClassWrapper<?> referencedClassWrapper, PropertyWrapperDefinition<?,?>[] primaryKeys) {
 		super("Property " + adaptee.qualifiedName() + " references class " + referencedClassWrapper.javaName()
 				+ " using an implicit primary key reference, but the referenced class has " + primaryKeys.length
 				+ " primary key columns and none are similar to the FK column name. You must use an explicit column name in the @DBForeignKey.");

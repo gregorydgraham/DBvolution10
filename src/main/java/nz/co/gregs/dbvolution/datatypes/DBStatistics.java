@@ -231,11 +231,11 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 			if (dbValue == null) {
 				this.setToNull(database);
 			} else {
-				PropertyWrapperDefinition propertyWrapperDefinition = getPropertyWrapperDefinition();
+				var propertyWrapperDefinition = getPropertyWrapperDefinition();
 				if (propertyWrapperDefinition != null && propertyWrapperDefinition.allColumnAspects != null) {
-					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
-					final String modeSimpleAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
-					final String modeStrictAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
+					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).getColumnAlias();
+					final String modeSimpleAlias = propertyWrapperDefinition.allColumnAspects.get(1).getColumnAlias();
+					final String modeStrictAlias = propertyWrapperDefinition.allColumnAspects.get(2).getColumnAlias();
 //					final String medianAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
 					countOfRows = new DBInteger().getFromResultSet(database, resultSet, countColumnAlias);
 					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeSimpleAlias);

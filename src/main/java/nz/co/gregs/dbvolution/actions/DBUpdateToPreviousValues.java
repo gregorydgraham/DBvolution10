@@ -57,10 +57,10 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	protected String getSetClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
 		StringBuilder sql = new StringBuilder();
-		List<PropertyWrapper> fields = row.getColumnPropertyWrappers();
+		var fields = row.getColumnPropertyWrappers();
 
 		String separator = defn.getStartingSetSubClauseSeparator();
-		for (PropertyWrapper field : fields) {
+		for (var field : fields) {
 			if (field.isColumn()) {
 				final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 				if (qdt.hasChanged()) {
@@ -98,13 +98,13 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 		String separator = "";
 		if (primaryKeys.size() > 0) {
 			for (QueryableDatatype<?> pk : primaryKeys) {
-				PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
+				var wrapper = row.getPropertyWrapperOf(pk);
 				String pkValue = pk.toSQLString(defn);
 				sqlString.append(separator).append(defn.formatColumnName(wrapper.columnName())).append(defn.getEqualsComparator()).append(pkValue);
 				separator = defn.beginAndLine();
 			}
 		} else {
-			for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
+			for (var prop : row.getColumnPropertyWrappers()) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt.isNull()) {
 					sqlString.append(separator).append(BooleanExpression.isNull(row.column(qdt)).toSQLString(defn));

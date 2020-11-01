@@ -124,10 +124,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private boolean isDefined = false;
-	private final List<PropertyWrapperDefinition> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition>());
+	private final List<PropertyWrapperDefinition<?, ?>> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition<?, ?>>());
 	private transient Boolean hasBlobs;
-	private transient final List<PropertyWrapper> fkFields = new ArrayList<>();
-	private transient final List<PropertyWrapper> blobColumns = new ArrayList<>();
+	private transient final List<PropertyWrapper<?, ?>> fkFields = new ArrayList<>();
+	private transient final List<PropertyWrapper<?, ?>> blobColumns = new ArrayList<>();
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<>(new DBRow.ClassNameComparator());
 	private Boolean emptyRow = true;
 
@@ -165,14 +165,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param requiredDBRowClass requiredDBRowClass
 	 * @return a new blank version of the specified class
 	 */
-	public static DBRow getDBRow(RowDefinitionClassWrapper requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
+	public static <ROW extends DBRow> ROW getDBRow(RowDefinitionClassWrapper<ROW> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
 		try {
 			Constructor<?> constructor = requiredDBRowClass.adapteeClass().getConstructor();
 			constructor.setAccessible(true);
-			return (DBRow) constructor.newInstance();
+			return (ROW) constructor.newInstance();
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			try {
-				return (DBRow) requiredDBRowClass.adapteeClass().getDeclaredConstructor().newInstance();
+				return (ROW) requiredDBRowClass.adapteeClass().getDeclaredConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex1) {
 				throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass.adapteeClass(), ex);
 			}
@@ -193,13 +193,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public static <R extends DBRow> R getPrimaryKeyExample(R sourceRow) {
 		@SuppressWarnings("unchecked")
 		R newRow = (R) getDBRow(sourceRow.getClass());
-		final List<PropertyWrapper> wrappers = sourceRow.getPrimaryKeyPropertyWrappers();
-		for (PropertyWrapper wrapper : wrappers) {
-			PropertyWrapperDefinition definition = wrapper.getPropertyWrapperDefinition();
+		final var wrappers = sourceRow.getPrimaryKeyPropertyWrappers();
+		for (var wrapper : wrappers) {
+			var definition = wrapper.getPropertyWrapperDefinition();
 			QueryableDatatype<?> sourceQDT = definition.getQueryableDatatype(sourceRow);
 			QueryableDatatype<?> newQDT = definition.getQueryableDatatype(newRow);
 
-			new InternalQueryableDatatypeProxy(newQDT).setValue(sourceQDT);
+			new InternalQueryableDatatypeProxy<>(newQDT).setValue(sourceQDT);
 		}
 		return newRow;
 	}
@@ -224,20 +224,20 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		} else {
 			newRow.setUndefined();
 		}
-		for (PropertyWrapperDefinition defn : originalRow.getIgnoredForeignKeys()) {
+		for (var defn : originalRow.getIgnoredForeignKeys()) {
 			newRow.getIgnoredForeignKeys().add(defn);
 		}
 		if (originalRow.getReturnColumns() != null) {
-			newRow.setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
-			for (PropertyWrapperDefinition defn : originalRow.getReturnColumns()) {
+			newRow.setReturnColumns(new ArrayList<PropertyWrapperDefinition<?, ?>>());
+			for (var defn : originalRow.getReturnColumns()) {
 				newRow.getReturnColumns().add(defn);
 			}
 		} else {
 			newRow.setReturnColumns(null);
 		}
 
-		List<PropertyWrapper> subclassFields = originalRow.getColumnPropertyWrappers();
-		for (PropertyWrapper field : subclassFields) {
+		var subclassFields = originalRow.getColumnPropertyWrappers();
+		for (var field : subclassFields) {
 			try {
 				Object originalValue = field.rawJavaValue();
 				if (originalValue instanceof QueryableDatatype) {
@@ -266,12 +266,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the QDT of the primary key or null if there is no primary key.
 	 */
 	public List<QueryableDatatype<?>> getPrimaryKeys() {
-		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		var primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
 		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
 			List<QueryableDatatype<?>> names = new ArrayList<>();
-			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+			for (var pk : primaryKeyPropertyWrappers) {
 				names.add(pk.getQueryableDatatype());
 			}
 			return names;
@@ -292,12 +292,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * no primary key.
 	 */
 	public List<ColumnProvider> getPrimaryKeysAsColumns() {
-		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		var primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
 		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
 			List<ColumnProvider> names = new ArrayList<>();
-			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+			for (var pk : primaryKeyPropertyWrappers) {
 				final QueryableDatatype<?> qdt = pk.getQueryableDatatype();
 				final ColumnProvider column = this.column(qdt);
 				names.add(column);
@@ -344,7 +344,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		if (primaryKeys == null || primaryKeys.isEmpty()) {
 			throw new UndefinedPrimaryKeyException(this);
 		} else if (primaryKeys.size() == 1) {
-			InternalQueryableDatatypeProxy proxy = new InternalQueryableDatatypeProxy(primaryKeys.get(0));
+			InternalQueryableDatatypeProxy<?> proxy = new InternalQueryableDatatypeProxy<>(primaryKeys.get(0));
 			proxy.setValue(newPKValue);
 		} else {
 			throw new UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(this, primaryKeys);
@@ -364,12 +364,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the index of the primary key or null if there is no primary key.
 	 */
 	public List<Integer> getPrimaryKeyIndexes() {
-		final List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		final var primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
 		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
 			List<Integer> names = new ArrayList<>();
-			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+			for (var pk : primaryKeyPropertyWrappers) {
 				names.add(pk.getPropertyWrapperDefinition().getColumnIndex());
 			}
 			return names;
@@ -424,8 +424,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return TRUE if the simple types have changed, otherwise FALSE
 	 */
 	public boolean hasChangedSimpleTypes() {
-		List<PropertyWrapper> propertyWrappers = getWrapper().getColumnPropertyWrappers();
-		for (PropertyWrapper prop : propertyWrappers) {
+		var propertyWrappers = getWrapper().getColumnPropertyWrappers();
+		for (var prop : propertyWrappers) {
 			if (!(prop.getQueryableDatatype() instanceof DBLargeObject)) {
 				if (prop.getQueryableDatatype().hasChanged()) {
 					return true;
@@ -448,17 +448,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public void setSimpleTypesToUnchanged() {
-		List<PropertyWrapper> propertyWrappers = getWrapper().getColumnPropertyWrappers();
-		for (PropertyWrapper prop : propertyWrappers) {
-			final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
-			if (!(qdt instanceof DBLargeObject)) {
-				if (qdt != null && qdt.hasChanged()) {
-					qdt.setUnchanged();
-
-					// ensure field set when using type adaptors
-					prop.setQueryableDatatype(qdt);
-				}
-			}
+		var propertyWrappers = getWrapper().getColumnPropertyWrappers();
+		for (var prop : propertyWrappers) {
+			prop.setQueryableDatatypeAsUnchanged();
 		}
 	}
 
@@ -471,12 +463,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the column of the primary key
 	 */
 	public List<String> getPrimaryKeyColumnNames() {
-		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		var primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
 		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
 			List<String> names = new ArrayList<>();
-			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+			for (var pk : primaryKeyPropertyWrappers) {
 				names.add(pk.columnName());
 			}
 			return names;
@@ -492,12 +484,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the java field name of the primary key
 	 */
 	public List<String> getPrimaryKeyFieldName() {
-		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		var primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
 		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
 			List<String> names = new ArrayList<>();
-			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+			for (var pk : primaryKeyPropertyWrappers) {
 				names.add(pk.javaName());
 			}
 			return names;
@@ -512,7 +504,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the PropertyWrapper for the primary key.
 	 */
-	public List<PropertyWrapper> getPrimaryKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?>> getPrimaryKeyPropertyWrappers() {
 		return getWrapper().getPrimaryKeysPropertyWrappers();
 	}
 
@@ -553,8 +545,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private List<String> getWhereClauses(DBDefinition db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
 	{
 		List<String> whereClause = new ArrayList<>();
-		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
-		for (PropertyWrapper prop : props) {
+		var props = getWrapper().getColumnPropertyWrappers();
+		for (var prop : props) {
 			if (prop.isColumn() && !prop.isLargeObjectType()) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				String possibleWhereClause;
@@ -615,8 +607,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public final List<BooleanExpression> getWhereClauseExpressions(DBDefinition db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
 	{
 		List<BooleanExpression> whereClause = new ArrayList<>();
-		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
-		for (PropertyWrapper prop : props) {
+		var props = getWrapper().getColumnPropertyWrappers();
+		for (var prop : props) {
 			if (prop.isColumn()) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				ColumnProvider column;
@@ -737,11 +729,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public String toStringMinusFKs() {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
+		var fields = getWrapper().getColumnPropertyWrappers();
 
 		String separator = "";
 
-		for (PropertyWrapper field : fields) {
+		for (var field : fields) {
 			if (field.isColumn()) {
 				if (!field.isForeignKey()) {
 					string.append(separator);
@@ -763,12 +755,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
-	public List<PropertyWrapper> getForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?>> getForeignKeyPropertyWrappers() {
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
-				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
+				var props = getWrapper().getForeignKeyPropertyWrappers();
 
-				for (PropertyWrapper prop : props) {
+				for (var prop : props) {
 					if (prop.isColumn()) {
 						if (prop.isForeignKey()) {
 							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
@@ -789,12 +781,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
-	public List<PropertyWrapper> getNonPrimaryKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?>> getNonPrimaryKeyPropertyWrappers() {
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
-				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
+				var props = getWrapper().getForeignKeyPropertyWrappers();
 
-				for (PropertyWrapper prop : props) {
+				for (var prop : props) {
 					if (prop.isColumn()) {
 						if (!prop.isPrimaryKey()) {
 							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
@@ -815,13 +807,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
-	public List<PropertyWrapper> getRecursiveForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?>> getRecursiveForeignKeyPropertyWrappers() {
 //		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyPropertyWrappers()");
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
-				List<PropertyWrapper> props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
+				var props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
 
-				for (PropertyWrapper prop : props) {
+				for (var prop : props) {
 					if (prop.isColumn()) {
 						if (prop.isForeignKey() && prop.isRecursiveForeignKey()) {
 							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
@@ -853,7 +845,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param qdt	qdt
 	 */
 	public void ignoreForeignKey(Object qdt) throws IncorrectRowProviderInstanceSuppliedException {
-		PropertyWrapper fkProp = getPropertyWrapperOf(qdt);
+		var fkProp = getPropertyWrapperOf(qdt);
 		if (fkProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, qdt);
 		}
@@ -878,8 +870,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param fkProp the foreign key property to ignore
 	 */
-	public void ignoreForeignKey(PropertyWrapper fkProp) throws IncorrectRowProviderInstanceSuppliedException {
-//		PropertyWrapper fkProp = getPropertyWrapperOf(qdt);
+	public void ignoreForeignKey(PropertyWrapper<?, ?> fkProp) throws IncorrectRowProviderInstanceSuppliedException {
 		if (fkProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fkProp);
 		}
@@ -951,7 +942,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param column	column
 	 */
 	public void ignoreForeignKey(ColumnProvider column) {
-		PropertyWrapper fkProp = column.getColumn().getPropertyWrapper();
+		var fkProp = column.getColumn().getPropertyWrapper();
 		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
 		fkFields.clear();
 	}
@@ -979,8 +970,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public void ignoreAllForeignKeys() {
-		List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
-		for (PropertyWrapper prop : props) {
+		var props = this.getForeignKeyPropertyWrappers();
+		for (var prop : props) {
 			getIgnoredForeignKeys().add(prop.getPropertyWrapperDefinition());
 		}
 		fkFields.clear();
@@ -996,9 +987,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param importantForeignKeys	importantForeignKeys
 	 */
 	public void ignoreAllForeignKeysExcept(Object... importantForeignKeys) throws IncorrectRowProviderInstanceSuppliedException {
-		ArrayList<PropertyWrapperDefinition> importantFKs = new ArrayList<>();
+		ArrayList<PropertyWrapperDefinition<?, ?>> importantFKs = new ArrayList<>();
 		for (Object object : importantForeignKeys) {
-			PropertyWrapper importantProp = getPropertyWrapperOf(object);
+			var importantProp = getPropertyWrapperOf(object);
 			if (importantProp != null) {
 				if (importantProp.isColumn() && importantProp.isForeignKey()) {
 					importantFKs.add(importantProp.getPropertyWrapperDefinition());
@@ -1007,9 +998,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, object);
 			}
 		}
-		List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
-		for (PropertyWrapper prop : props) {
-			final PropertyWrapperDefinition propDefn = prop.getPropertyWrapperDefinition();
+		var props = this.getForeignKeyPropertyWrappers();
+		for (var prop : props) {
+			final var propDefn = prop.getPropertyWrapperDefinition();
 			if (!importantFKs.contains(propDefn)) {
 				getIgnoredForeignKeys().add(propDefn);
 			}
@@ -1032,7 +1023,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		synchronized (blobColumns) {
 			if (hasBlobs == null) {
 				hasBlobs = Boolean.FALSE;
-				for (PropertyWrapper prop : getColumnPropertyWrappers()) {
+				for (var prop : getColumnPropertyWrappers()) {
 					if (prop.isInstanceOfLargeObject()) {
 						blobColumns.add(prop);
 						hasBlobs = Boolean.TRUE;
@@ -1053,7 +1044,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public final void setReturnFieldsToNone() {
-		setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
+		setReturnColumns(new ArrayList<PropertyWrapperDefinition<?, ?>>());
 	}
 
 	/**
@@ -1074,8 +1065,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param fields a list of fields/methods from this object
 	 */
 	public final void setReturnFields(Object... fields) throws IncorrectRowProviderInstanceSuppliedException {
-		setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
-		PropertyWrapper propWrapper;
+		setReturnColumns(new ArrayList<PropertyWrapperDefinition<?, ?>>());
+		PropertyWrapper<?, ?> propWrapper;
 		for (Object property : fields) {
 			propWrapper = getPropertyWrapperOf(property);
 			if (propWrapper == null) {
@@ -1132,9 +1123,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public final void addReturnFields(Object... fields) throws IncorrectRowProviderInstanceSuppliedException {
 		if (getReturnColumns() == null) {
-			setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
+			setReturnColumns(new ArrayList<PropertyWrapperDefinition<?, ?>>());
 		}
-		PropertyWrapper propWrapper;
+		PropertyWrapper<?, ?> propWrapper;
 		for (Object property : fields) {
 			propWrapper = getPropertyWrapperOf(property);
 			if (propWrapper == null) {
@@ -1185,8 +1176,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public List<BooleanExpression> getRelationshipsAsBooleanExpressions(DBRow otherTable) {
 		List<BooleanExpression> rels = new ArrayList<>();
 
-		List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
-		for (PropertyWrapper fk : fks) {
+		var fks = getForeignKeyPropertyWrappers();
+		for (var fk : fks) {
 			Class<? extends DBRow> referencedClass = fk.referencedClass();
 
 			if (referencedClass.isAssignableFrom(otherTable.getClass())) {
@@ -1195,7 +1186,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 
 		fks = otherTable.getForeignKeyPropertyWrappers();
-		for (PropertyWrapper fk : fks) {
+		for (var fk : fks) {
 			Class<? extends DBRow> referencedClass = fk.referencedClass();
 
 			if (referencedClass.isAssignableFrom(this.getClass())) {
@@ -1244,8 +1235,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public SortedSet<Class<? extends DBRow>> getReferencedTables() {
 		synchronized (referencedTables) {
 			if (referencedTables.isEmpty()) {
-				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
-				for (PropertyWrapper prop : props) {
+				var props = getWrapper().getForeignKeyPropertyWrappers();
+				for (var prop : props) {
 					referencedTables.add(prop.referencedClass());
 				}
 			}
@@ -1277,8 +1268,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public SortedSet<Class<? extends DBRow>> getReferencedBaseTables() {
 		synchronized (referencedTables) {
 			if (referencedTables.isEmpty()) {
-				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
-				for (PropertyWrapper prop : props) {
+				var props = getWrapper().getForeignKeyPropertyWrappers();
+				for (var prop : props) {
 					final Class<? extends DBRow> referencedClass = prop.referencedClass();
 					if (referencedClass.getSuperclass().equals(DBRow.class)) {
 						referencedTables.add(referencedClass);
@@ -1431,8 +1422,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param goodTables	goodTables
 	 */
 	public void ignoreAllForeignKeysExceptFKsTo(DBRow... goodTables) {
-		List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
-		for (PropertyWrapper prop : props) {
+		var props = getWrapper().getForeignKeyPropertyWrappers();
+		for (var prop : props) {
 			boolean ignore = true;
 			for (DBRow goodTable : goodTables) {
 				if (prop.isForeignKeyTo(goodTable)) {
@@ -1460,7 +1451,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		// Initialise the blob columns list if necessary
 		ArrayList<QueryableDatatype<?>> returnList = new ArrayList<>();
 		if (hasLargeObjects()) {
-			for (PropertyWrapper propertyWrapper : blobColumns) {
+			for (var propertyWrapper : blobColumns) {
 				returnList.add(propertyWrapper.getQueryableDatatype());
 			}
 		}
@@ -1538,13 +1529,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		this.emptyRow = isThisRowEmpty;
 	}
 
-	public List<PropertyWrapper> getSelectedProperties() {
+	public List<PropertyWrapper<?, ?>> getSelectedProperties() {
 		if (getReturnColumns() == null) {
 			return getColumnPropertyWrappers();
 		} else {
-			ArrayList<PropertyWrapper> selected = new ArrayList<>();
-			for (PropertyWrapperDefinition proDef : getReturnColumns()) {
-				for (PropertyWrapper pro : getColumnPropertyWrappers()) {
+			ArrayList<PropertyWrapper<?, ?>> selected = new ArrayList<>();
+			for (var proDef : getReturnColumns()) {
+				for (var pro : getColumnPropertyWrappers()) {
 					if (pro.getPropertyWrapperDefinition().equals(proDef)) {
 						selected.add(pro);
 					}
@@ -1555,8 +1546,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	boolean isPeerOf(DBRow table) {
-		final RowDefinitionClassWrapper thisClassWrapper = this.getWrapper().getClassWrapper();
-		final RowDefinitionClassWrapper thatClassWrapper = table.getWrapper().getClassWrapper();
+		final var thisClassWrapper = this.getWrapper().getClassWrapper();
+		final var thatClassWrapper = table.getWrapper().getClassWrapper();
 		return thisClassWrapper.equals(thatClassWrapper);
 	}
 
@@ -1580,9 +1571,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public <R extends DBRow> List<QueryableDatatype<?>> getForeignKeysTo(R row) {
 		List<QueryableDatatype<?>> fksToR = new ArrayList<>();
-		RowDefinitionInstanceWrapper wrapper = getWrapper();
-		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getForeignKeyPropertyWrappers();
-		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+		var wrapper = getWrapper();
+		var foreignKeyPropertyWrappers = wrapper.getForeignKeyPropertyWrappers();
+		for (var propertyWrapper : foreignKeyPropertyWrappers) {
 			if (propertyWrapper.isForeignKeyTo(row)) {
 				fksToR.add(propertyWrapper.getQueryableDatatype());
 			}
@@ -1608,9 +1599,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public <R extends DBRow> List<QueryableDatatype<?>> getRecursiveForeignKeys() {
 //		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeys()");
 		List<QueryableDatatype<?>> fksToSelf = new ArrayList<>();
-		RowDefinitionInstanceWrapper wrapper = getWrapper();
-		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
-		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+		var wrapper = getWrapper();
+		var foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
+		for (var propertyWrapper : foreignKeyPropertyWrappers) {
 			fksToSelf.add(propertyWrapper.getQueryableDatatype());
 		}
 		return fksToSelf;
@@ -1632,14 +1623,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public <R extends DBRow> List<DBExpression> getForeignKeyExpressionsTo(R target) {
 		List<DBExpression> fksToR = new ArrayList<>();
-		RowDefinitionInstanceWrapper wrapper = getWrapper();
-		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getForeignKeyPropertyWrappers();
-		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+		var wrapper = getWrapper();
+		var foreignKeyPropertyWrappers = wrapper.getForeignKeyPropertyWrappers();
+		for (var propertyWrapper : foreignKeyPropertyWrappers) {
 			if (propertyWrapper.isForeignKeyTo(target)) {
 				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 				final QueryableDatatype<?> sourceFK = propertyWrapper.getQueryableDatatype();
-				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
-				PropertyWrapper targetProperty = target.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
+				var targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
+				var targetProperty = target.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
 				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
 
 				Object column = source.column(sourceFK);
@@ -1673,14 +1664,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public <R extends DBRow> List<DBExpression> getRecursiveForeignKeyExpressions() {
 //		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
 		List<DBExpression> fksToR = new ArrayList<>();
-		RowDefinitionInstanceWrapper wrapper = getWrapper();
-		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
-		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+		var wrapper = getWrapper();
+		var foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
+		for (var propertyWrapper : foreignKeyPropertyWrappers) {
 			if (propertyWrapper.isRecursiveForeignKey()) {
 				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 				final QueryableDatatype<?> sourceFK = propertyWrapper.getQueryableDatatype();
-				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
-				PropertyWrapper targetProperty = this.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
+				var targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
+				var targetProperty = this.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
 				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
 
 				ColumnProvider column = source.column(sourceFK);
@@ -1714,15 +1705,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public <R extends DBRow> List<ColumnProvider> getRecursiveForeignKeyColumns() {
 //		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
 		List<ColumnProvider> fksToR = new ArrayList<>();
-		RowDefinitionInstanceWrapper wrapper = getWrapper();
-		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
-		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+		var wrapper = getWrapper();
+		var foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
+		for (var propertyWrapper : foreignKeyPropertyWrappers) {
 			if (propertyWrapper.isRecursiveForeignKey()) {
 				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 				final QueryableDatatype<?> sourceFK = propertyWrapper.getQueryableDatatype();
-//				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
-//				PropertyWrapper targetProperty = this.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
-//				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
 
 				ColumnProvider column = source.column(sourceFK);
 				fksToR.add(column);
@@ -1737,7 +1725,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the ignoredForeignKeys
 	 */
-	protected List<PropertyWrapperDefinition> getIgnoredForeignKeys() {
+	protected List<PropertyWrapperDefinition<?, ?>> getIgnoredForeignKeys() {
 		return ignoredForeignKeys;
 	}
 
@@ -1794,14 +1782,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
-	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper fk, DBRow otherTable) {
+	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper<?,?> fk, DBRow otherTable) {
 		BooleanExpression expr = BooleanExpression.falseExpression();
-		final PropertyWrapperDefinition fkDefn = fk.getPropertyWrapperDefinition();
+		final var fkDefn = fk.getPropertyWrapperDefinition();
 		QueryableDatatype<?> fkQDT = fkDefn.getQueryableDatatype(fkTable);
 
-		PropertyWrapperDefinition targetPropertyDefinition = fkDefn.referencedPropertyDefinitionIdentity();
-		PropertyWrapper targetProperty = otherTable.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
-		QueryableDatatype<?> pkQDT = targetProperty.getQueryableDatatype();
+		var targetPropertyDefinition = fkDefn.referencedPropertyDefinitionIdentity();
+		var targetProperty = otherTable.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
+		var pkQDT = targetProperty.getQueryableDatatype();
 
 		if (fkQDT.getClass().isAssignableFrom(pkQDT.getClass())
 				|| pkQDT.getClass().isAssignableFrom(fkQDT.getClass())) {
@@ -1848,21 +1836,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return database.getDBQuery().getDistinctValuesOfColumn(this, fieldOfThisInstance);
-//		List<A> results = new ArrayList<>();
-//		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
-//		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(this);
-//		this.setReturnFields(fieldOfThisInstance);
-//		final ColumnProvider columnProvider = this.column(thisQDT);
-//		DBExpression expr = columnProvider.getColumn().asExpression();
-//		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, expr);
-//		dbQuery.setSortOrder(columnProvider.getSortProvider().nullsLowest());
-//		dbQuery.setBlankQueryAllowed(true);
-//		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		for (DBQueryRow row : allRows) {
-//			DBRow get = row.get(this);
-//			results.add(get == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(get));
-//		}
-//		return results;
 	}
 
 	/**
@@ -1877,8 +1850,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return true if the row has a condition set.
 	 */
 	public boolean hasConditionsSet() {
-		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
-		for (PropertyWrapper prop : props) {
+		var props = getWrapper().getColumnPropertyWrappers();
+		for (var prop : props) {
 			if (prop.isColumn()) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt.getOperator() != null) {
@@ -1919,11 +1892,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					&& tab.getPackage().equals(referencePackage)) {
 				DBRow tabInstance;
 				tabInstance = DBRow.getDBRow(tab);
-//				try {
-//					tabInstance = tab.newInstance();
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(tab, ex);
-//				}
 				resultList.add(tabInstance);
 			}
 		}
@@ -1931,9 +1899,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	void removeConstraints() {
-		RowDefinitionInstanceWrapper wrapper = getWrapper();
-		List<PropertyWrapper> propertyWrappers = wrapper.getColumnPropertyWrappers();
-		for (PropertyWrapper propertyWrapper : propertyWrappers) {
+		var wrapper = getWrapper();
+		var propertyWrappers = wrapper.getColumnPropertyWrappers();
+		for (var propertyWrapper : propertyWrappers) {
 			propertyWrapper.getQueryableDatatype().removeConstraints();
 		}
 	}
@@ -1943,8 +1911,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {
-			List<PropertyWrapper> fields = this.getAutoFillingPropertyWrappers();
-			for (PropertyWrapper field : fields) {
+			var fields = this.getAutoFillingPropertyWrappers();
+			for (var field : fields) {
 				if (field.isAutoFilling()) {
 					Class<?> requiredClass = field.getRawJavaType();
 					if (requiredClass.isArray()) {
@@ -1960,11 +1928,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					if (DBRow.class.isAssignableFrom(requiredClass)) {
 						DBRow fieldInstance;
 						fieldInstance = DBRow.getDBRow((Class<? extends DBRow>) requiredClass);
-//						try {
-//							fieldInstance = (DBRow) requiredClass.newInstance();
-//						} catch (InstantiationException | IllegalAccessException ex) {
-//							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
-//						}
 						List<DBRow> relatedInstancesFromQuery = this.getRelatedInstancesFromQuery(query, fieldInstance);
 						if (arrayRequired) {
 							Object newInstance = Array.newInstance(requiredClass, relatedInstancesFromQuery.size());
@@ -1979,10 +1942,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						} else if (relatedInstancesFromQuery.size() == 1) {
 							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						} else {
-//							System.out.println("nz.co.gregs.dbvolution.DBRow.setAutoFilledFields(): TOO MANY MATCHING ELEMENTS FOUND");
-//							for (DBRow dBRow : relatedInstancesFromQuery) {
-//								System.out.println(""+dBRow);
-//							}
 							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						}
 					}
@@ -2037,8 +1996,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	public boolean hasAutoIncrementField() {
-		List<PropertyWrapper> columns = getColumnPropertyWrappers();
-		for (PropertyWrapper column : columns) {
+		var columns = getColumnPropertyWrappers();
+		for (var column : columns) {
 			if (column.isAutoIncrement()) {
 				return true;
 			}
@@ -2046,9 +2005,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return false;
 	}
 
-	public PropertyWrapper getAutoIncrementField() {
-		List<PropertyWrapper> columns = getColumnPropertyWrappers();
-		for (PropertyWrapper column : columns) {
+	public PropertyWrapper<?,?> getAutoIncrementField() {
+		var columns = getColumnPropertyWrappers();
+		for (var column : columns) {
 			if (column.isAutoIncrement()) {
 				return column;
 			}

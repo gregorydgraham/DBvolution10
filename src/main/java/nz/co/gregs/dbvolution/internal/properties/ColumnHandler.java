@@ -1,7 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.io.Serializable;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -22,7 +21,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
  *
  * @author Malcolm Lett
  */
-class ColumnHandler  implements Serializable{
+class ColumnHandler<BASETYPE>  implements Serializable{
 
 	private static final long serialVersionUID = 1l;
 
@@ -33,7 +32,7 @@ class ColumnHandler  implements Serializable{
 	private transient final DBForeignKey foreignKeyAnnotation; // null if not present on property
 //	private transient final boolean foreignKeyIsRecursive = false;
 
-	ColumnHandler(JavaProperty adaptee) {
+	ColumnHandler(JavaProperty<BASETYPE> adaptee) {
 		this.columnAnnotation = adaptee.getAnnotation(DBColumn.class);
 		this.primaryKeyAnnotation = adaptee.getAnnotation(DBPrimaryKey.class);
 		this.autoIncrementAnnotation = adaptee.getAnnotation(DBAutoIncrement.class);

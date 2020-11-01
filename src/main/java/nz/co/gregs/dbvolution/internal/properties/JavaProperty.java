@@ -12,8 +12,9 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Malcolm Lett
+ * @param <BASETYPE> the jave class return from the QDT's getValue method
  */
-public interface JavaProperty {
+public interface JavaProperty<BASETYPE> {
 
 	/**
 	 * Gets a string that clearly identifies the field or bean-property, suitable
@@ -121,7 +122,7 @@ public interface JavaProperty {
 	 *
 	 * @return the type if a single consistent type can be resolved
 	 */
-	public Class<?> type();
+	public Class<BASETYPE> type();
 
 	/**
 	 * Gets a <code>Type</code> object that represents the formal type of the

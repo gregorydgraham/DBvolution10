@@ -35,7 +35,7 @@ public class ReferenceToUndefinedPrimaryKeyException extends DBRuntimeException 
 	 * @param adaptee the property that reference a class without a primary key
 	 * @param referencedClassWrapper the class referenced by the property
 	 */
-	public ReferenceToUndefinedPrimaryKeyException(JavaProperty adaptee, RowDefinitionClassWrapper referencedClassWrapper) {
+	public ReferenceToUndefinedPrimaryKeyException(JavaProperty<?> adaptee, RowDefinitionClassWrapper<?> referencedClassWrapper) {
 		super("Property " + adaptee.qualifiedName() + " references class " + referencedClassWrapper.javaName()
 				+ ", which does not have a primary key. Please identify the primary key on that class or specify the column in the"
 				+ " @" + DBForeignKey.class.getSimpleName() + " declaration.");

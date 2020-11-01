@@ -26,7 +26,7 @@ public class DBRowClassWrapperTest {
 
 	@Test
 	public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
-		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
+		var classWrapper = new RowDefinitionClassWrapper<>(MyTable1.class);
 		assertThat(classWrapper.primaryKeyDefinitions()[0], is(not(nullValue())));
 		assertThat(classWrapper.primaryKeyDefinitions()[0].getColumnName(), is("uid"));
 	}
@@ -48,7 +48,7 @@ public class DBRowClassWrapperTest {
 			public DBInteger fkTable2 = new DBInteger();
 		}
 
-		RowDefinitionClassWrapper rowDefinitionClassWrapper = new RowDefinitionClassWrapper(TestClass.class);
+		var rowDefinitionClassWrapper = new RowDefinitionClassWrapper<>(TestClass.class);
 		Assert.assertThat(rowDefinitionClassWrapper, notNullValue());
 	}
 
@@ -73,19 +73,19 @@ public class DBRowClassWrapperTest {
 //	}
 	@Test
 	public void getsProperties() {
-		RowDefinitionClassWrapper classAdaptor = new RowDefinitionClassWrapper(MyTable1.class);
+		var classAdaptor = new RowDefinitionClassWrapper<>(MyTable1.class);
 		assertThat(classAdaptor.getColumnPropertyDefinitions().size(), is(3));
 	}
 
 	@Test
 	public void getsForeignKeyReferencedTableName() {
-		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
+		var classWrapper = new RowDefinitionClassWrapper<>(MyTable1.class);
 		assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedTableName(), is("table2"));
 	}
 
 	@Test
 	public void getsForeignKeyReferencedColumnName() {
-		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
+		var classWrapper = new RowDefinitionClassWrapper<>(MyTable1.class);
 		assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedColumnName(), is("uid_2"));
 	}
 

@@ -93,8 +93,8 @@ class JavaPropertyFinder {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the non-null list of properties found on the given class
 	 */
-	List<JavaProperty> getPropertiesOf(Class<?> clazz) {
-		List<JavaProperty> properties = new ArrayList<JavaProperty>();
+	List<JavaProperty<?>> getPropertiesOf(Class<?> clazz) {
+		List<JavaProperty<?>> properties = new ArrayList<JavaProperty<?>>();
 
 		// retrieve fields
 		if (propertyTypes.contains(PropertyType.FIELD)) {
@@ -118,9 +118,9 @@ class JavaPropertyFinder {
 	 * @return a list of JavaProperty
 	 */
 	// TODO: this may not be able to handle inheritance of protected/default fields
-	private List<JavaProperty> getFields(Class<?> clazz) {
+	private List<JavaProperty<?>> getFields(Class<?> clazz) {
 		Class<?> theClass = clazz;
-		List<JavaProperty> properties = new ArrayList<JavaProperty>();
+		List<JavaProperty<?>> properties = new ArrayList<JavaProperty<?>>();
 
 		Set<String> observedFieldNames = new HashSet<String>();
 
@@ -129,7 +129,7 @@ class JavaPropertyFinder {
 		for (Field field : theClass.getFields()) {
 			field.setAccessible(true);
 			if (filter.acceptField(field)) {
-				properties.add(new JavaField(field));
+				properties.add(new JavaField<>(field));
 			}
 			observedFieldNames.add(field.getName());
 		}
@@ -158,7 +158,7 @@ class JavaPropertyFinder {
 								// TODO: pretty sure there's exception types that need to be caught on this call
 								field.setAccessible(true);
 
-								properties.add(new JavaField(field));
+								properties.add(new JavaField<>(field));
 							}
 						}
 					}
@@ -183,8 +183,8 @@ class JavaPropertyFinder {
 	 *
 	 * @return a list of JavaProperty
 	 */
-	private List<JavaProperty> getBeanProperties(Class<?> clazz) {
-		List<JavaProperty> properties = new ArrayList<JavaProperty>();
+	private List<JavaProperty<?>> getBeanProperties(Class<?> clazz) {
+		List<JavaProperty<?>> properties = new ArrayList<JavaProperty<?>>();
 
 		// get all public bean-properties
 		try {
@@ -200,7 +200,7 @@ class JavaPropertyFinder {
 
 				// add field if accepted
 				if (filter.acceptBeanProperty(getter, setter)) {
-					properties.add(new JavaBeanProperty(descriptor));
+					properties.add(new JavaBeanProperty<>(descriptor));
 				}
 			}
 		} catch (IntrospectionException e) {

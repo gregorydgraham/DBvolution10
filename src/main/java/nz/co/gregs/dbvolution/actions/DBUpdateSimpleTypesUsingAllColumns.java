@@ -57,7 +57,7 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 				.append(getSetClause(db, table))
 				.append(defn.beginWhereClause())
 				.append(defn.getWhereClauseBeginningCondition());
-		for (PropertyWrapper prop : table.getColumnPropertyWrappers()) {
+		for (var prop : table.getColumnPropertyWrappers()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
 				sql.append(defn.beginAndLine())

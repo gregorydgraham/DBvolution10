@@ -2,34 +2,29 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
- * Internal class. Do not use.
- *
- * Used internally to bridge between packages. Makes it possible to hide
- * internal methods on the QueryableDatatype so that they don't pollute the API
- * or JavaDocs, while still providing access to the internal methods from other
- * packages within DBvolution.
- *
- * For example QueryableDatatype.setPropertyWrapper() is set to package-private,
- * so the only way of calling it from other packages is via this class. If
- * QueryableDatatype.setPropertyWrapper() was public, then this class wouldn't
- * be needed, but it would pollute the public API.
+ * Internal class.Do not use.Used internally to bridge between packages.Makes it possible to hide
+ internal methods on the QueryableDatatype so that they don't pollute the API
+ or JavaDocs, while still providing access to the internal methods from other
+ packages within DBvolution. For example QueryableDatatype.setPropertyWrapper() is set to package-private,
+ so the only way of calling it from other packages is via this class. If
+ QueryableDatatype.setPropertyWrapper() was public, then this class wouldn't
+ be needed, but it would pollute the public API.
+ * @param <BASETYPE> the type returned by the QDT's getValue method
  */
-public class InternalQueryableDatatypeProxy {
+public class InternalQueryableDatatypeProxy<BASETYPE> {
 
-	private final QueryableDatatype<?> qdt;
+	private final QueryableDatatype<BASETYPE> qdt;
 
 	/**
 	 * Internal class, do not use.
 	 *
 	 * @param qdt	qdt
 	 */
-	public InternalQueryableDatatypeProxy(QueryableDatatype<?> qdt) {
+	public InternalQueryableDatatypeProxy(QueryableDatatype<BASETYPE> qdt) {
 		this.qdt = qdt;
 	}
 
@@ -43,7 +38,7 @@ public class InternalQueryableDatatypeProxy {
 	 *
 	 * @param propertyWrapperDefn	propertyWrapperDefn
 	 */
-	public void setPropertyWrapper(PropertyWrapperDefinition propertyWrapperDefn) {
+	public void setPropertyWrapper(PropertyWrapperDefinition<?,BASETYPE> propertyWrapperDefn) {
 		qdt.setPropertyWrapper(propertyWrapperDefn);
 	}
 

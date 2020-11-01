@@ -27,7 +27,7 @@ public class RowDefinitionWrapperFactory {
 	/**
 	 * Thread-safety: access to this object must be synchronized on it
 	 */
-	private final Map<Class<?>, RowDefinitionClassWrapper> classWrappersByClass = new HashMap<Class<?>, RowDefinitionClassWrapper>();
+	private final Map<Class<?>, RowDefinitionClassWrapper<?>> classWrappersByClass = new HashMap<Class<?>, RowDefinitionClassWrapper<?>>();
 
 	/**
 	 * Gets the class adaptor for the given class. If an adaptor for the given
@@ -39,11 +39,12 @@ public class RowDefinitionWrapperFactory {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the class adaptor
 	 */
-	public RowDefinitionClassWrapper classWrapperFor(Class<? extends RowDefinition> clazz) {
+	public <ROW extends RowDefinition> RowDefinitionClassWrapper<ROW> classWrapperFor(Class<ROW> clazz) {
 		synchronized (classWrappersByClass) {
-			RowDefinitionClassWrapper wrapper = classWrappersByClass.get(clazz);
+			@SuppressWarnings("unchecked")
+			RowDefinitionClassWrapper<ROW> wrapper = (RowDefinitionClassWrapper<ROW>) classWrappersByClass.get(clazz);
 			if (wrapper == null) {
-				wrapper = new RowDefinitionClassWrapper(clazz);
+				wrapper = new RowDefinitionClassWrapper<>(clazz);
 				classWrappersByClass.put(clazz, wrapper);
 			}
 			return wrapper;
@@ -60,7 +61,9 @@ public class RowDefinitionWrapperFactory {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object adaptor for the given object
 	 */
-	public RowDefinitionInstanceWrapper instanceWrapperFor(RowDefinition object) {
-		return classWrapperFor(object.getClass()).instanceWrapperFor(object);
+	public <ROW extends RowDefinition> RowDefinitionInstanceWrapper<ROW> instanceWrapperFor(ROW object) {
+		@SuppressWarnings("unchecked")
+		final RowDefinitionClassWrapper<ROW> classWrapper = (RowDefinitionClassWrapper<ROW>) classWrapperFor(object.getClass());
+		return classWrapper.instanceWrapperFor(object);
 	}
 }

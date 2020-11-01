@@ -78,7 +78,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		DBDefinition defn = db.getDefinition();
 		try (DBStatement statement = db.getDBStatement()) {
 			actions = new DBActionList();
-			for (PropertyWrapper prop : getInterestingLargeObjects(table)) {
+			for (var prop : getInterestingLargeObjects(table)) {
 				final String col = prop.columnName();
 				final DBLargeObject<?> largeObject = (DBLargeObject<?>) prop.getQueryableDatatype();
 
@@ -313,7 +313,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the interesting DBLargeObjects.
 	 */
-	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
+	protected List<PropertyWrapper<?,?>> getInterestingLargeObjects(DBRow row) {
 		return getChangedLargeObjects(row);
 	}
 
@@ -322,13 +322,8 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		return new DBActionList();
 	}
 
-//	@Override
-//	protected DBActionList getActions() {
-//		return new DBActionList(new DBUpdateLargeObjects(getRow()));
-//	}
-
-	private List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
-		List<PropertyWrapper> changed = new ArrayList<>();
+	private List<PropertyWrapper<?,?>> getChangedLargeObjects(DBRow row) {
+		List<PropertyWrapper<?,?>> changed = new ArrayList<>();
 		if (row.hasLargeObjects()) {
 			for (QueryableDatatype<?> qdt : row.getLargeObjects()) {
 				if (qdt instanceof DBLargeObject) {
