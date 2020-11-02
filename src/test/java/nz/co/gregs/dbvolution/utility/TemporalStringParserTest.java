@@ -30,10 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -88,6 +85,25 @@ public class TemporalStringParserTest {
 
 	@Test
 	public void testToZonedDateTime() {
+		String oracleZuluDate = "2011-04-01 12:02:03.0 +1:00";
+		OffsetDateTime parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
+		 oracleZuluDate = "2011-04-01 12:02:03.0001 +1:00";
+		 parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
+		//  uuuu-MM-dd HH:mm:ss.S VV
+		
+		String novemberFirst = "2020-11-01 00:48:18.8436";
+		ZonedDateTime toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
+
+		novemberFirst = "2020-11-01 00:48:18.8436Z";
+		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
+		novemberFirst = "2020-11-01 00:48:18.8436 +0000";
+		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
+		novemberFirst = "2020-11-01 00:48:18.8436 +00:00";
+		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
+		novemberFirst = "2020-11-01 00:48:18.8436 +0:00";
+		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
+		ZonedDateTime testDate = ZonedDateTime.of(2020, 11, 1, 0, 48, 18, 843600000, ZoneId.of("Z"));
+		Assert.assertThat(toZonedDateTime, is(testDate));
 	}
 
 	@Test

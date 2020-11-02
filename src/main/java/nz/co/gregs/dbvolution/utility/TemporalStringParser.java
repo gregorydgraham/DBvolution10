@@ -160,11 +160,11 @@ public class TemporalStringParser {
 		} else {
 			System.out.println("nz.co.gregs.dbvolution.utility.TemporalStringParser.toZonedDateTime()");
 			System.out.println("FAILED TO PARSE DATE");
-			System.out.println("INPUTSTRING: "+inputDateString);
-			System.out.println("FINAL VERSION: "+str);
+			System.out.println("INPUTSTRING: " + inputDateString);
+			System.out.println("FINAL VERSION: " + str);
 			LOG.info("FAILED TO PARSE DATE");
-			LOG.info("INPUTSTRING: "+inputDateString);
-			LOG.info("FINAL VERSION: "+str);
+			LOG.info("INPUTSTRING: " + inputDateString);
+			LOG.info("TEST VERSION: " + str);
 			throw new DateTimeParseException(inputDateString, sequence, 0, exception);
 		}
 	}
@@ -309,7 +309,7 @@ public class TemporalStringParser {
 		static String[] hourParts = new String[]{"HH"};
 		static String[] minuteParts = new String[]{"mm"};
 		static String[] secondParts = new String[]{"ss"};
-		static String[] subsecondParts = new String[]{"SSSSSSSSS", "SSSSSS", "SSS", "S", ""};
+		static String[] subsecondParts = new String[]{"SSSSSSSSS", "SSSSSS", "SSSSS", "SSSS", "SSS", "SS", "S", ""};
 		static String[] secondPartDividerParts = new String[]{".", ""};
 		static String[] timezoneParts = new String[]{"VV", "zzzz", "OOOO", "XXXXX", "xxxxx", "ZZZZZ", "XXXX", "xxxx", "ZZZZ", "XXX", "xxx", "XX", "xx", "z", "O", "X", "x", "Z"};
 
