@@ -24,6 +24,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -58,6 +61,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.VendorSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
+import nz.co.gregs.dbvolution.expressions.InstantExpression;
+import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -1609,10 +1614,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
-		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper<?,?>>(), new ArrayList<PropertyWrapper<?,?>>());
+		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper<?, ?>>(), new ArrayList<PropertyWrapper<?, ?>>());
 	}
 
-	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper<?,?>> pkFields, List<PropertyWrapper<?,?>> spatial2DFields) {
+	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper<?, ?>> pkFields, List<PropertyWrapper<?, ?>> spatial2DFields) {
 		StringBuilder sqlScript = new StringBuilder();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
@@ -1679,8 +1684,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 
-		List<PropertyWrapper<?,?>> pkFields = new ArrayList<>();
-		List<PropertyWrapper<?,?>> spatial2DFields = new ArrayList<>();
+		List<PropertyWrapper<?, ?>> pkFields = new ArrayList<>();
+		List<PropertyWrapper<?, ?>> spatial2DFields = new ArrayList<>();
 
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
 		try ( DBStatement dbStatement = getDBStatement()) {
@@ -2514,6 +2519,30 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		hasCreatedRequiredTables = b;
 	}
 
+	public LocalDateTime getCurrentLocalDatetime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+		DBQuery query = getDBQuery();
+		final String key = "THE SYSTEM LOCALDATETIME";
+		query.addExpressionColumn(key, LocalDateTimeExpression.currentLocalDateTime().asExpressionColumn());
+		Object value = query.setBlankQueryAllowed(true).getAllRows(1).get(0).getExpressionColumnValue(key).getValue();
+		if (value instanceof LocalDateTime) {
+			return (LocalDateTime) value;
+		} else {
+			throw new SQLException("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME: "+query.getSQLForQuery());
+		}
+	}
+
+	public Instant getCurrentInstant() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+		DBQuery query = getDBQuery();
+		final String key = "THE SYSTEM ZONEDDATETIME";
+		query.addExpressionColumn(key, InstantExpression.currentInstant().asExpressionColumn());
+		Object value = query.setBlankQueryAllowed(true).getAllRows(1).get(0).getExpressionColumnValue(key).getValue();
+		if (value instanceof Instant) {
+			return (Instant) value;
+		} else {
+			throw new SQLException("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME: "+query.getSQLForQuery());
+		}
+	}
+
 	public static enum ResponseToException {
 		REPLACECONNECTION(),
 		REQUERY(),
@@ -2632,7 +2661,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
 
-		List<PropertyWrapper<?,?>> newColumns = new ArrayList<>();
+		List<PropertyWrapper<?, ?>> newColumns = new ArrayList<>();
 		String testQuery = getDBTable(table)
 				.setQueryTimeout(10000)
 				.setBlankQueryAllowed(true)
@@ -2674,7 +2703,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
-	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?,?> columnPropertyWrapper) {
+	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?, ?> columnPropertyWrapper) {
 		preventDDLDuringTransaction("DBDatabase.alterTable()");
 
 		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
