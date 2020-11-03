@@ -69,8 +69,11 @@ public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> 
 	 * @param classProperty the class-level wrapper
 	 * @param target the target object containing the given property
 	 */
-	public PropertyWrapper(RowDefinitionInstanceWrapper<?> instanceWrapper,
-			PropertyWrapperDefinition<?, BASETYPE> classProperty, RowDefinition target) {
+	public PropertyWrapper(
+			RowDefinitionInstanceWrapper<?> instanceWrapper,
+			PropertyWrapperDefinition<?, BASETYPE> classProperty,
+			RowDefinition target
+	) {
 		this.dbRowInstanceWrapper = instanceWrapper;
 		this.propertyDefinition = classProperty;
 		this.target = target;
@@ -172,7 +175,7 @@ public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> 
 		if (!(obj instanceof PropertyWrapper)) {
 			return false;
 		}
-		var other = (PropertyWrapper<?,?>) obj;
+		var other = (PropertyWrapper<?, ?>) obj;
 		if (propertyDefinition == null) {
 			if (other.propertyDefinition != null) {
 				return false;
@@ -517,8 +520,8 @@ public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> 
 
 	/**
 	 * Sets the DBvolution-centric value of the property.The value set may have
- undergone type conversion to the target object's actual property type, if a
- type adaptor is present.<p>
+	 * undergone type conversion to the target object's actual property type, if a
+	 * type adaptor is present.<p>
 	 * Use {@link #isWritable()} beforehand to check whether the property can be
 	 * modified.
 	 *
@@ -831,7 +834,7 @@ public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> 
 		if (!(qdt instanceof DBLargeObject)) {
 			if (qdt != null && qdt.hasChanged()) {
 				qdt.setUnchanged();
-				
+
 				// ensure field set when using type adaptors
 				setQueryableDatatype(qdt);
 			}
