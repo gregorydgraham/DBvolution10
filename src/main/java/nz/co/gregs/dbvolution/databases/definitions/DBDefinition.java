@@ -1076,6 +1076,22 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * Returns the FROM clause required to access the DUAL table or its
+	 * equivalent.
+	 *
+	 * <p>
+	 * Oracle defines a table called DUAL that makes it easy to select random
+	 * values for instance "select getdate() from dual;". Other databases use
+	 * different mechanisms, often empty from clauses e.g. "select getdate;". This
+	 * method should return " FROM DUAL" or the equivalent for the database.</p>
+	 *
+	 * @return " FROM DUAL " or equivalent.
+	 */
+	public String getFromDualEquivalent() {
+		return " ";
+	}
+
+	/**
 	 * Returns the default ending of an SQL statement for this database.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
