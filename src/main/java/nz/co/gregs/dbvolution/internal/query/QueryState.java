@@ -51,6 +51,7 @@ public class QueryState {
 	private boolean hasBeenOrdered = false;
 	private final List<DBRow> joinedTables = new ArrayList<>();
 	private final List<DBExpression> joinedComplexExpressions = new ArrayList<>();
+	private boolean queryOnDual=false;
 
 	public QueryState(QueryDetails details) {
 		this.remainingExpressions = new ArrayList<>(details.getConditions());
@@ -167,4 +168,11 @@ public class QueryState {
 		return joinedComplexExpressions;
 	}
 
+	public void setQueryOnDual(boolean b) {
+		queryOnDual = b;
+	}
+
+	public boolean isQueryOnDual() {
+		return queryOnDual;
+	}
 }
