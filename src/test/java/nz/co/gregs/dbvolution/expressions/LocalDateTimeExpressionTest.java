@@ -22,8 +22,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -590,19 +588,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		final LocalDateTime buffered = now.minusMinutes(10);
 
 		Assert.assertThat(systemLocalDatetime, is(greaterThan(buffered)));
-
-	}
-
-	@Test
-	public void testCheckDatabaseInstant() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
-
-		Instant systemInstant = database.getCurrentInstant();
-
-		System.out.println("SYSTEMINSTANT: " + systemInstant);
-		final Instant now = Instant.now();
-		final Instant buffered = now.minus(10, ChronoUnit.MINUTES);
-
-		Assert.assertThat(systemInstant, is(greaterThan(buffered)));
 
 	}
 

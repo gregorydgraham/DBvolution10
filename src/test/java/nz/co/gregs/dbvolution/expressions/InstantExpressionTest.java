@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -42,7 +43,11 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBStringTrimmed;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,6 +87,19 @@ public class InstantExpressionTest extends AbstractTest {
 
 	Instant march23rd2013Instant = (new GregorianCalendar(2013, 2, 23, 12, 34, 56)).toZonedDateTime().withZoneSameLocal(ZoneOffset.UTC).toInstant();
 	Instant april2nd2011Instant = (new GregorianCalendar(2011, 3, 2, 1, 2, 3)).toZonedDateTime().withZoneSameLocal(ZoneOffset.UTC).toInstant();
+
+	@Test
+	public void testCheckDatabaseInstant() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+
+		Instant systemInstant = database.getCurrentInstant();
+
+		System.out.println("SYSTEMINSTANT: " + systemInstant);
+		final Instant now = Instant.now();
+		final Instant buffered = now.minus(10, ChronoUnit.MINUTES);
+
+		Assert.assertThat(systemInstant, is(greaterThan(buffered)));
+
+	}
 
 	@Test
 	public void testIsNotDateExpression() throws SQLException {
@@ -1353,7 +1371,7 @@ public class InstantExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).get(new MarqueWithInstant()).creationInstant.getValue(), nullValue());
+		Assert.assertThat(allRows.get(0).get(new MarqueWithInstant()).creationInstant.getValue(), Matchers.nullValue());
 
 		MarqueWithInstant newMarque = new MarqueWithInstant(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
