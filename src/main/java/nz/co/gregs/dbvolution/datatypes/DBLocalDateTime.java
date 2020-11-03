@@ -288,6 +288,9 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		} else {
 			dbValue = setByGetDate(defn, resultSet, fullColumnName);
 		}
+		if (dbValue!=null && defn.hasLocalDateTimeOffset()){
+			dbValue = dbValue.plusHours(defn.getLocalDateTimeOffsetHours()).plusMinutes(defn.getLocalDateTimeOffsetMinutes());
+		}
 		return dbValue;
 	}
 

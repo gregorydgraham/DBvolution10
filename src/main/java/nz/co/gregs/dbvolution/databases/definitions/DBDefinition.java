@@ -82,6 +82,8 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
 public abstract class DBDefinition implements Serializable {
 
 	public static final long serialVersionUID = 1L;
+	private int localDateTimeOffsetHours;
+	private int localDateTimeOffsetMinutes;
 
 	public int getNumericPrecision() {
 		return DBNumber.getNumericPrecision();
@@ -6973,5 +6975,25 @@ public abstract class DBDefinition implements Serializable {
 			Logger.getLogger(DBDefinition.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		return this;
+	}
+
+	public boolean hasLocalDateTimeOffset() {
+		return getLocalDateTimeOffsetHours() != 0 && getLocalDateTimeOffsetMinutes() != 0;
+	}
+
+	public int getLocalDateTimeOffsetHours() {
+		return localDateTimeOffsetHours;
+	}
+
+	public int getLocalDateTimeOffsetMinutes() {
+		return localDateTimeOffsetMinutes;
+	}
+
+	public void setLocalDateTimeOffsetHours(int localDateTimeOffsetHours) {
+		this.localDateTimeOffsetHours = localDateTimeOffsetHours;
+	}
+
+	public void setLocalDateTimeOffsetMinutes(int localDateTimeOffsetMinutes) {
+		this.localDateTimeOffsetMinutes = localDateTimeOffsetMinutes;
 	}
 }

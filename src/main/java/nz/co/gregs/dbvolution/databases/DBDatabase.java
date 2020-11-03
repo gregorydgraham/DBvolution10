@@ -26,7 +26,6 @@ import java.security.SecureRandom;
 import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,6 +62,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.VendorSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
+import nz.co.gregs.dbvolution.utility.TimeZoneGuesser;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -396,6 +396,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 		setDBDatabaseClassInSettings(suppliedSettings);
 		createRequiredTables();
+		checkForTimezoneIssues();
 	}
 
 	/**
@@ -2519,16 +2520,24 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		hasCreatedRequiredTables = b;
 	}
 
-	public LocalDateTime getCurrentLocalDatetime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+	public LocalDateTime getCurrentLocalDatetime() throws SQLException {
 		DBQuery query = getDBQuery();
 		final String key = "THE SYSTEM LOCALDATETIME";
 		query.addExpressionColumn(key, LocalDateTimeExpression.currentLocalDateTime().asExpressionColumn());
-		Object value = query.setBlankQueryAllowed(true).getAllRows(1).get(0).getExpressionColumnValue(key).getValue();
-		if (value instanceof LocalDateTime) {
-			return (LocalDateTime) value;
-		} else {
-			throw new SQLException("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME: "+query.getSQLForQuery());
+		Object value;
+		try {
+			value = query.setBlankQueryAllowed(true).getAllRows(1).get(0).getExpressionColumnValue(key).getValue();
+			if (value instanceof LocalDateTime) {
+				return (LocalDateTime) value;
+			}
+		} catch (UnexpectedNumberOfRowsException ex) {
+			LOG.error("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME ", ex);
+		} catch (AccidentalCartesianJoinException ex) {
+			LOG.error("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME ", ex);
+		} catch (AccidentalBlankQueryException ex) {
+			LOG.error("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME ", ex);
 		}
+		throw new SQLException("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME: " + query.getSQLForQuery());
 	}
 
 	public Instant getCurrentInstant() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
@@ -2539,8 +2548,14 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		if (value instanceof Instant) {
 			return (Instant) value;
 		} else {
-			throw new SQLException("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME: "+query.getSQLForQuery());
+			throw new SQLException("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME: " + query.getSQLForQuery());
 		}
+	}
+
+	private void checkForTimezoneIssues() throws SQLException {
+		TimeZoneGuesser guess = TimeZoneGuesser.guess(getCurrentLocalDatetime());
+		this.definition.setLocalDateTimeOffsetHours(guess.getHours());
+		this.definition.setLocalDateTimeOffsetMinutes(guess.getMinutes());
 	}
 
 	public static enum ResponseToException {
