@@ -21,6 +21,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -39,6 +42,9 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -452,9 +458,8 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-		
-//		query.printAllRows();
 
+//		query.printAllRows();
 		Assert.assertThat(allRows.size(), is(22));
 
 		MarqueWithAggregatorAndDateWindowingFunctions got;// = allRows.get(0).get(marq);
@@ -573,6 +578,32 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		@DBColumn //(rank - 1) / (total partition rows - 1)
 		DBNumber percentileRank = AnyExpression.percentageRank().AllRowsAndOrderBy(column(carCompany).ascending()).asExpressionColumn();
+	}
+
+	@Test
+	public void tesCheckDatabaseLocalDateTime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+
+		LocalDateTime systemLocalDatetime = database.getCurrentLocalDatetime();
+
+		System.out.println("SYSTEMLOCALDATETIME: " + systemLocalDatetime);
+		final LocalDateTime now = LocalDateTime.now();
+		final LocalDateTime buffered = now.minusMinutes(10);
+
+		Assert.assertThat(systemLocalDatetime, is(greaterThan(buffered)));
+
+	}
+
+	@Test
+	public void testCheckDatabaseInstant() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+
+		Instant systemInstant = database.getCurrentInstant();
+
+		System.out.println("SYSTEMINSTANT: " + systemInstant);
+		final Instant now = Instant.now();
+		final Instant buffered = now.minus(10, ChronoUnit.MINUTES);
+
+		Assert.assertThat(systemInstant, is(greaterThan(buffered)));
+
 	}
 
 	@Test
