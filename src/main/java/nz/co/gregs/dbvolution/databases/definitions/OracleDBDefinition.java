@@ -927,4 +927,8 @@ public class OracleDBDefinition extends DBDefinition {
 		return formatColumnName(primaryKeyColumnName);
 	}
 
+	public String getFromDualEquivalent() {
+		return " FROM DUAL ";
+	}
+
 }
