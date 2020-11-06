@@ -103,7 +103,7 @@ public abstract class DBUpdate extends DBAction {
 	public static DBActionList getUpdates(DBRow... rows) throws SQLException {
 		DBActionList updates = new DBActionList();
 		for (DBRow row : rows) {
-			if (row.getDefined()) {
+			if (row.isDefined()) {
 				if (row.hasChangedSimpleTypes()) {
 					final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 					if (primaryKeys == null || primaryKeys.isEmpty()) {
