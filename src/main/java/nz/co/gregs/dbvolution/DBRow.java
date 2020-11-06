@@ -165,14 +165,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param requiredDBRowClass requiredDBRowClass
 	 * @return a new blank version of the specified class
 	 */
-	public static <ROW extends DBRow> ROW getDBRow(RowDefinitionClassWrapper<ROW> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
+	public static <ROW extends RowDefinition> ROW getDBRow(RowDefinitionClassWrapper<ROW> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
 		try {
-			Constructor<?> constructor = requiredDBRowClass.adapteeClass().getConstructor();
+			Constructor<ROW> constructor = requiredDBRowClass.adapteeClass().getConstructor();
 			constructor.setAccessible(true);
-			return (ROW) constructor.newInstance();
+			return constructor.newInstance();
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			try {
-				return (ROW) requiredDBRowClass.adapteeClass().getDeclaredConstructor().newInstance();
+				return requiredDBRowClass.adapteeClass().getDeclaredConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex1) {
 				throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass.adapteeClass(), ex);
 			}
@@ -389,6 +389,36 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public boolean getDefined() {
 		return isDefined;
+	}
+
+	/**
+	 *
+	 * Indicates whether this instance is a defined row within the database.
+	 *
+	 * Example objects and blank rows from an optional table are "undefined".
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return TRUE if this row exists within the database, otherwise FALSE.
+	 */
+	public boolean isDefined() {
+		return isDefined;
+	}
+
+	/**
+	 *
+	 * Indicates whether this instance is a undefined row within the database.
+	 *
+	 * Example objects and blank rows from an optional table are "undefined".
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return TRUE if this row exists within the database, otherwise FALSE.
+	 */
+	public boolean isUndefined() {
+		return !isDefined();
 	}
 
 	/**
