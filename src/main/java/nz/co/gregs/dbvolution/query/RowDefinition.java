@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.columns.*;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -56,7 +57,7 @@ public class RowDefinition implements Serializable {
 
 	private static final RowDefinitionWrapperFactory WRAPPER_FACTORY = new RowDefinitionWrapperFactory();
 	private final RowDefinitionInstanceWrapper<?> wrapper = WRAPPER_FACTORY.instanceWrapperFor(this);
-	private transient List<PropertyWrapperDefinition<?,?>> returnColumns = null;
+	private transient List<PropertyWrapperDefinition<?, ?>> returnColumns = null;
 
 	/**
 	 * Gets a wrapper for the underlying property (field or method) given the
@@ -75,7 +76,7 @@ public class RowDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the PropertyWrapper associated with the Object suppled or NULL.
 	 */
-	public PropertyWrapper<?,?> getPropertyWrapperOf(Object qdt) {
+	public PropertyWrapper<?, ?> getPropertyWrapperOf(Object qdt) {
 		var props = getWrapper().getColumnPropertyWrappers();
 
 		Object qdtOfProp;
@@ -83,6 +84,36 @@ public class RowDefinition implements Serializable {
 			qdtOfProp = prop.rawJavaValue();
 			if (qdtOfProp == qdt) {
 				return prop;
+			}
+		}
+		return null;
+	}
+	/**
+	 * Gets a wrapper for the underlying property (field or method) given the
+	 * property's object reference.
+	 *
+	 * <p>
+	 * For example the following code snippet will get a property wrapper for the
+	 * {@literal name} field:
+	 * <pre>
+	 * Customer customer = ...;
+	 * getPropertyWrapperOf(customer.name);
+	 * </pre>
+	 *
+	 * @param qdt	qdt
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the PropertyWrapper associated with the Object suppled or NULL.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T, Q extends QueryableDatatype<T>> PropertyWrapper<T, Q> getPropertyWrapperOf(Q qdt) {
+		var props = getWrapper().getColumnPropertyWrappers();
+
+		Object qdtOfProp;
+		for (var prop : props) {
+			qdtOfProp = prop.rawJavaValue();
+			if (qdtOfProp == qdt) {
+				return (PropertyWrapper<T, Q>) prop;
 			}
 		}
 		return null;
@@ -113,8 +144,25 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
-	public List<PropertyWrapper<?,?>> getColumnPropertyWrappers() {
+	public List<PropertyWrapper<?, ?>> getColumnPropertyWrappers() {
 		return getWrapper().getColumnPropertyWrappers();
+	}
+
+	/**
+	 * Returns the queryabledatatypes used internally to maintain the relationship
+	 * between fields and columns
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return non-null list of property wrappers, empty if none
+	 */
+	public List<QueryableDatatype<?>> getColumnQueryableDatatypes() {
+		return getWrapper()
+				.getColumnPropertyWrappers()
+				.stream()
+				.map(w -> (QueryableDatatype<?>) w.getQueryableDatatype())
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -125,7 +173,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
-	public List<PropertyWrapper<?,?>> getAutoFillingPropertyWrappers() {
+	public List<PropertyWrapper<?, ?>> getAutoFillingPropertyWrappers() {
 		return getWrapper().getAutoFillingPropertyWrappers();
 	}
 
@@ -407,6 +455,7 @@ public class RowDefinition implements Serializable {
 	public LineSegment2DColumn column(DBLineSegment2D fieldOfThisInstance) {
 		return new LineSegment2DColumn(this, fieldOfThisInstance);
 	}
+
 	/**
 	 * Creates a new {@link LineSegment2DColumn} instance to help create
 	 * {@link DBExpression expressions}
@@ -450,7 +499,7 @@ public class RowDefinition implements Serializable {
 	public MultiPoint2DColumn column(DBMultiPoint2D fieldOfThisInstance) {
 		return new MultiPoint2DColumn(this, fieldOfThisInstance);
 	}
-	
+
 	/**
 	 * Creates a new {@link MultiPoint2DColumn} instance to help create
 	 * {@link DBExpression expressions}
@@ -1451,7 +1500,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return a list of the columns to be selected and returned in the query.
 	 */
-	protected List<PropertyWrapperDefinition<?,?>> getReturnColumns() {
+	protected List<PropertyWrapperDefinition<?, ?>> getReturnColumns() {
 		if (returnColumns == null) {
 			returnColumns = this.getColumnPropertyWrapperDefinitions();
 		}
@@ -1461,9 +1510,11 @@ public class RowDefinition implements Serializable {
 	/**
 	 * Changed the list of columns that are to be return during a query.
 	 *
-	 * @param returnColumns a list of all the columns to be included in the returned data from the database.  Other columns will be DBNull REGARDLESS of there actual value in the database.
+	 * @param returnColumns a list of all the columns to be included in the
+	 * returned data from the database. Other columns will be DBNull REGARDLESS of
+	 * there actual value in the database.
 	 */
-	protected void setReturnColumns(List<PropertyWrapperDefinition<?,?>> returnColumns) {
+	protected void setReturnColumns(List<PropertyWrapperDefinition<?, ?>> returnColumns) {
 		this.returnColumns = returnColumns;
 	}
 
@@ -1477,8 +1528,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return a list of the PropertyWrapperDefinition for columns.
 	 */
-	protected List<PropertyWrapperDefinition<?,?>> getColumnPropertyWrapperDefinitions() {
-		List<PropertyWrapperDefinition<?,?>> columns = new ArrayList<PropertyWrapperDefinition<?,?>>();
+	protected List<PropertyWrapperDefinition<?, ?>> getColumnPropertyWrapperDefinitions() {
+		List<PropertyWrapperDefinition<?, ?>> columns = new ArrayList<PropertyWrapperDefinition<?, ?>>();
 		var propertyWrappers = this.getColumnPropertyWrappers();
 		for (var propertyWrapper : propertyWrappers) {
 			columns.add(propertyWrapper.getPropertyWrapperDefinition());
@@ -1487,7 +1538,7 @@ public class RowDefinition implements Serializable {
 	}
 
 	public String getTableVariantAlias() {
-		return ""+ getClass().getSimpleName().hashCode();
+		return "" + getClass().getSimpleName().hashCode();
 	}
 
 }
