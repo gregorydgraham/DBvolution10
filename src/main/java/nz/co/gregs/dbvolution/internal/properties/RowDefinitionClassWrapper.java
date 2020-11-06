@@ -163,7 +163,7 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 				.stream()
 				.filter(property -> (property.isPrimaryKey()))
 				.forEachOrdered(property -> pkProperties.add(property));
-		
+
 		@SuppressWarnings("unchecked")
 		final PropertyWrapperDefinition<ROW, ?>[] genericArray = new PropertyWrapperDefinition[]{};
 		this.primaryKeyProperties = pkProperties.toArray(genericArray);
@@ -343,7 +343,7 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 *
 	 * @return the DBRow or Object wrapped by this instance.
 	 */
-	public Class<? extends RowDefinition> adapteeClass() {
+	public Class<ROW> adapteeClass() {
 		return adapteeClass;
 	}
 
@@ -424,11 +424,10 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	}
 
 	/**
-	 * Gets the property that is the primary key, if one is marked. Note:
-	 * multi-column primary key tables are not yet supported.
+	 * Gets the property that is the primary key, if one is marked.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p>
+	 * Note: multi-column primary key tables are not yet supported.</p>
 	 *
 	 * @return the primary key property or null if no primary key
 	 */
