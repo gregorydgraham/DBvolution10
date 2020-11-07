@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -114,9 +113,6 @@ import org.reflections.Reflections;
  * }<br>
  * </code>
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 abstract public class DBRow extends RowDefinition implements Serializable {
@@ -140,8 +136,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param <T> DBRow type
 	 * @param requiredDBRowClass requiredDBRowClass
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new blank version of the specified class
 	 */
 	public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
@@ -185,8 +179,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param <R> DBRow type
 	 * @param sourceRow sourceRow
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return Returns a new DBRow example, of the same class as the supplied row,
 	 * with the same primary key as the source key
 	 */
@@ -210,8 +202,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param <T> DBRow type
 	 * @param originalRow originalRow
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new version of the specified row with values that duplicate the
 	 * original.
 	 */
@@ -260,9 +250,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
 	 * field, then the QueryableDatatype instance of that field is returned.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the QDT of the primary key or null if there is no primary key.
 	 */
 	public List<QueryableDatatype<?>> getPrimaryKeys() {
@@ -284,9 +271,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
 	 * field, then the Column instance of that field is returned.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the ColumnProvider instance of the primary key or null if there is
 	 * no primary key.
@@ -313,9 +297,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
 	 * field, then the QueryableDatatype instance of that field is returned.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the QDT of the primary key or an empty array if there is no primary
 	 * key.
@@ -358,9 +339,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
 	 * field, then the field index of that field is returned.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the index of the primary key or null if there is no primary key.
 	 */
 	public List<Integer> getPrimaryKeyIndexes() {
@@ -382,9 +360,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * Example objects and blank rows from an optional table are "undefined".
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return TRUE if this row exists within the database, otherwise FALSE.
 	 */
 	public boolean getDefined() {
@@ -397,9 +372,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * Example objects and blank rows from an optional table are "undefined".
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return TRUE if this row exists within the database, otherwise FALSE.
 	 */
 	public boolean isDefined() {
@@ -411,10 +383,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Indicates whether this instance is a undefined row within the database.
 	 *
 	 * Example objects and blank rows from an optional table are "undefined".
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
+	 * 
 	 * @return TRUE if this row exists within the database, otherwise FALSE.
 	 */
 	public boolean isUndefined() {
@@ -447,9 +416,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	/**
 	 * Returns true if any of the non-LargeObject fields has been changed.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the simple types have changed, otherwise FALSE
 	 */
@@ -487,9 +453,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Finds the Primary Key, if there is one, and returns its column name
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the column of the primary key
 	 */
 	public List<String> getPrimaryKeyColumnNames() {
@@ -507,9 +470,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	/**
 	 * Finds the Primary Key, if there is one, and returns the name of the field.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the java field name of the primary key
 	 */
@@ -529,9 +489,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Returns the PropertyWrapper for the DBRow's primary key.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the PropertyWrapper for the primary key.
 	 */
 	public List<PropertyWrapper<?, ?>> getPrimaryKeyPropertyWrappers() {
@@ -546,8 +503,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Uses table and column aliases appropriate for SELECT queries
 	 *
 	 * @param db The DBDatabase instance that this query is to be executed on.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the WHERE clause that will be used with the current parameters
 	 *
 	 */
@@ -563,8 +518,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Uses plain table and column names appropriate for DELETE queries
 	 *
 	 * @param db The DBDatabase instance that this query is to be executed on.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the WHERE clause that will be used with the current parameters
 	 *
 	 */
@@ -572,7 +525,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return getWhereClauses(db, true);
 	}
 
-	private List<String> getWhereClauses(DBDefinition db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
+	private List<String> getWhereClauses(DBDefinition db, boolean useTableAlias)
 	{
 		List<String> whereClause = new ArrayList<>();
 		var props = getWrapper().getColumnPropertyWrappers();
@@ -584,12 +537,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (prop.isTypeAdapted()) {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
-//						try {
-						rawJavaValue = prop.getRawJavaTypeInstance();//.newInstance();
-//						} catch (InstantiationException | IllegalAccessException ex) {
-//							// note: InstantiationException tends to be thrown without a message
-//							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
-//						}
+						rawJavaValue = prop.getRawJavaTypeInstance();
 						prop.setRawJavaValue(rawJavaValue);
 					}
 					column = this.column(rawJavaValue);
@@ -645,12 +593,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (prop.isTypeAdapted()) {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
-//						try {
 						rawJavaValue = prop.getRawJavaTypeInstance();
-//						} catch (InstantiationException | IllegalAccessException ex) {
-						// note: InstantiationException tends to be thrown without a message
-//							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
-//						}
 						prop.setRawJavaValue(rawJavaValue);
 					}
 					column = this.column(rawJavaValue);
@@ -699,8 +642,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * functionally blank queries.
 	 *
 	 * @param db	db
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if this DBRow instance has no specified criteria and will
 	 * create a blank query returning the whole table.
 	 *
@@ -713,9 +654,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Probably not needed by the programmer, this is the convenience function to
 	 * find the table name specified by {@code @DBTableName} or the class name
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the name of the table in the database specified to correlate with
 	 * the specified type
@@ -737,9 +675,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Returns the alias to be used if this DBRow is being used in a recursive
 	 * query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the recursive alias set by {@link DBRecursiveQuery} during query
 	 * execution.
 	 */
@@ -750,9 +685,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Returns the same result as {@link #toString() } but omitting the Foreign
 	 * Key references.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a string representation of the contents of this instance with
 	 * Foreign Key fields removed
@@ -780,9 +712,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
 	public List<PropertyWrapper<?, ?>> getForeignKeyPropertyWrappers() {
@@ -806,9 +735,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
 	public List<PropertyWrapper<?, ?>> getNonPrimaryKeyPropertyWrappers() {
@@ -831,14 +757,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
 	public List<PropertyWrapper<?, ?>> getRecursiveForeignKeyPropertyWrappers() {
-//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyPropertyWrappers()");
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
 				var props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
@@ -1044,9 +965,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * If the DBrow has columns that represent BLOB, CLOB, TEXT, JAVA_OBJECT, or
 	 * other large object columns, this method with indicate it.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return TRUE if this DBRow has large object columns, FALSE otherwise.
 	 */
 	public boolean hasLargeObjects() {
@@ -1198,8 +1116,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * supplied example as DBRelationships
 	 *
 	 * @param otherTable otherTable
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the foreign keys and ad-hoc relationships as an SQL String or a
 	 * null pointer
 	 */
@@ -1232,8 +1148,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * will be connected given the specified database and query options.
 	 *
 	 * @param otherTable otherTable
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if this instance and the otherTable will be connected, FALSE
 	 * otherwise.
 	 */
@@ -1254,9 +1168,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * That is to say: where A is this class, returns a List of B such that A
 	 * =&gt; B
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return A set of DBRow subclasses referenced with {@code @DBForeignKey}
 	 *
@@ -1391,16 +1302,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
-//			try {
 			if (!Modifier.isAbstract(tableClass.getModifiers())) {
-				DBRow newInstance = DBRow.getDBRow(tableClass);//tableClass.newInstance();
+				DBRow newInstance = DBRow.getDBRow(tableClass);
 				if (newInstance.getReferencedTables().contains(this.getClass())) {
 					relatedTables.add(tableClass);
 				}
 			}
-//			} catch (InstantiationException | IllegalAccessException ex) {
-//				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
-//			}
 		}
 		return relatedTables;
 	}
@@ -1417,9 +1324,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * That is to say: where A is this class, returns a List of B such that B
 	 * =&gt; A
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a set of classes that have a {@code @DBForeignKey} reference to
 	 * this class
 	 */
@@ -1430,17 +1334,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
 			if (tableClass.getSuperclass().equals(DBRow.class)) {
-//				try {
 				if (!Modifier.isAbstract(tableClass.getModifiers())) {
 					DBRow newInstance = DBRow.getDBRow(tableClass);
-//						DBRow newInstance = tableClass.newInstance();
 					if (newInstance.getReferencedTables().contains(this.getClass())) {
 						relatedTables.add(tableClass);
 					}
 				}
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
-//				}
 			}
 		}
 		return relatedTables;
@@ -1471,9 +1370,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Returns all fields that represent BLOB columns such DBLargeObject or
 	 * DBJavaObject.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of {@link QueryableDatatype} that are large objects in this
 	 * object.
 	 */
@@ -1495,8 +1391,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param <R> DBRow
 	 * @param query query
 	 * @param example example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return all instances of {@code example} that are connected to this
 	 * instance in the {@code query} 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -1537,9 +1431,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * Please note: if the row is undefined
 	 * {@link DBRow#isDefined (see isDefined)} then this is meaningless
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the row has no non-null values or is undefined, FALSE
 	 * otherwise
@@ -1594,8 +1485,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param <R> DBRow type
 	 * @param row row
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of {@link QueryableDatatype} that are foreign keys to the
 	 * {@link DBRow}
 	 */
@@ -1627,7 +1516,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * {@link DBRow}
 	 */
 	public <R extends DBRow> List<QueryableDatatype<?>> getRecursiveForeignKeys() {
-//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeys()");
 		List<QueryableDatatype<?>> fksToSelf = new ArrayList<>();
 		var wrapper = getWrapper();
 		var foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
@@ -1646,8 +1534,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param <R> DBRow type
 	 * @param target target
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of {@link DBExpression DBExpressions} that are foreign keys
 	 * to the {@link DBRow target}
 	 */
@@ -1692,7 +1578,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * to the {@link DBRow target}
 	 */
 	public <R extends DBRow> List<DBExpression> getRecursiveForeignKeyExpressions() {
-//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
 		List<DBExpression> fksToR = new ArrayList<>();
 		var wrapper = getWrapper();
 		var foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
@@ -1733,7 +1618,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * to the {@link DBRow target}
 	 */
 	public <R extends DBRow> List<ColumnProvider> getRecursiveForeignKeyColumns() {
-//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
 		List<ColumnProvider> fksToR = new ArrayList<>();
 		var wrapper = getWrapper();
 		var foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
@@ -1750,9 +1634,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
+	 * 
 	 * @return the ignoredForeignKeys
 	 */
 	protected List<PropertyWrapperDefinition<?, ?>> getIgnoredForeignKeys() {
@@ -1812,7 +1694,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
-	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper<?,?> fk, DBRow otherTable) {
+	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper<?, ?> fk, DBRow otherTable) {
 		BooleanExpression expr = BooleanExpression.falseExpression();
 		final var fkDefn = fk.getPropertyWrapperDefinition();
 		QueryableDatatype<?> fkQDT = fkDefn.getQueryableDatatype(fkTable);
@@ -1853,8 +1735,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param <A> the field type
 	 * @param database - the database to connect to.
 	 * @param fieldOfThisInstance - the field/column that you need data from.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of distinct values used in the column. 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -1907,8 +1787,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * triple-checking everything.
 	 *
 	 * @param referencePackage
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the direct subclasses of DBRow from the specified
 	 * package.
 	 */
@@ -1986,9 +1864,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Returns the schema defined for this DBRow in the DBTableName annotation, if
 	 * there is one.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the defined schema name.
 	 */
 	public String getSchemaName() {
@@ -2035,7 +1910,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return false;
 	}
 
-	public PropertyWrapper<?,?> getAutoIncrementField() {
+	public PropertyWrapper<?, ?> getAutoIncrementField() {
 		var columns = getColumnPropertyWrappers();
 		for (var column : columns) {
 			if (column.isAutoIncrement()) {
