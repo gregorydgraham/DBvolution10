@@ -199,16 +199,25 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 		return "NUMERIC(" + getNumericPrecision() + "," + getNumericScale() + ")";
 	}
 
+	/**
+	 *
+	 * Theoretically 16 decimals is the maximum accuracy of floating point
+	 * numbers. given the max precision(28) of pre-2012 MS SQL Server, 16 decimals
+	 * seems as accurate as is reasonable
+	 *
+	 * @return
+	 */
 	public static int getNumericScale() {
 		return 16;
-		// Theoretically 16 decimals is the maximum accuracy of floating point numbers.
-		// given the max precision(28) of pre-2012 MS SQL Server, 16 decimals seems as accurate as is reasonable
 	}
 
+	/**
+	 * 28 is the maximum precision for MS SQL Server pre-2012, other databases
+	 * seem not to be limited 38 is the maximum for MSSQLServer 2012+
+	 *
+	 */
 	public static int getNumericPrecision() {
 		return 28;
-		// 28 is the maximum precision for MS SQL Server pre-2012, other databases seem not to be limited
-		// 38 is the maximum for MSSQLServer 2012+
 	}
 
 	/**
