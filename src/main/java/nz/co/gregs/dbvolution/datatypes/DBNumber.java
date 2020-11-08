@@ -200,10 +200,12 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	}
 
 	/**
+	 * The number of decimal places supported by DBNumber.
 	 *
+	 * <p>
 	 * Theoretically 16 decimals is the maximum accuracy of floating point
 	 * numbers. given the max precision(28) of pre-2012 MS SQL Server, 16 decimals
-	 * seems as accurate as is reasonable
+	 * seems as accurate as is reasonable</p>
 	 *
 	 * @return
 	 */
@@ -212,8 +214,11 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	}
 
 	/**
+	 * The number of integer digits supported by DBNumber.
+	 *
+	 * <p>
 	 * 28 is the maximum precision for MS SQL Server pre-2012, other databases
-	 * seem not to be limited 38 is the maximum for MSSQLServer 2012+
+	 * seem not to be limited. 38 is the maximum for MSSQLServer 2012+</p>
 	 *
 	 */
 	public static int getNumericPrecision() {
