@@ -309,7 +309,7 @@ public class TemporalStringParser {
 		static String[] hourParts = new String[]{"HH"};
 		static String[] minuteParts = new String[]{"mm"};
 		static String[] secondParts = new String[]{"ss"};
-		static String[] subsecondParts = new String[]{"SSSSSSSSS", "SSSSSS", "SSSSS", "SSSS", "SSS", "SS", "S", ""};
+		static String[] subsecondParts = new String[]{"SSSSSSSSS", "SSSSSSSS", "SSSSSSS", "SSSSSS", "SSSSS", "SSSS", "SSS", "SS", "S", ""};
 		static String[] secondPartDividerParts = new String[]{".", ""};
 		static String[] timezoneParts = new String[]{"VV", "zzzz", "OOOO", "XXXXX", "xxxxx", "ZZZZZ", "XXXX", "xxxx", "ZZZZ", "XXX", "xxx", "XX", "xx", "z", "O", "X", "x", "Z"};
 
