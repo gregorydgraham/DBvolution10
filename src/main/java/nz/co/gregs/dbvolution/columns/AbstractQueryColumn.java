@@ -111,7 +111,7 @@ public class AbstractQueryColumn extends AbstractColumn {
 	 * @return the propertyWrapperOfQDT
 	 */
 	@Override
-	public PropertyWrapper<?,?> getPropertyWrapper() {
+	public PropertyWrapper<?, ?, ?> getPropertyWrapper() {
 		throw new RuntimeException("AbstractQueryColumn has no PropertyWrapper to return");
 	}
 

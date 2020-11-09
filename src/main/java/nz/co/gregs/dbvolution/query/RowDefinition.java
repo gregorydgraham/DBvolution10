@@ -76,7 +76,7 @@ public class RowDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the PropertyWrapper associated with the Object suppled or NULL.
 	 */
-	public PropertyWrapper<?, ?> getPropertyWrapperOf(Object qdt) {
+	public PropertyWrapper<?, ?, ?> getPropertyWrapperOf(Object qdt) {
 		var props = getWrapper().getColumnPropertyWrappers();
 
 		Object qdtOfProp;
@@ -88,6 +88,7 @@ public class RowDefinition implements Serializable {
 		}
 		return null;
 	}
+
 	/**
 	 * Gets a wrapper for the underlying property (field or method) given the
 	 * property's object reference.
@@ -106,14 +107,14 @@ public class RowDefinition implements Serializable {
 	 * @return the PropertyWrapper associated with the Object suppled or NULL.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T, Q extends QueryableDatatype<T>> PropertyWrapper<T, Q> getPropertyWrapperOf(Q qdt) {
+	public <R extends RowDefinition, T, Q extends QueryableDatatype<T>> PropertyWrapper<R, T, Q> getPropertyWrapperOf(Q qdt) {
 		var props = getWrapper().getColumnPropertyWrappers();
 
 		Object qdtOfProp;
 		for (var prop : props) {
 			qdtOfProp = prop.rawJavaValue();
 			if (qdtOfProp == qdt) {
-				return (PropertyWrapper<T, Q>) prop;
+				return (PropertyWrapper<R, T, Q>) prop;
 			}
 		}
 		return null;
@@ -144,7 +145,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
-	public List<PropertyWrapper<?, ?>> getColumnPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getColumnPropertyWrappers() {
 		return getWrapper().getColumnPropertyWrappers();
 	}
 
@@ -173,7 +174,7 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
-	public List<PropertyWrapper<?, ?>> getAutoFillingPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getAutoFillingPropertyWrappers() {
 		return getWrapper().getAutoFillingPropertyWrappers();
 	}
 

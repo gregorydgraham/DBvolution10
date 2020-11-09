@@ -402,7 +402,7 @@ public class SortProvider implements DBExpression {
 			return getColumn().getQueryableDatatypeForExpressionValue();
 		}
 
-		public PropertyWrapper<?, ?> getPropertyWrapper() {
+		public PropertyWrapper<?, ?, ?> getPropertyWrapper() {
 			return getColumn().getPropertyWrapper();
 		}
 

@@ -1316,7 +1316,7 @@ public abstract class DBDefinition implements Serializable {
 		return " ) ";
 	}
 
-	private String getSQLTypeOfDBDatatype(PropertyWrapper<?, ?> field) {
+	private String getSQLTypeOfDBDatatype(PropertyWrapper<?, ?, ?> field) {
 		return getDatabaseDataTypeOfQueryableDatatype(field.getQueryableDatatype());
 	}
 
@@ -2439,7 +2439,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @see #getColumnAutoIncrementSuffix()
 	 * @see AutoIncrementFieldClassAndDatatypeMismatch
 	 */
-	public final String getSQLTypeAndModifiersOfDBDatatype(PropertyWrapper<?, ?> field) {
+	public final String getSQLTypeAndModifiersOfDBDatatype(PropertyWrapper<?, ?, ?> field) {
 		if (field.isAutoIncrement()) {
 			if (propertyWrapperConformsToAutoIncrementType(field)) {
 				if (hasSpecialAutoIncrementType()) {
@@ -2516,7 +2516,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return true if the QDT field can be used with this database's
 	 * autoincrement feature.
 	 */
-	private boolean propertyWrapperConformsToAutoIncrementType(PropertyWrapper<?, ?> field) {
+	private boolean propertyWrapperConformsToAutoIncrementType(PropertyWrapper<?, ?, ?> field) {
 		final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 		return propertyWrapperConformsToAutoIncrementType(qdt);
 	}
@@ -3643,7 +3643,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return The default implementation returns something like " FOREIGN KEY
 	 * (column) REFERENCES table(reference_column) "
 	 */
-	public String getForeignKeyClauseForCreateTable(PropertyWrapper<?, ?> field) {
+	public String getForeignKeyClauseForCreateTable(PropertyWrapper<?, ?, ?> field) {
 		if (field.isForeignKey()) {
 			return " FOREIGN KEY (" + field.columnName() + ") REFERENCES " + field.referencedTableName() + "(" + field.referencedColumnName() + ") ";
 		}
@@ -3916,7 +3916,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return FALSE by default
 	 */
-	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper<?, ?> field) {
+	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper<?, ?, ?> field) {
 		return false;
 	}
 
@@ -3929,7 +3929,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return by default DBvolution returns the standard datatype for this field.
 	 */
-	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper<?, ?> field) {
+	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper<?, ?, ?> field) {
 		return getSQLTypeOfDBDatatype(field);
 	}
 
@@ -4167,7 +4167,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
-	public String getIndexClauseForCreateTable(PropertyWrapper<?, ?> field) {
+	public String getIndexClauseForCreateTable(PropertyWrapper<?, ?, ?> field) {
 		return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + ")";
 	}
 
@@ -4284,7 +4284,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the SQL to add a foreign key.
 	 */
-	public String getAlterTableAddForeignKeyStatement(DBRow newTableRow, PropertyWrapper<?, ?> field) {
+	public String getAlterTableAddForeignKeyStatement(DBRow newTableRow, PropertyWrapper<?, ?, ?> field) {
 		if (field.isForeignKey()) {
 			return "ALTER TABLE " + this.formatTableName(newTableRow) + " ADD " + this.getForeignKeyClauseForCreateTable(field);
 		}
@@ -4304,7 +4304,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the SQL to remove a foreign key.
 	 */
-	public String getAlterTableDropForeignKeyStatement(DBRow newTableRow, PropertyWrapper<?, ?> field) {
+	public String getAlterTableDropForeignKeyStatement(DBRow newTableRow, PropertyWrapper<?, ?, ?> field) {
 		if (field.isForeignKey()) {
 			return "ALTER TABLE " + this.formatTableName(newTableRow) + " DROP FOREIGN KEY " + field.columnName();
 		}
@@ -6661,11 +6661,11 @@ public abstract class DBDefinition implements Serializable {
 		return new ArrayList<String>();
 	}
 
-	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper<?, ?> columnPropertyWrapper) {
+	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
 		return "ALTER TABLE " + formatTableName(existingTable) + " ADD COLUMN " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
 	}
 
-	public String getAddColumnColumnSQL(PropertyWrapper<?, ?> field) {
+	public String getAddColumnColumnSQL(PropertyWrapper<?, ?, ?> field) {
 
 		StringBuilder sqlScript = new StringBuilder();
 

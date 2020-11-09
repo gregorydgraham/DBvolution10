@@ -1615,10 +1615,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
-		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper<?, ?>>(), new ArrayList<PropertyWrapper<?, ?>>());
+		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper<?, ?, ?>>(), new ArrayList<PropertyWrapper<?, ?, ?>>());
 	}
 
-	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper<?, ?>> pkFields, List<PropertyWrapper<?, ?>> spatial2DFields) {
+	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper<?, ?, ?>> pkFields, List<PropertyWrapper<?, ?, ?>> spatial2DFields) {
 		StringBuilder sqlScript = new StringBuilder();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
@@ -1685,8 +1685,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 
-		List<PropertyWrapper<?, ?>> pkFields = new ArrayList<>();
-		List<PropertyWrapper<?, ?>> spatial2DFields = new ArrayList<>();
+		List<PropertyWrapper<?, ?, ?>> pkFields = new ArrayList<>();
+		List<PropertyWrapper<?, ?, ?>> spatial2DFields = new ArrayList<>();
 
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
 		try ( DBStatement dbStatement = getDBStatement()) {
@@ -2676,7 +2676,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
 
-		List<PropertyWrapper<?, ?>> newColumns = new ArrayList<>();
+		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
 		String testQuery = getDBTable(table)
 				.setQueryTimeout(10000)
 				.setBlankQueryAllowed(true)
@@ -2718,7 +2718,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
-	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?, ?> columnPropertyWrapper) {
+	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
 		preventDDLDuringTransaction("DBDatabase.alterTable()");
 
 		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);

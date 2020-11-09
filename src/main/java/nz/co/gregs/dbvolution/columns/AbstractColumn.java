@@ -50,7 +50,7 @@ public class AbstractColumn implements DBExpression, Serializable {
 
 	private static final long serialVersionUID = 1l;
 
-	private final transient PropertyWrapper<?, ?> propertyWrapper;
+	private final transient PropertyWrapper<?, ?, ?> propertyWrapper;
 	private final RowDefinition dbrow;
 	private final Object field;
 	private boolean useTableAlias = true;
@@ -139,7 +139,7 @@ public class AbstractColumn implements DBExpression, Serializable {
 	 *
 	 * @return the propertyWrapperOfQDT
 	 */
-	public PropertyWrapper<?, ?> getPropertyWrapper() {
+	public PropertyWrapper<?, ?, ?> getPropertyWrapper() {
 		return propertyWrapper;
 	}
 

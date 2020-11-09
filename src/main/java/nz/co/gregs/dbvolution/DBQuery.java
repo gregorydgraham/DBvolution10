@@ -2109,7 +2109,7 @@ public class DBQuery implements Serializable {
 		}
 
 		for (Object fieldOfProvidedRow : fieldsOfProvidedRows) {
-			PropertyWrapper<?,?> fieldProp = null;
+			PropertyWrapper<?, ?, ?> fieldProp = null;
 			for (DBRow row : details.getAllQueryTables()) {
 				fieldProp = row.getPropertyWrapperOf(fieldOfProvidedRow);
 				if (fieldProp != null) {

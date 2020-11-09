@@ -236,7 +236,7 @@ public class MySQLDBDefinition_5_7 extends DBDefinition {
 	}
 
 	@Override
-	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper<?,?> field) {
+	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper<?, ?, ?> field) {
 		if (field.getQueryableDatatype() instanceof DBString) {
 			return true;
 		} else {
@@ -245,7 +245,7 @@ public class MySQLDBDefinition_5_7 extends DBDefinition {
 	}
 
 	@Override
-	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper<?,?> field) {
+	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper<?, ?, ?> field) {
 		if (field.getQueryableDatatype() instanceof DBString) {
 			return " VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else {
@@ -269,7 +269,7 @@ public class MySQLDBDefinition_5_7 extends DBDefinition {
 	}
 
 	@Override
-	public String getIndexClauseForCreateTable(PropertyWrapper<?,?> field) {
+	public String getIndexClauseForCreateTable(PropertyWrapper<?, ?, ?> field) {
 		if (field.getQueryableDatatype() instanceof DBString) {
 			return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + "(190))";
 		} else {

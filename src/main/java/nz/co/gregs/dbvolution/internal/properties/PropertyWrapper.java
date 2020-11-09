@@ -53,15 +53,16 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
  *
+ * @param <ROW>
  * @param <BASETYPE> the object returned by getValue on the QDT of this property
  * @param <QDT>
  */
-public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> implements Serializable {
+public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends QueryableDatatype<BASETYPE>> implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
-	private final RowDefinitionInstanceWrapper<?> dbRowInstanceWrapper;
-	private final PropertyWrapperDefinition<?, BASETYPE> propertyDefinition;
+	private final RowDefinitionInstanceWrapper<ROW> dbRowInstanceWrapper;
+	private final PropertyWrapperDefinition<ROW, BASETYPE> propertyDefinition;
 	private final RowDefinition target;
 
 	/**
@@ -70,8 +71,8 @@ public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> 
 	 * @param target the target object containing the given property
 	 */
 	public PropertyWrapper(
-			RowDefinitionInstanceWrapper<?> instanceWrapper,
-			PropertyWrapperDefinition<?, BASETYPE> classProperty,
+			RowDefinitionInstanceWrapper<ROW> instanceWrapper,
+			PropertyWrapperDefinition<ROW, BASETYPE> classProperty,
 			RowDefinition target
 	) {
 		this.dbRowInstanceWrapper = instanceWrapper;
@@ -175,7 +176,7 @@ public class PropertyWrapper<BASETYPE, QDT extends QueryableDatatype<BASETYPE>> 
 		if (!(obj instanceof PropertyWrapper)) {
 			return false;
 		}
-		var other = (PropertyWrapper<?, ?>) obj;
+		var other = (PropertyWrapper<?, ?, ?>) obj;
 		if (propertyDefinition == null) {
 			if (other.propertyDefinition != null) {
 				return false;

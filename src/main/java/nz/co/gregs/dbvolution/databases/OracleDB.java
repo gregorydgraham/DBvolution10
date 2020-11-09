@@ -198,7 +198,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		List<String> triggerBasedIdentitySQL = new ArrayList<>();
 		final DBDefinition definition = this.getDefinition();
 		if (definition.prefersTriggerBasedIdentities()) {
-			List<PropertyWrapper<?,?>> pkFields = new ArrayList<>();
+			List<PropertyWrapper<?, ?, ?>> pkFields = new ArrayList<>();
 			for (var field : fields) {
 				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 					if (field.isPrimaryKey()) {

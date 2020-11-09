@@ -122,8 +122,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private boolean isDefined = false;
 	private final List<PropertyWrapperDefinition<?, ?>> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition<?, ?>>());
 	private transient Boolean hasBlobs;
-	private transient final List<PropertyWrapper<?, ?>> fkFields = new ArrayList<>();
-	private transient final List<PropertyWrapper<?, ?>> blobColumns = new ArrayList<>();
+	private transient final List<PropertyWrapper<?, ?, ?>> fkFields = new ArrayList<>();
+	private transient final List<PropertyWrapper<?, ?, ?>> blobColumns = new ArrayList<>();
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<>(new DBRow.ClassNameComparator());
 	private Boolean emptyRow = true;
 
@@ -491,7 +491,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the PropertyWrapper for the primary key.
 	 */
-	public List<PropertyWrapper<?, ?>> getPrimaryKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getPrimaryKeyPropertyWrappers() {
 		return getWrapper().getPrimaryKeysPropertyWrappers();
 	}
 
@@ -714,7 +714,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
-	public List<PropertyWrapper<?, ?>> getForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getForeignKeyPropertyWrappers() {
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
 				var props = getWrapper().getForeignKeyPropertyWrappers();
@@ -737,7 +737,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
-	public List<PropertyWrapper<?, ?>> getNonPrimaryKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getNonPrimaryKeyPropertyWrappers() {
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
 				var props = getWrapper().getForeignKeyPropertyWrappers();
@@ -759,7 +759,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
-	public List<PropertyWrapper<?, ?>> getRecursiveForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getRecursiveForeignKeyPropertyWrappers() {
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
 				var props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
@@ -821,7 +821,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param fkProp the foreign key property to ignore
 	 */
-	public void ignoreForeignKey(PropertyWrapper<?, ?> fkProp) throws IncorrectRowProviderInstanceSuppliedException {
+	public void ignoreForeignKey(PropertyWrapper<?, ?, ?> fkProp) throws IncorrectRowProviderInstanceSuppliedException {
 		if (fkProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fkProp);
 		}
@@ -1014,7 +1014,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public final void setReturnFields(Object... fields) throws IncorrectRowProviderInstanceSuppliedException {
 		setReturnColumns(new ArrayList<PropertyWrapperDefinition<?, ?>>());
-		PropertyWrapper<?, ?> propWrapper;
+		PropertyWrapper<?, ?, ?> propWrapper;
 		for (Object property : fields) {
 			propWrapper = getPropertyWrapperOf(property);
 			if (propWrapper == null) {
@@ -1073,7 +1073,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		if (getReturnColumns() == null) {
 			setReturnColumns(new ArrayList<PropertyWrapperDefinition<?, ?>>());
 		}
-		PropertyWrapper<?, ?> propWrapper;
+		PropertyWrapper<?, ?, ?> propWrapper;
 		for (Object property : fields) {
 			propWrapper = getPropertyWrapperOf(property);
 			if (propWrapper == null) {
@@ -1450,11 +1450,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		this.emptyRow = isThisRowEmpty;
 	}
 
-	public List<PropertyWrapper<?, ?>> getSelectedProperties() {
+	public List<PropertyWrapper<?, ?, ?>> getSelectedProperties() {
 		if (getReturnColumns() == null) {
 			return getColumnPropertyWrappers();
 		} else {
-			ArrayList<PropertyWrapper<?, ?>> selected = new ArrayList<>();
+			ArrayList<PropertyWrapper<?, ?, ?>> selected = new ArrayList<>();
 			for (var proDef : getReturnColumns()) {
 				for (var pro : getColumnPropertyWrappers()) {
 					if (pro.getPropertyWrapperDefinition().equals(proDef)) {
@@ -1694,7 +1694,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
-	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper<?, ?> fk, DBRow otherTable) {
+	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper<?, ?, ?> fk, DBRow otherTable) {
 		BooleanExpression expr = BooleanExpression.falseExpression();
 		final var fkDefn = fk.getPropertyWrapperDefinition();
 		QueryableDatatype<?> fkQDT = fkDefn.getQueryableDatatype(fkTable);
@@ -1910,7 +1910,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return false;
 	}
 
-	public PropertyWrapper<?, ?> getAutoIncrementField() {
+	public PropertyWrapper<?, ?, ?> getAutoIncrementField() {
 		var columns = getColumnPropertyWrappers();
 		for (var column : columns) {
 			if (column.isAutoIncrement()) {

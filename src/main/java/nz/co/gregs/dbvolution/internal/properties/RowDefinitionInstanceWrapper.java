@@ -41,12 +41,12 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 
 	private final RowDefinitionClassWrapper<ROW> classWrapper;
 	private final ROW rowDefinition;
-	private final List<PropertyWrapper<?,?>> allProperties;
-	private final List<PropertyWrapper<?,?>> columnProperties;
-	private final List<PropertyWrapper<?,?>> autoFillingProperties;
-	private final List<PropertyWrapper<?,?>> foreignKeyProperties;
-	private final List<PropertyWrapper<?,?>> recursiveForeignKeyProperties;
-	private final List<PropertyWrapper<?,?>> primaryKeyProperties;
+	private final List<PropertyWrapper<?, ?, ?>> allProperties;
+	private final List<PropertyWrapper<?, ?, ?>> columnProperties;
+	private final List<PropertyWrapper<?, ?, ?>> autoFillingProperties;
+	private final List<PropertyWrapper<?, ?, ?>> foreignKeyProperties;
+	private final List<PropertyWrapper<?, ?, ?>> recursiveForeignKeyProperties;
+	private final List<PropertyWrapper<?, ?, ?>> primaryKeyProperties;
 
 	/**
 	 * Called by
@@ -72,10 +72,10 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 		// pre-cache commonly used things
 		// (note: if you change this to use lazy-initialisation, you'll have to
 		// add explicit synchronisation, or it won't be thread-safe anymore)
-		this.allProperties = new ArrayList<PropertyWrapper<?,?>>();
-		this.columnProperties = new ArrayList<PropertyWrapper<?,?>>();
+		this.allProperties = new ArrayList<PropertyWrapper<?, ?, ?>>();
+		this.columnProperties = new ArrayList<PropertyWrapper<?, ?, ?>>();
 		for (var propertyDefinition : classWrapper.getColumnPropertyDefinitions()) {
-			final PropertyWrapper<?,?> propertyWrapper = new PropertyWrapper<>(this, propertyDefinition, rowDefinition);
+			final PropertyWrapper<?, ?, ?> propertyWrapper = new PropertyWrapper<>(this, propertyDefinition, rowDefinition);
 			addPropertyWrapperToCollection(columnProperties, propertyWrapper);
 //			this.columnProperties.add(propertyWrapper);
 //			this.allProperties.add(propertyWrapper);
@@ -83,14 +83,14 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 //				autoFillingProperties.add(propertyWrapper);
 //			}
 		}
-		this.autoFillingProperties = new ArrayList<PropertyWrapper<?,?>>();
+		this.autoFillingProperties = new ArrayList<PropertyWrapper<?, ?, ?>>();
 		for (var propertyDefinition : classWrapper.getAutoFillingPropertyDefinitions()) {
-			final PropertyWrapper<?,?> propertyWrapper = new PropertyWrapper<>(this, propertyDefinition, rowDefinition);
+			final PropertyWrapper<?, ?, ?> propertyWrapper = new PropertyWrapper<>(this, propertyDefinition, rowDefinition);
 			addPropertyWrapperToCollection(autoFillingProperties, propertyWrapper);
 		}
 
-		this.foreignKeyProperties = new ArrayList<PropertyWrapper<?,?>>();
-		this.recursiveForeignKeyProperties = new ArrayList<PropertyWrapper<?,?>>();
+		this.foreignKeyProperties = new ArrayList<PropertyWrapper<?, ?, ?>>();
+		this.recursiveForeignKeyProperties = new ArrayList<PropertyWrapper<?, ?, ?>>();
 		for (var propertyDefinition : classWrapper.getForeignKeyPropertyDefinitions()) {
 			this.foreignKeyProperties.add(new PropertyWrapper<>(this, propertyDefinition, rowDefinition));
 			if(propertyDefinition.isRecursiveForeignKey()){
@@ -98,13 +98,13 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 			}
 		}
 
-		this.primaryKeyProperties = new ArrayList<PropertyWrapper<?,?>>();
+		this.primaryKeyProperties = new ArrayList<PropertyWrapper<?, ?, ?>>();
 		for (var propertyDefinition : classWrapper.primaryKeyDefinitions()) {
 			this.primaryKeyProperties.add(new PropertyWrapper<>(this, propertyDefinition, rowDefinition));
 		}
 	}
 
-	private void addPropertyWrapperToCollection(List<PropertyWrapper<?,?>> collection, PropertyWrapper<?,?> propertyWrapper) {
+	private void addPropertyWrapperToCollection(List<PropertyWrapper<?, ?, ?>> collection, PropertyWrapper<?, ?, ?> propertyWrapper) {
 		collection.add(propertyWrapper);
 		this.allProperties.add(propertyWrapper);
 	}
@@ -299,7 +299,7 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 *
 	 * @return the primary key property or null if no primary key
 	 */
-	public List<PropertyWrapper<?,?>> getPrimaryKeysPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getPrimaryKeysPropertyWrappers() {
 		return primaryKeyProperties;
 	}
 
@@ -324,7 +324,7 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 * @return the Java property associated with the column name supplied. Null if
 	 * no such column is found.
 	 */
-	public PropertyWrapper<?,?> getPropertyByColumn(DBDatabase database, String columnName) {
+	public PropertyWrapper<?, ?, ?> getPropertyByColumn(DBDatabase database, String columnName) {
 		PropertyWrapperDefinition<ROW,?> classProperty = classWrapper.getPropertyDefinitionByColumn(database, columnName);
 		return (classProperty == null) ? null : new PropertyWrapper<>(this, classProperty, rowDefinition);
 	}
@@ -340,7 +340,7 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 * @return property of the wrapped {@link RowDefinition} associated with the
 	 * java field name supplied. Null if no such property is found.
 	 */
-	public PropertyWrapper<?,?> getPropertyByName(String propertyName) {
+	public PropertyWrapper<?, ?, ?> getPropertyByName(String propertyName) {
 		var classProperty = classWrapper.getPropertyDefinitionByName(propertyName);
 		return (classProperty == null) ? null : new PropertyWrapper<>(this, classProperty, rowDefinition);
 	}
@@ -360,7 +360,7 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 *
 	 * @return the non-null list of properties, empty if none
 	 */
-	public List<PropertyWrapper<?,?>> getColumnPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getColumnPropertyWrappers() {
 		return columnProperties;
 	}
 
@@ -379,7 +379,7 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 *
 	 * @return the non-null list of properties, empty if none
 	 */
-	public List<PropertyWrapper<?,?>> getAutoFillingPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getAutoFillingPropertyWrappers() {
 		return autoFillingProperties;
 	}
 
@@ -392,7 +392,7 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 * @return non-null list of PropertyWrappers, empty if no foreign key
 	 * properties
 	 */
-	public List<PropertyWrapper<?,?>> getForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getForeignKeyPropertyWrappers() {
 		return foreignKeyProperties;
 	}
 
@@ -418,7 +418,7 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 * @return non-null list of PropertyWrappers, empty if no foreign key
 	 * properties
 	 */
-	public List<PropertyWrapper<?,?>> getRecursiveForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper<?, ?, ?>> getRecursiveForeignKeyPropertyWrappers() {
 		return recursiveForeignKeyProperties;
 	}
 

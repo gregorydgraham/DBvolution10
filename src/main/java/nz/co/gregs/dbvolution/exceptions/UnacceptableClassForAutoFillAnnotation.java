@@ -39,7 +39,7 @@ public class UnacceptableClassForAutoFillAnnotation extends DBRuntimeException {
 	 * @param field the field that can't be auto-filled
 	 * @param requiredClass the class that field is in
 	 */
-	public UnacceptableClassForAutoFillAnnotation(PropertyWrapper<?,?> field, Class<?> requiredClass) {
+	public UnacceptableClassForAutoFillAnnotation(PropertyWrapper<?, ?, ?> field, Class<?> requiredClass) {
 		super("Unable To AutoFill Given Type: field " + field.qualifiedJavaName() + " is a " + requiredClass.getCanonicalName() + " but needs to be a DBRow sub-class.");
 	}
 

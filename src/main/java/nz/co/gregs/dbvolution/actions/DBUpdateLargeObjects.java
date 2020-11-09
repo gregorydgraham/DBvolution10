@@ -313,7 +313,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the interesting DBLargeObjects.
 	 */
-	protected List<PropertyWrapper<?,?>> getInterestingLargeObjects(DBRow row) {
+	protected List<PropertyWrapper<?, ?, ?>> getInterestingLargeObjects(DBRow row) {
 		return getChangedLargeObjects(row);
 	}
 
@@ -322,8 +322,8 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		return new DBActionList();
 	}
 
-	private List<PropertyWrapper<?,?>> getChangedLargeObjects(DBRow row) {
-		List<PropertyWrapper<?,?>> changed = new ArrayList<>();
+	private List<PropertyWrapper<?, ?, ?>> getChangedLargeObjects(DBRow row) {
+		List<PropertyWrapper<?, ?, ?>> changed = new ArrayList<>();
 		if (row.hasLargeObjects()) {
 			for (QueryableDatatype<?> qdt : row.getLargeObjects()) {
 				if (qdt instanceof DBLargeObject) {

@@ -116,7 +116,7 @@ public class PropertyWrapperTest {
 
 	// note: intentionally doesn't use a wrapper factory for tests on equals() methods
 	@SuppressWarnings("unchecked")
-	private <ROW extends DBRow > PropertyWrapper<?,?> propertyOf(ROW target, String javaPropertyName) {
+	private <ROW extends DBRow > PropertyWrapper<?, ?, ?> propertyOf(ROW target, String javaPropertyName) {
 		var classWrapper = new RowDefinitionClassWrapper<ROW>((Class<ROW>) target.getClass());
 		return classWrapper.instanceWrapperFor(target).getPropertyByName(javaPropertyName);
 	}
