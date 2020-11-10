@@ -159,7 +159,7 @@ public class UUIDExpression extends InExpression<UUID, UUIDResult, DBUUID> imple
 
 	@Override
 	public StringExpression stringResult() {
-		return new StringExpression(this);
+		return new StringResultFunction(this);
 	}
 
 	private class StringResultFunction extends StringExpression {
@@ -168,7 +168,7 @@ public class UUIDExpression extends InExpression<UUID, UUIDResult, DBUUID> imple
 		private final UUIDExpression only;
 
 		public StringResultFunction(UUIDExpression only) {
-			this.only = null;
+			this.only = only;
 		}
 
 		@Override
