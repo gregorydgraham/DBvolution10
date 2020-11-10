@@ -91,7 +91,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	public final static Boolean SORT_DESCENDING = Boolean.FALSE;
 	private Boolean sort = SORT_ASCENDING;
-	transient PropertyWrapperDefinition<?,T> propertyWrapperDefn; // no guarantees whether this gets set
+	transient PropertyWrapperDefinition<?, T> propertyWrapperDefn; // no guarantees whether this gets set
 	private DBExpression[] columnExpression = new DBExpression[]{};
 	private boolean setValueHasBeenCalled = false;
 	private T defaultInsertValue = null;
@@ -171,10 +171,14 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new instance of the supplied QDT class
-	 * @throws java.lang.NoSuchMethodException All QDTs need an accessible default constructor
-	 * @throws java.lang.InstantiationException All QDTs need an accessible default constructor
-	 * @throws java.lang.IllegalAccessException All QDTs need an accessible default constructor
-	 * @throws java.lang.reflect.InvocationTargetException All QDTs need an accessible default constructor
+	 * @throws java.lang.NoSuchMethodException All QDTs need an accessible default
+	 * constructor
+	 * @throws java.lang.InstantiationException All QDTs need an accessible
+	 * default constructor
+	 * @throws java.lang.IllegalAccessException All QDTs need an accessible
+	 * default constructor
+	 * @throws java.lang.reflect.InvocationTargetException All QDTs need an
+	 * accessible default constructor
 	 */
 	public static <T extends QueryableDatatype<?>> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		return requiredQueryableDatatype.getConstructor().newInstance();
@@ -193,10 +197,14 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new instance of the supplied QDT class
-	 * @throws java.lang.NoSuchMethodException All QDTs need an accessible default constructor
-	 * @throws java.lang.InstantiationException All QDTs need an accessible default constructor
-	 * @throws java.lang.IllegalAccessException All QDTs need an accessible default constructor
-	 * @throws java.lang.reflect.InvocationTargetException All QDTs need an accessible default constructor
+	 * @throws java.lang.NoSuchMethodException All QDTs need an accessible default
+	 * constructor
+	 * @throws java.lang.InstantiationException All QDTs need an accessible
+	 * default constructor
+	 * @throws java.lang.IllegalAccessException All QDTs need an accessible
+	 * default constructor
+	 * @throws java.lang.reflect.InvocationTargetException All QDTs need an
+	 * accessible default constructor
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends QueryableDatatype<?>> T getQueryableDatatypeInstance(T requiredQueryableDatatype) throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -549,11 +557,20 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected synchronized void setLiteralValue(T newLiteralValue) {
-		if ((!hasBeenSet() && newLiteralValue != null)
-				|| (hasBeenSet() && newLiteralValue != null && !newLiteralValue.equals(getLiteralValue()))
-				|| (hasBeenSet() && newLiteralValue == null && getLiteralValue() != null)) {
-			setLiteralValueInternal(newLiteralValue);
-			this.setHasBeenSet(true);
+		refreshValue(newLiteralValue);
+		this.setHasBeenSet(true);
+	}
+
+	/**
+	 * Internal
+	 *
+	 * @param refreshValue
+	 */
+	public synchronized void refreshValue(T refreshValue) {
+		if ((!hasBeenSet() && refreshValue != null)
+				|| (hasBeenSet() && refreshValue != null && !refreshValue.equals(getLiteralValue()))
+				|| (hasBeenSet() && refreshValue == null && getLiteralValue() != null)) {
+			setLiteralValueInternal(refreshValue);
 		}
 	}
 
@@ -1033,7 +1050,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 *
 	 */
-	void setPropertyWrapper(PropertyWrapperDefinition<?,T> propertyWrapper) {
+	void setPropertyWrapper(PropertyWrapperDefinition<?, T> propertyWrapper) {
 		this.propertyWrapperDefn = propertyWrapper;
 	}
 
@@ -1189,7 +1206,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @return the PropertyWrapperDefinition
 	 */
-	protected PropertyWrapperDefinition<?,T> getPropertyWrapperDefinition() {
+	protected PropertyWrapperDefinition<?, T> getPropertyWrapperDefinition() {
 		return propertyWrapperDefn;
 	}
 
@@ -1295,8 +1312,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		}
 		return false;
 	}
-	
-	public boolean isLargeObject(){
+
+	public boolean isLargeObject() {
 		return false;
 	}
 

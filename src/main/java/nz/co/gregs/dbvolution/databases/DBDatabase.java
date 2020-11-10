@@ -667,6 +667,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		DBActionList changes = new DBActionList();
 		final DBTable<DBRow> table = this.getDBTable(row);
 		changes.addAll(table.save(row));
+		refetch(row);
 		return changes;
 	}
 
@@ -681,7 +682,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList save(DBRow... rows) throws SQLException {
-		return save(Arrays.asList(rows));
+		final DBActionList save = save(Arrays.asList(rows));
+		refetch(rows);
+		return save;
 	}
 
 	/**
@@ -699,6 +702,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		for (DBRow row : rows) {
 			actions.addAll(save(row));
 		}
+		refetch(rows);
 		return actions;
 	}
 
@@ -715,6 +719,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	public final DBActionList insert(DBRow row) throws SQLException {
 		DBActionList changes = new DBActionList();
 		changes.addAll(this.getDBTable(row).insert(row));
+		refetch(row);
 		return changes;
 	}
 
@@ -734,6 +739,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			insert.addAll(listOfRowsToInsert);
 			return insert.insert(this);
 		}
+		refetch(listOfRowsToInsert);
 		return new DBActionList();
 	}
 
@@ -754,6 +760,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				changes.addAll(this.getDBTable(row).insert(row));
 			}
 		}
+		refetch(listOfRowsToInsert);
 		return changes;
 	}
 
@@ -774,6 +781,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				changes.addAll(this.getDBTable(row).insertOrUpdate(row));
 			}
 		}
+		refetch(listOfRowsToInsert);
 		return changes;
 	}
 
@@ -782,6 +790,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		for (DBRow row : rows) {
 			actions.addAll(this.getDBTable(row).updateAnyway(row));
 		}
+		refetch(rows);
 		return actions;
 	}
 
@@ -859,6 +868,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		for (DBRow row : rows) {
 			actions.addAll(this.getDBTable(row).update(row));
 		}
+		refetch(rows);
 		return actions;
 	}
 
@@ -882,6 +892,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				actions.addAll(this.getDBTable(row).update(row));
 			}
 		}
+		refetch(listOfRowsToUpdate);
 		return actions;
 	}
 
@@ -2556,6 +2567,37 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		TimeZoneGuesser guess = TimeZoneGuesser.guess(getCurrentLocalDatetime());
 		this.definition.setLocalDateTimeOffsetHours(guess.getHours());
 		this.definition.setLocalDateTimeOffsetMinutes(guess.getMinutes());
+	}
+
+	private void refetch(Collection<? extends DBRow> listOfRowsToRefetch) {
+		listOfRowsToRefetch.stream().filter(t -> t != null).forEach(t -> refetch(t));
+	}
+
+	private void refetch(DBRow[] rows) {
+		for (DBRow row : rows) {
+			refetch(row);
+		}
+	}
+
+	private void refetch(DBRow originalRow) {
+		try {
+			if (originalRow.hasAutomaticValueFields()) {
+				List<DBRow> got = get(1L, originalRow);
+				DBRow newRow = got.get(0);
+				List<PropertyWrapper<?, ?, ?>> props = originalRow.getColumnPropertyWrappers();
+				props.stream()
+						.filter(p -> p != null)
+						.forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
+			}
+		} catch (SQLException ex) {
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (UnexpectedNumberOfRowsException ex) {
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (AccidentalBlankQueryException ex) {
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (NoAvailableDatabaseException ex) {
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 
 	public static enum ResponseToException {

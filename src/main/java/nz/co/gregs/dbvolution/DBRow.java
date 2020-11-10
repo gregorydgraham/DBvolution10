@@ -242,6 +242,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 		return newRow;
 	}
+	private Boolean hasAutomaticValueFields;
 
 	/**
 	 * Returns the QueryableDatatype instance of the Primary Key of This DBRow
@@ -383,7 +384,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Indicates whether this instance is a undefined row within the database.
 	 *
 	 * Example objects and blank rows from an optional table are "undefined".
-	 * 
+	 *
 	 * @return TRUE if this row exists within the database, otherwise FALSE.
 	 */
 	public boolean isUndefined() {
@@ -525,8 +526,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return getWhereClauses(db, true);
 	}
 
-	private List<String> getWhereClauses(DBDefinition db, boolean useTableAlias)
-	{
+	private List<String> getWhereClauses(DBDefinition db, boolean useTableAlias) {
 		List<String> whereClause = new ArrayList<>();
 		var props = getWrapper().getColumnPropertyWrappers();
 		for (var prop : props) {
@@ -1634,7 +1634,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the ignoredForeignKeys
 	 */
 	protected List<PropertyWrapperDefinition<?, ?>> getIgnoredForeignKeys() {
@@ -1926,6 +1926,20 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	public SortProvider getSortedSubSelectRequired() {
 		return sortedSubselectRequired;
+	}
+
+	public boolean hasAutomaticValueFields() {
+		if (hasAutomaticValueFields == null) {
+			// probably not true
+			hasAutomaticValueFields = false;
+			var columns = getColumnPropertyWrappers();
+			for (var column : columns) {
+				if (column.isAutomaticValueField()) {
+					hasAutomaticValueFields = true;
+				}
+			}
+		}
+		return hasAutomaticValueFields;
 	}
 
 	/**

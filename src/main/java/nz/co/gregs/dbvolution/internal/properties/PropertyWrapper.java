@@ -64,6 +64,7 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 	private final RowDefinitionInstanceWrapper<ROW> dbRowInstanceWrapper;
 	private final PropertyWrapperDefinition<ROW, BASETYPE> propertyDefinition;
 	private final RowDefinition target;
+	private Boolean isAutomaticValueField;
 
 	/**
 	 * @param instanceWrapper instanceWrapper
@@ -840,5 +841,20 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 				setQueryableDatatype(qdt);
 			}
 		}
+	}
+
+	public void copyFromRowToOtherRow(DBRow freshRow, DBRow staleRow) {
+		final PropertyWrapperDefinition<?, BASETYPE> propertyWrapperDefinition = this.getPropertyWrapperDefinition();
+		QueryableDatatype<BASETYPE> freshQDT = propertyWrapperDefinition.getQueryableDatatype(freshRow);
+		QueryableDatatype<BASETYPE> staleQDT = propertyWrapperDefinition.getQueryableDatatype(staleRow);
+		staleQDT.refreshValue(freshQDT.getValue());
+	}
+
+	public boolean isAutomaticValueField() {
+		if (isAutomaticValueField == null) {
+			final QDT qdt = this.getQueryableDatatype();
+			isAutomaticValueField = qdt.hasDefaultInsertValue() || qdt.hasDefaultUpdateValue();
+		}
+		return isAutomaticValueField;
 	}
 }

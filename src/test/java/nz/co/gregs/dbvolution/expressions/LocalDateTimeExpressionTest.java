@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -1743,6 +1744,27 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
+	@Test
+	public void testUpdateRefreshesExistingObject() throws SQLException, ParseException {
+		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime(359, "testUpdateRefreshesExistingObject", april2nd2011LocalDateTime);
+		database.insert(marq);
+		Assert.assertThat(marq.updateTime.getValue(), is(nullValue()));
+		marq.name.setValue("Actual Car Company");
+		database.update(marq);
+		Assert.assertThat(marq.updateTime.getValue(), is(notNullValue()));
+		database.delete(marq);
+	}
+
+	@Test
+	public void testInsertRefreshesExistingObject() throws SQLException, ParseException {
+		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime(360, "testInsertRefreshesExistingObject", april2nd2011LocalDateTime);
+		Assert.assertThat(marq.insertTime.getValue(), is(nullValue()));
+		database.insert(marq);
+		Assert.assertThat(marq.insertTime.getValue(), is(notNullValue()));
+		database.delete(marq);
+
+	}
+
 	public static class MarqueWithSecondsFromDate extends MarqueWithLocalDateTime {
 
 		private static final long serialVersionUID = 1L;
@@ -1866,37 +1888,25 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		private static final long serialVersionUID = 1L;
 
-//		@DBColumn("numeric_code")
-//		public DBNumber numericCode = new DBNumber();
 		@DBColumn("uid_marque")
 		@DBPrimaryKey
 		public DBInteger uidMarque = new DBInteger();
 
-//		@DBColumn("isusedfortafros")
-//		public DBString isUsedForTAFROs = new DBString();
-//		@DBColumn("fk_toystatusclass")
-//		public DBNumber statusClassID = new DBNumber();
-//		@DBColumn("intindallocallowed")
-//		public DBString individualAllocationsAllowed = new DBString();
-//		@DBColumn("upd_count")
-//		public DBInteger updateCount = new DBInteger();
-//		@DBColumn
-//		public DBStringTrimmed auto_created = new DBStringTrimmed();
 		@DBColumn
 		public DBString name = new DBString();
 
-//		@DBColumn("pricingcodeprefix")
-//		public DBString pricingCodePrefix = new DBString();
-//		@DBColumn("reservationsalwd")
-//		public DBString reservationsAllowed = new DBString();
 		@DBColumn("creation_localdatetime")
 		public DBLocalDateTime creationLocalDateTime = new DBLocalDateTime();
 
-//		@DBColumn("enabled")
-//		public DBBoolean enabled = new DBBoolean();
 		@DBForeignKey(CarCompany.class)
 		@DBColumn("fk_carcompany")
 		public DBInteger carCompany = new DBInteger();
+
+		@DBColumn()
+		public DBLocalDateTime insertTime = new DBLocalDateTime().setDefaultInsertValueToNow();
+
+		@DBColumn()
+		public DBLocalDateTime updateTime = new DBLocalDateTime().setDefaultUpdateValueToNow();
 
 		/**
 		 * Required Public No-Argument Constructor.
@@ -1923,17 +1933,16 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		 */
 		public MarqueWithLocalDateTime(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, LocalDateTime creationLocalDateTime, int carCompany, Boolean enabled) {
 			this.uidMarque.setValue(uidMarque);
-//			this.isUsedForTAFROs.setValue(isUsedForTAFROs);
-//			this.statusClassID.setValue(statusClass);
-//			this.individualAllocationsAllowed.setValue(intIndividualAllocationsAllowed);
-//			this.updateCount.setValue(updateCount);
-//			this.auto_created.setValue(autoCreated);
 			this.name.setValue(name);
-//			this.pricingCodePrefix.setValue(pricingCodePrefix);
-//			this.reservationsAllowed.setValue(reservationsAllowed);
 			this.creationLocalDateTime.setValue(creationLocalDateTime);
 			this.carCompany.setValue(carCompany);
-//			this.enabled.setValue(enabled);
+		}
+
+		public MarqueWithLocalDateTime(int uidMarque, String name, LocalDateTime creationLocalDateTime) {
+			this.uidMarque.setValue(uidMarque);
+			this.name.setValue(name);
+			this.creationLocalDateTime.setValue(creationLocalDateTime);
+			this.carCompany.setValue(carCompany);
 		}
 	}
 }
