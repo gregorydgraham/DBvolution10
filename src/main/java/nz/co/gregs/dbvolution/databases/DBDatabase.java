@@ -272,6 +272,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		settings.setDataSource(ds);
 		setDBDatabaseClassInSettings();
 		createRequiredTables();
+		checkForTimezoneIssues();
 	}
 
 	/**
@@ -312,6 +313,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		this.setDatabaseName(settings.getDatabaseName());
 		setDBDatabaseClassInSettings();
 		createRequiredTables();
+		checkForTimezoneIssues();
 	}
 
 	/**
@@ -353,6 +355,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		this.setDatabaseName(settings.getDatabaseName());
 		setDBDatabaseClassInSettings(settingsBuilder);
 		createRequiredTables();
+		checkForTimezoneIssues();
 	}
 
 	/**
@@ -435,6 +438,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		settings.setUsername(username);
 		settings.setPassword(password);
 		createRequiredTables();
+		checkForTimezoneIssues();
 	}
 
 	private void initDriver(SettingsBuilder<?, ?> settings) {

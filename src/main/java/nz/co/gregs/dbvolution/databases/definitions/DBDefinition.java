@@ -6978,22 +6978,27 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public boolean hasLocalDateTimeOffset() {
+		System.out.println("HAS LOCALDATETIME OFFSET: " + (getLocalDateTimeOffsetHours() != 0 && getLocalDateTimeOffsetMinutes() != 0));
 		return getLocalDateTimeOffsetHours() != 0 && getLocalDateTimeOffsetMinutes() != 0;
 	}
 
 	public int getLocalDateTimeOffsetHours() {
+		System.out.println("GET LOCALDATETIME OFFSET HOURS: " + localDateTimeOffsetHours);
 		return localDateTimeOffsetHours;
 	}
 
 	public int getLocalDateTimeOffsetMinutes() {
+		System.out.println("GET LOCALDATETIME OFFSET MINUTES: " + localDateTimeOffsetMinutes);
 		return localDateTimeOffsetMinutes;
 	}
 
 	public void setLocalDateTimeOffsetHours(int localDateTimeOffsetHours) {
+		System.out.println("SET LOCALDATETIME OFFSET HOURS: " + localDateTimeOffsetHours);
 		this.localDateTimeOffsetHours = localDateTimeOffsetHours;
 	}
 
 	public void setLocalDateTimeOffsetMinutes(int localDateTimeOffsetMinutes) {
+		System.out.println("SET LOCALDATETIME OFFSET MINUTES: " + localDateTimeOffsetMinutes);
 		this.localDateTimeOffsetMinutes = localDateTimeOffsetMinutes;
 	}
 }

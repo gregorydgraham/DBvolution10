@@ -580,7 +580,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	public void tesCheckDatabaseLocalDateTime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+	public void testCheckDatabaseLocalDateTime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
 
 		LocalDateTime systemLocalDatetime = database.getCurrentLocalDatetime();
 
