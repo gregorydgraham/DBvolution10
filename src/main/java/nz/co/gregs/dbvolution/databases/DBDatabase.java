@@ -2583,15 +2583,18 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
-	private void refetch(DBRow originalRow) {
+	private <R extends DBRow> void refetch(R originalRow) {
 		try {
 			if (originalRow.hasAutomaticValueFields()) {
-				List<DBRow> got = get(1L, originalRow);
-				DBRow newRow = got.get(0);
-				List<PropertyWrapper<?, ?, ?>> props = originalRow.getColumnPropertyWrappers();
-				props.stream()
-						.filter(p -> p != null)
-						.forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
+				if (originalRow.getPrimaryKeys().size() > 0) {
+					R example = DBRow.getPrimaryKeyExample(originalRow);
+					List<DBRow> got = get(1L, example);
+					var newRow = got.get(0);
+					var props = originalRow.getColumnPropertyWrappers();
+					props.stream()
+							.filter(p -> p != null)
+							.forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
+				}
 			}
 		} catch (SQLException ex) {
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
