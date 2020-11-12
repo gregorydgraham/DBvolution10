@@ -7,10 +7,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.DBNumberStatistics;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -847,7 +844,10 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 		final PropertyWrapperDefinition<?, BASETYPE> propertyWrapperDefinition = this.getPropertyWrapperDefinition();
 		QueryableDatatype<BASETYPE> freshQDT = propertyWrapperDefinition.getQueryableDatatype(freshRow);
 		QueryableDatatype<BASETYPE> staleQDT = propertyWrapperDefinition.getQueryableDatatype(staleRow);
-		staleQDT.setValue(freshQDT.getValue());
+		if (freshQDT.getValue() != staleQDT.getValue()) {
+			new InternalQueryableDatatypeProxy<>(staleQDT).setValueFromDatabase(freshQDT.getValue());
+//			staleQDT.setValue(freshQDT.getValue());
+		}
 	}
 
 	public boolean isAutomaticValueField() {

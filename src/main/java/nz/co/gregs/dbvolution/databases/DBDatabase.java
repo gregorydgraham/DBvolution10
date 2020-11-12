@@ -2597,13 +2597,13 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				}
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			LOG.fatal(null, ex);
 		} catch (UnexpectedNumberOfRowsException ex) {
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			LOG.fatal(null, ex);
 		} catch (AccidentalBlankQueryException ex) {
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			LOG.fatal(null, ex);
 		} catch (NoAvailableDatabaseException ex) {
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			LOG.fatal(null, ex);
 		}
 	}
 
