@@ -589,7 +589,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @param refreshValue
 	 */
-	public synchronized void refreshValue(T refreshValue) {
+	private synchronized void refreshValue(T refreshValue) {
 		if ((!hasBeenSet() && refreshValue != null)
 				|| (hasBeenSet() && refreshValue != null && !refreshValue.equals(getLiteralValue()))
 				|| (hasBeenSet() && refreshValue == null && getLiteralValue() != null)) {
