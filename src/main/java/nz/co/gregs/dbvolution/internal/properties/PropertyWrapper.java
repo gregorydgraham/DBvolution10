@@ -847,7 +847,7 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 		final PropertyWrapperDefinition<?, BASETYPE> propertyWrapperDefinition = this.getPropertyWrapperDefinition();
 		QueryableDatatype<BASETYPE> freshQDT = propertyWrapperDefinition.getQueryableDatatype(freshRow);
 		QueryableDatatype<BASETYPE> staleQDT = propertyWrapperDefinition.getQueryableDatatype(staleRow);
-		staleQDT.refreshValue(freshQDT.getValue());
+		staleQDT.setValue(freshQDT.getValue());
 	}
 
 	public boolean isAutomaticValueField() {
