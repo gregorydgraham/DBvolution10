@@ -67,7 +67,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	private static final long serialVersionUID = 1L;
 //	private final SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
-	private final transient DateTimeFormatter toStringFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS ZZZZ");
+//	private final transient DateTimeFormatter toStringFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS ZZZZ");
 
 	/**
 	 * The default constructor for DBDate.
@@ -126,7 +126,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	}
 
 	/**
-	 * Creates a DBDate with the value provided.
+	 * Creates a DBLocalDateTime with the value provided.
 	 *
 	 * <p>
 	 * The resulting DBDate will be set as having the value provided but will not
@@ -141,7 +141,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	DBLocalDateTime(String dateAsAString) {
 //		System.out.println("DATEASSTRING: "+dateAsAString);
 //		System.out.println("ISO_DATE FORMAT: 2011-12-03T10:15:30");
-		setLiteralValue(LocalDateTime.parse(dateAsAString, DateTimeFormatter.ISO_DATE_TIME));
+		setLiteralValue(LocalDateTime.parse(dateAsAString, DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 	}
 
 	/**
@@ -233,9 +233,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * @param dateStr	dateStr
 	 */
-	@SuppressWarnings("deprecation")
 	public void setValue(String dateStr) {
-		setValue(dateStr, DateTimeFormatter.ISO_DATE_TIME);
+		setValue(dateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 	}
 
 	/**
@@ -249,7 +248,6 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * @param dateStr	dateStr
 	 * @param format the format to parse the string with
 	 */
-	@SuppressWarnings("deprecation")
 	public void setValue(String dateStr, DateTimeFormatter format) {
 		setValue(LocalDateTime.parse(dateStr, format));
 	}
@@ -272,7 +270,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		if (this.isNull() || getValue() == null) {
 			return "<NULL>";
 		}
-		return DateTimeFormatter.ISO_DATE_TIME.format(getValue());
+		return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(getValue());
 	}
 
 	@Override

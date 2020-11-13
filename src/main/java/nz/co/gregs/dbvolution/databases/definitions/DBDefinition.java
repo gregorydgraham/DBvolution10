@@ -6979,27 +6979,27 @@ public abstract class DBDefinition implements Serializable {
 
 	public boolean hasLocalDateTimeOffset() {
 		final boolean hasLocalDateTimeOffset = getLocalDateTimeOffsetHours() != 0 || getLocalDateTimeOffsetMinutes() != 0;
-		System.out.println("HAS LOCALDATETIME OFFSET: " + (hasLocalDateTimeOffset));
+//		System.out.println("HAS LOCALDATETIME OFFSET: " + (hasLocalDateTimeOffset));
 		return hasLocalDateTimeOffset;
 	}
 
 	public int getLocalDateTimeOffsetHours() {
-		System.out.println("GET LOCALDATETIME OFFSET HOURS: " + localDateTimeOffsetHours);
+//		System.out.println("GET LOCALDATETIME OFFSET HOURS: " + localDateTimeOffsetHours);
 		return localDateTimeOffsetHours;
 	}
 
 	public int getLocalDateTimeOffsetMinutes() {
-		System.out.println("GET LOCALDATETIME OFFSET MINUTES: " + localDateTimeOffsetMinutes);
+//		System.out.println("GET LOCALDATETIME OFFSET MINUTES: " + localDateTimeOffsetMinutes);
 		return localDateTimeOffsetMinutes;
 	}
 
 	public void setLocalDateTimeOffsetHours(int localDateTimeOffsetHours) {
-		System.out.println("SET LOCALDATETIME OFFSET HOURS: " + localDateTimeOffsetHours);
+//		System.out.println("SET LOCALDATETIME OFFSET HOURS: " + localDateTimeOffsetHours);
 		this.localDateTimeOffsetHours = localDateTimeOffsetHours;
 	}
 
 	public void setLocalDateTimeOffsetMinutes(int localDateTimeOffsetMinutes) {
-		System.out.println("SET LOCALDATETIME OFFSET MINUTES: " + localDateTimeOffsetMinutes);
+//		System.out.println("SET LOCALDATETIME OFFSET MINUTES: " + localDateTimeOffsetMinutes);
 		this.localDateTimeOffsetMinutes = localDateTimeOffsetMinutes;
 	}
 }
