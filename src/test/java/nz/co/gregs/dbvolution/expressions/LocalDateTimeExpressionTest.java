@@ -581,14 +581,15 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCheckDatabaseLocalDateTime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testCheckDatabaseLocalDateTime()");
+		
+		LocalDateTime databaseLocalDateTime = database.getCurrentLocalDatetime();
 
-		LocalDateTime systemLocalDatetime = database.getCurrentLocalDatetime();
+		System.out.println("DATABASELOCALDATETIME: " + databaseLocalDateTime);
+		final LocalDateTime applicationLocalDateTime = LocalDateTime.now();
+		final LocalDateTime buffered = applicationLocalDateTime.minusMinutes(10);
 
-		System.out.println("SYSTEMLOCALDATETIME: " + systemLocalDatetime);
-		final LocalDateTime now = LocalDateTime.now();
-		final LocalDateTime buffered = now.minusMinutes(10);
-
-		Assert.assertThat(systemLocalDatetime, is(greaterThan(buffered)));
+		Assert.assertThat(databaseLocalDateTime, is(greaterThan(buffered)));
 
 	}
 

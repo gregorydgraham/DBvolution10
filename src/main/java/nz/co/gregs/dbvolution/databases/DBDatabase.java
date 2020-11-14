@@ -2544,6 +2544,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			value = query.setBlankQueryAllowed(true).getAllRows(1).get(0).getExpressionColumnValue(key).getValue();
 			if (value instanceof LocalDateTime) {
 				System.out.println(key + ": " + value.toString());
+				System.out.println("Current application localdatetime: " + LocalDateTime.now().toString());
 				return (LocalDateTime) value;
 			}
 		} catch (UnexpectedNumberOfRowsException ex) {

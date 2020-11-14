@@ -286,7 +286,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		} else {
 			dbValue = setByGetDate(defn, resultSet, fullColumnName);
 		}
-		if (dbValue!=null && defn.hasLocalDateTimeOffset()){
+		if (dbValue != null && defn.hasLocalDateTimeOffset()) {
 			dbValue = dbValue.plusHours(defn.getLocalDateTimeOffsetHours()).plusMinutes(defn.getLocalDateTimeOffsetMinutes());
 		}
 		return dbValue;
@@ -319,9 +319,12 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 //			final Timestamp cal = resultSet.getTimestamp(fullColumnName, new GregorianCalendar());
 
 			if (resultSet.wasNull()) {
+				System.out.println("TIMESTAMP: <NULL>");
 				dbValue = null;
 			} else {
+				System.out.println("TIMESTAMP: " + timestamp.toString());
 				final LocalDateTime localDateTime = timestamp.toLocalDateTime();
+				System.out.println("LOCALDATETIME: " + localDateTime.format(DateTimeFormatter.ISO_DATE_TIME));
 //				final LocalDateTime localDateTime = utcVersion;
 //				LocalDateTime timestampValue = localDateTime;
 				dbValue = localDateTime;
