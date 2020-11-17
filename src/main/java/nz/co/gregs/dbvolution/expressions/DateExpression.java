@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
@@ -3717,14 +3719,39 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 		private final static long serialVersionUID = 1l;
 
+		
 		@Override
-		public String toSQLString(DBDefinition db) {
-			return db.doCurrentDateTimeTransform();
+		public String toSQLString(DBDefinition defn) {
+			final DoCurrentDateTransformationExpression doCurrentDateTransformationExpression = new DoCurrentDateTransformationExpression();
+			if (defn.requiresAddingTimeZoneToCurrentLocalDateTime()) {
+				ZoneOffset offset = OffsetDateTime.now().getOffset();
+				int totalSeconds = offset.getTotalSeconds();
+				return doCurrentDateTransformationExpression.addSeconds(totalSeconds).toSQLString(defn);
+			} else {
+				return doCurrentDateTransformationExpression.toSQLString(defn);
+			}
 		}
 
 		@Override
 		public DateCurrentDateExpression copy() {
 			return new DateCurrentDateExpression();
+		}
+
+		private static class DoCurrentDateTransformationExpression extends DateExpression {
+
+			public DoCurrentDateTransformationExpression() {
+			}
+			private final static long serialVersionUID = 1l;
+
+			@Override
+			public String toSQLString(DBDefinition defn) {
+				return defn.doCurrentDateTimeTransform();
+			}
+
+			@Override
+			public DoCurrentDateTransformationExpression copy() {
+				return new DoCurrentDateTransformationExpression();
+			}
 		}
 
 	}

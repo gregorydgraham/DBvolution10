@@ -20,10 +20,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBReport;
@@ -314,19 +311,11 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		LocalDateTime dbValue = null;
 		try {
 			final Timestamp timestamp = resultSet.getTimestamp(fullColumnName);
-//			final java.sql.Date date = resultSet.getDate(fullColumnName);
-//			final Time time = resultSet.getTime(fullColumnName);
-//			final Timestamp cal = resultSet.getTimestamp(fullColumnName, new GregorianCalendar());
 
 			if (resultSet.wasNull()) {
-				System.out.println("TIMESTAMP: <NULL>");
 				dbValue = null;
 			} else {
-				System.out.println("TIMESTAMP: " + timestamp.toString());
-				final LocalDateTime localDateTime = timestamp.toLocalDateTime();
-				System.out.println("LOCALDATETIME: " + localDateTime.format(DateTimeFormatter.ISO_DATE_TIME));
-//				final LocalDateTime localDateTime = utcVersion;
-//				LocalDateTime timestampValue = localDateTime;
+				LocalDateTime localDateTime = timestamp.toLocalDateTime();
 				dbValue = localDateTime;
 			}
 		} catch (SQLException sqlex) {

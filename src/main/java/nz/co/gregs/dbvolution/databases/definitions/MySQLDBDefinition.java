@@ -107,7 +107,7 @@ public class MySQLDBDefinition extends DBDefinition {
 						"'-'", doLeftPadTransform(days, "0", "2"),
 						"' '", doLeftPadTransform(hours, "0", "2"),
 						"'-'", doLeftPadTransform(minutes, "0", "2"),
-						"'-'", doTruncTransform("(" + seconds + "+" + subsecond + ")","6")
+						"'-'", doTruncTransform("(" + seconds + "+" + subsecond + ")", "6")
 				//"' '", timeZoneSign, timeZoneHourOffset, timeZoneMinuteOffSet)//MySQL doesn't support time zones
 				) + ", '%Y-%m-%d %H-%i-%s.%f') ";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
@@ -764,5 +764,13 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public boolean supportsDurationNatively() {
 		return false;
+	}
+
+	protected String getCurrentDateTimeFunction() {
+		return " SYSDATE() ";
+	}
+
+	public boolean requiresAddingTimeZoneToCurrentLocalDateTime() {
+		return true;
 	}
 }

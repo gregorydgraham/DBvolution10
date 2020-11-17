@@ -16,18 +16,11 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.*;
+import java.util.*;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.results.NumberResult;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -3629,13 +3622,37 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		private final static long serialVersionUID = 1l;
 
 		@Override
-		public String toSQLString(DBDefinition db) {
-			return db.doCurrentDateTimeTransform();
+		public String toSQLString(DBDefinition defn) {
+			final DoCurrentDateTransformationExpression doCurrentDateTransformationExpression = new DoCurrentDateTransformationExpression();
+			if (defn.requiresAddingTimeZoneToCurrentLocalDateTime()) {
+				ZoneOffset offset = OffsetDateTime.now().getOffset();
+				int totalSeconds = offset.getTotalSeconds();
+				return doCurrentDateTransformationExpression.addSeconds(totalSeconds).toSQLString(defn);
+			} else {
+				return doCurrentDateTransformationExpression.toSQLString(defn);
+			}
 		}
 
 		@Override
 		public LocalDateTimeCurrentLocalDateTimeExpression copy() {
 			return new LocalDateTimeCurrentLocalDateTimeExpression();
+		}
+
+		private static class DoCurrentDateTransformationExpression extends LocalDateTimeExpression {
+
+			public DoCurrentDateTransformationExpression() {
+			}
+			private final static long serialVersionUID = 1l;
+
+			@Override
+			public String toSQLString(DBDefinition defn) {
+				return defn.doCurrentDateTimeTransform();
+			}
+
+			@Override
+			public DoCurrentDateTransformationExpression copy() {
+				return new DoCurrentDateTransformationExpression();
+			}
 		}
 
 	}
@@ -4802,8 +4819,9 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 	/**
 	 * previousRowValue is a synonym for LAG.
-	 * 
-	 * <p>LAG() is a window function that provides access to a row at a specified
+	 *
+	 * <p>
+	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.</p>
 	 *
 	 * <p>
@@ -4872,8 +4890,9 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 	/**
 	 * nextRowValue is a synonym for LEAD.
-	 * 
-	 * <p>LEAD() is a window function that provides access to a row at a specified
+	 *
+	 * <p>
+	 * LEAD() is a window function that provides access to a row at a specified
 	 * physical offset which comes after the current row.</p>
 	 *
 	 * <p>

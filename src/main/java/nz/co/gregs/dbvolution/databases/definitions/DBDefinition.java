@@ -142,7 +142,7 @@ public abstract class DBDefinition implements Serializable {
 	 * For instance the date might be transformed into a string like "
 	 * DATETIME('2013-03-23 00:00:00') "
 	 *
-	 * @param date	date
+	 * @param localdatetime	date
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the date formatted as a string that the database will correctly
@@ -152,21 +152,14 @@ public abstract class DBDefinition implements Serializable {
 		if (date == null) {
 			return getNull();
 		}
-//		ZoneId systemDefault = ZoneOffset.systemDefault();
+		LocalDateTime localdatetime = date;
+
 		int tzMillis = TimeZone.getDefault().getOffset(Instant.now().toEpochMilli());
-//		final int tzMillis = TimeZone.getTimeZone(ZoneId.systemDefault()).getRawOffset();
 		String tzSign = tzMillis < 0 ? "-" : "+";
 		int tzHour = tzMillis / (1000 * 60 * 60);
 		int tzMinutes = (tzMillis - (tzHour * 1000 * 60 * 60)) / 1000 * 60;
-//		var strings = SeparatedString.byCommas()
-//				.add(date.getYear(),date.getMonth().getValue(),date.getDayOfMonth())
-//				.add(date.getHour(),date.getMinute())
-//				.add(date.getSecond(),((0.0+date.getNano())/1000000000.0))
-//				.add(tzSign,tzHour, tzMinutes);
-//		System.out.println(strings.toString());
-//		final String subsecond = "" + ((0.0 + date.getNano()) / 1000000000.0);
-		final String subsecond = "0." + String.format("%09d", date.getNano());
-		return getLocalDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), subsecond, tzSign, "" + tzHour, "" + tzMinutes);
+		final String subsecond = "0." + String.format("%09d", localdatetime.getNano());
+		return getLocalDatePartsFormattedForQuery("" + localdatetime.getYear(), "" + localdatetime.getMonth().getValue(), "" + localdatetime.getDayOfMonth(), "" + localdatetime.getHour(), "" + localdatetime.getMinute(), "" + localdatetime.getSecond(), subsecond, tzSign, "" + tzHour, "" + tzMinutes);
 	}
 
 	/**
@@ -7001,5 +6994,9 @@ public abstract class DBDefinition implements Serializable {
 	public void setLocalDateTimeOffsetMinutes(int localDateTimeOffsetMinutes) {
 //		System.out.println("SET LOCALDATETIME OFFSET MINUTES: " + localDateTimeOffsetMinutes);
 		this.localDateTimeOffsetMinutes = localDateTimeOffsetMinutes;
+	}
+
+	public boolean requiresAddingTimeZoneToCurrentLocalDateTime() {
+		return false;
 	}
 }

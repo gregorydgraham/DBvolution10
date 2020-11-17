@@ -18,12 +18,17 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.*;
@@ -103,6 +108,20 @@ public class DBLocalDateTimeTest extends AbstractTest {
 
 		@DBColumn
 		DBLocalDateTime dateOnly = new DBLocalDateTime();
+	}
+
+	@Test
+	public void testCheckDatabaseLocalDateTime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testCheckDatabaseLocalDateTime()");
+
+		LocalDateTime databaseLocalDateTime = database.getCurrentLocalDatetime();
+
+		System.out.println("DATABASELOCALDATETIME: " + databaseLocalDateTime);
+		final LocalDateTime applicationLocalDateTime = LocalDateTime.now();
+		final LocalDateTime buffered = applicationLocalDateTime.minusMinutes(10);
+
+		Assert.assertThat(databaseLocalDateTime, is(greaterThan(buffered)));
+
 	}
 
 }
