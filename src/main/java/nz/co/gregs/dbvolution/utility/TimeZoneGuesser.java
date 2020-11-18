@@ -42,8 +42,6 @@ public class TimeZoneGuesser {
 	public static TimeZoneGuesser guess(LocalDateTime systemLocalDatetime) {
 
 		final LocalDateTime now = LocalDateTime.now();
-		System.out.println("THEN: " + systemLocalDatetime);
-		System.out.println("NOW: " + now);
 		Duration difference = Duration.between(systemLocalDatetime, now);
 		if (difference.abs().compareTo(Duration.ofMinutes(20)) <= 0) {
 			return new TimeZoneGuesser();
