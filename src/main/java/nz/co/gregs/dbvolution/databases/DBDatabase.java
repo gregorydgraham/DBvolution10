@@ -2543,8 +2543,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		try {
 			value = query.setBlankQueryAllowed(true).getAllRows(1).get(0).getExpressionColumnValue(key).getValue();
 			if (value instanceof LocalDateTime) {
-				System.out.println(key + ": " + value.toString());
-				System.out.println("Current application localdatetime: " + LocalDateTime.now().toString());
 				return (LocalDateTime) value;
 			}
 		} catch (UnexpectedNumberOfRowsException ex) {
@@ -2570,9 +2568,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private void checkForTimezoneIssues() throws SQLException {
-		TimeZoneGuesser guess = TimeZoneGuesser.guess(getCurrentLocalDatetime());
-//		this.definition.setLocalDateTimeOffsetHours(guess.getHours());
-//		this.definition.setLocalDateTimeOffsetMinutes(guess.getMinutes());
 	}
 
 	private void refetch(Collection<? extends DBRow> listOfRowsToRefetch) {
