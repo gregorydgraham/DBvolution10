@@ -70,6 +70,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 		}
 		return strings;
 	}
+
 	/**
 	 * Utility function to return the values of a list of Strings in a list of
 	 * DBStrings.
@@ -735,17 +736,17 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * FALSE.
 	 */
 	public boolean isEmptyString() {
-		return isDBEmptyString|| (getLiteralValue()!=null && getLiteralValue().isEmpty());
+		return isDBEmptyString || (getLiteralValue() != null && getLiteralValue().isEmpty());
 	}
 
 	@Override
 	protected String getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
 		if (resultSet.wasNull() || gotString == null) {
-			if (defn.canProduceNullStrings()) {
-				return null;
-			} else {
+			if (defn.requiredToProduceEmptyStringsForNull()) {
 				return "";
+			} else {
+				return null;
 			}
 		} else {
 			return gotString;
