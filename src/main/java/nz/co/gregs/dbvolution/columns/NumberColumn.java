@@ -18,6 +18,8 @@ package nz.co.gregs.dbvolution.columns;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBEnum;
+import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -73,6 +75,17 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	 * @param field the field defining the column
 	 */
 	public NumberColumn(RowDefinition row, DBNumber field) {
+		this.column = new AbstractColumn(row, field);
+	}
+
+	/**
+	 * Create a NumberColumn for the supplied field of the supplied row
+	 *
+	 * @param <ENUM> an DBEnumValue&lt;Number&gt; type
+	 * @param row the row containing the field
+	 * @param field the field defining the column
+	 */
+	public <NUMBER extends Number, ENUM extends Enum<ENUM> & DBEnumValue<NUMBER>> NumberColumn(RowDefinition row, DBEnum<ENUM, NUMBER> field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
