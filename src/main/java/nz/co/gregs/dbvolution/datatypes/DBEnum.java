@@ -20,13 +20,14 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Conversion to the enumeration type is done lazily so that it's possible to
  * handle the case where a database has an invalid value or a new value that
  * isn't in the enumeration.</p>
- * 
+ *
  * <p>
- * The easiest way to use DBEnum is via {@link DBIntegerEnum} or {@link DBStringEnum}.
+ * The easiest way to use DBEnum is via {@link DBIntegerEnum} or
+ * {@link DBStringEnum}.
  * </p>
- * 
+ *
  * <p>
- * Example implementations are available in 
+ * Example implementations are available in
  * </p>
  *
  * @param <ENUM> the enumeration type. Must implement {@link DBEnumValue}.
@@ -174,34 +175,37 @@ public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BA
 	}
 
 	public List<String> getValidNames() {
-		return Arrays.stream(getValidValues()).map(e->e.name()).collect(Collectors.toList());
+		return Arrays.stream(getValidValues()).map(e -> e.name()).collect(Collectors.toList());
 	}
-	
-	public List<BASETYPE> getValidCodesList(){
+
+	public List<BASETYPE> getValidCodesList() {
 		final ENUM[] validValues = getValidValues();
 		List<BASETYPE> validCodesList = Arrays.stream(validValues).map(v -> v.getCode()).collect(Collectors.toList());
 		return validCodesList;
 	}
-	
-	public BASETYPE[] getValidCodesArray(){
+
+	public BASETYPE[] getValidCodesArray() {
 		List<BASETYPE> validCodesList = getValidCodesList();
 		@SuppressWarnings("unchecked")
 		BASETYPE[] validCodesArray = (BASETYPE[]) validCodesList.toArray();
 		return validCodesArray;
 	}
-	
-	public ENUM getEnumFromName(String enumName){
+
+	public ENUM getEnumFromName(String enumName) {
 		return ENUM.valueOf(enumType, enumName);
 	}
-	
-	public ENUM getEnumFromValue(BASETYPE enumValue){
+
+	public ENUM getEnumFromCode(BASETYPE enumValue) {
 		ENUM[] enums = getValidValues();
 		for (ENUM enum1 : enums) {
-			if (enum1.getCode() == enumValue) {
+			if (enum1.getCode() == null && enumValue == null) {
+				return enum1;
+			}
+			if (enum1.getCode() != null && enum1.getCode().equals(enumValue)) {
 				return enum1;
 			}
 		}
-		throw new InvalidParameterException("Value '"+enumValue+"' is not a valid code for the "+getEnumType().getSimpleName()+" enumeration");
+		throw new InvalidParameterException("Value '" + enumValue + "' is not a valid code for the " + getEnumType().getSimpleName() + " enumeration");
 	}
 
 	/**
@@ -300,7 +304,7 @@ public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BA
 	@SuppressWarnings("unchecked")
 	private Class<ENUM> getEnumType() {
 		if (enumType == null) {
-			PropertyWrapperDefinition<?,?> propertyWrapper = getPropertyWrapperDefinition();
+			PropertyWrapperDefinition<?, ?> propertyWrapper = getPropertyWrapperDefinition();
 			if (propertyWrapper == null) {
 				throw new IllegalStateException(
 						"Unable to convert literal value to enum: enum type unable to be inferred at this point. "
