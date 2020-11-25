@@ -147,26 +147,15 @@ public class DBDatabaseGetTest extends AbstractTest {
 		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> gotMarques = database.get(literalQuery);
 		database.setPrintSQLBeforeExecuting(false);
-		/*if (database instanceof DBDatabaseCluster) {
-			Assert.assertThat(
-					gotMarques.size(),
-					isOneOf(
-							2,
-							21
-					)
-			);
-		} else*/ if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+		
+		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
+		if (notOracle) {
 			Assert.assertEquals(2, gotMarques.size());
 		} else {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
 		}
-		/*if (database instanceof DBDatabaseCluster) {
-			Assert.assertEquals(
-					true,
-					gotMarques.get(0).individualAllocationsAllowed.isNull()
-					|| gotMarques.get(0).individualAllocationsAllowed.getValue().isEmpty()
-			);
-		} else*/ if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+		
+		if (notOracle) {
 			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
 		} else {
 			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.getValue().isEmpty());
@@ -179,8 +168,10 @@ public class DBDatabaseGetTest extends AbstractTest {
 		literalQuery.individualAllocationsAllowed.excludedValues((String) null);
 		List<Marque> gotMarques = database.get(literalQuery);
 		final Long fullTableCount = database.getDBTable(new Marque()).count();
+		
+		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
 
-		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+		if (notOracle) {
 			Assert.assertEquals(gotMarques.size(), fullTableCount - 2);
 		} else {
 			Assert.assertEquals(1, gotMarques.size());
