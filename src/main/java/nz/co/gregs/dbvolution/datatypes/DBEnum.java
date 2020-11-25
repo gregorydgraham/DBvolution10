@@ -1,6 +1,10 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.lang.reflect.Array;
+import java.security.InvalidParameterException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
@@ -25,13 +29,13 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Example implementations are available in 
  * </p>
  *
- * @param <E> the enumeration type. Must implement {@link DBEnumValue}.
- * @param <T> the base type used on the database.
+ * @param <ENUM> the enumeration type. Must implement {@link DBEnumValue}.
+ * @param <BASETYPE> the base type used on the database.
  */
-public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends QueryableDatatype<T> {
+public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BASETYPE> extends QueryableDatatype<BASETYPE> {
 
 	private static final long serialVersionUID = 1L;
-	private Class<E> enumType;
+	private Class<ENUM> enumType;
 
 	/**
 	 * The default constructor for DBEnums.
@@ -57,7 +61,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 *
 	 * @param literalValue	literalValue
 	 */
-	protected DBEnum(T literalValue) {
+	protected DBEnum(BASETYPE literalValue) {
 		super(literalValue);
 	}
 
@@ -93,8 +97,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @param value an enumeration value.
 	 */
 	@SuppressWarnings("unchecked")
-	public DBEnum(E value) {
-		this.enumType = (value == null) ? null : (Class<E>) value.getClass();
+	public DBEnum(ENUM value) {
+		this.enumType = (value == null) ? null : (Class<ENUM>) value.getClass();
 		setLiteralValue(convertToLiteral(value));
 	}
 
@@ -104,9 +108,19 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @param enumValue	enumValue
 	 */
 	@SuppressWarnings("unchecked")
-	public void setValue(E enumValue) {
-		this.enumType = (enumValue == null) ? null : (Class<E>) enumValue.getClass();
+	public void setValue(ENUM enumValue) {
+		this.enumType = (enumValue == null) ? null : (Class<ENUM>) enumValue.getClass();
 		super.setLiteralValue(convertToLiteral(enumValue));
+	}
+
+	/**
+	 * Sets the value based on the given enumeration.
+	 *
+	 * @param enumName the name of the enumeration value
+	 */
+	@SuppressWarnings("unchecked")
+	public void setValueByName(String enumName) {
+		setValue(ENUM.valueOf(enumType, enumName));
 	}
 
 	/**
@@ -122,7 +136,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * null
 	 * @throws IncompatibleClassChangeError on incompatible types
 	 */
-	protected abstract void validateLiteralValue(E enumValue) throws IncompatibleClassChangeError;
+	protected abstract void validateLiteralValue(ENUM enumValue) throws IncompatibleClassChangeError;
 
 	/**
 	 * Gets the enumeration value.
@@ -136,7 +150,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @throws IllegalArgumentException if the database's raw value does not have
 	 * a corresponding value in the enum
 	 */
-	public E enumValue() {
+	public ENUM enumValue() {
 		// get actual literal value: a String or a Long
 		Object localValue = super.getValue();
 		if (localValue == null) {
@@ -144,8 +158,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 		}
 
 		// attempt conversion
-		E[] enumValues = getEnumType().getEnumConstants();
-		for (E enumValue : enumValues) {
+		ENUM[] enumValues = getValidValues();//getEnumType().getEnumConstants();
+		for (ENUM enumValue : enumValues) {
 			Object enumLiteralValue = enumValue.getCode();
 			if (areLiteralValuesEqual(localValue, enumLiteralValue)) {
 				return enumValue;
@@ -153,6 +167,41 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 		}
 		throw new IncompatibleClassChangeError("Invalid literal value [" + localValue + "] encountered"
 				+ " when converting to enum type " + enumType.getName());
+	}
+
+	public ENUM[] getValidValues() {
+		return getEnumType().getEnumConstants();
+	}
+
+	public List<String> getValidNames() {
+		return Arrays.stream(getValidValues()).map(e->e.name()).collect(Collectors.toList());
+	}
+	
+	public List<BASETYPE> getValidCodesList(){
+		final ENUM[] validValues = getValidValues();
+		List<BASETYPE> validCodesList = Arrays.stream(validValues).map(v -> v.getCode()).collect(Collectors.toList());
+		return validCodesList;
+	}
+	
+	public BASETYPE[] getValidCodesArray(){
+		List<BASETYPE> validCodesList = getValidCodesList();
+		@SuppressWarnings("unchecked")
+		BASETYPE[] validCodesArray = (BASETYPE[]) validCodesList.toArray();
+		return validCodesArray;
+	}
+	
+	public ENUM getEnumFromName(String enumName){
+		return ENUM.valueOf(enumType, enumName);
+	}
+	
+	public ENUM getEnumFromValue(BASETYPE enumValue){
+		ENUM[] enums = getValidValues();
+		for (ENUM enum1 : enums) {
+			if (enum1.getCode() == enumValue) {
+				return enum1;
+			}
+		}
+		throw new InvalidParameterException("Value '"+enumValue+"' is not a valid code for the "+getEnumType().getSimpleName()+" enumeration");
 	}
 
 	/**
@@ -249,7 +298,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @throws IllegalStateException if not configured correctly
 	 */
 	@SuppressWarnings("unchecked")
-	private Class<E> getEnumType() {
+	private Class<ENUM> getEnumType() {
 		if (enumType == null) {
 			PropertyWrapperDefinition<?,?> propertyWrapper = getPropertyWrapperDefinition();
 			if (propertyWrapper == null) {
@@ -264,7 +313,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 						+ "Row needs to be queried from database, or value set with an actual enum, "
 						+ "on " + propertyWrapper.qualifiedJavaName() + ".");
 			}
-			enumType = (Class<E>) type;
+			enumType = (Class<ENUM>) type;
 		}
 		return enumType;
 	}
@@ -289,26 +338,26 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @return a list of the literal database values for the enumeration values.
 	 */
 	@SuppressWarnings("unchecked")
-	protected T[] convertToLiteral(E... enumValues) {
+	protected BASETYPE[] convertToLiteral(ENUM... enumValues) {
 		// Use Array native method to create array
 		// of a type only known at run time
 		if (enumValues.length == 0) {
-			return (T[]) new Object[]{};
+			return (BASETYPE[]) new Object[]{};
 		} else {
 			int index = 0;
-			E firstValue = null;
+			ENUM firstValue = null;
 			while (firstValue == null && index < enumValues.length) {
 				index++;
 				firstValue = enumValues[index];
 			}
 			if (enumType == null && firstValue == null) {
-				return (T[]) new Object[]{};
+				return (BASETYPE[]) new Object[]{};
 			} else {
 				Class<?> baseType = convertToLiteral(firstValue).getClass();
-				enumType = (Class<E>) baseType;
-				final T[] result = (T[]) Array.newInstance(enumType, enumValues.length);
+				enumType = (Class<ENUM>) baseType;
+				final BASETYPE[] result = (BASETYPE[]) Array.newInstance(enumType, enumValues.length);
 				for (int i = 0; i < enumValues.length; i++) {
-					E enumValue = enumValues[i];
+					ENUM enumValue = enumValues[i];
 					result[i] = convertToLiteral(enumValue);
 				}
 				return result;
@@ -324,12 +373,12 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the literal database value for the enumeration value.
 	 */
-	protected final T convertToLiteral(E enumValue) {
+	protected final BASETYPE convertToLiteral(ENUM enumValue) {
 		if (enumValue == null || enumValue.getCode() == null) {
 			return null;
 		} else {
 			validateLiteralValue(enumValue);
-			T newLiteralValue = enumValue.getCode();
+			BASETYPE newLiteralValue = enumValue.getCode();
 			return newLiteralValue;
 		}
 	}
@@ -346,8 +395,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @param permitted	permitted
 	 */
 	@SafeVarargs
-	public final void permittedValues(T... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<T>(permitted));
+	public final void permittedValues(BASETYPE... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<BASETYPE>(permitted));
 	}
 
 	/**
@@ -357,8 +406,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @param permitted	permitted
 	 */
 	@SafeVarargs
-	public final void permittedValues(E... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<T>(convertToLiteral(permitted)));
+	public final void permittedValues(ENUM... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<BASETYPE>(convertToLiteral(permitted)));
 	}
 
 	/**
@@ -375,8 +424,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @param excluded	excluded
 	 */
 	@SafeVarargs
-	public final void excludedValues(T... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<T>(excluded));
+	public final void excludedValues(BASETYPE... excluded) {
+		this.setOperator(new DBPermittedValuesOperator<BASETYPE>(excluded));
 		negateOperator();
 	}
 
@@ -390,8 +439,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @param excluded	excluded
 	 */
 	@SafeVarargs
-	public final void excludedValues(E... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<T>(convertToLiteral(excluded)));
+	public final void excludedValues(ENUM... excluded) {
+		this.setOperator(new DBPermittedValuesOperator<BASETYPE>(convertToLiteral(excluded)));
 		negateOperator();
 	}
 }
