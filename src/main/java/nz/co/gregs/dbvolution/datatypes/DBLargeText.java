@@ -149,7 +149,11 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	 * @param string	string
 	 */
 	public void setValue(String string) {
-		setValue(string.getBytes(UTF_8));
+		setValue(transformToStandardCharset(string));
+	}
+
+	public static byte[] transformToStandardCharset(String string) {
+		return string.getBytes(UTF_8);
 	}
 
 	void setValue(DBLargeText newLiteralValue) {
@@ -243,7 +247,7 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	private byte[] getFromString(ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
 		if (gotString != null) {
-			return gotString.getBytes(UTF_8);
+			return transformToStandardCharset(gotString);
 		} else {
 			return new byte[]{};
 		}
@@ -271,11 +275,11 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 					int bytesRead = input.read(resultSetBytes);
 					while (bytesRead > 0) {
 						if (bytesRead == byteArrayDefaultSize) {
-							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
+							byteArrays.add(transformToStandardCharset(String.valueOf(resultSetBytes)));
 						} else {
 							char[] shortBytes = new char[bytesRead];
 							System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
-							byteArrays.add(String.valueOf(shortBytes).getBytes(UTF_8));
+							byteArrays.add(transformToStandardCharset(String.valueOf(shortBytes)));
 						}
 						resultSetBytes = new char[byteArrayDefaultSize];
 						bytesRead = input.read(resultSetBytes);
@@ -315,11 +319,11 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 				int bytesRead = input.read(resultSetBytes);
 				while (bytesRead > 0) {
 					if (bytesRead == byteArrayDefaultSize) {
-						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
+						byteArrays.add(transformToStandardCharset(String.valueOf(resultSetBytes)));
 					} else {
 						char[] shortBytes = new char[bytesRead];
 						System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
-						byteArrays.add(String.valueOf(shortBytes).getBytes(UTF_8));
+						byteArrays.add(transformToStandardCharset(String.valueOf(shortBytes)));
 					}
 					resultSetBytes = new char[byteArrayDefaultSize];
 					bytesRead = input.read(resultSetBytes);
@@ -613,7 +617,7 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 		if (gotString == null) {
 			return null;
 		} else {
-			return Base64.decodeBase64(gotString.getBytes(UTF_8));
+			return Base64.decodeBase64(transformToStandardCharset(gotString));
 		}
 	}
 
