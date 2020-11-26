@@ -156,6 +156,10 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 		return string.getBytes(UTF_8);
 	}
 
+	public static String transformToStandardCharset(byte[] string) {
+		return new String(string, UTF_8);
+	}
+
 	void setValue(DBLargeText newLiteralValue) {
 		setValue(newLiteralValue.getValue());
 	}
