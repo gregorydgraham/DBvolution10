@@ -1177,28 +1177,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	public DBExpression transformToSelectableType(DBExpression columnExpression) {
 		return super.transformToSelectableType(columnExpression);
 	}
-
-//	public Duration parseDurationFromGetString(String intervalStr) {
-//		if (intervalStr == null || intervalStr.isEmpty()) {
-//			return null;
-//		}
-//		String[] numbers = intervalStr.split("[^0-9]+");
-//		Long days = Long.valueOf(numbers[0]);
-//		Long hours = Long.valueOf(numbers[1]);
-//		Long minutes = Long.valueOf(numbers[2]);
-//		Long seconds = Long.valueOf(numbers[3]);
-//		long nanos = 0;
-//		if (numbers.length == 5) {
-//			final String subsecondStr = numbers[4];
-//			nanos = Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length())));
-//		}
-//		Duration duration = Duration.ofDays(days)
-//				.plusHours(hours)
-//				.plusMinutes(minutes)
-//				.plusSeconds(seconds)
-//				.plusNanos(nanos);
-//		return duration;
-//	}
+	
 	@Override
 	public int getParseDurationPartOffset() {
 		return 0;
