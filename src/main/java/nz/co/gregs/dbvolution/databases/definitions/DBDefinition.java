@@ -6858,21 +6858,35 @@ public abstract class DBDefinition implements Serializable {
 		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
 		String intervalString;
 		if (supportsDurationNatively()) {
-			intervalString
-					= "INTERVAL '"
-					+ days
-					+ " " + hours
-					+ ":" + minutes
-					+ ":" + seconds
-					+ "' DAY TO SECOND";
+			if (days == 0 && hours == 0 && minutes == 0) {
+				intervalString
+						= "INTERVAL '"
+						+ seconds
+						+ "' SECOND";
+			} else {
+				intervalString
+						= "INTERVAL '"
+						+ days
+						+ " " + hours
+						+ ":" + minutes
+						+ ":" + seconds
+						+ "' DAY TO SECOND";
+			}
 		} else {
-			intervalString
-					= "'INTERVAL "
-					+ days
-					+ " " + hours
-					+ ":" + minutes
-					+ ":" + seconds
-					+ " DAY TO SECOND'";
+			if (days == 0 && hours == 0 && minutes == 0) {
+				intervalString
+						= "'INTERVAL "
+						+ seconds
+						+ " SECOND'";
+			} else {
+				intervalString
+						= "'INTERVAL "
+						+ days
+						+ " " + hours
+						+ ":" + minutes
+						+ ":" + seconds
+						+ " DAY TO SECOND'";
+			}
 		}
 		return intervalString;
 	}
@@ -6882,21 +6896,34 @@ public abstract class DBDefinition implements Serializable {
 			return null;
 		}
 		int durationPartsOffset = getParseDurationPartOffset();
-		String[] numbers = intervalStr.split("[^0-9]+");
-		Long days = Long.valueOf(numbers[durationPartsOffset]);
-		Long hours = Long.valueOf(numbers[durationPartsOffset + 1]);
-		Long minutes = Long.valueOf(numbers[durationPartsOffset + 2]);
-		Long seconds = Long.valueOf(numbers[durationPartsOffset + 3]);
+		String[] numbers = intervalStr.split("[^-0-9]+");
+		String number = numbers[durationPartsOffset];
+		boolean negated = number.startsWith("-");
+		Long days = Math.abs(Long.valueOf(number));
+		number = numbers[durationPartsOffset + 1];
+		negated = negated || number.startsWith("-");
+		Long hours = Math.abs(Long.valueOf(number));
+		number = numbers[durationPartsOffset + 2];
+		negated = negated || number.startsWith("-");
+		Long minutes = Math.abs(Long.valueOf(number));
+		number = numbers[durationPartsOffset + 3];
+		negated = negated || number.startsWith("-");
+		Long seconds = Math.abs(Long.valueOf(number));
 		long nanos = 0;
 		if (numbers.length == durationPartsOffset + 5) {
-			final String subsecondStr = numbers[durationPartsOffset + 4];
-			nanos = Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length())));
+			number = numbers[durationPartsOffset + 4];
+			negated = negated || number.startsWith("-");
+			final String subsecondStr = number;
+			nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
 		}
 		Duration duration = Duration.ofDays(days)
 				.plusHours(hours)
 				.plusMinutes(minutes)
 				.plusSeconds(seconds)
 				.plusNanos(nanos);
+		if (negated) {
+			duration = duration.negated();
+		}
 		return duration;
 	}
 
