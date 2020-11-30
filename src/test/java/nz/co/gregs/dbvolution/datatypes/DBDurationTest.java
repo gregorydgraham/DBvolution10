@@ -62,6 +62,44 @@ public class DBDurationTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
 	}
 
+	@Test
+	public void testNegativeSeconds() throws SQLException {
+		final DurationTable durationTable = new DurationTable();
+		database.setPrintSQLBeforeExecuting(true);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(durationTable);
+		database.createTable(durationTable);
+		final Duration testPeriod = Duration.ofSeconds(-2);
+		durationTable.durationCol.setValue(testPeriod);
+		database.insert(durationTable);
+		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
+		List<DurationTable> allRows = tab.getAllRows();
+		database.setPrintSQLBeforeExecuting(false);
+
+		Assert.assertThat(allRows.size(), is(1));
+
+		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+	}
+
+	@Test
+	public void testNegativeDays() throws SQLException {
+		final DurationTable durationTable = new DurationTable();
+		database.setPrintSQLBeforeExecuting(true);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(durationTable);
+		database.createTable(durationTable);
+		final Duration testPeriod = Duration.ofDays(-2);
+		durationTable.durationCol.setValue(testPeriod);
+		database.insert(durationTable);
+		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
+		List<DurationTable> allRows = tab.getAllRows();
+		database.setPrintSQLBeforeExecuting(false);
+
+		Assert.assertThat(allRows.size(), is(1));
+
+		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+	}
+
 	public static class DurationTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;
