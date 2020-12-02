@@ -350,6 +350,27 @@ public class DBDateRepeatTest extends AbstractTest {
 	}
 
 	@Test
+	public void testGetMillis() throws SQLException {
+		DateRepeatTable marq = new DateRepeatTable();
+
+		Period myPeriod = new Period().withMillis(700);
+		marq.dateRepeatCol.setValue(myPeriod);
+		database.setPrintSQLBeforeExecuting(true);
+		database.insert(marq);
+		DateRepeatTable example = new DateRepeatTable();
+		example.pkid.setValue(marq.pkid);
+		List<DateRepeatTable> got = database.get(example);
+		Assert.assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
+		
+		myPeriod = myPeriod.withSeconds(6).withMinutes(5).withHours(4).withDays(3).withMonths(2).withYears(1);
+		got.get(0).dateRepeatCol.setValue(myPeriod);
+		database.update(got.get(0));got = database.get(example);
+		Assert.assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
+		
+		database.setPrintSQLBeforeExecuting(false);
+	}
+
+	@Test
 	public void testParsing() {
 		String twoYearPlusDateRepeat = "P2Y-1M0D11h32n53s";
 		String zeroDateRepeat = "P0Y0M0D0h0n0s";

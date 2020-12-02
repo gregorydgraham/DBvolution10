@@ -4347,7 +4347,9 @@ public abstract class DBDefinition implements Serializable {
 		str.append(interval.getDays() + (interval.getWeeks() * 7)).append(DateRepeatExpression.DAY_SUFFIX);
 		str.append(interval.getHours()).append(DateRepeatExpression.HOUR_SUFFIX);
 		str.append(interval.getMinutes()).append(DateRepeatExpression.MINUTE_SUFFIX);
-		str.append(Integer.valueOf(interval.getSeconds()).doubleValue()).append(DateRepeatExpression.SECOND_SUFFIX);
+		final double secondsAndMillis = Integer.valueOf(interval.getSeconds()).doubleValue()+(Integer.valueOf(interval.getMillis()).doubleValue()/1000);
+		str.append(secondsAndMillis)
+				.append(DateRepeatExpression.SECOND_SUFFIX);
 		str.append("'");
 		return str.toString();
 	}
