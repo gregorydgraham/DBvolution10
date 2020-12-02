@@ -592,7 +592,7 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
-	
+
 	@Test
 	public void testStringBetweenInclusiveResultLeft() throws SQLException {
 
@@ -1024,7 +1024,9 @@ public class StringExpressionTest extends AbstractTest {
 						marq.column(marq.uidMarque).ascending()
 				);
 
+		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
+		database.setPrintSQLBeforeExecuting(false);
 //		query.printSQLForQuery();
 		Assert.assertThat(allRows.size(), is(22));
 
@@ -1062,9 +1064,9 @@ public class StringExpressionTest extends AbstractTest {
 			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
 			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
 			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
-			final String lagTest = oracleSafeStrings((String)expect[4]);
+			final String lagTest = oracleSafeStrings((String) expect[4]);
 			Assert.assertThat(got.lag.getValue(), is(lagTest));
-			final String leadTest = oracleSafeStrings((String)expect[5]);
+			final String leadTest = oracleSafeStrings((String) expect[5]);
 			Assert.assertThat(got.lead.getValue(), is(leadTest));
 		}
 	}

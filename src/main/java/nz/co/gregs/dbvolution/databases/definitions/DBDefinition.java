@@ -70,6 +70,7 @@ import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
@@ -4846,7 +4847,16 @@ public abstract class DBDefinition implements Serializable {
 	 * @return The DBExpression as a DBExpression supported by the database.
 	 */
 	public DBExpression transformToSortableType(DBExpression columnExpression) {
-		return columnExpression;
+		if (columnExpression instanceof StringResult) {
+			if (requiredToProduceEmptyStringsForNull) {
+				StringExpression expr = new StringExpression((StringResult) columnExpression).ifDBNull("");
+				return expr;
+			} else {
+				return columnExpression;
+			}
+		} else {
+			return columnExpression;
+		}
 	}
 
 	/**
@@ -6739,6 +6749,12 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public DBExpression transformToSelectableType(DBExpression expression) {
+		if (expression instanceof StringResult) {
+			if (requiredToProduceEmptyStringsForNull) {
+				StringExpression expr = new StringExpression((StringResult) expression).ifDBNull("");
+				return expr;
+			}
+		}
 		return transformToStorableType(expression);
 	}
 
@@ -6895,36 +6911,56 @@ public abstract class DBDefinition implements Serializable {
 		if (intervalStr == null || intervalStr.isEmpty()) {
 			return null;
 		}
+		System.out.println("INTERVALSTR: " + intervalStr);
 		int durationPartsOffset = getParseDurationPartOffset();
 		String[] numbers = intervalStr.split("[^-0-9]+");
-		String number = numbers[durationPartsOffset];
-		boolean negated = number.startsWith("-");
-		Long days = Math.abs(Long.valueOf(number));
-		number = numbers[durationPartsOffset + 1];
-		negated = negated || number.startsWith("-");
-		Long hours = Math.abs(Long.valueOf(number));
-		number = numbers[durationPartsOffset + 2];
-		negated = negated || number.startsWith("-");
-		Long minutes = Math.abs(Long.valueOf(number));
-		number = numbers[durationPartsOffset + 3];
-		negated = negated || number.startsWith("-");
-		Long seconds = Math.abs(Long.valueOf(number));
-		long nanos = 0;
-		if (numbers.length == durationPartsOffset + 5) {
-			number = numbers[durationPartsOffset + 4];
+		if (numbers.length == durationPartsOffset + 1 || numbers.length == durationPartsOffset + 2) {
+			//seconds only
+			String number = numbers[durationPartsOffset];
+			boolean negated = number.startsWith("-");
+			Long seconds = Math.abs(Long.valueOf(number));
+			long nanos = 0;
+			if (numbers.length == durationPartsOffset + 2) {
+				number = numbers[durationPartsOffset + 1];
+				negated = negated || number.startsWith("-");
+				final String subsecondStr = number;
+				nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+			}
+			Duration duration = Duration.ofSeconds(seconds).plusNanos(nanos);
+			if (negated) {
+				duration = duration.negated();
+			}
+			return duration;
+		} else {
+			String number = numbers[durationPartsOffset];
+			boolean negated = number.startsWith("-");
+			Long days = Math.abs(Long.valueOf(number));
+			number = numbers[durationPartsOffset + 1];
 			negated = negated || number.startsWith("-");
-			final String subsecondStr = number;
-			nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+			Long hours = Math.abs(Long.valueOf(number));
+			number = numbers[durationPartsOffset + 2];//---
+			negated = negated || number.startsWith("-");
+			Long minutes = Math.abs(Long.valueOf(number));
+			number = numbers[durationPartsOffset + 3];
+			negated = negated || number.startsWith("-");
+			Long seconds = Math.abs(Long.valueOf(number));
+			long nanos = 0;
+			if (numbers.length == durationPartsOffset + 5) {
+				number = numbers[durationPartsOffset + 4];
+				negated = negated || number.startsWith("-");
+				final String subsecondStr = number;
+				nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+			}
+			Duration duration = Duration.ofDays(days)
+					.plusHours(hours)
+					.plusMinutes(minutes)
+					.plusSeconds(seconds)
+					.plusNanos(nanos);
+			if (negated) {
+				duration = duration.negated();
+			}
+			return duration;
 		}
-		Duration duration = Duration.ofDays(days)
-				.plusHours(hours)
-				.plusMinutes(minutes)
-				.plusSeconds(seconds)
-				.plusNanos(nanos);
-		if (negated) {
-			duration = duration.negated();
-		}
-		return duration;
 	}
 
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
@@ -6987,14 +7023,9 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public DBDefinition getOracleCompatibleVersion() {
-		try {
-			DBDefinition newInstance = this.getClass().getConstructor().newInstance();
-			newInstance.setRequiredToProduceEmptyStringsForNull(true);
-			return newInstance;
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			Logger.getLogger(DBDefinition.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return this;
+		DBDefinition newInstance = DBDefinitionWrapper.wrap(this);
+		newInstance.setRequiredToProduceEmptyStringsForNull(true);
+		return newInstance;
 	}
 
 	public boolean hasLocalDateTimeOffset() {

@@ -1381,7 +1381,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @return a DBQuery with the examples as required tables
 	 */
 	public DBQuery getDBQuery(DBRow example, DBRow... examples) {
-		return DBQuery.getInstance(this, example, examples);
+		final DBQuery query = DBQuery.getInstance(this, example, examples);
+		return query;
 	}
 
 	/**

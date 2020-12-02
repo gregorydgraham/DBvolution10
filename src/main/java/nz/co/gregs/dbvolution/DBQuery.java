@@ -39,7 +39,6 @@ import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.expressions.search.HasComparisonExpression;
 import nz.co.gregs.dbvolution.expressions.search.HasRankingExpression;
 import nz.co.gregs.dbvolution.internal.querygraph.*;
@@ -80,9 +79,6 @@ import nz.co.gregs.dbvolution.expressions.search.SearchAcross;
  * DBQuery can even scan the Class path and find all related DBRow classes and
  * addTerm them on request.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBQuery implements Serializable {
@@ -96,35 +92,47 @@ public class DBQuery implements Serializable {
 	private final QueryDetails details = new QueryDetails();
 	private transient QueryGraph queryGraph;
 	private transient JFrame queryGraphFrame = null;
-	private String label;
 
 	public QueryDetails getQueryDetails() {
 		return details;
 	}
 
-	/**
-	 * Use of this method is not recommended as it subverts database clustering.
-	 *
-	 * @return a ready database from the cluster, or this DBQuery's database if
-	 * not using a cluster.
-	 */
-	private DBDatabase getReadyDatabase() {
-		if (database instanceof DBDatabaseCluster) {
-			return ((DBDatabaseCluster) database).getReadyDatabase();
-		} else {
-			return database;
-		}
-	}
-
 	protected DBQuery(DBDatabase database) {
 		this.database = database;
+		setDefaultQueryLabel(Thread.currentThread().getStackTrace());
 		blankResults();
+	}
+
+	private void setDefaultQueryLabel(StackTraceElement[] stackTrace) {
+		if (stackTrace.length > 0) {
+			for (StackTraceElement entryLine : stackTrace) {
+				if (entryLine != null) {
+					String className = entryLine.getClassName();
+					if (!className.equals(java.lang.Thread.class.getCanonicalName())) {
+						if (!className.equals(DBQuery.class.getCanonicalName())) {
+							if (!className.equals(DBDatabase.class.getCanonicalName())) {
+								if (!className.equals(DBRecursiveQuery.class.getCanonicalName())) {
+									if (!className.equals(DBTable.class.getCanonicalName())) {
+										final String entryLineString = entryLine.toString();
+										if (!entryLineString.isEmpty()) {
+											setQueryLabel(entryLineString);
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
 	 * Don't use this, it's for DBDatabase
-	 * 
-	 * <p>Use {@link DBDatabase#getDBQuery() }  instead</p>
+	 *
+	 * <p>
+	 * Use {@link DBDatabase#getDBQuery() } instead</p>
 	 *
 	 * @param database the database to query
 	 * @return a DBQuery object
@@ -136,8 +144,10 @@ public class DBQuery implements Serializable {
 
 	/**
 	 * Don't use this, it's for DBDatabase
-	 * 
-	 * <p>Use {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.DBRow...) }  instead</p>
+	 *
+	 * <p>
+	 * Use {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.DBRow...)
+	 * } instead</p>
 	 *
 	 * @param database the database to query
 	 * @param example the first example to base the query on
@@ -149,7 +159,7 @@ public class DBQuery implements Serializable {
 		dbQuery.add(example);
 		for (DBRow exampl : examples) {
 			dbQuery.add(exampl);
-		} 
+		}
 		return dbQuery;
 	}
 
@@ -196,8 +206,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param examples a list of DBRow objects that defines required tables and
 	 * criteria
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery add(List<DBRow> examples) {
@@ -228,8 +236,6 @@ public class DBQuery implements Serializable {
 	 * @param examples a list of DBRow objects that defines optional tables and
 	 * criteria
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptional(DBRow... examples) {
@@ -254,8 +260,6 @@ public class DBQuery implements Serializable {
 	 * re-run.
 	 *
 	 * @param examples a list of DBRow instances to remove from the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery remove(DBRow... examples) {
@@ -289,9 +293,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
@@ -312,12 +313,9 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 */
 	public void printSQLForQuery() {
-		System.out.println(details.getLabel()+": "+getSQLForQuery());
+		System.out.println(details.getLabel() + ": " + getSQLForQuery());
 	}
 
 	/**
@@ -326,9 +324,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * Use this method to check the SQL that will be executed during
 	 * {@link DBQuery#count() the count() method}
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this query
@@ -352,9 +347,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * <p>
 	 * See also {@link DBQuery#getSQLForQuery() getSQLForQuery}
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 */
 	public void printSQLForCount() {
@@ -392,7 +384,8 @@ public class DBQuery implements Serializable {
 	 * with their related instances. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.sql.SQLTimeoutException timeout
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add a condition or set blank queries permitted
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * a condition or set blank queries permitted
 	 * @see DBRow
 	 * @see DBForeignKey
 	 * @see QueryableDatatype
@@ -417,7 +410,8 @@ public class DBQuery implements Serializable {
 	/**
 	 * Sets all the expression columns using data from the current ResultSet row.
 	 *
-	 * <p>You probably shouldn't be using this</p>
+	 * <p>
+	 * You probably shouldn't be using this</p>
 	 *
 	 * @param defn the database definition to use
 	 * @param resultSet the data retrieved
@@ -451,13 +445,13 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param <R> a subclass of DBRow
 	 * @param exemplar an instance of R
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the ONLY instance found using this query 1 Database exceptions may
 	 * be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException the number of rows retrieved was not what was expected
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add a condition or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * the number of rows retrieved was not what was expected
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * a condition or permit blank queries
 	 *
 	 */
 	public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -491,14 +485,15 @@ public class DBQuery implements Serializable {
 	 * @param exemplar The DBRow class that you would like returned.
 	 * @param expected The expected number of rows, an exception will be thrown if
 	 * this expectation is not met.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of all the instances of the exemplar found by this query.
 	 *
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException the number of results differs from the number expected
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * the number of results differs from the number expected
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 *
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, long expected) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -530,13 +525,12 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param <R> a class that extends DBRow
 	 * @param exemplar an instance of R that has been included in the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A List of all the instances found of the exemplar.
 	 *
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> arrayList = new ArrayList<>();
@@ -563,7 +557,8 @@ public class DBQuery implements Serializable {
 	 * Equivalent to: printAll(System.out);
 	 *
 	 * @throws java.sql.SQLException database exception
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 */
 	public void print() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		print(System.out);
@@ -576,7 +571,8 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param ps a printstream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 *
 	 */
 	public void print(PrintStream ps) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -630,7 +626,8 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param printStream a printstream to print to
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 *
 	 */
 	public void printAllDataColumns(PrintStream printStream) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -663,7 +660,8 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param ps a PrintStream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 *
 	 */
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -722,7 +720,8 @@ public class DBQuery implements Serializable {
 	 * @return the number of rows that have or will be retrieved. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 */
 	public Long count() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		if (needsResults(details.getOptions())) {
@@ -750,9 +749,6 @@ public class DBQuery implements Serializable {
 	 * the table is made: if your criteria selects all the row of the tables this
 	 * method will still return FALSE.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return TRUE if the DBQuery will retrieve all the rows of the tables, FALSE
 	 * otherwise
 	 */
@@ -777,8 +773,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param maximumNumberOfRowsReturned the require limit to the number of rows
 	 * returned
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 * @see #clearRowLimit()
 	 */
@@ -811,8 +806,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param maximumNumberOfRowsReturned the require limit to the number of rows
 	 * returned
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 * @see #clearRowLimit()
 	 */
@@ -825,9 +819,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * <p>
 	 * Also resets the retrieved results so that the database will be re-queried.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
 	 * @see #setRowLimit(int)
@@ -861,8 +852,6 @@ public class DBQuery implements Serializable {
 	 * for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
 	 *
 	 * @param sortColumns a list of sort providers to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setSortOrder(SortProvider... sortColumns) {
@@ -887,8 +876,6 @@ public class DBQuery implements Serializable {
 	 * for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
 	 *
 	 * @param columns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setSortOrder(ColumnProvider... columns) {
@@ -919,8 +906,6 @@ public class DBQuery implements Serializable {
 	 * </pre>
 	 *
 	 * @param sortColumns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addToSortOrder(SortProvider... sortColumns) {
@@ -930,9 +915,6 @@ public class DBQuery implements Serializable {
 
 	/**
 	 * Remove all sorting that has been set on this DBQuery
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
 	 */
@@ -959,8 +941,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param allow - TRUE to allow blank queries, FALSE to return it to the
 	 * default setting.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setBlankQueryAllowed(boolean allow) {
@@ -987,8 +967,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param allow - TRUE to allow cartesian joins, FALSE to return it to the
 	 * default setting.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setCartesianJoinsAllowed(boolean allow) {
@@ -1029,17 +1007,17 @@ public class DBQuery implements Serializable {
 	 * are added.
 	 *
 	 * @param expectedRows - the number of rows expected to be retrieved
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances.
 	 *
 	 * <p>
 	 * Database exceptions may be thrown.
 	 *
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException incorrect number of rows
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * incorrect number of rows
 	 * @throws java.sql.SQLException Database errors
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add
+	 * conditions or permit blank queries
 	 */
 	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> allRows = getAllRows();
@@ -1088,8 +1066,6 @@ public class DBQuery implements Serializable {
 	 * supports OUTER thru the ANSI syntax.
 	 *
 	 * @param useANSISyntax the useANSISyntax flag to set
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setUseANSISyntax(boolean useANSISyntax) {
@@ -1109,9 +1085,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * That is to say: where A is a DBRow in this query, returns a List of B such
 	 * that B =&gt; A
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of classes that have a {@code @DBForeignKey} reference to
 	 * this class
@@ -1149,9 +1122,6 @@ public class DBQuery implements Serializable {
 	 * That is to say: where A is A DBRow in this class, returns a List of B such
 	 * that A =&gt; B
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
 	 * @see #getRelatedTables()
 	 * @see DBRow#getReferencedTables()
@@ -1164,11 +1134,7 @@ public class DBQuery implements Serializable {
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
-//				try {
-					result.add(DBRow.getDBRow(connectedTable));
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-//				}
+				result.add(DBRow.getDBRow(connectedTable));
 			}
 		}
 
@@ -1177,9 +1143,6 @@ public class DBQuery implements Serializable {
 
 	/**
 	 * Returns all the DBRow subclasses used in this query.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return A list of DBRow subclasses included in this query.
 	 * @see #getRelatedTables()
@@ -1203,9 +1166,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * That is to say: where A is a DBRow in this query, returns a List of B such
 	 * that B =&gt; A or A =&gt; B
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of classes that have a {@code @DBForeignKey} reference to or
 	 * from this class
@@ -1237,22 +1197,16 @@ public class DBQuery implements Serializable {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException thrown if the there is no accessible default constructor for the DBRow class
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if the there is no
+	 * accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedTables() throws UnableToInstantiateDBRowSubclassException {
 		List<DBRow> tablesToAdd = new ArrayList<>();
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
-//				try {
-					tablesToAdd.add(DBRow.getDBRow(connectedTable));
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-//				}
+				tablesToAdd.add(DBRow.getDBRow(connectedTable));
 			}
 		}
 		add(tablesToAdd.toArray(new DBRow[]{}));
@@ -1275,22 +1229,16 @@ public class DBQuery implements Serializable {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException  thrown if the there is no accessible default constructor for the DBRow class
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if the there is no
+	 * accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedBaseTables() throws UnableToInstantiateDBRowSubclassException {
 		List<DBRow> tablesToAdd = new ArrayList<>();
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedBaseTables();
 			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
-//				try {
-					tablesToAdd.add(DBRow.getDBRow(connectedTable));
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-//				}
+				tablesToAdd.add(DBRow.getDBRow(connectedTable));
 			}
 		}
 		add(tablesToAdd.toArray(new DBRow[]{}));
@@ -1313,11 +1261,9 @@ public class DBQuery implements Serializable {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no accessible default constructor for the DBRow class
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no
+	 * accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedTablesAsOptional() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<>();
@@ -1331,11 +1277,7 @@ public class DBQuery implements Serializable {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 				DBRow newInstance;
-//				try {
-					newInstance =DBRow.getDBRow(relatedTable);
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-//				}
+				newInstance = DBRow.getDBRow(relatedTable);
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {
@@ -1364,11 +1306,9 @@ public class DBQuery implements Serializable {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no accessible default constructor for the DBRow class
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no
+	 * accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedBaseTablesAsOptional() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<>();
@@ -1381,13 +1321,8 @@ public class DBQuery implements Serializable {
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedBaseTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
-//				DBRow newInstance = relatedTable.newInstance();
 				DBRow newInstance;
-//				try {
-					newInstance = DBRow.getDBRow(relatedTable);
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-//				}
+				newInstance = DBRow.getDBRow(relatedTable);
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {
@@ -1413,11 +1348,9 @@ public class DBQuery implements Serializable {
 	 * This method adds all the connected tables as if they were only connected to
 	 * the core tables and had no other relationships.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no accessible default constructor for the DBRow class
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no
+	 * accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<>();
@@ -1433,13 +1366,8 @@ public class DBQuery implements Serializable {
 		for (DBRow table : allQueryTables) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
-//				DBRow newInstance = relatedTable.newInstance();
 				DBRow newInstance;
-//				try {
-					newInstance = DBRow.getDBRow(relatedTable);
-//				} catch (InstantiationException | IllegalAccessException ex) {
-//					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-//				}
+				newInstance = DBRow.getDBRow(relatedTable);
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {
@@ -1467,14 +1395,14 @@ public class DBQuery implements Serializable {
 	 * DBRow as a block.
 	 *
 	 * @param instance the DBRow instance you are interested in.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return A list of DBQueryRow instances that relate to the exemplar 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
 	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
-	 * } or similar.	 
+	 * } or similar.
 	 */
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
@@ -1506,14 +1434,14 @@ public class DBQuery implements Serializable {
 	 * Convenience method for {@link #getAllRowsForPage(java.lang.Integer) }.
 	 *
 	 * @param pageNumber	pageNumber
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
- * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
- * } or similar.
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public List<DBQueryRow> getPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRowsForPage(pageNumber);
@@ -1531,14 +1459,14 @@ public class DBQuery implements Serializable {
 	 * This method is zero-based so the first page is getAllRowsForPage(0).
 	 *
 	 * @param pageNumber	pageNumber
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
- * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
- * } or similar.
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
@@ -1551,11 +1479,12 @@ public class DBQuery implements Serializable {
 	}
 
 	/**
-	 * Use this method to remove all existing conditions on the query and add the supplied conditions to the DBQuery.
+	 * Use this method to remove all existing conditions on the query and add the
+	 * supplied conditions to the DBQuery.
 	 *
 	 * <p>
-	 * This method takes a list of BooleanExpressions and add them to the where clause of
-	 * the Query
+	 * This method takes a list of BooleanExpressions and add them to the where
+	 * clause of the Query
 	 *
 	 * <p>
 	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
@@ -1579,9 +1508,9 @@ public class DBQuery implements Serializable {
 	 * );
 	 * </pre>
 	 *
-	 * @param conditions all boolean expressions that defines the required limits on the
-	 * results of the query
-	 * 
+	 * @param conditions all boolean expressions that defines the required limits
+	 * on the results of the query
+	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setConditions(BooleanExpression... conditions) {
@@ -1621,8 +1550,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param condition a boolean expression that defines a require limit on the
 	 * results of the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addCondition(BooleanExpression condition) {
@@ -1667,8 +1595,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param conditions boolean expressions that define required limits on the
 	 * results of the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addConditions(BooleanExpression... conditions) {
@@ -1709,8 +1636,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param conditions boolean expressions that define required limits on the
 	 * results of the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addConditions(Collection<BooleanExpression> conditions) {
@@ -1742,8 +1668,7 @@ public class DBQuery implements Serializable {
 	 * Remove all conditions from this query.
 	 *
 	 * @see #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery object
 	 */
 	public DBQuery clearConditions() {
@@ -1761,9 +1686,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * <p>
 	 * The conditions will be connected by OR in the SQL.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
 	 */
@@ -1784,9 +1706,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * The relationships will be connected by OR in the SQL.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAnyRelationship() {
@@ -1806,9 +1725,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * The relationships will be connected by AND in the SQL.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAllRelationships() {
@@ -1826,9 +1742,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * This means that all permitted*, excluded*, and comparisons are required for
 	 * any rows and the conditions will be connected by AND.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
 	 */
@@ -1857,8 +1770,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param exampleWithOrWithoutCriteria an example DBRow that should be added
 	 * to the query as a required or optional table as appropriate.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow exampleWithOrWithoutCriteria) {
@@ -1889,8 +1801,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param examplesWithOrWithoutCriteria Example DBRow objects that should be
 	 * added to the query as a optional or required table as appropriate.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow... examplesWithOrWithoutCriteria) {
@@ -1905,8 +1816,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param identifyingObject identifyingObject
 	 * @param expressionToAdd expressionToAdd
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addExpressionColumn(Object identifyingObject, QueryableDatatype<?> expressionToAdd) {
@@ -1920,8 +1830,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param identifyingObject identifyingObject
 	 * @param expressionToAdd expressionToAdd
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery instance
 	 */
 	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
@@ -1961,8 +1870,7 @@ public class DBQuery implements Serializable {
 	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) addTerm and related methods}.
 	 *
 	 * @param extraExamples
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery with the extra examples added
 	 */
 	public DBQuery addExtraExamples(DBRow... extraExamples) {
@@ -2083,20 +1991,24 @@ public class DBQuery implements Serializable {
 	 * the distinct or unique values that are used.
 	 *
 	 * @param fieldsOfProvidedRows - the field/column that you need data for.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of DBQQueryRows with distinct combinations of values used in
 	 * the columns. 1 Database exceptions may be thrown
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
- * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
- * } or similar.
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings({"unchecked", "empty-statement"})
 	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
 		List<DBQueryRow> returnList = new ArrayList<>();
 
-		DBQuery distinctQuery = database.getDBQuery().setReturnEmptyStringForNullString(details.getReturnEmptyStringForNullString());
+		DBQuery distinctQuery = database
+				.getDBQuery()
+				.setQueryLabel(getQueryLabel())
+				.setPrintSQLBeforeExecution(getPrintSQLBeforeExecution())
+				.setReturnEmptyStringForNullString(getReturnEmptyStringForNullString());
 		for (DBRow row : details.getRequiredQueryTables()) {
 			final DBRow copyDBRow = DBRow.copyDBRow(row);
 			copyDBRow.removeAllFieldsFromResults();
@@ -2236,8 +2148,7 @@ public class DBQuery implements Serializable {
 	 * Also used by the {@link ExistsExpression}.
 	 *
 	 * @param tables	tables
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery object.
 	 */
 	public DBQuery addAssumedTables(List<DBRow> tables) {
@@ -2256,8 +2167,7 @@ public class DBQuery implements Serializable {
 	 * Also used by the {@link ExistsExpression}.
 	 *
 	 * @param tables	tables
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this DBQuery object.
 	 */
 	public DBQuery addAssumedTables(DBRow... tables) {
@@ -2289,8 +2199,6 @@ public class DBQuery implements Serializable {
 	 * @param optionalQueryTables a list of DBRow objects that defines optional
 	 * tables and criteria
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptional(List<DBRow> optionalQueryTables) {
@@ -2316,8 +2224,7 @@ public class DBQuery implements Serializable {
 	 * </pre>
 	 *
 	 * @param foreignKeyToFollow the foreign key to ignore
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return This DBQuery object
 	 */
 	public DBQuery ignoreForeignKey(ColumnProvider foreignKeyToFollow) {
@@ -2347,8 +2254,7 @@ public class DBQuery implements Serializable {
 	 * Use this method If you require a longer running query.
 	 *
 	 * @param milliseconds
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this query.
 	 */
 	public synchronized DBQuery setTimeoutInMilliseconds(Long milliseconds) {
@@ -2371,8 +2277,7 @@ public class DBQuery implements Serializable {
 	 * Use this method If you require a longer running query.
 	 *
 	 * @param milliseconds
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return this query.
 	 */
 	public synchronized DBQuery setTimeoutInMilliseconds(Integer milliseconds) {
@@ -2425,9 +2330,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * Use this method if you expect an extremely long query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery object
 	 */
 	public synchronized DBQuery clearTimeout() {
@@ -2458,8 +2360,6 @@ public class DBQuery implements Serializable {
 		List<DBRow> allQueryTables = this.details.getAllQueryTables();
 		for (ColumnProvider provider : columns) {
 			if (provider instanceof QueryColumn) {
-//				QueryColumn<?,?,?> qc = (QueryColumn)provider;
-//				qc.setReturnField(true);
 			} else {
 				if (provider != null) {
 					final AbstractColumn column = provider.getColumn();
@@ -2511,8 +2411,7 @@ public class DBQuery implements Serializable {
 	 * This method is zero-based so the first page is getAllRowsForPage(0).
 	 *
 	 * @param pageNumberZeroBased pageNumber
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 */
@@ -2595,6 +2494,10 @@ public class DBQuery implements Serializable {
 		return this;
 	}
 
+	public String getQueryLabel() {
+		return this.details.getLabel();
+	}
+
 	public DBQuery setReturnEmptyStringForNullString(boolean b) {
 		this.details.setReturnEmptyStringForNullString(b);
 		return this;
@@ -2607,21 +2510,6 @@ public class DBQuery implements Serializable {
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(DBRow example, A fieldOfTheExample) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getDistinctValuesOfColumn(example.column(fieldOfTheExample));
-//		List<A> results = new ArrayList<>();
-//		DBRow queryRow = DBRow.copyDBRow(example);
-//		final PropertyWrapper fieldProp = queryRow.getPropertyWrapperOf(fieldOfTheExample);
-//		queryRow.setReturnFields(fieldOfTheExample);
-//		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(queryRow);
-//		final ColumnProvider columnProvider = queryRow.column(thisQDT);
-//		DBExpression expr = columnProvider.getColumn().asExpression();
-//		DBQuery dbQuery = this.add(queryRow).addGroupByColumn(queryRow, expr);
-//		dbQuery.setSortOrder(columnProvider.getSortProvider().nullsLowest());
-//		dbQuery.setBlankQueryAllowed(true);
-//		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		allRows.stream().map(row -> row.get(queryRow)).forEachOrdered(got -> {
-//			results.add(got == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(got));
-//		});
-//		return results;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2634,9 +2522,11 @@ public class DBQuery implements Serializable {
 		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(queryRow);
 		final ColumnProvider columnProvider = queryRow.column(thisQDT);
 		DBExpression expr = columnProvider.getColumn().asExpression();
-		DBQuery dbQuery 
+		DBQuery dbQuery
 				= database
 						.getDBQuery()
+						.setQueryLabel(getQueryLabel())
+						.setPrintSQLBeforeExecution(getPrintSQLBeforeExecution())
 						.setReturnEmptyStringForNullString(details.getReturnEmptyStringForNullString())
 						.add(queryRow)
 						.addGroupByColumn(queryRow, expr);
@@ -2647,5 +2537,14 @@ public class DBQuery implements Serializable {
 			results.add(got == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(got));
 		});
 		return results;
+	}
+
+	public DBQuery setPrintSQLBeforeExecution(boolean b) {
+		this.details.getOptions().setPrintSQLBeforeExecution(b);
+		return this;
+	}
+
+	public boolean getPrintSQLBeforeExecution() {
+		return this.details.getOptions().getPrintSQLBeforeExecution();
 	}
 }

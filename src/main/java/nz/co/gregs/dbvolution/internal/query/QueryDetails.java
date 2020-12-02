@@ -53,7 +53,6 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
@@ -179,11 +178,18 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	private DBDefinition getDatabaseDefinition(DBDatabase database) throws NoAvailableDatabaseException {
-		if (this.returnEmptyStringForNullString && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively()) {
-			DBDefinition newInstance = database.getDefinition().getOracleCompatibleVersion();
-			return newInstance;
+//		if (this.returnEmptyStringForNullString && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively()) {
+		if (getReturnEmptyStringForNullString()) {
+			return getOracleCompatibleDBDefinition(database);
+		} else if (database.getDefinition().requiredToProduceEmptyStringsForNull()) {
+			return getOracleCompatibleDBDefinition(database);
 		}
 		return database.getDefinition();
+	}
+
+	private DBDefinition getOracleCompatibleDBDefinition(DBDatabase database) throws NoAvailableDatabaseException {
+		DBDefinition newInstance = database.getDefinition().getOracleCompatibleVersion();
+		return newInstance;
 	}
 
 	/**
@@ -383,9 +389,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException, LoopDetectedInRecursiveSQL {
 		long result = 0L;
-		try (DBStatement dbStatement = db.getDBStatement()) {
+		try ( DBStatement dbStatement = db.getDBStatement()) {
 			final String sqlForCount = details.getSQLForCount(db, details);
-			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
+			try ( ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
 				while (resultSet.next()) {
 					result = resultSet.getLong(1);
 				}
@@ -857,7 +863,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return sqlToReturn.toString();
 	}
 
-	private synchronized OrderByClause getOrderByClause(QueryState state, DBDefinition defn, Map<PropertyWrapperDefinition<?,?>, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
+	private synchronized OrderByClause getOrderByClause(QueryState state, DBDefinition defn, Map<PropertyWrapperDefinition<?, ?>, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
 		OrderByClause clause = new OrderByClause();
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
@@ -874,7 +880,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 //						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 					} else {
 						if (prefersIndexBasedOrderByClause) {
-							PropertyWrapperDefinition<?,?> propDefn;
+							PropertyWrapperDefinition<?, ?> propDefn;
 							QueryableDatatype<?> qdt;
 							if (sorter instanceof SortProvider.Column) {
 								var prop = ((SortProvider.Column) sorter).getPropertyWrapper();
@@ -1070,7 +1076,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				getResultSetCount(db, this);
 				break;
 			case ROWSFORPAGE:
-				getAllRowsForPage(db, this);
+				getAllRowsForPage(db);
 				break;
 			case GENERATESQLFORSELECT:
 				this.setResultSQL(getSQLForQuery(db, new QueryState(this), QueryType.SELECT, getOptions()));
@@ -1087,15 +1093,15 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return this;
 	}
 
-	public synchronized void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
+	public synchronized void getAllRowsForPage(DBDatabase database) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
 		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
 		final DBDefinition defn = getDatabaseDefinition(database);
 
 		if (defn.supportsPagingNatively(opts)) {
 			opts.setPageIndex(pageNumber);
-			if (details.needsResults(opts)) {
-				fillResultSetInternal(database, details, options);
+			if (needsResults(opts)) {
+				fillResultSetInternal(database, this, options);
 			}
 			setCurrentPage(getResults());
 		} else {
@@ -1103,21 +1109,21 @@ public class QueryDetails implements DBQueryable, Serializable {
 				QueryOptions tempOptions = new QueryOptions(opts);
 				tempOptions.setQueryType(QueryType.SELECT);
 				tempOptions.setRowLimit((pageNumber + 1) * opts.getRowLimit());
-				if (details.needsResults(tempOptions) || tempOptions.getRowLimit() > getResults().size()) {
-					details.setOptions(tempOptions);
-					database.executeDBQuery(details);
-					details.setOptions(opts);
+				if (needsResults(tempOptions) || tempOptions.getRowLimit() > getResults().size()) {
+					setOptions(tempOptions);
+					database.executeDBQuery(this);
+					setOptions(opts);
 				}
 			} else {
-				if (details.needsResults(opts)) {
+				if (needsResults(opts)) {
 					QueryOptions tempOptions = new QueryOptions(opts);
 					tempOptions.setRowLimit(-1);
 					tempOptions.setQueryType(QueryType.SELECT);
-					details.setOptions(tempOptions);
+					setOptions(tempOptions);
 
-					database.executeDBQuery(details);
+					database.executeDBQuery(this);
 
-					details.setOptions(opts);
+					setOptions(opts);
 				}
 			}
 			int rowLimit = opts.getRowLimit();
@@ -1147,16 +1153,18 @@ public class QueryDetails implements DBQueryable, Serializable {
 				&& queryGraph.willCreateCartesianJoin()) {
 			throw new AccidentalCartesianJoinException(details);
 		}
-
-		fillResultSetFromSQL(db, details, defn, details.getResultSQL());
-
+		// all set to execute the query
+		fillResultSetFromSQL(db, details, options, defn, details.getResultSQL());
 	}
 
-	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
-		DBQueryRow queryRow;
+	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, QueryOptions options, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
+		if (options.getPrintSQLBeforeExecution()) {
+			System.out.println("/* SQL for " + details.label + " */ " + details.getResultSQL());
+		}
 
-		try (DBStatement dbStatement = db.getDBStatement()) {
-			try (ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
+		try ( DBStatement dbStatement = db.getDBStatement()) {
+			try ( ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
+				DBQueryRow queryRow;
 				while (resultSet.next()) {
 					queryRow = new DBQueryRow(this);
 

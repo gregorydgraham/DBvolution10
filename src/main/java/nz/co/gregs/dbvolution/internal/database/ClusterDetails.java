@@ -99,11 +99,24 @@ public class ClusterDetails implements Serializable {
 	public final synchronized boolean add(DBDatabase databaseToAdd) throws SQLException {
 		if (databaseToAdd != null) {
 			DBDatabase database = getClusteredVersionOfDatabase(databaseToAdd);
-			final boolean supportsDifferenceBetweenNullAndEmptyString1 = getSupportsDifferenceBetweenNullAndEmptyString();
-			boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
-			if (result != supportsDifferenceBetweenNullAndEmptyString1) {
-				setSupportsDifferenceBetweenNullAndEmptyString(result);
+			final boolean clusterSupportsDifferenceBetweenNullAndEmptyString = getSupportsDifferenceBetweenNullAndEmptyString();
+			boolean databaseSupportsDifferenceBetweenNullAndEmptyString = database.supportsDifferenceBetweenNullAndEmptyString();
+			if (clusterSupportsDifferenceBetweenNullAndEmptyString) {
+				if (databaseSupportsDifferenceBetweenNullAndEmptyString) {
+					// both support the diference so there is no conflict
+				} else {
+					// the cluster needs to change to handle Oracle-like behaviour
+					setSupportsDifferenceBetweenNullAndEmptyString(false);
+				}
+			} else {
+				if  (databaseSupportsDifferenceBetweenNullAndEmptyString) {
+					// currently the cluster and query should avoid any need to change the database behaviour
+				}
 			}
+//			boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
+//			if (result != supportsDifferenceBetweenNullAndEmptyString1) {
+//			setSupportsDifferenceBetweenNullAndEmptyString(result);
+//			}
 
 			if (clusterContainsDatabase(database)) {
 				readyDatabases.remove(database);
@@ -208,7 +221,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized void synchronizingDatabase(DBDatabase datbaseIsSynchronized) throws SQLException {
-		DBDatabase database = getClusteredVersionOfDatabase(datbaseIsSynchronized); 
+		DBDatabase database = getClusteredVersionOfDatabase(datbaseIsSynchronized);
 		unsynchronizedDatabases.remove(database);
 	}
 
@@ -309,7 +322,7 @@ public class ClusterDetails implements Serializable {
 			if (authoritativeDCS != null) {
 				try {
 					return getClusteredVersionOfDatabase(authoritativeDCS.createDBDatabase());
-				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException  ex) {
+				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
 					throw new NoAvailableDatabaseException();
 				}
@@ -440,7 +453,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized void setSupportsDifferenceBetweenNullAndEmptyString(boolean result) {
-			supportsDifferenceBetweenNullAndEmptyString = result;
+		supportsDifferenceBetweenNullAndEmptyString = result;
 	}
 
 	public synchronized boolean getSupportsDifferenceBetweenNullAndEmptyString() {

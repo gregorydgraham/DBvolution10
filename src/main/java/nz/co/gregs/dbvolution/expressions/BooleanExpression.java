@@ -676,7 +676,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static BooleanExpression isNotNull(StringExpression possibleNullExpression) {
+	public static BooleanExpression isNotNull(StringResult possibleNullExpression) {
 		return new BooleanExpression(new IsNotNullStringExpression(possibleNullExpression));
 	}
 
@@ -2851,7 +2851,11 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		public String toSQLString(DBDefinition db) {
 			String returnStr = "";
 			final String onlyBoolStr = onlyBool.toSQLString(db);
-			returnStr = onlyBoolStr + " IS NOT " + db.getNull() + "/*GENERIC*/";
+			if (db.requiredToProduceEmptyStringsForNull()) {
+				returnStr = " (" + onlyBoolStr + " IS NOT " + db.getNull() + ") /* generic version */";
+			} else {
+				returnStr = onlyBoolStr + " IS NOT " + db.getNull();
+			}
 			return returnStr;
 		}
 
@@ -2868,9 +2872,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	protected static class IsNotNullStringExpression extends BooleanExpression {
 
-		private final StringExpression onlyBool;
+		private final StringResult onlyBool;
 
-		public IsNotNullStringExpression(StringExpression bool) {
+		public IsNotNullStringExpression(StringResult bool) {
 			onlyBool = bool;
 		}
 		private final static long serialVersionUID = 1l;
@@ -2880,7 +2884,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			String returnStr = "";
 			final String onlyBoolStr = onlyBool.toSQLString(db);
 			if (db.requiredToProduceEmptyStringsForNull()) {
-				returnStr = " NOT (" + onlyBoolStr + " IS " + db.getNull() + " OR " + onlyBoolStr + " = '')";
+				returnStr = " NOT ((" + onlyBoolStr + " IS " + db.getNull() + ") OR (" + onlyBoolStr + " = '')) /* STRING VERSION */ ";
 			} else {
 				returnStr = onlyBoolStr + " IS NOT " + db.getNull();// for strings
 			}
@@ -2941,7 +2945,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			final String onlyBoolStr = onlyBool.toSQLString(db);
 			returnStr = onlyBoolStr + " IS " + db.getNull();
 			if (db.requiredToProduceEmptyStringsForNull()) {
-				returnStr = " (" + returnStr + " OR " + onlyBoolStr + " = '')";
+				returnStr = " (" + returnStr + " OR " + onlyBoolStr + " = '') /* BooleanExpression 2948 */";
 			}
 			return returnStr;
 		}

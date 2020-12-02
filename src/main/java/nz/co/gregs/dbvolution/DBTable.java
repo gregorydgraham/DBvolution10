@@ -34,8 +34,6 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
@@ -86,7 +84,9 @@ public class DBTable<E extends DBRow> {
 		this.original = exampleRow;
 		exemplar = DBRow.copyDBRow(exampleRow);
 		this.database = database;
-		this.query = database.getDBQuery(exemplar).setReturnEmptyStringForNullString(!database.supportsDifferenceBetweenNullAndEmptyString());
+		this.query = database
+				.getDBQuery(exemplar)
+				.setReturnEmptyStringForNullString(!database.supportsDifferenceBetweenNullAndEmptyString());
 	}
 
 	/**
@@ -190,7 +190,11 @@ public class DBTable<E extends DBRow> {
 	 */
 	public List<E> getRowsByExample(E example) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		this.exemplar = DBRow.copyDBRow(example);
-		this.query = database.getDBQuery(exemplar).setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
+		this.query = database
+				.getDBQuery(exemplar)
+				.setQueryLabel(this.getQueryLabel())
+				.setPrintSQLBeforeExecution(this.getPrintSQLBeforeExecution())
+				.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
 		return getAllRows();
 	}
 
@@ -333,7 +337,11 @@ public class DBTable<E extends DBRow> {
 				throw new ClassNotFoundException("The value supplied is not in a supported class or it does not match the primary key class.");
 			}
 		}
-		this.query = database.getDBQuery(newInstance).setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
+		this.query = database
+				.getDBQuery(newInstance)
+				.setQueryLabel(this.getQueryLabel())
+				.setPrintSQLBeforeExecution(this.getPrintSQLBeforeExecution())
+				.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
 		return getAllRows();
 	}
 
@@ -502,7 +510,12 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public String getSQLForQuery(DBRow exemplar) throws SQLException {
-		return database.getDBQuery(exemplar).setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString()).getSQLForQuery();
+		return database
+				.getDBQuery(exemplar)
+				.setQueryLabel(this.getQueryLabel())
+				.setPrintSQLBeforeExecution(this.getPrintSQLBeforeExecution())
+				.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString())
+				.getSQLForQuery();
 	}
 
 	/**
@@ -1234,9 +1247,11 @@ public class DBTable<E extends DBRow> {
 		final var fieldDefn = fieldProp.getPropertyWrapperDefinition();
 		QueryableDatatype<?> thisQDT = fieldDefn.getQueryableDatatype(exemplar);
 		exemplar.setReturnFields(thisQDT);
-		DBQuery distinctQuery 
+		DBQuery distinctQuery
 				= database
 						.getDBQuery(exemplar)
+						.setQueryLabel(this.getQueryLabel())
+						.setPrintSQLBeforeExecution(this.getPrintSQLBeforeExecution())
 						.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString());
 		distinctQuery.setBlankQueryAllowed(true);
 		final ColumnProvider column = exemplar.column(thisQDT);
@@ -1252,6 +1267,15 @@ public class DBTable<E extends DBRow> {
 
 	public void printSQLForQuery() {
 		System.out.println(this.getSQLForQuery());
+	}
+
+	public DBTable<E> setPrintSQLBeforeExecution(boolean b) {
+		this.query.setPrintSQLBeforeExecution(b);
+		return this;
+	}
+
+	public boolean getPrintSQLBeforeExecution() {
+		return this.query.getPrintSQLBeforeExecution();
 	}
 
 	/**
@@ -1304,6 +1328,10 @@ public class DBTable<E extends DBRow> {
 	public DBTable<E> setQueryLabel(String queryLabel) {
 		this.query.setQueryLabel(queryLabel);
 		return this;
+	}
+
+	public String getQueryLabel() {
+		return this.query.getQueryLabel();
 	}
 
 	DBTable<E> setReturnEmptyStringForNullString(boolean b) {

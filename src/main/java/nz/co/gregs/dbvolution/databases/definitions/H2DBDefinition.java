@@ -68,34 +68,34 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		String result = "PARSEDATETIME("
-				+ "''||"+years
+				+ "''||" + years
 				+ "||'-'||" + doLeftPadTransform(months, "'0'", "2")
-				+ "||'-'||" + doLeftPadTransform(days, "'0'","2")
-				+ "||' '||" + doLeftPadTransform(hours,"'0'","2")
-				+ "||':'||" + doLeftPadTransform(minutes, "'0'","2")
-				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
-				+ "||" + seconds				+ "||' '||'" + timeZoneSign+"'"
-				+ "||"+ doLeftPadTransform(timeZoneHourOffset, "'0'","2")
-				+ "||" + doLeftPadTransform(timeZoneMinuteOffSet, "'0'","2")
-				+ ", '"+ "yyyy-M-d HH:mm:ss Z"+"'"
-				+")";
-		result = "TIMESTAMPADD('NANOSECOND', ("+ subsecond+"*1000000000), "+result+")";
+				+ "||'-'||" + doLeftPadTransform(days, "'0'", "2")
+				+ "||' '||" + doLeftPadTransform(hours, "'0'", "2")
+				+ "||':'||" + doLeftPadTransform(minutes, "'0'", "2")
+				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||" + seconds), "1"), "'0'", "''")
+				+ "||" + seconds + "||' '||'" + timeZoneSign + "'"
+				+ "||" + doLeftPadTransform(timeZoneHourOffset, "'0'", "2")
+				+ "||" + doLeftPadTransform(timeZoneMinuteOffSet, "'0'", "2")
+				+ ", '" + "yyyy-M-d HH:mm:ss Z" + "'"
+				+ ")";
+		result = "TIMESTAMPADD('NANOSECOND', (" + subsecond + "*1000000000), " + result + ")";
 		return result;
 	}
 
 	@Override
 	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		String result = "PARSEDATETIME("
-				+ "''||"+years
+				+ "''||" + years
 				+ "||'-'||" + doLeftPadTransform(months, "'0'", "2")
-				+ "||'-'||" + doLeftPadTransform(days, "'0'","2")
-				+ "||' '||" + doLeftPadTransform(hours,"'0'","2")
-				+ "||':'||" + doLeftPadTransform(minutes, "'0'","2")
-				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
+				+ "||'-'||" + doLeftPadTransform(days, "'0'", "2")
+				+ "||' '||" + doLeftPadTransform(hours, "'0'", "2")
+				+ "||':'||" + doLeftPadTransform(minutes, "'0'", "2")
+				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||" + seconds), "1"), "'0'", "''")
 				+ "||" + seconds
-				+ ", '"+ "yyyy-M-d HH:mm:ss"+"'"
-				+")";
-		result = "TIMESTAMPADD('NANOSECOND', ("+ subsecond+"*1000000000), "+result+")";
+				+ ", '" + "yyyy-M-d HH:mm:ss" + "'"
+				+ ")";
+		result = "TIMESTAMPADD('NANOSECOND', (" + subsecond + "*1000000000), " + result + ")";
 		return result;
 	}
 
@@ -150,7 +150,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	public String doDateAddDaysTransform(String dayValue, String numberOfDays) {
 		return "DATEADD('day'," + numberOfDays + ", " + dayValue + ")";
 	}
-	
+
 	@Override
 	public String doDateAddSecondsTransform(String secondValue, String numberOfSeconds) {
 		return "DATEADD('second'," + numberOfSeconds + "," + secondValue + ")";
@@ -185,7 +185,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	public String doInstantAddDaysTransform(String instantValue, String numberOfDays) {
 		return doInsertInstantTimeZoneTransform(instantValue, "DATEADD('day'," + numberOfDays + ", " + doRemoveInstantTimeZoneTransform(instantValue) + ")");
 	}
-	
+
 	@Override
 	public String doInstantAddSecondsTransform(String instantValue, String numberOfSeconds) {
 		return doInsertInstantTimeZoneTransform(instantValue, "DATEADD('second'," + numberOfSeconds + "," + doRemoveInstantTimeZoneTransform(instantValue) + ")");
@@ -229,19 +229,19 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	protected String getCurrentDateTimeFunction() {
 		return " CURRENT_TIMESTAMP(9) ";
 	}
-	
+
 	@Override
-	public String getDefaultTimeZoneSign(){
+	public String getDefaultTimeZoneSign() {
 		return "case when extract(timezone_hour from current_timestamp(9))>=0 then '+' else '-' end";
 	}
-	
+
 	@Override
-	public String getDefaultTimeZoneHour(){
+	public String getDefaultTimeZoneHour() {
 		return "extract(timezone_hour from current_timestamp(9))";
 	}
-	
+
 	@Override
-	public String getDefaultTimeZoneMinute(){
+	public String getDefaultTimeZoneMinute() {
 		return "extract(timezone_minute from current_timestamp(9))";
 	}
 
@@ -291,7 +291,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 				return str.toString();
 		}
 	}
-	
+
 	@Override
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
 		return " " + DateRepeatFunctions.CREATE + "(" + leftHandSide + ", " + rightHandSide + ")";
@@ -644,7 +644,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	public String doMultiPoint2DToLine2DTransform(String first) {
 		return MultiPoint2DFunctions.ASLINE2D + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
-	
+
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {
 		return MultiPoint2DFunctions.MINY + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
@@ -706,7 +706,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
 		return "GROUP_CONCAT(" + accumulateColumn + " ORDER BY " + orderByColumnName + " SEPARATOR " + separator + ")";
 	}
-	
+
 	/**
 	 * Creates the CURRENTTIME function for this database.
 	 *
@@ -717,19 +717,19 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	 */
 	@Override
 	public String doCurrentUTCTimeTransform() {
-		 return "/*doCurrentUTCTimeTransform*/dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
+		return "/*doCurrentUTCTimeTransform*/dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
 	}
 
 	@Override
 	public String doCurrentUTCDateTimeTransform() {
-		 return "/*doCurrentUTCDateTimeTransform*/dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
+		return "/*doCurrentUTCDateTimeTransform*/dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
 	}
-	
+
 	public String doRemoveInstantTimeZoneTransform(String instantValue) {
-		 return "/*remove timezone*/dateadd(minute, -1*extract(timezone_minute from "+instantValue+"), dateadd(hour, -1*extract(timezone_hour from "+instantValue+"), "+instantValue+"))/*!remove timezone*/";
+		return "/*remove timezone*/dateadd(minute, -1*extract(timezone_minute from " + instantValue + "), dateadd(hour, -1*extract(timezone_hour from " + instantValue + "), " + instantValue + "))/*!remove timezone*/";
 	}
-	
+
 	public String doInsertInstantTimeZoneTransform(String instantValueWithCorrectTZ, String dateValue) {
-		 return "/*insert timezone*/dateadd(minute, extract(timezone_minute from "+instantValueWithCorrectTZ+"), dateadd(hour, extract(timezone_hour from "+instantValueWithCorrectTZ+"), "+dateValue+"))/*!insert timezone*/";
+		return "/*insert timezone*/dateadd(minute, extract(timezone_minute from " + instantValueWithCorrectTZ + "), dateadd(hour, extract(timezone_hour from " + instantValueWithCorrectTZ + "), " + dateValue + "))/*!insert timezone*/";
 	}
 }

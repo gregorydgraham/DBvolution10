@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import nz.co.gregs.dbvolution.results.LargeObjectResult;
 
 /**
@@ -26,9 +27,9 @@ import nz.co.gregs.dbvolution.results.LargeObjectResult;
  * {@code TEXT}, {@code JavaObject}, or similar datatype.
  *
  * <p>
- * Mostly you should use {@link  DBLargeBinary} or {@link DBLargeText} though there should be other more
- * specific classes eventually. There is also {@link DBJavaObject} for storing
- * Java objects directly in the database.
+ * Mostly you should use {@link  DBLargeBinary} or {@link DBLargeText} though
+ * there should be other more specific classes eventually. There is also
+ * {@link DBJavaObject} for storing Java objects directly in the database.
  *
  * <p style="color: #F90;">Support DBvolution at
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -94,6 +95,17 @@ public abstract class DBLargeObject<T> extends QueryableDatatype<T> implements L
 	 */
 	public abstract int getSize();
 
+	public String getSizeAsReadableString() {
+		int size = getSize();
+		if (size <= 0) {
+			return "0";
+		}
+		final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
+		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups))
+				+ " " + units[digitGroups];
+	}
+
 	@Override
 	public String toString() {
 		return "/*BINARY DATA*/";
@@ -103,9 +115,8 @@ public abstract class DBLargeObject<T> extends QueryableDatatype<T> implements L
 //	public DBLargeObject<T> copy() {
 //		return (DBLargeObject<T>) super.copy();
 //	}
-	
 	@Override
-	public boolean isLargeObject(){
+	public boolean isLargeObject() {
 		return true;
 	}
 }

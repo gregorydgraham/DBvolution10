@@ -68,7 +68,11 @@ public class OracleCompatibilityTest extends AbstractTest {
 	@Test
 	public void testDBRowMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
-		DBQuery query = database.getDBQuery().add(marque).setReturnEmptyStringForNullString(true);
+		DBQuery query = database.getDBQuery()
+				.add(marque)
+				.setQueryLabel("testDBRowMethodWithDBString")
+				.setPrintSQLBeforeExecution(true)
+				.setReturnEmptyStringForNullString(true);
 		List<DBString> distinctValuesForColumn = query.getDistinctValuesOfColumn(marque.column(marque.individualAllocationsAllowed));
 		Assert.assertThat(distinctValuesForColumn.size(), is(2));
 
@@ -93,7 +97,10 @@ public class OracleCompatibilityTest extends AbstractTest {
 	@Test
 	public void testDBTableMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
-		final DBTable<Marque> dbTable = database.getDBTable(marque)
+		final DBTable<Marque> dbTable = database
+				.getDBTable(marque)
+				.setQueryLabel("testDBTableMethodWithDBString")
+				.setPrintSQLBeforeExecution(true)
 				.setReturnEmptyStringForNullString(true);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
 		List<String> foundStrings = new ArrayList<String>();
@@ -123,6 +130,8 @@ public class OracleCompatibilityTest extends AbstractTest {
 		List<DBQueryRow> distinctCombinationsOfColumnValues
 				= database
 						.getDBQuery(carCo, marque)
+//						.setQueryLabel("testDBQueryVersion")
+						.setPrintSQLBeforeExecution(true)
 						.setBlankQueryAllowed(true)
 						.setReturnEmptyStringForNullString(true)
 						.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);

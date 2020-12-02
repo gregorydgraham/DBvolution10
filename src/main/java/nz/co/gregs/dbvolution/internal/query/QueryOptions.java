@@ -27,8 +27,8 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
  *
  * @author greg
  */
-public class QueryOptions  implements Serializable{
-	
+public class QueryOptions implements Serializable {
+
 	private static final long serialVersionUID = 1l;
 
 	private boolean matchAll = true;
@@ -41,6 +41,7 @@ public class QueryOptions  implements Serializable{
 	private boolean matchAnyRelationship = false;
 	private boolean queryIsNativeQuery = true;
 	private QueryType queryType = QueryType.SELECT;
+	private boolean printSQLBeforeExecution = false;
 
 	public QueryOptions() {
 		super();
@@ -197,8 +198,8 @@ public class QueryOptions  implements Serializable{
 	 * Defines which page of results the query is to retrieve.
 	 *
 	 * <p>
-	 * {@link #getRowLimit() } defines the size of a page, and this method
-	 * return which page is to be retrieved.
+	 * {@link #getRowLimit() } defines the size of a page, and this method return
+	 * which page is to be retrieved.
 	 *
 	 * <p>
 	 * Be default the page index is zero.
@@ -340,5 +341,13 @@ public class QueryOptions  implements Serializable{
 
 	private void setMatchAllRelationships(boolean matchAnyRelationship) {
 		this.matchAnyRelationship = matchAnyRelationship;
+	}
+
+	public void setPrintSQLBeforeExecution(boolean b) {
+		printSQLBeforeExecution = b;
+	}
+
+	public boolean getPrintSQLBeforeExecution() {
+		return printSQLBeforeExecution;
 	}
 }
