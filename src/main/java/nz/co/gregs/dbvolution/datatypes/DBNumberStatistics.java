@@ -13,12 +13,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.SimpleNumericExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -106,9 +102,6 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * Count of the rows included in this set of statistics
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the size of the statistics collection
 	 */
 	public Number count() {
@@ -118,9 +111,6 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * Returns the sum of all the numbers in this group.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the sum of all values in this grouping
 	 */
 	public Number sum() {
@@ -129,8 +119,6 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the minimum (smallest) value in this grouping
 	 */
@@ -140,8 +128,6 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the maximum (largest) value in this grouping
 	 */
@@ -152,8 +138,6 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The middle term in the grouping.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the uniqueRanking value in this grouping
 	 */
@@ -164,8 +148,6 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The average value of the grouping.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the average value of the grouping
 	 */
@@ -175,8 +157,6 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the middle number between the uniqueRanking and the smallest value.
 	 */
@@ -186,8 +166,6 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the middle number between the uniqueRanking and the largest value.
 	 */
@@ -198,8 +176,6 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The middle term in the grouping.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the uniqueRanking value in this grouping
 	 */
@@ -323,7 +299,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	@Override
 	public String toString() {
-		return (averageNumber == null ? "" : "count=" + countOfRows + "sum=" + sumNumber + "ave=" + averageNumber + "stdDev=" + stdDev + ":max=" + maxNumber + ":min=" + minNumber);
+		return (averageNumber == null ? "" : "count=" + countOfRows + "sum=" + sumNumber + "ave=" + averageNumber + "stdDev=" + stdDev + ":max=" + maxNumber + ":min=" + minNumber+ ":stdev=" + stdDev);
 	}
 
 	public Number standardDeviation() {
