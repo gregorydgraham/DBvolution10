@@ -2905,7 +2905,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @return A number expression representing the average of the grouped rows.
 	 */
-	public NumberExpression average() {
+	public AverageExpression average() {
 		return new AverageExpression(this);
 	}
 
@@ -2918,7 +2918,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
 	 */
-	public NumberExpression stddev() {
+	public StandardDeviationExpression stddev() {
 		return standardDeviation();
 	}
 
@@ -2931,7 +2931,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
 	 */
-	public NumberExpression standardDeviation() {
+	public StandardDeviationExpression standardDeviation() {
 		return new StandardDeviationExpression(this);
 	}
 
@@ -2949,7 +2949,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @return the greatest/largest value from the column.
 	 */
-	public NumberExpression max() {
+	public MaxUnaryFunction max() {
 		return new MaxUnaryFunction(this);
 	}
 
@@ -2966,7 +2966,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @return the least/smallest value from the column.
 	 */
-	public NumberExpression min() {
+	public MinUnaryFunction min() {
 		return new MinUnaryFunction(this);
 	}
 
