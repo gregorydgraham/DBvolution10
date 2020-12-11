@@ -147,7 +147,7 @@ public class DataModelTest extends AbstractTest {
 		for (Constructor<DBDatabase> constr : result) {
 			try {
 				constr.setAccessible(true);
-				System.out.println("PARAMETERLESS CONSTRUCTOR: "+constr.toString());
+				System.out.println("PARAMETERLESS CONSTRUCTOR: " + constr.toString());
 				DBDatabase newInstance = constr.newInstance();
 				Assert.assertThat(newInstance, instanceOf(DBDatabase.class));
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -267,7 +267,6 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$14MyClass");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.TypeAdaptorUsabilityTest$3MyTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$15MyClass");
-		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBNumberStatisticsTest$StatsTest");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBJavaObjectTest$DBJavaObjectTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$2MyClass");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$13MyClass");
@@ -474,6 +473,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBUUIDTest$UUIDTestTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.JavaObjectExpressionTest$JavaObjectExpressionTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LargeTextExpressionTest$ExampleTableForLargeText");
+		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBNumberStatisticsTest$DBNumberStatisticsTestDBRowClass");
 //		knownKeys.add("");
 
 		for (String knownString : knownKeys) {
@@ -495,7 +495,7 @@ public class DataModelTest extends AbstractTest {
 			}
 			Assert.assertTrue(knownKeys.contains(foundString));
 		}
-		Assert.assertThat(result.size(), is(304));
+		Assert.assertThat(result.size(), is(knownKeys.size()));
 	}
 
 	@Test

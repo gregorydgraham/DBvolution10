@@ -34,11 +34,13 @@ public class DBNumberStatisticsTest extends AbstractTest {
 	@Test
 	public void testBasic() throws SQLException {
 
-		DBQuery dbQuery = database.getDBQuery(new StatsTest()).setBlankQueryAllowed(true);
+		DBQuery dbQuery = database
+				.getDBQuery(new DBNumberStatisticsTestDBRowClass())
+				.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		assertThat(allRows.size(), is(1));
-		final StatsTest row = allRows.get(0).get(new StatsTest());
+//		assertThat(allRows.size(), is(1));
+		final DBNumberStatisticsTestDBRowClass row = allRows.get(0).get(new DBNumberStatisticsTestDBRowClass());
 		assertThat(row.stats.count().intValue(), is(22));
 		assertThat(row.stats.sum().intValue(), is(128625259));
 		assertThat(row.stats.max().intValue(), is(13224369));
@@ -50,59 +52,11 @@ public class DBNumberStatisticsTest extends AbstractTest {
 		assertThat(rounded, isOneOf(5846602.68182));
 	}
 
-	//@Test
-	public void testMin() {
-	}
-
-	//@Test
-	public void testMax() {
-	}
-
-	//@Test
-	public void testMedian() {
-	}
-
-	//@Test
-	public void testAverage() {
-	}
-
-	//@Test
-	public void testFirstQuartile() {
-	}
-
-	//@Test
-	public void testThirdQuartile() {
-	}
-
-	//@Test
-	public void testSecondQuartile() {
-	}
-
-	//@Test
-	public void testGetSQLDatatype() {
-	}
-
-	//@Test
-	public void testIsAggregator() {
-	}
-
-	//@Test
-	public void testCopy() {
-	}
-
-	//@Test
-	public void testSetFromResultSet() throws Exception {
-	}
-
-	//@Test
-	public void testToString() {
-	}
-
-	public static class StatsTest extends Marque {
+	public static class DBNumberStatisticsTestDBRowClass extends Marque {
 
 		private static final long serialVersionUID = 1L;
 
-		public StatsTest() {
+		public DBNumberStatisticsTestDBRowClass() {
 		}
 
 		@DBColumn
@@ -112,5 +66,4 @@ public class DBNumberStatisticsTest extends AbstractTest {
 			this.setReturnFields(stats);
 		}
 	}
-
 }
