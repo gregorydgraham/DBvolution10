@@ -30,9 +30,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregorygraham
  */
 public class DBStatisticsTest extends AbstractTest {
@@ -44,7 +41,9 @@ public class DBStatisticsTest extends AbstractTest {
 	@Test
 	public void testBasic() throws SQLException {
 
-		DBQuery dbQuery = database.getDBQuery(new StatsIntegerTest()).setBlankQueryAllowed(true);
+		DBQuery dbQuery = database
+				.getDBQuery(new StatsIntegerTest())
+				.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		assertThat(allRows.size(), is(1));
