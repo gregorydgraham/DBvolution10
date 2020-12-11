@@ -20,9 +20,6 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregorygraham
  * @param <B> the base Java type of the values to be processed by this
  * DBStatistics
@@ -99,9 +96,6 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	/**
 	 * Count of the rows included in this set of statistics
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the size of the statistics collection
 	 */
 	public Number count() {
@@ -110,8 +104,6 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the minimum (smallest) value in this grouping
 	 */
@@ -120,9 +112,6 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	}
 
 	/**
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the maximum (largest) value in this grouping
 	 */
@@ -134,9 +123,6 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	 * The median value, that is the value that occurs halfway through the
 	 * distribution.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the ranking
 	 */
 	public B median() {
@@ -146,9 +132,6 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	/**
 	 * Returns the value that occurs 1/4 of the way through the distribution.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the middle number between the median and the smallest value.
 	 */
 	public B firstQuartile() {
@@ -157,9 +140,6 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 
 	/**
 	 * Returns the value that occurs 3/4 of the way through the distribution.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the middle number between the median and the largest value.
 	 */
