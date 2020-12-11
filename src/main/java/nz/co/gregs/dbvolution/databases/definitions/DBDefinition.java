@@ -67,11 +67,14 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
+import org.eclipse.core.internal.resources.RegexFileInfoMatcher;
 
 /**
  *
@@ -4347,7 +4350,7 @@ public abstract class DBDefinition implements Serializable {
 		str.append(interval.getDays() + (interval.getWeeks() * 7)).append(DateRepeatExpression.DAY_SUFFIX);
 		str.append(interval.getHours()).append(DateRepeatExpression.HOUR_SUFFIX);
 		str.append(interval.getMinutes()).append(DateRepeatExpression.MINUTE_SUFFIX);
-		final double secondsAndMillis = Integer.valueOf(interval.getSeconds()).doubleValue()+(Integer.valueOf(interval.getMillis()).doubleValue()/1000);
+		final double secondsAndMillis = Integer.valueOf(interval.getSeconds()).doubleValue() + (Integer.valueOf(interval.getMillis()).doubleValue() / 1000);
 		str.append(secondsAndMillis)
 				.append(DateRepeatExpression.SECOND_SUFFIX);
 		str.append("'");
@@ -6913,58 +6916,134 @@ public abstract class DBDefinition implements Serializable {
 		if (intervalStr == null || intervalStr.isEmpty()) {
 			return null;
 		}
-		System.out.println("INTERVALSTR: " + intervalStr);
+		Duration duration;
+		boolean negated = false;
+		Long days = 0l;
+		Long hours = 0l;
+		Long minutes = 0l;
+		Long seconds = 0L;
+		Long nanos = 0L;
+		System.out.println("INTERVALSTR: <" + intervalStr + ">");
 		int durationPartsOffset = getParseDurationPartOffset();
 		String[] numbers = intervalStr.split("[^-0-9]+");
 		if (numbers.length == durationPartsOffset + 1 || numbers.length == durationPartsOffset + 2) {
-			//seconds only
+			// only one time type specified i.e. days, seconds, months, ...
+			// 2 days, 5.03 seconds, -2 months,...
 			String number = numbers[durationPartsOffset];
-			boolean negated = number.startsWith("-");
-			Long seconds = Math.abs(Long.valueOf(number));
-			long nanos = 0;
-			if (numbers.length == durationPartsOffset + 2) {
-				number = numbers[durationPartsOffset + 1];
-				negated = negated || number.startsWith("-");
-				final String subsecondStr = number;
-				nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+			negated = number.startsWith("-");
+			Long numberValue = Math.abs(Long.valueOf(number));
+			if (intervalStr.endsWith("days")) {
+				days = numberValue;
+				//duration = Duration.ofDays(numberValue);
+			} else if (intervalStr.endsWith("hours")) {
+				hours = numberValue;
+//				duration = Duration.ofHours(numberValue);
+			} else if (intervalStr.endsWith("minutes")) {
+				minutes = numberValue;
+//				duration = Duration.ofMinutes(numberValue);
+			} else {
+				//seconds only
+				seconds = numberValue;
+				// check for nanos
+				if (numbers.length == durationPartsOffset + 2) {
+					number = numbers[durationPartsOffset + 1];
+					negated = negated || number.startsWith("-");
+					final String subsecondStr = number;
+					nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+				}
+//				duration = Duration.ofSeconds(numberValue).plusNanos(nanos);
 			}
-			Duration duration = Duration.ofSeconds(seconds).plusNanos(nanos);
-			if (negated) {
-				duration = duration.negated();
-			}
-			return duration;
-		} else {
+		} else if (numbers.length == durationPartsOffset + 3) {
+			// hours:minutes:seconds
 			String number = numbers[durationPartsOffset];
-			boolean negated = number.startsWith("-");
-			Long days = Math.abs(Long.valueOf(number));
+			negated = number.startsWith("-");
+			hours = Math.abs(Long.valueOf(number));
 			number = numbers[durationPartsOffset + 1];
 			negated = negated || number.startsWith("-");
-			Long hours = Math.abs(Long.valueOf(number));
+			minutes = Math.abs(Long.valueOf(number));
 			number = numbers[durationPartsOffset + 2];//---
 			negated = negated || number.startsWith("-");
-			Long minutes = Math.abs(Long.valueOf(number));
+			seconds = Math.abs(Long.valueOf(number));
+//			duration = Duration.ofHours(hours)
+//					.plusMinutes(minutes)
+//					.plusSeconds(seconds);
+		} else if (numbers.length == durationPartsOffset + 4) {
+			// either x days hours:minutes:seconds
+			// or hours:minutes:seconds:nanos
+			if (DURATION_PATTERN_DAYHOURSMINUTESSECONDS.matcher(intervalStr).find()) {
+				// x days hours:minutes:seconds
+				String number = numbers[durationPartsOffset];
+				negated = number.startsWith("-");
+				days = Math.abs(Long.valueOf(number));
+				number = numbers[durationPartsOffset + 1];
+				negated = negated || number.startsWith("-");
+				hours = Math.abs(Long.valueOf(number));
+				number = numbers[durationPartsOffset + 2];//---
+				negated = negated || number.startsWith("-");
+				minutes = Math.abs(Long.valueOf(number));
+				number = numbers[durationPartsOffset + 3];
+				negated = negated || number.startsWith("-");
+				seconds = Math.abs(Long.valueOf(number));
+//				duration = Duration.ofDays(days)
+//						.plusHours(hours)
+//						.plusMinutes(minutes)
+//						.plusSeconds(seconds);
+			} else {
+				//hours:minutes:seconds:nanos
+				String number = numbers[durationPartsOffset];
+				negated = number.startsWith("-");
+				hours = Math.abs(Long.valueOf(number));
+				number = numbers[durationPartsOffset + 1];
+				negated = negated || number.startsWith("-");
+				minutes = Math.abs(Long.valueOf(number));
+				number = numbers[durationPartsOffset + 2];//---
+				negated = negated || number.startsWith("-");
+				seconds = Math.abs(Long.valueOf(number));
+				if (numbers.length == durationPartsOffset + 4) {
+					number = numbers[durationPartsOffset + 3];
+					negated = negated || number.startsWith("-");
+					final String subsecondStr = number;
+					nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+				}
+//				duration = Duration
+//						.ofHours(hours)
+//						.plusMinutes(minutes)
+//						.plusSeconds(seconds)
+//						.plusNanos(nanos);
+			}
+		} else {
+			String number = numbers[durationPartsOffset];
+			negated = number.startsWith("-");
+			days = Math.abs(Long.valueOf(number));
+			number = numbers[durationPartsOffset + 1];
+			negated = negated || number.startsWith("-");
+			hours = Math.abs(Long.valueOf(number));
+			number = numbers[durationPartsOffset + 2];//---
+			negated = negated || number.startsWith("-");
+			minutes = Math.abs(Long.valueOf(number));
 			number = numbers[durationPartsOffset + 3];
 			negated = negated || number.startsWith("-");
-			Long seconds = Math.abs(Long.valueOf(number));
-			long nanos = 0;
+			seconds = Math.abs(Long.valueOf(number));
 			if (numbers.length == durationPartsOffset + 5) {
 				number = numbers[durationPartsOffset + 4];
 				negated = negated || number.startsWith("-");
 				final String subsecondStr = number;
 				nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
 			}
-			Duration duration = Duration.ofDays(days)
-					.plusHours(hours)
-					.plusMinutes(minutes)
-					.plusSeconds(seconds)
-					.plusNanos(nanos);
-			if (negated) {
-				duration = duration.negated();
-			}
-			return duration;
 		}
+		duration = Duration.ofDays(days)
+				.plusHours(hours)
+				.plusMinutes(minutes)
+				.plusSeconds(seconds)
+				.plusNanos(nanos);
+		if (negated) {
+			duration = duration.negated();
+		}
+		return duration;
 	}
-
+	protected static final String DURATION_REGEX_DAYHOURSMINUTESSECONDS = "[-0-9]+[^-0-9]+[-0-9]+:[-0-9]+:[-0-9]+";
+	Pattern DURATION_PATTERN_DAYHOURSMINUTESSECONDS  = Pattern.compile(DURATION_REGEX_DAYHOURSMINUTESSECONDS);
+	
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
