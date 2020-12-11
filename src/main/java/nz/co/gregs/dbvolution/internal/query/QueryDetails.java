@@ -869,15 +869,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			state.setHasBeenOrdered(true);
 			SeparatedString orderByClause = SeparatedString.byCommas();
-//			StringBuilder orderByClause = new StringBuilder("");
-//			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (SortProvider sorter : sortOrderColumns) {
 				if (!sorter.isWindowingFunction() || defn.supportsWindowingFunctionsInTheOrderByClause()) {
 					clause.addGroupByClauses(sorter.getGroupByClauses(defn));
 					if (sorter.hasQueryColumn()) {
 						orderByClause.add(defn.transformToSortableType(sorter).toSQLString(defn));
-//						orderByClause.append(sortSeparator).append(defn.transformToStorableType(sorter).toSQLString(defn));
-//						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 					} else {
 						if (prefersIndexBasedOrderByClause) {
 							PropertyWrapperDefinition<?, ?> propDefn;
@@ -902,26 +898,17 @@ public class QueryDetails implements DBQueryable, Serializable {
 								}
 							}
 							orderByClause.add(columnIndex + sorter.getSortDirectionSQL(defn));
-//							orderByClause.append(sortSeparator).append(columnIndex).append(sorter.getSortDirectionSQL(defn));//defn.getOrderByDirectionClause(qdt.getSortOrder()));
-//							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 						} else {
 							orderByClause.add(sorter.toSQLString(defn));
-//							orderByClause.append(sortSeparator).append(defn.transformToStorableType(sorter).toSQLString(defn));
-//							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 						}
 					}
 				}
 			}
-//			if (orderByClause.toString().replaceAll(" ", "").isEmpty()) {
-//				return "";
-//			} else {
 			orderByClause
 					.withPrefix(defn.beginOrderByClause())
 					.withSuffix(defn.endOrderByClause())
 					.useWhenEmpty("");
-//				orderByClause.insert(0, defn.beginOrderByClause()).append(defn.endOrderByClause());
 			clause.setOrderByClause(orderByClause);
-//			}
 		}
 
 		return clause;
