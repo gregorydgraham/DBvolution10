@@ -613,6 +613,10 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 		return value;
 	}
 
+	public NumberExpression approximateDurationInSeconds() {
+		return this.getYears().times(12).plus(this.getMonths()).times(30).plus(this.getDays()).times(24).plus(this.getHours()).times(60).plus(this.getMinutes()).times(60).plus(this.getSeconds());
+	}
+
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
 
 		private static final long serialVersionUID = 1L;
