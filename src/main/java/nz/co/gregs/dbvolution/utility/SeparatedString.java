@@ -47,11 +47,11 @@ import java.util.stream.Collectors;
  * A common pattern is to add string elements to a longer string with a format
  * similar to: prefix|element1|separator|element2|suffix. For instance a file
  * path has prefix "/", separator "/", and suffix "". This class allows for
- * convenient object-oriented processing of this pattern.</p>
+ * convenient object-oriented processing of this pattern.
  *
  * <p>
  * Advanced features allow for proper CSV formatting including quoting and
- * escaping.</p>
+ * escaping.
  *
  * <p>
  * All values are strings, not characters, so complex output can be generated: a
@@ -60,11 +60,11 @@ import java.util.stream.Collectors;
  * <code>SeparatedString.startsWith("WHEN").separatedBy(" AND ").addAll(allWhenClausesList).endsWith(groupByClauseString).toString();</code>
  *
  * <p>
- * The default separator is a space (" "). All other defaults are empty.</p>
+ * The default separator is a space (" "). All other defaults are empty.
  *
  * <p>
  * Supports string separator, prefix, suffix, quoting, before quote, after
- * quote, escaping, maps, and is a fluent API.</p>
+ * quote, escaping, maps, and is a fluent API.
  *
  * @author gregorygraham
  */
@@ -90,7 +90,7 @@ public class SeparatedString {
 	 * <p>
 	 * This adds a prefix to the separated string result. For instance
 	 * SeparatedString.byCommas().startsWith("LIST=").addAll("1","2","3") will
-	 * produce "LIST=1,2,3"</p>
+	 * produce "LIST=1,2,3"
 	 *
 	 * @param precedingString
 	 * @return a SeparatedString that will have precedingString at the beginning
@@ -104,7 +104,7 @@ public class SeparatedString {
 	 * Creates a SeparatedString for the map's keys and values.
 	 *
 	 * <p>
-	 * Remember to set the {@link #getKeyValueSeparator() key-value separator}</p>
+	 * Remember to set the {@link #getKeyValueSeparator() key-value separator}
 	 *
 	 * @param nameValuePairs
 	 * @param nameValueSeparator
@@ -117,10 +117,10 @@ public class SeparatedString {
 			String val = entry.getValue();
 			list.add(key + nameValueSeparator + val);
 		});
-		if (list != null) {
-			return new SeparatedString().addAll(list);
-		} else {
+		if (list.isEmpty()) {
 			return new SeparatedString();
+		} else {
+			return new SeparatedString().addAll(list);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class SeparatedString {
 	 *
 	 * <p>
 	 * SeparatedString.forSeparator(",").addAll("1","2","3").toString() will
-	 * produce "1,2,3"</p>
+	 * produce "1,2,3"
 	 *
 	 * @param separator
 	 * @return
@@ -345,11 +345,11 @@ public class SeparatedString {
 		return this;
 	}
 
-	public SeparatedString addAll(Function<String, String> stringProcessor, String... strs) {
+	public <TYPE> SeparatedString addAll(Function<TYPE, String> stringProcessor, TYPE... strs) {
 		return addAll(stringProcessor, Arrays.asList(strs));
 	}
 
-	public SeparatedString addAll(Function<String, String> stringProcessor, List<String> strs) {
+	public <TYPE> SeparatedString addAll(Function<TYPE, String> stringProcessor, List<TYPE> strs) {
 		final List<String> asList = strs.stream().map(stringProcessor).collect(Collectors.toList());
 		if (asList != null) {
 			getStrings().addAll(asList);
