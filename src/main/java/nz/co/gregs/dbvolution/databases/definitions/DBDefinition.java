@@ -56,6 +56,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -6867,13 +6868,28 @@ public abstract class DBDefinition implements Serializable {
 		int minutes = interval.toMinutesPart();
 
 		int nanos = interval.toNanosPart();
-		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
+		Double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
 		String intervalString;
 		if (supportsDurationNatively()) {
-			if (days == 0 && hours == 0 && minutes == 0) {
+			if (days != 0 && hours == 0 && minutes == 0 && seconds == 0) {
 				intervalString
 						= "INTERVAL '"
-						+ seconds
+						+ days
+						+ "' DAY";
+			} else if (days == 0 && hours != 0 && minutes == 0 && seconds == 0) {
+				intervalString
+						= "INTERVAL '"
+						+ hours
+						+ "' HOUR";
+			} else if (days == 0 && hours == 0 && minutes != 0 && seconds == 0) {
+				intervalString
+						= "INTERVAL '"
+						+ minutes
+						+ "' MINUTE";
+			} else if (days == 0 && hours == 0 && minutes == 0 && seconds != 0) {
+				intervalString
+						= "INTERVAL '"
+						+ DECIMAL_FORMAT_WITH_NANO_PRECISION.format(seconds)
 						+ "' SECOND";
 			} else {
 				intervalString
@@ -6902,6 +6918,7 @@ public abstract class DBDefinition implements Serializable {
 		}
 		return intervalString;
 	}
+	protected static final DecimalFormat DECIMAL_FORMAT_WITH_NANO_PRECISION = new DecimalFormat("#.#########");
 
 	public Duration parseDurationFromGetString(String intervalStr) {
 		if (intervalStr == null || intervalStr.isEmpty()) {
