@@ -34,24 +34,32 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
-import org.testcontainers.containers.PostgisContainerProvider;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
  *
  * @author gregorygraham
  */
-public class Postgres10ContainerDB extends PostgresDB{
+public class Postgres10ContainerDB extends PostgresDB {
 
 	private static final long serialVersionUID = 1l;
+
 	protected final PostgreSQLContainer<?> storedContainer;
+
+	protected static final String DEFAULT_TAG = "10-3.0-alpine";
+	protected static final String DEFAULT_CONTAINER = "postgis/postgis";
 
 	public static Postgres10ContainerDB getInstance() {
 		return getLabelledInstance("Unlabelled");
 	}
 
-	public static Postgres10ContainerDB getLabelledInstance(String label) {
-		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance("10");
+	public static Postgres10ContainerDB getLabelledInstance(String unlabelled) {
+		return getLabelledInstance(unlabelled, DEFAULT_CONTAINER, DEFAULT_TAG);
+	}
+
+	public static Postgres10ContainerDB getLabelledInstance(String label, String containerRepo, String tag) {
+		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(containerRepo + ":" + tag);
+//		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance("10");
 		ContainerUtils.startContainer(container);
 		try {
 			Postgres10ContainerDB dbdatabase = new Postgres10ContainerDB(container, label);
@@ -64,7 +72,7 @@ public class Postgres10ContainerDB extends PostgresDB{
 
 	public Postgres10ContainerDB(PostgreSQLContainer<?> container, String label) throws SQLException {
 		this(
-				container, 
+				container,
 				ContainerUtils.getContainerSettings(new PostgresSettingsBuilder(), container, label)
 		);
 	}
