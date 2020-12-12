@@ -145,7 +145,8 @@ public class DBDurationTest extends AbstractTest {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(durationTable);
 		database.createTable(durationTable);
-		final Duration testPeriod = Duration.ofNanos(-2);
+		// Postgres only supports microsecond precision so make sure it's thousands of nanos
+		final Duration testPeriod = Duration.ofNanos(-2*1000);
 		durationTable.durationCol.setValue(testPeriod);
 		database.insert(durationTable);
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
