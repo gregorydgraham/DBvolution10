@@ -70,6 +70,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.utility.Regexp;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
@@ -6427,7 +6428,7 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * <p>
 	 * For each call of this method a new random number is generated.
-	 * 
+	 *
 	 *
 	 * <p>
 	 * By default this method returns <b>rand()</b>
@@ -6971,7 +6972,8 @@ public abstract class DBDefinition implements Serializable {
 		} else if (numbers.length == durationPartsOffset + 4) {
 			// either x days hours:minutes:seconds
 			// or hours:minutes:seconds:nanos
-			if (DURATION_PATTERN_DAYHOURSMINUTESSECONDS.matcher(intervalStr).find()) {
+//			if (DURATION_PATTERN_DAYHOURSMINUTESSECONDS.matcher(intervalStr).find()) {
+			if (DURATION_PATTERN_DAYHOURSMINUTESSECONDS.matchesWithinString(intervalStr)) {
 				// x days hours:minutes:seconds
 				String number = numbers[durationPartsOffset];
 				negated = number.startsWith("-");
@@ -7033,8 +7035,29 @@ public abstract class DBDefinition implements Serializable {
 		}
 		return duration;
 	}
-	protected static final String DURATION_REGEX_DAYHOURSMINUTESSECONDS = "[-0-9]+[^-0-9]+[-0-9]+:[-0-9]+:[-0-9]+";
-	Pattern DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Pattern.compile(DURATION_REGEX_DAYHOURSMINUTESSECONDS);
+//	protected static final String DURATION_REGEX_DAYHOURSMINUTESSECONDS = "[-0-9]+[^-0-9]+[-0-9]+:[-0-9]+:[-0-9]+";
+//	Pattern DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Pattern.compile(DURATION_REGEX_DAYHOURSMINUTESSECONDS);
+	// -2 days 00:00:00
+	// 1 days 00:00:5.5
+	// 0 days 00:00:-5.5
+	Regexp DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Regexp.startingAnywhere()
+			.literal('-').onceOrNotAtAll()
+			.anyBetween('0', '9').atLeastOnce()
+			.add(
+					new Regexp.Range('0', '9')
+							.includeMinus()
+							.negated()
+			).atLeastOnce()
+			.literal('-').onceOrNotAtAll()
+			.anyBetween('0', '9').atLeastOnce()
+			.literal(':').once()
+			.literal('-').onceOrNotAtAll()
+			.anyBetween('0', '9').atLeastOnce()
+			.literal(':').once()
+			.literal('-').onceOrNotAtAll()
+			.anyBetween('0', '9').atLeastOnce().add(
+			Regexp.startingAnywhere().dot().digits()
+	).onceOrNotAtAll();
 
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet.");
