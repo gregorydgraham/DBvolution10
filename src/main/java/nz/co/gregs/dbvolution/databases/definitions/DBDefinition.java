@@ -70,7 +70,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.dbvolution.utility.Regexp;
+import nz.co.gregs.dbvolution.utility.Regex;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
@@ -7040,11 +7040,10 @@ public abstract class DBDefinition implements Serializable {
 	// -2 days 00:00:00
 	// 1 days 00:00:5.5
 	// 0 days 00:00:-5.5
-	Regexp DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Regexp.startingAnywhere()
+	Regex DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Regex.startingAnywhere()
 			.literal('-').onceOrNotAtAll()
 			.anyBetween('0', '9').atLeastOnce()
-			.add(
-					new Regexp.Range('0', '9')
+			.add(new Regex.Range('0', '9')
 							.includeMinus()
 							.negated()
 			).atLeastOnce()
@@ -7055,8 +7054,7 @@ public abstract class DBDefinition implements Serializable {
 			.anyBetween('0', '9').atLeastOnce()
 			.literal(':').once()
 			.literal('-').onceOrNotAtAll()
-			.anyBetween('0', '9').atLeastOnce().add(
-			Regexp.startingAnywhere().dot().digits()
+			.anyBetween('0', '9').atLeastOnce().add(Regex.startingAnywhere().dot().digits()
 	).onceOrNotAtAll();
 
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
