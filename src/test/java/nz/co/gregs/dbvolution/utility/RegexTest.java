@@ -177,7 +177,7 @@ public class RegexTest {
 
 	@Test
 	public void testGroupBuilding() {
-		
+
 		Regex pattern
 				= Regex.startGroup().literal("Amy").or().literal("Bob").or().literal("Charlie").closeGroup();
 
@@ -197,6 +197,75 @@ public class RegexTest {
 		Assert.assertThat(pattern.matchesEntireString("Charlie at the start"), is(false));
 		Assert.assertThat(pattern.matchesWithinString("Still can't find David"), is(false));
 		Assert.assertThat(pattern.matchesWithinString("Emma doesn't do any better"), is(false));
+
+	}
+
+	@Test
+	public void testNumberElement() {
+		// -2 days 00:00:00
+		// 1 days 00:00:5.5
+		// 0 days 00:00:-5.5
+		//
+		// ([-+]?\b[1-9]+\d*(\.{1}\d+)?){1}
+		Regex pattern
+				= Regex.startingAnywhere()
+						.number().once();
+
+		System.out.println("REGEX: " + pattern.getRegexp());
+
+		Assert.assertThat(pattern.matchesWithinString("before -1 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 2 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -234 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before +4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 4.5 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4.5 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4.05 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 02 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before -0234 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before 004 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before _4 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before A4 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before A4after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before 2*E10"), is(false));
+
+	}
+
+	@Test
+	public void testNumberLike() {
+		// -2 days 00:00:00
+		// 1 days 00:00:5.5
+		// 0 days 00:00:-5.5
+		//
+		// ([-+]?\b[1-9]+\d*(\.{1}\d+)?){1}
+		Regex pattern
+				= Regex.startingAnywhere()
+						.numberLike().once();
+
+		System.out.println("REGEX: " + pattern.getRegexp());
+
+		pattern.getResultsStream("-2 days 00 00 00").forEachOrdered(t -> {
+			System.out.println("MATCH: " + t.groupCount());
+			for (int i = 0; i < t.groupCount(); i++) {
+				System.out.println("FOUND: " + t.group(i));
+			}
+		});
+		//-1 2 -234 +4 -4 4.5 FAIL 02 -0234 004 _4 A4
+		Assert.assertThat(pattern.matchesWithinString("before -1 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 2 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -234 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before +4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 4.5 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4.5 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 02 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -0234 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 004 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before _4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before A4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before A4after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 2*E10"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before"), is(false));
 
 	}
 
