@@ -30,6 +30,8 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -46,7 +48,7 @@ public abstract class Regex {
 	public abstract String getRegexp();
 
 	/**
-	 * Creat a new empty regular expression.
+	 * Create a new empty regular expression.
 	 *
 	 * @return a new empty regular expression
 	 */
@@ -65,29 +67,14 @@ public abstract class Regex {
 	}
 
 	/**
-	 * Create a regular expression that includes all the regexps supplied within
-	 * an OR grouping.
-	 *
-	 * <p>
-	 * for instance, use this to generate "(FRED|EMILY|GRETA|DONALD)".
-	 *
-	 * @param regexp
-	 * @param regexps
-	 * @return a new regular expression
-	 */
-	public static Regex or(Regex regexp, Regex... regexps) {
-		return new Or(regexp, regexps);
-	}
-
-	/**
 	 * Adds the regular expression to the end of current expression as a new
 	 * group.
 	 *
 	 * <p>
- For example Regex.startingAnywhere().add(allowedValue).add(separator) will
- add the "separator" regular expression to the "allowedValue" expression
- (the rest of the instruction adds nothing). Assuming that allowedValue is
- "[0-9]" and separator is ":", the full regexp will be "([0-9])(:)".
+	 * For example Regex.startingAnywhere().add(allowedValue).add(separator) will
+	 * add the "separator" regular expression to the "allowedValue" expression
+	 * (the rest of the instruction adds nothing). Assuming that allowedValue is
+	 * "[0-9]" and separator is ":", the full regexp will be "([0-9])(:)".
 	 *
 	 * @param second
 	 * @return a new regular expression consisting of the current expression and
@@ -110,11 +97,11 @@ public abstract class Regex {
 	 * match "0." and "0.5" but not "0". If you want grouping use add() instead.
 	 *
 	 * <p>
- For example
- Regex.startingAnywhere().extend(allowedValue).extend(separator) will add
- the "separator" regular expression to the "allowedValue" expression (the
- rest of the instruction adds nothing). Assuming that allowedValue is
- "[0-9]" and separator is ":", the full regexp will be "[0-9]:".
+	 * For example Regex.startingAnywhere().extend(allowedValue).extend(separator)
+	 * will add the "separator" regular expression to the "allowedValue"
+	 * expression (the rest of the instruction adds nothing). Assuming that
+	 * allowedValue is "[0-9]" and separator is ":", the full regexp will be
+	 * "[0-9]:".
 	 *
 	 * @param second
 	 * @return a new regular expression consisting of the current expression and
@@ -634,14 +621,18 @@ public abstract class Regex {
 	 * @return a new regexp
 	 */
 	public Regex integer() {
-		return extend(Regex.or(new UnescapedSequence("-"), new UnescapedSequence("+")).onceOrNotAtAll().anyBetween('1', '9').once().digit().zeroOrMore());
+		return extend(Regex
+				.startGroup().literal("-")
+				.or().literal("+")
+				.closeGroup().onceOrNotAtAll()
+				.anyBetween('1', '9').once().digit().zeroOrMore()
+		);
+//		return extend(Regex.or(new UnescapedSequence("-"), new UnescapedSequence("+")).onceOrNotAtAll().anyBetween('1', '9').once().digit().zeroOrMore());
 	}
 
 	public Regex number() {
-		return extend(Regex.or(
-				new LiteralSequence("-"),
-				new LiteralSequence("+")
-		).onceOrNotAtAll()
+		return extend(
+				Regex.startGroup().literal("-").or().literal("+").closeGroup().onceOrNotAtAll()
 				.anyBetween('1', '9').atLeastOnce()
 				.digit().zeroOrMore()
 				.extend(startingAnywhere()
@@ -655,28 +646,58 @@ public abstract class Regex {
 	 * Adds a check for a simple range to the regular expression without grouping.
 	 *
 	 * <p>
- To add more complex ranges use .add(new Regex.Range(lowest, highest)).
+	 * To add more complex ranges use .add(new Regex.Range(lowest, highest)).
 	 *
 	 * @param lowest the (inclusive) start of the character range
 	 * @param highest the (inclusive) end of the character range
 	 * @return a new regexp
 	 */
 	public Regex anyBetween(Character lowest, Character highest) {
-		return extend(new Range(lowest, highest));
+		return extend(startingAnywhere().openRange(lowest, highest).closeRange());
 	}
 
 	/**
 	 * Adds a check for a simple range to the regular expression without grouping.
 	 *
 	 * <p>
- To add more complex ranges use .add(new Regex.Range(rangeItems)).
+	 * To add more complex ranges use .add(new Regex.Range(rangeItems)).
 	 *
 	 * @param literals all the characters to be included in the range, for example
 	 * "abcdeABCDE"
 	 * @return a new regexp
 	 */
 	public Regex anyOf(String literals) {
-		return extend(new Range(literals));
+		return extend(startingAnywhere().openRange(literals).closeRange());
+	}
+
+	/**
+	 * Adds a check to exclude a simple range from the regular expression without
+	 * grouping.
+	 *
+	 * <p>
+	 * To add more complex ranges use .add(new Regex.Range(lowest, highest)).
+	 *
+	 * @param lowest the (inclusive) start of the character range
+	 * @param highest the (inclusive) end of the character range
+	 * @return a new regexp
+	 */
+	public Regex nothingBetween(Character lowest, Character highest) {
+		return extend(startingAnywhere().openRange(lowest, highest).negated().closeRange());
+	}
+
+	/**
+	 * Adds a check to exclude a simple range from the regular expression without
+	 * grouping.
+	 *
+	 * <p>
+	 * To add more complex ranges use .add(new Regex.Range(rangeItems)).
+	 *
+	 * @param literals all the characters to be included in the range, for example
+	 * "abcdeABCDE"
+	 * @return a new regexp
+	 */
+	public Regex noneOf(String literals) {
+		return extend(startingAnywhere().openRange(literals).negated().closeRange());
 	}
 
 	/**
@@ -728,6 +749,59 @@ public abstract class Regex {
 				.extend(new UnescapedSequence(")"));
 	}
 
+	/**
+	 * Starts making a character range, use {@link RangeBuilder#closeRange() } to
+	 * return to the regex.
+	 *
+	 * <p>
+	 * This provides more options than the {@link #anyBetween(java.lang.Character, java.lang.Character)
+	 * } and {@link #anyOf(java.lang.String) } methods for creating ranges.
+	 *
+	 * @param lowest
+	 * @param highest
+	 * @return the start of a range.
+	 */
+	public RangeBuilder openRange(char lowest, char highest) {
+		return new RangeBuilder(this, lowest, highest);
+	}
+
+	public RangeBuilder openRange(String literals) {
+		return new RangeBuilder(this, literals);
+	}
+
+	/**
+	 * Create a regular expression that includes all the regexps supplied within
+	 * an OR grouping.
+	 *
+	 * <p>
+	 * for instance, use this to generate "(FRED|EMILY|GRETA|DONALD)".
+	 *
+	 * <p>
+	 * {@code Regex regex =  Regex.startGroup().literal("A").or().literal("B").closeGroup();
+	 * } produces "(A|B)".
+	 *
+	 * @return a new regular expression
+	 */
+	public static GroupBuilder startGroup() {
+		return new GroupBuilder(startingAnywhere());
+	}
+
+	/**
+	 * Extends this regular expression with an OR grouping.
+	 *
+	 * <p>
+	 * for instance, use this to generate "(FRED|EMILY|GRETA|DONALD)".
+	 *
+	 * <p>
+	 * {@code Regex regex =  Regex.startAnywhere().literal("Project ").startGroup().literal("A").or().literal("B").closeGroup();
+	 * } produces "Project (A|B)".
+	 *
+	 * @return a new regular expression
+	 */
+	public GroupBuilder openGroup() {
+		return new GroupBuilder(this);
+	}
+
 	public static class SingleCharacter extends Regex {
 
 		private final Character literal;
@@ -769,56 +843,6 @@ public abstract class Regex {
 		}
 	}
 
-	public static class Range extends Regex {
-
-		private final String literals;
-
-		public Range(Character lowest, Character highest) {
-			this.literals = lowest + "-" + highest;
-		}
-
-		public Range(String literals) {
-			this.literals = literals;
-		}
-
-		public Regex not() {
-			return new NegatedCharacterRange(this);
-		}
-
-		public Regex negated() {
-			return new NegatedCharacterRange(this);
-		}
-
-		public Range includeMinus() {
-			return new Range("-" + this.literals);
-		}
-
-		public Range and(Character lowest, Character highest) {
-			return and(new Range(lowest, highest));
-		}
-
-		public Range and(String literals) {
-			return and(new Range(literals));
-		}
-
-		public Range and(Range range) {
-			return new Range(this.literals + range.getRange());
-		}
-
-		public Range excluding(Range range) {
-			return new Range(this.literals + "-[" + range.getRange() + "]");
-		}
-
-		@Override
-		public String getRegexp() {
-			return "[" + getRange() + "]";
-		}
-
-		public String getRange() {
-			return literals;
-		}
-	}
-
 	protected static class UnescapedSequence extends Regex {
 
 		private final String literal;
@@ -853,21 +877,6 @@ public abstract class Regex {
 		}
 	}
 
-	public static class NegatedCharacterRange extends Regex {
-
-		private final Range range;
-
-		public NegatedCharacterRange(Range range) {
-			this.range = range;
-		}
-
-		@Override
-		public String getRegexp() {
-			return "[^" + range.getRange() + "]";
-		}
-
-	}
-
 	private static class Or extends Regex {
 
 		private final SeparatedString sepString;
@@ -875,8 +884,8 @@ public abstract class Regex {
 		public Or(Regex first, Regex... regexps) {
 			sepString = SeparatedString
 					.forSeparator("|")
-					.withWrapBefore("(")
-					.withWrapAfter(")")
+					.withThisBeforeEachTerm("(")
+					.withThisAfterEachTerm(")")
 					.add(first.getRegexp())
 					.addAll(
 							(t) -> {
@@ -904,4 +913,394 @@ public abstract class Regex {
 		}
 	}
 
+	public static class RangeBuilder {
+
+		private final Regex origin;
+		private String literals;
+
+		private boolean negated = false;
+		private boolean includeMinus = false;
+		private boolean includeOpenBracket = false;
+		private boolean includeCloseBracket = false;
+
+		public RangeBuilder(Regex original) {
+			this.origin = original;
+		}
+
+		public RangeBuilder(Regex original, Character lowest, Character highest) {
+			this(original);
+			addRange(lowest, highest);
+		}
+
+		public RangeBuilder(Regex original, String literals) {
+			this(original);
+			addLiterals(literals);
+		}
+
+		protected final RangeBuilder addRange(Character lowest, Character highest) {
+			this.literals = lowest + "-" + highest;
+			return this;
+		}
+
+		protected final RangeBuilder addLiterals(String literals1) {
+			this.literals = literals1.replaceAll("-", "").replaceAll("]", "");
+			this.includeMinus = literals1.contains("-");
+			this.includeOpenBracket = literals1.contains("[");
+			this.includeCloseBracket = literals1.contains("]");
+			return this;
+		}
+
+		public RangeBuilder not() {
+			this.negated = true;
+			return this;
+		}
+
+		public RangeBuilder negated() {
+			return not();
+		}
+
+		public RangeBuilder includeMinus() {
+			includeMinus = true;
+			return this;
+		}
+
+		public RangeBuilder and(Character lowest, Character highest) {
+			return addRange(lowest, highest);
+		}
+
+		public RangeBuilder and(String literals) {
+			return addLiterals(literals);
+		}
+
+		public RangeBuilder excluding(Character lowest, Character highest) {
+			excluding(new RangeBuilder(Regex.startingAnywhere(), lowest, highest));
+			return this;
+		}
+
+		public RangeBuilder excluding(String literals) {
+			excluding(new RangeBuilder(Regex.startingAnywhere(), literals));
+			return this;
+		}
+
+		public RangeBuilder excluding(RangeBuilder newRange) {
+			this.literals = this.literals + "-" + newRange.encloseInBrackets();
+			return this;
+		}
+
+		public String encloseInBrackets() {
+			return "["
+					+ (negated ? "^" : "")
+					+ (includeMinus ? "-" : "")
+					+ (includeOpenBracket ? "\\[" : "")
+					+ (includeCloseBracket ? "\\]" : "")
+					+ literals
+					+ "]";
+		}
+
+		public Regex closeRange() {
+			return origin.add(new UnescapedSequence(encloseInBrackets()));
+		}
+	}
+
+	public static class GroupBuilder {
+
+		private final Regex origin;
+		private final List<String> ors = new ArrayList<>(0);
+		private Regex current = Regex.startingAnywhere();
+
+		public GroupBuilder(Regex original) {
+			this.origin = original;
+		}
+
+		private GroupBuilder(Regex original, List<String> previousOptions) {
+			this(original);
+			ors.addAll(previousOptions);
+		}
+
+		public GroupBuilder or() {
+			ors.add(current.getRegexp());
+			return new GroupBuilder(origin, ors);
+		}
+
+		public Regex closeGroup() {
+			return origin.add(new UnescapedSequence(this.formatOrElement()));
+		}
+
+		public String formatOrElement() {
+			final String regexp = current.getRegexp();
+			ors.add(regexp);
+			final SeparatedString groupedString = SeparatedString.of(ors).separatedBy("|");
+			return groupedString.toString();
+		}
+
+		public GroupBuilder notPrecededBy(String literalValue) {
+			current = current.notPrecededBy(literalValue);
+			return this;
+		}
+
+		public GroupBuilder noneOf(String literals) {
+			current = current.noneOf(literals);
+			return this;
+		}
+
+		public GroupBuilder nothingBetween(Character lowest, Character highest) {
+			current = current.nothingBetween(lowest, highest);
+			return this;
+		}
+
+		public GroupBuilder anyOf(String literals) {
+			current = current.anyOf(literals);
+			return this;
+		}
+
+		public GroupBuilder anyBetween(Character lowest, Character highest) {
+			current = current.anyBetween(lowest, highest);
+			return this;
+		}
+
+		public GroupBuilder number() {
+			current = current.number();
+			return this;
+		}
+
+		public GroupBuilder integer() {
+			current = current.integer();
+			return this;
+		}
+
+		public GroupBuilder positiveInteger() {
+			current = current.positiveInteger();
+			return this;
+		}
+
+		public GroupBuilder negativeInteger() {
+			current = current.negativeInteger();
+			return this;
+		}
+
+		public GroupBuilder capture(Regex regexp) {
+			current = current.capture(regexp);
+			return this;
+		}
+
+		public GroupBuilder space() {
+			current = current.space();
+			return this;
+		}
+
+		public GroupBuilder nonWhitespace() {
+			current = current.nonWhitespace();
+			return this;
+		}
+
+		public GroupBuilder whitespace() {
+			current = current.whitespace();
+			return this;
+		}
+
+		public GroupBuilder nonWordCharacter() {
+			current = current.nonWordCharacter();
+			return this;
+		}
+
+		public GroupBuilder gapBetweenWords() {
+			current = current.gapBetweenWords();
+			return this;
+		}
+
+		public GroupBuilder word() {
+			current = current.word();
+			return this;
+		}
+
+		public GroupBuilder wordCharacter() {
+			current = current.wordCharacter();
+			return this;
+		}
+
+		public GroupBuilder nondigits() {
+			current = current.nondigits();
+			return this;
+		}
+
+		public GroupBuilder nondigit() {
+			current = current.nondigit();
+			return this;
+		}
+
+		public GroupBuilder digits() {
+			current = current.digits();
+			return this;
+		}
+
+		public GroupBuilder digit() {
+			current = current.digit();
+			return this;
+		}
+
+		public GroupBuilder endOfTheString() {
+			current = current.endOfTheString();
+			return this;
+		}
+
+		public GroupBuilder optionalMany() {
+			current = current.optionalMany();
+			return this;
+		}
+
+		public GroupBuilder zeroOrMore() {
+			current = current.zeroOrMore();
+			return this;
+		}
+
+		public GroupBuilder oneOrMore() {
+			current = current.oneOrMore();
+			return this;
+		}
+
+		public GroupBuilder atLeastOnce() {
+			current = current.atLeastOnce();
+			return this;
+		}
+
+		public GroupBuilder onceOrNotAtAll() {
+			current = current.onceOrNotAtAll();
+			return this;
+		}
+
+		public GroupBuilder atLeastXAndNoMoreThanYTimes(int x, int y) {
+			current = current.atLeastXAndNoMoreThanYTimes(x, y);
+			return this;
+		}
+
+		public GroupBuilder atLeastThisManyTimes(int x) {
+			current = current.atLeastThisManyTimes(x);
+			return this;
+		}
+
+		public GroupBuilder thisManyTimes(int x) {
+			current = current.thisManyTimes(x);
+			return this;
+		}
+
+		public GroupBuilder once() {
+			current = current.once();
+			return this;
+		}
+
+		public GroupBuilder anyCharacter() {
+			current = current.anyCharacter();
+			return this;
+		}
+
+		public GroupBuilder controlCharacter(String x) {
+			current = current.controlCharacter(x);
+			return this;
+		}
+
+		public GroupBuilder escapeCharacter() {
+			current = current.escapeCharacter();
+			return this;
+		}
+
+		public GroupBuilder bell() {
+			current = current.bell();
+			return this;
+		}
+
+		public GroupBuilder formfeed() {
+			current = current.formfeed();
+			return this;
+		}
+
+		public GroupBuilder carriageReturn() {
+			current = current.carriageReturn();
+			return this;
+		}
+
+		public GroupBuilder newline() {
+			current = current.newline();
+			return this;
+		}
+
+		public GroupBuilder tab() {
+			current = current.tab();
+			return this;
+		}
+
+		public GroupBuilder bracket() {
+			current = current.bracket();
+			return this;
+		}
+
+		public GroupBuilder squareBracket() {
+			current = current.squareBracket();
+			return this;
+		}
+
+		public GroupBuilder pipe() {
+			current = current.pipe();
+			return this;
+		}
+
+		public GroupBuilder asterisk() {
+			current = current.asterisk();
+			return this;
+		}
+
+		public GroupBuilder star() {
+			current = current.star();
+			return this;
+		}
+
+		public GroupBuilder plus() {
+			current = current.plus();
+			return this;
+		}
+
+		public GroupBuilder questionMark() {
+			current = current.questionMark();
+			return this;
+		}
+
+		public GroupBuilder dot() {
+			current = current.dot();
+			return this;
+		}
+
+		public GroupBuilder dollarSign() {
+			current = current.dollarSign();
+			return this;
+		}
+
+		public GroupBuilder carat() {
+			current = current.carat();
+			return this;
+		}
+
+		public GroupBuilder backslash() {
+			current = current.backslash();
+			return this;
+		}
+
+		public GroupBuilder literal(String literals) {
+			current = current.literal(literals);
+			return this;
+		}
+
+		public GroupBuilder literal(Character character) {
+			current = current.literal(character);
+			return this;
+		}
+
+		public GroupBuilder extend(Regex second) {
+			current = current.extend(second);
+			return this;
+		}
+
+		public GroupBuilder add(Regex second) {
+			current = current.add(second);
+			return this;
+		}
+	}
 }

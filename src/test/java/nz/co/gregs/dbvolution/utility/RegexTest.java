@@ -85,14 +85,16 @@ public class RegexTest {
 						.anyBetween('0', '9').atLeastOnce();
 
 		final Regex allowedSeconds
-				= allowedValue.add(Regex.startingAnywhere().dot().digits()
+				= allowedValue.add(
+						Regex.startingAnywhere().dot().digits()
 				).onceOrNotAtAll();
 
 		final Regex separator
-				= new Regex.Range('0', '9')
-						.includeMinus()
-						.negated()
-						.atLeastOnce();
+				= Regex.startingAnywhere().openRange('0', '9').includeMinus().negated().closeRange().atLeastOnce();
+//				= new Regex.Range('0', '9')
+//						.includeMinus()
+//						.negated()
+//						.atLeastOnce();
 
 		Regex pattern
 				= Regex.startingAnywhere()
@@ -111,7 +113,6 @@ public class RegexTest {
 //		System.out.println("PASS: " + pattern.matchesWithinString("0 00:00:-5.5"));
 //		System.out.println("FAIL: " + pattern.matchesWithinString("00:00:-5.5"));
 //		System.out.println("FAIL: " + pattern.matchesWithinString("-2 days"));
-
 		Assert.assertThat(pattern.matchesWithinString("-2 days 00:00:00"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("2 days 00:00:00"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("2 days 00:00:00.0"), is(true));
@@ -131,16 +132,16 @@ public class RegexTest {
 		// 1 days 00:00:5.5
 		// 0 days 00:00:-5.5
 		//
-		//(-?[0-9]+)([^-0-9]+)(-?[0-9]+):(-?[0-9]+):(-?[0-9]+)(\.\d+)?
-
+		//-?[0-9]+([^-0-9])+-?[0-9]+:{1}-?[0-9]+:{1}-?[0-9]+(\.\d+)?
 		Regex pattern
 				= Regex.startingAnywhere()
 						.literal('-').onceOrNotAtAll()
 						.anyBetween('0', '9').atLeastOnce()
-						.add(new Regex.Range('0', '9')
-										.includeMinus()
-										.negated()
-						).atLeastOnce()
+						.openRange('0', '9')
+						.includeMinus()
+						.negated()
+						.closeRange()
+						.atLeastOnce()
 						.literal('-').onceOrNotAtAll()
 						.anyBetween('0', '9').atLeastOnce()
 						.literal(':').once()
@@ -161,7 +162,6 @@ public class RegexTest {
 //		System.out.println("PASS: " + pattern.matchesWithinString("0 00:00:-5.5"));
 //		System.out.println("FAIL: " + pattern.matchesWithinString("00:00:-5.5"));
 //		System.out.println("FAIL: " + pattern.matchesWithinString("-2 days"));
-
 		Assert.assertThat(pattern.matchesWithinString("-2 days 00:00:00"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("2 days 00:00:00"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("2 days 00:00:00.0"), is(true));
@@ -172,6 +172,25 @@ public class RegexTest {
 		Assert.assertThat(pattern.matchesWithinString("0 00:00:-5.5"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("00:00:-5.5"), is(false));
 		Assert.assertThat(pattern.matchesWithinString("-2"), is(false));
+
+	}
+
+	@Test
+	public void testGroupBuilding() {
+		
+		Regex pattern
+				= Regex.startGroup().literal("Amy").or().literal("Bob").or().literal("Charlie").closeGroup();
+
+		Assert.assertThat(pattern.matchesWithinString("Amy"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("Bob"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("Charlie"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("David"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("Emma"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("Try with Amy in the middle"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("End it with Bob"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("Charlie at the start"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("Still can't find David"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("Emma doesn't do any better"), is(false));
 
 	}
 
