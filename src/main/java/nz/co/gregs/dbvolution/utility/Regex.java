@@ -32,13 +32,15 @@ package nz.co.gregs.dbvolution.utility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  *
  * @author gregorygraham
  */
-public abstract class Regex {
+public abstract class Regex implements HasRegexFunctions {
 
 	private Pattern compiledVersion;
 
@@ -80,8 +82,9 @@ public abstract class Regex {
 	 * @return a new regular expression consisting of the current expression and
 	 * the supplied expression added together
 	 */
+	@Override
 	public Regex add(Regex second) {
-		return new RegexpCombination(this, second.group());
+		return new RegexpCombination(this, second.groupEverythingBeforeThis());
 	}
 
 	/**
@@ -107,10 +110,12 @@ public abstract class Regex {
 	 * @return a new regular expression consisting of the current expression and
 	 * the supplied expression added together
 	 */
+	@Override
 	public Regex extend(Regex second) {
 		return new RegexpCombination(this, second);
 	}
 
+	@Override
 	public Regex literal(Character character) {
 		if (character.equals('/')) {
 			return extend(backslash());
@@ -126,6 +131,7 @@ public abstract class Regex {
 	 * @param literals
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex literal(String literals) {
 		return extend(new LiteralSequence(literals));
 	}
@@ -135,6 +141,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex backslash() {
 		return extend(new UnescapedSequence("\\\\"));
 	}
@@ -144,6 +151,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex carat() {
 		return extend(new UnescapedSequence("\\^"));
 	}
@@ -153,6 +161,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex dollarSign() {
 		return extend(new UnescapedSequence("\\$"));
 	}
@@ -162,6 +171,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex dot() {
 		return extend(new UnescapedSequence("\\."));
 	}
@@ -171,6 +181,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex questionMark() {
 		return extend(new UnescapedSequence("\\?"));
 	}
@@ -180,6 +191,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex plus() {
 		return extend(new UnescapedSequence("\\+"));
 	}
@@ -189,6 +201,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex star() {
 		return extend(new UnescapedSequence("\\*"));
 	}
@@ -198,6 +211,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex asterisk() {
 		return extend(new UnescapedSequence("\\*"));
 	}
@@ -207,6 +221,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex pipe() {
 		return extend(new UnescapedSequence("\\|"));
 	}
@@ -216,6 +231,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex squareBracket() {
 		return extend(new UnescapedSequence("\\["));
 	}
@@ -225,6 +241,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex bracket() {
 		return extend(new UnescapedSequence("\\("));
 	}
@@ -234,6 +251,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex tab() {
 		return extend(new UnescapedSequence("\\t"));
 	}
@@ -243,6 +261,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex newline() {
 		return extend(new UnescapedSequence("\\n"));
 	}
@@ -252,6 +271,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex carriageReturn() {
 		return extend(new UnescapedSequence("\\r"));
 	}
@@ -261,6 +281,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex formfeed() {
 		return extend(new UnescapedSequence("\\f"));
 	}
@@ -270,6 +291,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex bell() {
 		return extend(new UnescapedSequence("\\a"));
 	}
@@ -279,6 +301,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex escapeCharacter() {
 		return extend(new UnescapedSequence("\\e"));
 	}
@@ -288,6 +311,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex controlCharacter(String x) {
 		return extend(new UnescapedSequence("\\c" + x));
 	}
@@ -297,6 +321,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex anyCharacter() {
 		return extend(new UnescapedSequence("."));
 	}
@@ -307,6 +332,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex once() {
 		return extend(new UnescapedSequence("{1}"));
 	}
@@ -317,6 +343,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex thisManyTimes(int x) {
 		return extend(new UnescapedSequence("{" + x + "}"));
 	}
@@ -327,6 +354,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex atLeastThisManyTimes(int x) {
 		return extend(new UnescapedSequence("{" + x + ",}"));
 	}
@@ -341,6 +369,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex atLeastXAndNoMoreThanYTimes(int x, int y) {
 		return extend(new UnescapedSequence("{" + x + "," + y + "}"));
 	}
@@ -355,6 +384,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex onceOrNotAtAll() {
 		return extend(new UnescapedSequence("?"));
 	}
@@ -369,6 +399,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex atLeastOnce() {
 		return extend(new UnescapedSequence("+"));
 	}
@@ -383,6 +414,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex oneOrMore() {
 		return atLeastOnce();
 	}
@@ -397,6 +429,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex zeroOrMore() {
 		return extend(new UnescapedSequence("*"));
 	}
@@ -411,6 +444,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex optionalMany() {
 		return zeroOrMore();
 	}
@@ -421,6 +455,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex endOfTheString() {
 		return extend(new UnescapedSequence("$"));
 	}
@@ -431,6 +466,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex digit() {
 		return extend(new UnescapedSequence("\\d"));
 	}
@@ -445,6 +481,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex digits() {
 		return digit().oneOrMore();
 	}
@@ -455,6 +492,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex nondigit() {
 		return extend(new UnescapedSequence("\\D"));
 	}
@@ -465,6 +503,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex nondigits() {
 		return nondigit().oneOrMore();
 	}
@@ -479,6 +518,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex wordCharacter() {
 		return extend(new UnescapedSequence("\\w"));
 	}
@@ -493,6 +533,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex word() {
 		return wordCharacter().oneOrMore();
 	}
@@ -507,6 +548,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex gapBetweenWords() {
 		return nonWordCharacter().oneOrMore();
 	}
@@ -521,6 +563,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex nonWordCharacter() {
 		return extend(new UnescapedSequence("\\W"));
 	}
@@ -535,6 +578,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex whitespace() {
 		return extend(new UnescapedSequence("\\s"));
 	}
@@ -550,8 +594,39 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex nonWhitespace() {
 		return extend(new UnescapedSequence("\\S"));
+	}
+
+	@Override
+	public Regex wordBoundary() {
+		return extend(new UnescapedSequence("\\b"));
+	}
+
+	@Override
+	public Regex nonWordBoundary() {
+		return extend(new UnescapedSequence("\\B"));
+	}
+
+	@Override
+	public Regex theBeginningOfTheInput() {
+		return extend(new UnescapedSequence("\\A"));
+	}
+
+	@Override
+	public Regex theEndOfThePreviousMatch() {
+		return extend(new UnescapedSequence("\\G"));
+	}
+
+	@Override
+	public Regex theEndOfTheInput() {
+		return extend(new UnescapedSequence("\\z"));
+	}
+
+	@Override
+	public Regex theEndOfTheInputButForTheFinalTerminator() {
+		return extend(new UnescapedSequence("\\Z"));
 	}
 
 	/**
@@ -560,6 +635,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex space() {
 		return extend(new UnescapedSequence(" "));
 	}
@@ -571,8 +647,10 @@ public abstract class Regex {
 	 * capturing and grouping are the same, there are methods of both names to
 	 * capture the intent.
 	 *
+	 * @param regexp
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex capture(Regex regexp) {
 		return new UnescapedSequence("(" + regexp.getRegexp() + ")");
 	}
@@ -587,6 +665,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex negativeInteger() {
 		return extend(literal('-').anyBetween('1', '9').once().digit().zeroOrMore());
 	}
@@ -600,6 +679,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex positiveInteger() {
 		return extend(
 				startingAnywhere()
@@ -620,6 +700,7 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex integer() {
 		return extend(Regex
 				.startGroup().literal("-")
@@ -627,18 +708,77 @@ public abstract class Regex {
 				.closeGroup().onceOrNotAtAll()
 				.anyBetween('1', '9').once().digit().zeroOrMore()
 		);
-//		return extend(Regex.or(new UnescapedSequence("-"), new UnescapedSequence("+")).onceOrNotAtAll().anyBetween('1', '9').once().digit().zeroOrMore());
 	}
 
+	/**
+	 * Adds a standard pattern that will match any valid number to the pattern as
+	 * a grouped element.
+	 *
+	 * <p>
+	 * A valid number is any sequence of digits not starting with zero, optionally
+	 * preceded with a plus or minus, and optionally followed by a decimal point
+	 * and a sequence of digits, that is clearly separated from other characters.
+	 *
+	 * <p>
+	 * An example of a valid number would be +2.345.
+	 *
+	 * <p>
+	 * Invalid numbers include 02.345, A4, _234, 2*E10, and 5678ABC.
+	 *
+	 * @return the current regex with a number matching pattern added to it
+	 */
+	@Override
 	public Regex number() {
 		return extend(
-				Regex.startGroup().literal("-").or().literal("+").closeGroup().onceOrNotAtAll()
-				.anyBetween('1', '9').atLeastOnce()
-				.digit().zeroOrMore()
-				.extend(startingAnywhere()
-						.dot().once()
-						.digit().oneOrMore()
-				).onceOrNotAtAll()
+				Regex.startGroup()
+						.anyOf("-+").onceOrNotAtAll()
+						.wordBoundary()
+						.anyBetween('1', '9').atLeastOnce()
+						.digit().zeroOrMore()
+						.add(startingAnywhere()
+								.dot().once()
+								.digit().oneOrMore()
+						).onceOrNotAtAll()
+						.notFollowedBy(Regex.startingAnywhere().nonWhitespace())
+						.closeGroup()
+		);
+	}
+
+	/**
+	 * Adds a standard pattern that will match any number-like sequence to the
+	 * pattern as a grouped element.
+	 *
+	 * <p>
+	 * A number-like sequence is any sequence of digits, optionally preceded with
+	 * a plus or minus, and optionally followed by a decimal point and a sequence
+	 * of digits.
+	 *
+	 * <p>
+	 * It differs from a number in that zero can be the first digit and the
+	 * sequence doesn't need to be clearly separated from the surrounding
+	 * characters.
+	 *
+	 * <p>
+	 * It differs from digits in that leading +/- and a middle decimal point are
+	 * included.
+	 *
+	 * <p>
+	 * A valid match would occur for the following +2.345, 02.345, A4, _234,
+	 * _234.5, 2*E10, and 5678ABC.
+	 *
+	 * @return the current regex with a number matching pattern added to it
+	 */
+	@Override
+	public Regex numberLike() {
+		return extend(
+				Regex.startGroup()
+						.anyOf("-+").onceOrNotAtAll()
+						.digit().atLeastOnce()
+						.add(startingAnywhere()
+								.dot().once()
+								.digit().oneOrMore()
+						).onceOrNotAtAll()
+						.closeGroup()
 		);
 	}
 
@@ -652,6 +792,7 @@ public abstract class Regex {
 	 * @param highest the (inclusive) end of the character range
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex anyBetween(Character lowest, Character highest) {
 		return extend(startingAnywhere().openRange(lowest, highest).closeRange());
 	}
@@ -666,6 +807,7 @@ public abstract class Regex {
 	 * "abcdeABCDE"
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex anyOf(String literals) {
 		return extend(startingAnywhere().openRange(literals).closeRange());
 	}
@@ -681,6 +823,7 @@ public abstract class Regex {
 	 * @param highest the (inclusive) end of the character range
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex nothingBetween(Character lowest, Character highest) {
 		return extend(startingAnywhere().openRange(lowest, highest).negated().closeRange());
 	}
@@ -696,13 +839,14 @@ public abstract class Regex {
 	 * "abcdeABCDE"
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex noneOf(String literals) {
 		return extend(startingAnywhere().openRange(literals).negated().closeRange());
 	}
 
 	/**
-	 * Places the regular expression in a group and making them one element for
-	 * the next instruction.
+	 * Places the regular expression in a group and adds it as one element for the
+	 * next instruction.
 	 *
 	 * <p>
 	 * capturing and grouping are the same, there are methods of both names to
@@ -710,8 +854,24 @@ public abstract class Regex {
 	 *
 	 * @return a new regexp
 	 */
-	public Regex.Group group() {
+	@Override
+	public Regex groupEverythingBeforeThis() {
 		return new Group(this);
+	}
+
+	/**
+	 * Places the regular expression in a group and add it as one element for the
+	 * next instruction.
+	 *
+	 * <p>
+	 * capturing and grouping are the same, there are methods of both names to
+	 * capture the intent.
+	 *
+	 * @return a new regexp
+	 */
+	@Override
+	public Regex addGroup(Regex regex) {
+		return this.extend(regex.groupEverythingBeforeThis());
 	}
 
 	protected final Pattern getCompiledVersion() {
@@ -730,6 +890,18 @@ public abstract class Regex {
 		return getCompiledVersion().matcher(string).find();
 	}
 
+	public Stream<MatchResult> getResultsStream(String string) {
+		return getCompiledVersion().matcher(string).results();
+	}
+
+	public String getFirstMatch(String string) {
+		return getCompiledVersion().matcher(string).group();
+	}
+
+	public MatchResult getMatchResult(String string) {
+		return getCompiledVersion().matcher(string).toMatchResult();
+	}
+
 	/**
 	 * Adds a check for a that the next element does not have the literal value
 	 * before it.
@@ -742,12 +914,67 @@ public abstract class Regex {
 	 * @param literalValue
 	 * @return a new regexp
 	 */
+	@Override
 	public Regex notPrecededBy(String literalValue) {
-		return new UnescapedSequence("(?<!")
-				.extend(new LiteralSequence(literalValue))
+		return this.notPrecededBy(new LiteralSequence(literalValue));
+	}
+
+	/**
+	 * Adds a check for a that the next element does not have the literal value
+	 * before it.
+	 *
+	 * <p>
+	 * For instance a positive integer is an integer that may have a plus in front
+	 * of it but definitely isn't preceded by a minus. So it uses a notPrecededBy:
+	 * startingAnywhere().notPrecededBy("-").plus().onceOrNotAtAll()...
+	 *
+	 * @param literalValue
+	 * @return a new regexp
+	 */
+	@Override
+	public Regex notPrecededBy(Regex literalValue) {
+		return this
+				.extend(new UnescapedSequence("(?<!"))
+				.extend(literalValue)
 				.extend(new UnescapedSequence(")"));
 	}
 
+	/**
+	 * Adds a check for a that the next element does not have the literal value
+	 * immediately after it.
+	 *
+	 * <p>
+	 * For instance to match words but not e-mail addresses you might use
+	 * Regex.startingAnywhere().word().notFollowedBy("@").
+	 *
+	 * @param literalValue
+	 * @return a new regexp
+	 */
+	@Override
+	public Regex notFollowedBy(String literalValue) {
+		return this.notFollowedBy(new LiteralSequence(literalValue));
+	}
+
+	/**
+	 * Adds a check for a that the next element does not have the literal value
+	 * immediately after it.
+	 *
+	 * <p>
+	 * For instance to match words but not e-mail addresses you might use
+	 * Regex.startingAnywhere().word().notFollowedBy("@").
+	 *
+	 * @param literalValue
+	 * @return a new regexp
+	 */
+	@Override
+	public Regex notFollowedBy(Regex literalValue) {
+		return this
+				.extend(new UnescapedSequence("(?!"))
+				.extend(literalValue)
+				.extend(new UnescapedSequence(")"));
+	}
+
+	//(?!@)
 	/**
 	 * Starts making a character range, use {@link RangeBuilder#closeRange() } to
 	 * return to the regex.
@@ -827,7 +1054,7 @@ public abstract class Regex {
 						.replaceAll("\\\\", "\\")
 						.replaceAll("\\.", "\\.")
 						.replaceAll("\\?", "\\?")
-						.replaceAll("\\+", "\\+")
+						.replaceAll("\\+", "\\\\+")
 						.replaceAll("\\*", "\\*")
 						.replaceAll("\\^", "\\^")
 						.replaceAll("\\$", "\\$")
@@ -876,28 +1103,27 @@ public abstract class Regex {
 		}
 	}
 
-	private static class Or extends Regex {
-
-		private final SeparatedString sepString;
-
-		public Or(Regex first, Regex... regexps) {
-			sepString = SeparatedString
-					.forSeparator("|")
-					.withThisBeforeEachTerm("(")
-					.withThisAfterEachTerm(")")
-					.add(first.getRegexp())
-					.addAll(
-							(t) -> {
-								return t.getRegexp();
-							}, regexps);
-		}
-
-		@Override
-		public String getRegexp() {
-			return sepString.toString();
-		}
-	}
-
+//	private static class Or extends Regex {
+//
+//		private final SeparatedString sepString;
+//
+//		public Or(Regex first, Regex... regexps) {
+//			sepString = SeparatedString
+//					.forSeparator("|")
+//					.withThisBeforeEachTerm("(")
+//					.withThisAfterEachTerm(")")
+//					.add(first.getRegexp())
+//					.addAll(
+//							(t) -> {
+//								return t.getRegexp();
+//							}, regexps);
+//		}
+//
+//		@Override
+//		public String getRegexp() {
+//			return sepString.toString();
+//		}
+//	}
 	public static class Group extends Regex {
 
 		private final Regex regexp;
@@ -997,11 +1223,11 @@ public abstract class Regex {
 		}
 
 		public Regex closeRange() {
-			return origin.add(new UnescapedSequence(encloseInBrackets()));
+			return origin.extend(new UnescapedSequence(encloseInBrackets()));
 		}
 	}
 
-	public static class GroupBuilder {
+	public static class GroupBuilder implements HasRegexFunctions {
 
 		private final Regex origin;
 		private final List<String> ors = new ArrayList<>(0);
@@ -1032,273 +1258,399 @@ public abstract class Regex {
 			return groupedString.toString();
 		}
 
+		@Override
 		public GroupBuilder notPrecededBy(String literalValue) {
 			current = current.notPrecededBy(literalValue);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder noneOf(String literals) {
 			current = current.noneOf(literals);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder nothingBetween(Character lowest, Character highest) {
 			current = current.nothingBetween(lowest, highest);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder anyOf(String literals) {
 			current = current.anyOf(literals);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder anyBetween(Character lowest, Character highest) {
 			current = current.anyBetween(lowest, highest);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder number() {
 			current = current.number();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder integer() {
 			current = current.integer();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder positiveInteger() {
 			current = current.positiveInteger();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder negativeInteger() {
 			current = current.negativeInteger();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder capture(Regex regexp) {
 			current = current.capture(regexp);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder space() {
 			current = current.space();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder nonWhitespace() {
 			current = current.nonWhitespace();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder whitespace() {
 			current = current.whitespace();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder nonWordCharacter() {
 			current = current.nonWordCharacter();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder gapBetweenWords() {
 			current = current.gapBetweenWords();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder word() {
 			current = current.word();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder wordCharacter() {
 			current = current.wordCharacter();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder nondigits() {
 			current = current.nondigits();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder nondigit() {
 			current = current.nondigit();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder digits() {
 			current = current.digits();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder digit() {
 			current = current.digit();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder endOfTheString() {
 			current = current.endOfTheString();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder optionalMany() {
 			current = current.optionalMany();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder zeroOrMore() {
 			current = current.zeroOrMore();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder oneOrMore() {
 			current = current.oneOrMore();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder atLeastOnce() {
 			current = current.atLeastOnce();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder onceOrNotAtAll() {
 			current = current.onceOrNotAtAll();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder atLeastXAndNoMoreThanYTimes(int x, int y) {
 			current = current.atLeastXAndNoMoreThanYTimes(x, y);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder atLeastThisManyTimes(int x) {
 			current = current.atLeastThisManyTimes(x);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder thisManyTimes(int x) {
 			current = current.thisManyTimes(x);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder once() {
 			current = current.once();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder anyCharacter() {
 			current = current.anyCharacter();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder controlCharacter(String x) {
 			current = current.controlCharacter(x);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder escapeCharacter() {
 			current = current.escapeCharacter();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder bell() {
 			current = current.bell();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder formfeed() {
 			current = current.formfeed();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder carriageReturn() {
 			current = current.carriageReturn();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder newline() {
 			current = current.newline();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder tab() {
 			current = current.tab();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder bracket() {
 			current = current.bracket();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder squareBracket() {
 			current = current.squareBracket();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder pipe() {
 			current = current.pipe();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder asterisk() {
 			current = current.asterisk();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder star() {
 			current = current.star();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder plus() {
 			current = current.plus();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder questionMark() {
 			current = current.questionMark();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder dot() {
 			current = current.dot();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder dollarSign() {
 			current = current.dollarSign();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder carat() {
 			current = current.carat();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder backslash() {
 			current = current.backslash();
 			return this;
 		}
 
+		@Override
 		public GroupBuilder literal(String literals) {
 			current = current.literal(literals);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder literal(Character character) {
 			current = current.literal(character);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder extend(Regex second) {
 			current = current.extend(second);
 			return this;
 		}
 
+		@Override
 		public GroupBuilder add(Regex second) {
 			current = current.add(second);
+			return this;
+		}
+
+		@Override
+		public GroupBuilder wordBoundary() {
+			current = current.wordBoundary();
+			return this;
+		}
+
+		@Override
+		public GroupBuilder nonWordBoundary() {
+			current = current.nonWordBoundary();
+			return this;
+		}
+
+		@Override
+		public GroupBuilder theBeginningOfTheInput() {
+			current = current.theBeginningOfTheInput();
+			return this;
+		}
+
+		@Override
+		public GroupBuilder theEndOfThePreviousMatch() {
+			current = current.theEndOfThePreviousMatch();
+			return this;
+		}
+
+		@Override
+		public GroupBuilder theEndOfTheInput() {
+			current = current.theEndOfTheInput();
+			return this;
+		}
+
+		@Override
+		public GroupBuilder theEndOfTheInputButForTheFinalTerminator() {
+			current = current.theEndOfTheInputButForTheFinalTerminator();
+			return this;
+		}
+
+		@Override
+		public GroupBuilder notPrecededBy(Regex literalValue) {
+			current = current.notPrecededBy(literalValue);
+			return this;
+		}
+
+		@Override
+		public GroupBuilder notFollowedBy(String literalValue) {
+			current = current.notFollowedBy(literalValue);
+			return this;
+		}
+
+		@Override
+		public GroupBuilder notFollowedBy(Regex literalValue) {
+			current = current.notFollowedBy(literalValue);
+			return this;
+		}
+
+		@Override
+		public HasRegexFunctions addGroup(Regex second) {
+			current = current.addGroup(second);
+			return this;
+		}
+
+		@Override
+		public HasRegexFunctions groupEverythingBeforeThis() {
+			current = current.groupEverythingBeforeThis();
+			return this;
+		}
+
+		@Override
+		public HasRegexFunctions numberLike() {
+			current = current.numberLike();
 			return this;
 		}
 	}

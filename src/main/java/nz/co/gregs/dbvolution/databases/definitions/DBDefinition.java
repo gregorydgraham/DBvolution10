@@ -593,8 +593,8 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 *
 	 *
-	 * @return TRUE if the database needs indexes for the group by columns, FALSE
-	 * otherwise.
+	 * @return TRUE if the database needs indexes for the groupEverythingBeforeThis by columns, FALSE
+ otherwise.
 	 */
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
