@@ -94,8 +94,8 @@ public class SeparatedStringTest {
 	public void testCustomParsing() {
 		final SeparatedString sepString = SeparatedString
 				.byTabs()
-				.withWrapBefore("~\"")
-				.withWrapAfter("\"~")
+				.withThisBeforeEachTerm("~\"")
+				.withThisAfterEachTerm("\"~")
 				.withEscapeChar("==");
 // 1000,117090058,117970084,"170,9 + 58","179,7 + 84","Flensburg Weiche, W 203 - Flensburg Grenze",Flensburg-Weiche - Flensb. Gr
 		sepString.addAll("1000","117090058","117970084","170,9 + 58","179,7 + 84","Flensburg Weiche, W 203 - Flensburg Grenze","Flensburg-Weiche - Flensb. Gr", "Albert \"The Pain\" Hallsburg");
@@ -119,8 +119,8 @@ public class SeparatedStringTest {
 	public void testCustomParsingWithRegexCharacters() {
 		final SeparatedString sepString = SeparatedString
 				.byTabs()
-				.withWrapBefore("+")
-				.withWrapAfter("+")
+				.withThisBeforeEachTerm("+")
+				.withThisAfterEachTerm("+")
 				.withEscapeChar("||");
 // 1000,117090058,117970084,"170,9 + 58","179,7 + 84","Flensburg Weiche, W 203 - Flensburg Grenze",Flensburg-Weiche - Flensb. Gr
 		sepString.addAll("1000","117090058","117970084","170,9 + 58","179,7 + 84","Flensburg Weiche, W 203 - Flensburg Grenze","Flensburg-Weiche - Flensb. Gr", "Albert \"The Pain\" Hallsburg");
@@ -144,8 +144,8 @@ public class SeparatedStringTest {
 	public void testWithWrappingCustomParsing() {
 		final SeparatedString sepString = SeparatedString
 				.byTabs()
-				.withWrapBefore("~\"")
-				.withWrapAfter("\"~")
+				.withThisBeforeEachTerm("~\"")
+				.withThisAfterEachTerm("\"~")
 				.withEscapeChar("==")
 				.withPrefix("START")
 				.withSuffix("END");
