@@ -211,7 +211,7 @@ public class RegexTest {
 				= Regex.startingAnywhere()
 						.number().once();
 
-		System.out.println("REGEX: " + pattern.getRegexp());
+//		System.out.println("REGEX: " + pattern.getRegexp());
 
 		Assert.assertThat(pattern.matchesWithinString("before -1 after"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("before 2 after"), is(true));
@@ -242,14 +242,8 @@ public class RegexTest {
 				= Regex.startingAnywhere()
 						.numberLike().once();
 
-		System.out.println("REGEX: " + pattern.getRegexp());
+//		System.out.println("REGEX: " + pattern.getRegexp());
 
-		pattern.getResultsStream("-2 days 00 00 00").forEachOrdered(t -> {
-			System.out.println("MATCH: " + t.groupCount());
-			for (int i = 0; i < t.groupCount(); i++) {
-				System.out.println("FOUND: " + t.group(i));
-			}
-		});
 		//-1 2 -234 +4 -4 4.5 FAIL 02 -0234 004 _4 A4
 		Assert.assertThat(pattern.matchesWithinString("before -1 after"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("before 2 after"), is(true));
