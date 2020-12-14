@@ -184,11 +184,17 @@ public class RegexTest {
 		Assert.assertThat(pattern.matchesWithinString("Amy"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("Bob"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("Charlie"), is(true));
+		Assert.assertThat(pattern.matchesEntireString("Amy"), is(true));
+		Assert.assertThat(pattern.matchesEntireString("Bob"), is(true));
+		Assert.assertThat(pattern.matchesEntireString("Charlie"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("David"), is(false));
 		Assert.assertThat(pattern.matchesWithinString("Emma"), is(false));
 		Assert.assertThat(pattern.matchesWithinString("Try with Amy in the middle"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("End it with Bob"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("Charlie at the start"), is(true));
+		Assert.assertThat(pattern.matchesEntireString("Try with Amy in the middle"), is(false));
+		Assert.assertThat(pattern.matchesEntireString("End it with Bob"), is(false));
+		Assert.assertThat(pattern.matchesEntireString("Charlie at the start"), is(false));
 		Assert.assertThat(pattern.matchesWithinString("Still can't find David"), is(false));
 		Assert.assertThat(pattern.matchesWithinString("Emma doesn't do any better"), is(false));
 
