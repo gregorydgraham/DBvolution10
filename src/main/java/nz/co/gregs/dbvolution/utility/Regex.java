@@ -717,7 +717,6 @@ public abstract class Regex {
 	protected final Pattern getCompiledVersion() {
 		if (compiledVersion == null) {
 			final String regexp = this.getRegexp();
-			System.out.println("nz.co.gregs.dbvolution.utility.Regexp.matchesEntireString(): " + regexp);
 			compiledVersion = Pattern.compile(regexp);
 		}
 		return compiledVersion;
