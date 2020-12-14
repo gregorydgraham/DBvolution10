@@ -191,15 +191,15 @@ public class SeparatedString {
 
 	public static SeparatedString byCommasWithQuotedTermsAndBackslashEscape() {
 		return byCommas()
-				.withWrapBefore("\"")
-				.withWrapAfter("\"")
+				.withThisBeforeEachTerm("\"")
+				.withThisAfterEachTerm("\"")
 				.withEscapeChar("\\");
 	}
 
 	public static SeparatedString byCommasWithQuotedTermsAndDoubleBackslashEscape() {
 		return byCommas()
-				.withWrapBefore("\"")
-				.withWrapAfter("\"")
+				.withThisBeforeEachTerm("\"")
+				.withThisAfterEachTerm("\"")
 				.withEscapeChar("\\\\");
 	}
 
@@ -445,18 +445,24 @@ public class SeparatedString {
 		return this;
 	}
 
-	public SeparatedString withWrapper(String wrapAroundEachTerm) {
+	public SeparatedString withEachTermPrecededAndFollowedWith(String wrapAroundEachTerm) {
 		this.wrapBefore = wrapAroundEachTerm;
 		this.wrapAfter = wrapAroundEachTerm;
 		return this;
 	}
 
-	public SeparatedString withWrapBefore(String wrapAtTheBeginningOfTerms) {
-		this.wrapBefore = wrapAtTheBeginningOfTerms;
+	public SeparatedString withEachTermWrappedWith(String beforeEachTerm, String afterEachTerm) {
+		this.wrapBefore = beforeEachTerm;
+		this.wrapAfter = afterEachTerm;
 		return this;
 	}
 
-	public SeparatedString withWrapAfter(String placeAtTheEndOfEachTerm) {
+	public SeparatedString withThisBeforeEachTerm(String placeAtTheBeginningOfEachTerm) {
+		this.wrapBefore = placeAtTheBeginningOfEachTerm;
+		return this;
+	}
+
+	public SeparatedString withThisAfterEachTerm(String placeAtTheEndOfEachTerm) {
 		this.wrapAfter = placeAtTheEndOfEachTerm;
 		return this;
 	}
