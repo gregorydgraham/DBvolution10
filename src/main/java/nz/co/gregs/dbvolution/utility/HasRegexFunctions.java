@@ -94,6 +94,12 @@ public interface HasRegexFunctions {
 
 	HasRegexFunctions literal(Character character);
 
+	HasRegexFunctions literalCaseInsensitive(String literals);
+
+	default HasRegexFunctions literalCaseInsensitive(Character literal) {
+		return literalCaseInsensitive("" + literal);
+	}
+
 	HasRegexFunctions negativeInteger();
 
 	HasRegexFunctions newline();
@@ -128,6 +134,20 @@ public interface HasRegexFunctions {
 
 	HasRegexFunctions onceOrNotAtAll();
 
+	/**
+	 * Alters the previous element in the regexp so that it only matches if the
+	 * element appears in that position exactly once or not at all.
+	 *
+	 * <p>
+	 * literal('a').literal('b)'.onceOrNotAtAll() will match "a" or "ab", but not
+	 * "abb"
+	 *
+	 * @return a new regexp
+	 */
+	public default HasRegexFunctions zeroOrOnce() {
+		return onceOrNotAtAll();
+	}
+
 	HasRegexFunctions oneOrMore();
 
 	HasRegexFunctions optionalMany();
@@ -158,6 +178,8 @@ public interface HasRegexFunctions {
 
 	HasRegexFunctions thisManyTimes(int x);
 
+	HasRegexFunctions unescaped(String unescapedSequence);
+
 	HasRegexFunctions whitespace();
 
 	HasRegexFunctions word();
@@ -167,5 +189,5 @@ public interface HasRegexFunctions {
 	HasRegexFunctions wordCharacter();
 
 	HasRegexFunctions zeroOrMore();
-	
+
 }

@@ -139,6 +139,18 @@ public abstract class Regex implements HasRegexFunctions {
 	}
 
 	/**
+	 * Adds a unescaped sequence to the regexp without grouping it.
+	 *
+	 *
+	 * @param literals
+	 * @return a new regexp
+	 */
+	@Override
+	public Regex unescaped(String literals) {
+		return extend(new UnescapedSequence(literals));
+	}
+
+	/**
 	 * Adds a literal backslash(\) to the regexp without grouping it.
 	 *
 	 * @return a new regexp
@@ -1036,6 +1048,22 @@ public abstract class Regex implements HasRegexFunctions {
 		return matches;
 	}
 
+	@Override
+	public Regex literalCaseInsensitive(String literal) {
+		return this
+				.addGroup(
+						Regex.startingAnywhere()
+								.unescaped("(?i)")
+								.literal(literal)
+								.unescaped("(?-i)")
+				);
+	}
+
+	@Override
+	public Regex literalCaseInsensitive(Character literal) {
+		return literal(""+literal);
+	}
+
 	public static class SingleCharacter extends Regex {
 
 		private final Character literal;
@@ -1659,6 +1687,18 @@ public abstract class Regex implements HasRegexFunctions {
 		@Override
 		public HasRegexFunctions numberLike() {
 			current = current.numberLike();
+			return this;
+		}
+
+		@Override
+		public HasRegexFunctions literalCaseInsensitive(String literals) {
+			current = current.literalCaseInsensitive(literals);
+			return this;
+		}
+
+		@Override
+		public HasRegexFunctions unescaped(String unescapedSequence) {
+			current=current.unescaped(unescapedSequence);
 			return this;
 		}
 	}

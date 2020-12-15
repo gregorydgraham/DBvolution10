@@ -277,8 +277,7 @@ public class RegexTest {
 		List<String> matches = regex.getAllMatches("-1 2 -234 +4 -4 4.5 FAIL 02 -0234 004 _4 A4");
 		Assert.assertThat(matches.size(), is(11));
 		Assert.assertThat(matches, contains("-1", "2", "-234", "+4", "-4", "4.5", "02", "-0234", "004", "4", "4"));
-		
-		
+
 		regex
 				= Regex.startingAnywhere()
 						.number().once();
@@ -287,5 +286,37 @@ public class RegexTest {
 		matches = regex.getAllMatches("-1 2 -234 +4 -4 4.5 FAIL 02 -0234 004 _4 A4");
 		Assert.assertThat(matches.size(), is(6));
 		Assert.assertThat(matches, contains("-1", "2", "-234", "+4", "-4", "4.5"));
+	}
+
+	@Test
+	public void testFindDaysAtEnd() {
+		// -2 days 00:00:00
+		// 1 days 00:00:5.5
+		// 0 days 00:00:-5.5
+		//
+		// ([-+]?\b[1-9]+\d*(\.{1}\d+)?){1}
+		Regex regex
+				= Regex.startingAnywhere()
+						.wordBoundary()
+						.literalCaseInsensitive("day").once()
+						.literalCaseInsensitive("s").onceOrNotAtAll()
+						.wordBoundary()
+						.endOfTheString();
+
+		System.out.println("REGEX: " + regex.getRegexp());
+		
+		Assert.assertThat(regex.matchesWithinString("day"), is(true));
+		Assert.assertThat(regex.matchesWithinString("days"), is(true));
+		Assert.assertThat(regex.matchesWithinString("DAY"), is(true));
+		Assert.assertThat(regex.matchesWithinString("DAYS"), is(true));
+		Assert.assertThat(regex.matchesWithinString("before day"), is(true));
+		Assert.assertThat(regex.matchesWithinString("before days"), is(true));
+		Assert.assertThat(regex.matchesWithinString("before middleday"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before middledays"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before day after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before days after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("day after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("days after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before"), is(false));
 	}
 }
