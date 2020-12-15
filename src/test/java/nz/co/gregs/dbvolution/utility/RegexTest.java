@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.util.List;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -212,7 +213,6 @@ public class RegexTest {
 						.number().once();
 
 //		System.out.println("REGEX: " + pattern.getRegexp());
-
 		Assert.assertThat(pattern.matchesWithinString("before -1 after"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("before 2 after"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("before -234 after"), is(true));
@@ -243,7 +243,6 @@ public class RegexTest {
 						.numberLike().once();
 
 //		System.out.println("REGEX: " + pattern.getRegexp());
-
 		//-1 2 -234 +4 -4 4.5 FAIL 02 -0234 004 _4 A4
 		Assert.assertThat(pattern.matchesWithinString("before -1 after"), is(true));
 		Assert.assertThat(pattern.matchesWithinString("before 2 after"), is(true));
@@ -263,4 +262,30 @@ public class RegexTest {
 
 	}
 
+	@Test
+	public void testGetAllMatches() {
+		// -2 days 00:00:00
+		// 1 days 00:00:5.5
+		// 0 days 00:00:-5.5
+		//
+		// ([-+]?\b[1-9]+\d*(\.{1}\d+)?){1}
+		Regex regex
+				= Regex.startingAnywhere()
+						.numberLike().once();
+
+//		System.out.println("REGEX: " + pattern.getRegexp());
+		List<String> matches = regex.getAllMatches("-1 2 -234 +4 -4 4.5 FAIL 02 -0234 004 _4 A4");
+		Assert.assertThat(matches.size(), is(11));
+		Assert.assertThat(matches, contains("-1", "2", "-234", "+4", "-4", "4.5", "02", "-0234", "004", "4", "4"));
+		
+		
+		regex
+				= Regex.startingAnywhere()
+						.number().once();
+
+//		System.out.println("REGEX: " + pattern.getRegexp());
+		matches = regex.getAllMatches("-1 2 -234 +4 -4 4.5 FAIL 02 -0234 004 _4 A4");
+		Assert.assertThat(matches.size(), is(6));
+		Assert.assertThat(matches, contains("-1", "2", "-234", "+4", "-4", "4.5"));
+	}
 }
