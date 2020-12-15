@@ -289,7 +289,41 @@ public class RegexTest {
 	}
 
 	@Test
-	public void testFindDaysAtEnd() {
+	public void testCaseInsensitiveAndEndOfString() {
+		// -2 days 00:00:00
+		// 1 days 00:00:5.5
+		// 0 days 00:00:-5.5
+		//
+		// ([-+]?\b[1-9]+\d*(\.{1}\d+)?){1}
+		Regex regex
+				= Regex.startingAnywhere()
+						.wordBoundary()
+						.caseInsensitiveGroup()
+						.literal("day").once()
+						.literal("s").onceOrNotAtAll()
+						.caseInsensitiveEnd()
+						.wordBoundary()
+						.endOfTheString();
+
+		System.out.println("REGEX: " + regex.getRegexp());
+		
+		Assert.assertThat(regex.matchesWithinString("day"), is(true));
+		Assert.assertThat(regex.matchesWithinString("days"), is(true));
+		Assert.assertThat(regex.matchesWithinString("DAY"), is(true));
+		Assert.assertThat(regex.matchesWithinString("DAYS"), is(true));
+		Assert.assertThat(regex.matchesWithinString("before day"), is(true));
+		Assert.assertThat(regex.matchesWithinString("before days"), is(true));
+		Assert.assertThat(regex.matchesWithinString("before middleday"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before middledays"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before day after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before days after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("day after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("days after"), is(false));
+		Assert.assertThat(regex.matchesWithinString("before"), is(false));
+	}
+
+	@Test
+	public void testLiteralCaseInsensitive() {
 		// -2 days 00:00:00
 		// 1 days 00:00:5.5
 		// 0 days 00:00:-5.5

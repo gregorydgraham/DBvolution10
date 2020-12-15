@@ -33,106 +33,149 @@ package nz.co.gregs.dbvolution.utility;
 /**
  *
  * @author gregorygraham
+ * @param <THIS>
  */
-public interface HasRegexFunctions {
+public interface HasRegexFunctions<THIS extends HasRegexFunctions<THIS>> {
 
-	HasRegexFunctions add(Regex second);
+	THIS add(Regex second);
 
-	HasRegexFunctions addGroup(Regex second);
+	THIS addGroup(Regex second);
 
-	HasRegexFunctions anyBetween(Character lowest, Character highest);
+	THIS anyBetween(Character lowest, Character highest);
 
-	HasRegexFunctions anyCharacter();
+	THIS anyCharacter();
 
-	HasRegexFunctions anyOf(String literals);
+	THIS anyOf(String literals);
 
-	HasRegexFunctions asterisk();
+	THIS asterisk();
 
-	HasRegexFunctions atLeastOnce();
+	THIS atLeastOnce();
 
-	HasRegexFunctions atLeastThisManyTimes(int x);
+	THIS atLeastThisManyTimes(int x);
 
-	HasRegexFunctions atLeastXAndNoMoreThanYTimes(int x, int y);
+	THIS atLeastXAndNoMoreThanYTimes(int x, int y);
 
-	HasRegexFunctions backslash();
+	THIS backslash();
 
-	HasRegexFunctions bell();
+	THIS bell();
 
-	HasRegexFunctions bracket();
+	THIS bracket();
 
-	HasRegexFunctions capture(Regex regexp);
+	THIS capture(Regex regexp);
 
-	HasRegexFunctions carat();
+	THIS carat();
 
-	HasRegexFunctions carriageReturn();
+	THIS carriageReturn();
 
-	HasRegexFunctions controlCharacter(String x);
+	THIS controlCharacter(String x);
 
-	HasRegexFunctions digit();
+	THIS digit();
 
-	HasRegexFunctions digits();
+	THIS digits();
 
-	HasRegexFunctions dollarSign();
+	THIS dollarSign();
 
-	HasRegexFunctions dot();
+	THIS dot();
 
-	HasRegexFunctions endOfTheString();
+	THIS endOfTheString();
 
-	HasRegexFunctions escapeCharacter();
+	THIS escapeCharacter();
 
-	HasRegexFunctions extend(Regex second);
+	THIS extend(Regex second);
 
-	HasRegexFunctions formfeed();
+	THIS formfeed();
 
-	HasRegexFunctions gapBetweenWords();
+	THIS gapBetweenWords();
 
-	HasRegexFunctions groupEverythingBeforeThis();
+	THIS groupEverythingBeforeThis();
 
-	HasRegexFunctions integer();
+	THIS integer();
 
-	HasRegexFunctions literal(String literals);
+	THIS literal(String literals);
 
-	HasRegexFunctions literal(Character character);
+	THIS literal(Character character);
 
-	HasRegexFunctions literalCaseInsensitive(String literals);
+	THIS literalCaseInsensitive(String literals);
 
-	default HasRegexFunctions literalCaseInsensitive(Character literal) {
+	default THIS literalCaseInsensitive(Character literal) {
 		return literalCaseInsensitive("" + literal);
 	}
 
-	HasRegexFunctions negativeInteger();
+	THIS negativeInteger();
 
-	HasRegexFunctions newline();
+	THIS newline();
 
-	HasRegexFunctions nonWhitespace();
+	THIS nonWhitespace();
 
-	HasRegexFunctions nonWordBoundary();
+	THIS nonWordBoundary();
 
-	HasRegexFunctions nonWordCharacter();
+	THIS nonWordCharacter();
 
-	HasRegexFunctions nondigit();
+	THIS nondigit();
 
-	HasRegexFunctions nondigits();
+	THIS nondigits();
 
-	HasRegexFunctions noneOf(String literals);
+	THIS noneOf(String literals);
 
-	HasRegexFunctions notFollowedBy(String literalValue);
+	THIS notFollowedBy(String literalValue);
 
-	HasRegexFunctions notFollowedBy(Regex literalValue);
+	THIS notFollowedBy(Regex literalValue);
 
-	HasRegexFunctions notPrecededBy(String literalValue);
+	THIS notPrecededBy(String literalValue);
 
-	HasRegexFunctions notPrecededBy(Regex literalValue);
+	THIS notPrecededBy(Regex literalValue);
 
-	HasRegexFunctions nothingBetween(Character lowest, Character highest);
+	THIS nothingBetween(Character lowest, Character highest);
 
-	HasRegexFunctions number();
+	THIS number();
 
-	HasRegexFunctions numberLike();
+	THIS numberLike();
 
-	HasRegexFunctions once();
+	THIS once();
 
-	HasRegexFunctions onceOrNotAtAll();
+	THIS onceOrNotAtAll();
+
+	THIS oneOrMore();
+
+	THIS optionalMany();
+	
+	THIS pipe();
+
+	THIS plus();
+
+	THIS positiveInteger();
+
+	THIS questionMark();
+
+	THIS space();
+
+	THIS squareBracket();
+
+	THIS star();
+
+	THIS tab();
+
+	THIS theBeginningOfTheInput();
+
+	THIS theEndOfTheInput();
+
+	THIS theEndOfTheInputButForTheFinalTerminator();
+
+	THIS theEndOfThePreviousMatch();
+
+	THIS thisManyTimes(int x);
+
+	THIS unescaped(String unescapedSequence);
+
+	THIS whitespace();
+
+	THIS word();
+
+	THIS wordBoundary();
+
+	THIS wordCharacter();
+
+	THIS zeroOrMore();
 
 	/**
 	 * Alters the previous element in the regexp so that it only matches if the
@@ -144,50 +187,8 @@ public interface HasRegexFunctions {
 	 *
 	 * @return a new regexp
 	 */
-	public default HasRegexFunctions zeroOrOnce() {
+	public default THIS zeroOrOnce() {
 		return onceOrNotAtAll();
 	}
-
-	HasRegexFunctions oneOrMore();
-
-	HasRegexFunctions optionalMany();
-
-	HasRegexFunctions pipe();
-
-	HasRegexFunctions plus();
-
-	HasRegexFunctions positiveInteger();
-
-	HasRegexFunctions questionMark();
-
-	HasRegexFunctions space();
-
-	HasRegexFunctions squareBracket();
-
-	HasRegexFunctions star();
-
-	HasRegexFunctions tab();
-
-	HasRegexFunctions theBeginningOfTheInput();
-
-	HasRegexFunctions theEndOfTheInput();
-
-	HasRegexFunctions theEndOfTheInputButForTheFinalTerminator();
-
-	HasRegexFunctions theEndOfThePreviousMatch();
-
-	HasRegexFunctions thisManyTimes(int x);
-
-	HasRegexFunctions unescaped(String unescapedSequence);
-
-	HasRegexFunctions whitespace();
-
-	HasRegexFunctions word();
-
-	HasRegexFunctions wordBoundary();
-
-	HasRegexFunctions wordCharacter();
-
-	HasRegexFunctions zeroOrMore();
 
 }
