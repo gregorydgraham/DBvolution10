@@ -33,7 +33,9 @@ package nz.co.gregs.dbvolution.utility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -1026,6 +1028,12 @@ public abstract class Regex implements HasRegexFunctions {
 	 */
 	public GroupBuilder openGroup() {
 		return new GroupBuilder(this);
+	}
+
+	public List<String> getAllMatches(String string) {
+		Matcher matcher = this.getCompiledVersion().matcher(string);
+		List<String> matches = matcher.results().map(m -> m.group()).collect(Collectors.toList());
+		return matches;
 	}
 
 	public static class SingleCharacter extends Regex {
