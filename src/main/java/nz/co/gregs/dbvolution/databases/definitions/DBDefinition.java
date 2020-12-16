@@ -6940,7 +6940,7 @@ public abstract class DBDefinition implements Serializable {
 			// 2 days, 5.03 seconds, -2 months,...
 			String number = numbers[durationPartsOffset];
 			negated = number.startsWith("-");
-			Long numberValue = Math.abs(Long.valueOf(number));
+			Long numberValue = Math.abs(Double.valueOf(number).longValue());
 			if (intervalStr.endsWith("days")) {
 				days = numberValue;
 			} else if (intervalStr.endsWith("hours")) {

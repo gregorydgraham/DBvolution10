@@ -61,7 +61,7 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 	}
 
 	public Regex closeGroup() {
-		return getOrigin().unescaped(this.formatGroup());
+		return getOrigin().unescaped(this.getRegexp());
 	}
 
 	@Override
@@ -430,14 +430,14 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public THIS extend(Regex second) {
+	public THIS extend(HasRegexFunctions<?> second) {
 		current = getCurrent().extend(second);
 		return (THIS) this;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public THIS add(Regex second) {
+	public THIS add(HasRegexFunctions<?> second) {
 		current = getCurrent().add(second);
 		return (THIS) this;
 	}
@@ -507,7 +507,7 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public THIS addGroup(Regex second) {
+	public THIS addGroup(HasRegexFunctions<?> second) {
 		current = getCurrent().addGroup(second);
 		return (THIS) this;
 	}
@@ -540,7 +540,15 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 		return (THIS) this;
 	}
 
-	public abstract String formatGroup();
+	@SuppressWarnings("unchecked")
+	public Regex.RangeBuilder<THIS> openRange(char lowest, char highest) {
+		return new Regex.RangeBuilder<THIS>((THIS) this, lowest, highest);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Regex.RangeBuilder<THIS> openRange(String literals) {
+		return new Regex.RangeBuilder<THIS>((THIS) this, literals);
+	}
 
 	public static class Or extends RegexGroup<Or> {
 
@@ -561,7 +569,7 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 		}
 
 		@Override
-		public String formatGroup() {
+		public String getRegexp() {
 			final String regexp = getCurrent().getRegexp();
 			ors.add(regexp);
 			final SeparatedString groupedString = SeparatedString.of(ors).separatedBy("|").withPrefix("(").withSuffix(")");
@@ -576,12 +584,12 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 		}
 
 		@Override
-		public String formatGroup() {
+		public String getRegexp() {
 			final String regexp = getCurrent().getRegexp();
 			return "(?i)" + regexp + "(?-i)";
 		}
-		
-		public Regex caseInsensitiveEnd(){
+
+		public Regex caseInsensitiveEnd() {
 			return closeGroup();
 		}
 	}

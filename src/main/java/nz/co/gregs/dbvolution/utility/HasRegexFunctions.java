@@ -30,152 +30,310 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import nz.co.gregs.dbvolution.utility.Regex.RangeBuilder;
+import static nz.co.gregs.dbvolution.utility.Regex.startingAnywhere;
+
 /**
  *
  * @author gregorygraham
- * @param <THIS>
+ * @param <REGEX>
  */
-public interface HasRegexFunctions<THIS extends HasRegexFunctions<THIS>> {
+public interface HasRegexFunctions<REGEX extends HasRegexFunctions<REGEX>> {
 
-	THIS add(Regex second);
+	public String getRegexp();
 
-	THIS addGroup(Regex second);
+	/**
+	 * Adds a check for a positive or negative integer to the regular expression
+	 * without grouping.
+	 *
+	 * <p>
+	 * Will capture the plus or minus so watch out for that in your calculator
+	 * application.
+	 *
+	 * @return a new regexp
+	 */
+	public default REGEX integer() {
+		return extend(Regex
+				.startGroup().literal("-")
+				.or().literal("+")
+				.closeGroup().onceOrNotAtAll()
+				.anyBetween('1', '9').once().digit().zeroOrMore()
+		);
+	}
 
-	THIS anyBetween(Character lowest, Character highest);
+	/**
+	 * Adds a standard pattern that will match any valid number to the pattern as
+	 * a grouped element.
+	 *
+	 * <p>
+	 * A valid number is any sequence of digits not starting with zero, optionally
+	 * preceded with a plus or minus, and optionally followed by a decimal point
+	 * and a sequence of digits, that is clearly separated from other characters.
+	 *
+	 * <p>
+	 * An example of a valid number would be +2.345.
+	 *
+	 * <p>
+	 * Invalid numbers include 02.345, A4, _234, 2*E10, and 5678ABC.
+	 *
+	 * @return the current regex with a number matching pattern added to it
+	 */
+	public default REGEX number() {
+		return extend(
+				Regex.startGroup()
+						.anyOf("-+").onceOrNotAtAll()
+						.wordBoundary()
+						.anyBetween('1', '9').atLeastOnce()
+						.digit().zeroOrMore()
+						.add(startingAnywhere()
+								.dot().once()
+								.digit().oneOrMore()
+						).onceOrNotAtAll()
+						.notFollowedBy(Regex.startingAnywhere().nonWhitespace())
+						.closeGroup()
+		);
+	}
 
-	THIS anyCharacter();
+	/**
+	 * Adds a standard pattern that will match any number-like sequence to the
+	 * pattern as a grouped element.
+	 *
+	 * <p>
+	 * A number-like sequence is any sequence of digits, optionally preceded with
+	 * a plus or minus, and optionally followed by a decimal point and a sequence
+	 * of digits.
+	 *
+	 * <p>
+	 * It differs from a number in that zero can be the first digit and the
+	 * sequence doesn't need to be clearly separated from the surrounding
+	 * characters.
+	 *
+	 * <p>
+	 * It differs from digits in that leading +/- and a middle decimal point are
+	 * included.
+	 *
+	 * <p>
+	 * A valid match would occur for the following +2.345, 02.345, A4, _234,
+	 * _234.5, 2*E10, and 5678ABC.
+	 *
+	 * @return the current regex with a number matching pattern added to it
+	 */
+	public default REGEX numberLike() {
+		return extend(
+				Regex.startGroup()
+						.anyOf("-+").onceOrNotAtAll()
+						.digit().atLeastOnce()
+						.add(startingAnywhere()
+								.dot().once()
+								.digit().oneOrMore()
+						).onceOrNotAtAll()
+						.closeGroup()
+		);
+	}
 
-	THIS anyOf(String literals);
+	/**
+	 * Adds a standard pattern that will match any valid number to the pattern as
+	 * a grouped element.
+	 *
+	 * <p>
+	 * A valid number is any sequence of digits not starting with zero, optionally
+	 * preceded with a plus or minus, and optionally followed by a decimal point
+	 * and a sequence of digits, that is clearly separated from other characters.
+	 *
+	 * <p>
+	 * Examples of a valid number would be +2.345, 2E10, -2.89E-7.98, or 1.37e+15.
+	 *
+	 * <p>
+	 * Invalid numbers include 02.345, A4, _234, 2*E10, and 5678ABC.
+	 *
+	 * @return the current regex with a number matching pattern added to it
+	 */
+	public default REGEX numberIncludingScientificNotation() {
+		return extend(
+				Regex.startGroup()
+						.anyOf("-+").onceOrNotAtAll()
+						.wordBoundary()
+						.anyBetween('1', '9').atLeastOnce()
+						.digit().zeroOrMore()
+						.add(startingAnywhere()
+								.dot().once()
+								.digit().oneOrMore()
+						).onceOrNotAtAll()
+						.add(startingAnywhere()
+								.literalCaseInsensitive('E').once()
+								.anyOf("-+").onceOrNotAtAll()
+								.anyBetween('1', '9').atLeastOnce()
+								.digit().zeroOrMore()
+								.add(startingAnywhere()
+										.dot().once()
+										.digit().oneOrMore()
+								).onceOrNotAtAll()
+						).onceOrNotAtAll()
+						.notFollowedBy(Regex.startingAnywhere().nonWhitespace())
+						.closeGroup()
+		);
+	}
 
-	THIS asterisk();
+	REGEX add(HasRegexFunctions<?> second);
 
-	THIS atLeastOnce();
+	REGEX addGroup(HasRegexFunctions<?> second);
 
-	THIS atLeastThisManyTimes(int x);
+	REGEX anyBetween(Character lowest, Character highest);
 
-	THIS atLeastXAndNoMoreThanYTimes(int x, int y);
+	REGEX anyCharacter();
 
-	THIS backslash();
+	REGEX anyOf(String literals);
 
-	THIS bell();
+	REGEX asterisk();
 
-	THIS bracket();
+	REGEX atLeastOnce();
 
-	THIS capture(Regex regexp);
+	REGEX atLeastThisManyTimes(int x);
 
-	THIS carat();
+	REGEX atLeastXAndNoMoreThanYTimes(int x, int y);
 
-	THIS carriageReturn();
+	REGEX backslash();
 
-	THIS controlCharacter(String x);
+	REGEX bell();
 
-	THIS digit();
+	REGEX bracket();
 
-	THIS digits();
+	REGEX capture(Regex regexp);
 
-	THIS dollarSign();
+	REGEX carat();
 
-	THIS dot();
+	REGEX carriageReturn();
 
-	THIS endOfTheString();
+	REGEX controlCharacter(String x);
 
-	THIS escapeCharacter();
+	REGEX digit();
 
-	THIS extend(Regex second);
+	REGEX digits();
 
-	THIS formfeed();
+	REGEX dollarSign();
 
-	THIS gapBetweenWords();
+	REGEX dot();
 
-	THIS groupEverythingBeforeThis();
+	REGEX endOfTheString();
 
-	THIS integer();
+	REGEX escapeCharacter();
 
-	THIS literal(String literals);
+	REGEX extend(HasRegexFunctions<?> second);
 
-	THIS literal(Character character);
+	REGEX formfeed();
 
-	THIS literalCaseInsensitive(String literals);
+	REGEX gapBetweenWords();
 
-	default THIS literalCaseInsensitive(Character literal) {
+	REGEX groupEverythingBeforeThis();
+
+	REGEX literal(String literals);
+
+	REGEX literal(Character character);
+
+	REGEX literalCaseInsensitive(String literals);
+
+	default REGEX literalCaseInsensitive(Character literal) {
 		return literalCaseInsensitive("" + literal);
 	}
 
-	THIS negativeInteger();
+	REGEX negativeInteger();
 
-	THIS newline();
+	REGEX newline();
 
-	THIS nonWhitespace();
+	REGEX nonWhitespace();
 
-	THIS nonWordBoundary();
+	REGEX nonWordBoundary();
 
-	THIS nonWordCharacter();
+	REGEX nonWordCharacter();
 
-	THIS nondigit();
+	REGEX nondigit();
 
-	THIS nondigits();
+	REGEX nondigits();
 
-	THIS noneOf(String literals);
+	REGEX noneOf(String literals);
 
-	THIS notFollowedBy(String literalValue);
+	REGEX notFollowedBy(String literalValue);
 
-	THIS notFollowedBy(Regex literalValue);
+	REGEX notFollowedBy(Regex literalValue);
 
-	THIS notPrecededBy(String literalValue);
+	REGEX notPrecededBy(String literalValue);
 
-	THIS notPrecededBy(Regex literalValue);
+	REGEX notPrecededBy(Regex literalValue);
 
-	THIS nothingBetween(Character lowest, Character highest);
+	REGEX nothingBetween(Character lowest, Character highest);
 
-	THIS number();
+	REGEX once();
 
-	THIS numberLike();
+	REGEX onceOrNotAtAll();
 
-	THIS once();
+	REGEX oneOrMore();
 
-	THIS onceOrNotAtAll();
+	/**
+	 * Starts making a character range, use {@link RangeBuilder#closeRange() } to
+	 * return to the regex.
+	 *
+	 * <p>
+	 * This provides more options than the {@link #anyBetween(java.lang.Character, java.lang.Character)
+	 * } and {@link #anyOf(java.lang.String) } methods for creating ranges.
+	 *
+	 * @param lowest
+	 * @param highest
+	 * @return the start of a range.
+	 */
+	RangeBuilder<REGEX> openRange(char lowest, char highest);
 
-	THIS oneOrMore();
+	/**
+	 * Starts making a character range, use {@link RangeBuilder#closeRange() } to
+	 * return to the regex.
+	 *
+	 * <p>
+	 * This provides more options than the {@link #anyBetween(java.lang.Character, java.lang.Character)
+	 * } and {@link #anyOf(java.lang.String) } methods for creating ranges.
+	 *
+	 * @param literals
+	 * @return the start of a range.
+	 */
+	RangeBuilder<REGEX> openRange(String literals);
 
-	THIS optionalMany();
-	
-	THIS pipe();
+	REGEX optionalMany();
 
-	THIS plus();
+	REGEX pipe();
 
-	THIS positiveInteger();
+	REGEX plus();
 
-	THIS questionMark();
+	REGEX positiveInteger();
 
-	THIS space();
+	REGEX questionMark();
 
-	THIS squareBracket();
+	REGEX space();
 
-	THIS star();
+	REGEX squareBracket();
 
-	THIS tab();
+	REGEX star();
 
-	THIS theBeginningOfTheInput();
+	REGEX tab();
 
-	THIS theEndOfTheInput();
+	REGEX theBeginningOfTheInput();
 
-	THIS theEndOfTheInputButForTheFinalTerminator();
+	REGEX theEndOfTheInput();
 
-	THIS theEndOfThePreviousMatch();
+	REGEX theEndOfTheInputButForTheFinalTerminator();
 
-	THIS thisManyTimes(int x);
+	REGEX theEndOfThePreviousMatch();
 
-	THIS unescaped(String unescapedSequence);
+	REGEX thisManyTimes(int x);
 
-	THIS whitespace();
+	REGEX unescaped(String unescapedSequence);
 
-	THIS word();
+	REGEX whitespace();
 
-	THIS wordBoundary();
+	REGEX word();
 
-	THIS wordCharacter();
+	REGEX wordBoundary();
 
-	THIS zeroOrMore();
+	REGEX wordCharacter();
+
+	REGEX zeroOrMore();
 
 	/**
 	 * Alters the previous element in the regexp so that it only matches if the
@@ -187,7 +345,7 @@ public interface HasRegexFunctions<THIS extends HasRegexFunctions<THIS>> {
 	 *
 	 * @return a new regexp
 	 */
-	public default THIS zeroOrOnce() {
+	public default REGEX zeroOrOnce() {
 		return onceOrNotAtAll();
 	}
 

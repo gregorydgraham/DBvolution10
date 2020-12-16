@@ -232,6 +232,47 @@ public class RegexTest {
 	}
 
 	@Test
+	public void testNumberIncludingScientificNotationElement() {
+		// -2 days 00:00:00
+		// 1 days 00:00:5.5
+		// 0 days 00:00:-5.5
+		//
+		// ([-+]?\b[1-9]+\d*(\.{1}\d+)?){1}
+		Regex pattern
+				= Regex.startingAnywhere()
+						.numberIncludingScientificNotation().once();
+
+//		System.out.println("REGEX: " + pattern.getRegexp());
+		Assert.assertThat(pattern.matchesWithinString("before -1 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 2 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -234 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before +4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 4.5 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4.5 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -4.05 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 02 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before -0234 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before 004 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before _4 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before A4 after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before A4after"), is(false));
+		Assert.assertThat(pattern.matchesWithinString("before 2*E10"), is(false));
+		//2E10, -2.89E-7.98, or 1.37e+15
+		
+		Assert.assertThat(pattern.matchesWithinString("before 2E10 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -2.89E-7.98 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 1.37e+15 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 2E10"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before -2.89E-7.98"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("before 1.37e+15"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("2E10 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("-2.89E-7.98 after"), is(true));
+		Assert.assertThat(pattern.matchesWithinString("1.37e+15 after"), is(true));
+
+	}
+
+	@Test
 	public void testNumberLike() {
 		// -2 days 00:00:00
 		// 1 days 00:00:5.5

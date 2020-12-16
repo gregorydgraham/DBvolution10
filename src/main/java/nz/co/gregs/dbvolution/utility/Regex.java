@@ -30,7 +30,6 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -85,7 +84,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	 * the supplied expression added together
 	 */
 	@Override
-	public Regex add(Regex second) {
+	public Regex add(HasRegexFunctions<?> second) {
 		return new RegexpCombination(this, second.groupEverythingBeforeThis());
 	}
 
@@ -113,7 +112,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	 * the supplied expression added together
 	 */
 	@Override
-	public Regex extend(Regex second) {
+	public Regex extend(HasRegexFunctions<?> second) {
 		return new RegexpCombination(this, second);
 	}
 
@@ -705,98 +704,6 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	}
 
 	/**
-	 * Adds a check for a positive or negative integer to the regular expression
-	 * without grouping.
-	 *
-	 * <p>
-	 * Will capture the plus or minus so watch out for that in your calculator
-	 * application.
-	 *
-	 * @return a new regexp
-	 */
-	@Override
-	public Regex integer() {
-		return extend(Regex
-				.startGroup().literal("-")
-				.or().literal("+")
-				.closeGroup().onceOrNotAtAll()
-				.anyBetween('1', '9').once().digit().zeroOrMore()
-		);
-	}
-
-	/**
-	 * Adds a standard pattern that will match any valid number to the pattern as
-	 * a grouped element.
-	 *
-	 * <p>
-	 * A valid number is any sequence of digits not starting with zero, optionally
-	 * preceded with a plus or minus, and optionally followed by a decimal point
-	 * and a sequence of digits, that is clearly separated from other characters.
-	 *
-	 * <p>
-	 * An example of a valid number would be +2.345.
-	 *
-	 * <p>
-	 * Invalid numbers include 02.345, A4, _234, 2*E10, and 5678ABC.
-	 *
-	 * @return the current regex with a number matching pattern added to it
-	 */
-	@Override
-	public Regex number() {
-		return extend(
-				Regex.startGroup()
-						.anyOf("-+").onceOrNotAtAll()
-						.wordBoundary()
-						.anyBetween('1', '9').atLeastOnce()
-						.digit().zeroOrMore()
-						.add(startingAnywhere()
-								.dot().once()
-								.digit().oneOrMore()
-						).onceOrNotAtAll()
-						.notFollowedBy(Regex.startingAnywhere().nonWhitespace())
-						.closeGroup()
-		);
-	}
-
-	/**
-	 * Adds a standard pattern that will match any number-like sequence to the
-	 * pattern as a grouped element.
-	 *
-	 * <p>
-	 * A number-like sequence is any sequence of digits, optionally preceded with
-	 * a plus or minus, and optionally followed by a decimal point and a sequence
-	 * of digits.
-	 *
-	 * <p>
-	 * It differs from a number in that zero can be the first digit and the
-	 * sequence doesn't need to be clearly separated from the surrounding
-	 * characters.
-	 *
-	 * <p>
-	 * It differs from digits in that leading +/- and a middle decimal point are
-	 * included.
-	 *
-	 * <p>
-	 * A valid match would occur for the following +2.345, 02.345, A4, _234,
-	 * _234.5, 2*E10, and 5678ABC.
-	 *
-	 * @return the current regex with a number matching pattern added to it
-	 */
-	@Override
-	public Regex numberLike() {
-		return extend(
-				Regex.startGroup()
-						.anyOf("-+").onceOrNotAtAll()
-						.digit().atLeastOnce()
-						.add(startingAnywhere()
-								.dot().once()
-								.digit().oneOrMore()
-						).onceOrNotAtAll()
-						.closeGroup()
-		);
-	}
-
-	/**
 	 * Adds a check for a simple range to the regular expression without grouping.
 	 *
 	 * <p>
@@ -884,7 +791,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	 * @return a new regexp
 	 */
 	@Override
-	public Regex addGroup(Regex regex) {
+	public Regex addGroup(HasRegexFunctions<?> regex) {
 		return this.extend(regex.groupEverythingBeforeThis());
 	}
 
@@ -988,7 +895,6 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 				.extend(new UnescapedSequence(")"));
 	}
 
-	//(?!@)
 	/**
 	 * Starts making a character range, use {@link RangeBuilder#closeRange() } to
 	 * return to the regex.
@@ -1001,12 +907,12 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	 * @param highest
 	 * @return the start of a range.
 	 */
-	public RangeBuilder openRange(char lowest, char highest) {
-		return new RangeBuilder(this, lowest, highest);
+	public RangeBuilder<Regex> openRange(char lowest, char highest) {
+		return new RangeBuilder<>(this, lowest, highest);
 	}
 
-	public RangeBuilder openRange(String literals) {
-		return new RangeBuilder(this, literals);
+	public RangeBuilder<Regex> openRange(String literals) {
+		return new RangeBuilder<>(this, literals);
 	}
 
 	/**
@@ -1123,10 +1029,10 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 
 	protected static class RegexpCombination extends Regex {
 
-		private final Regex first;
-		private final Regex second;
+		private final HasRegexFunctions<?> first;
+		private final HasRegexFunctions<?> second;
 
-		protected RegexpCombination(Regex first, Regex second) {
+		protected RegexpCombination(HasRegexFunctions<?> first, HasRegexFunctions<?> second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -1172,9 +1078,9 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 		}
 	}
 
-	public static class RangeBuilder {
+	public static class RangeBuilder<REGEX extends HasRegexFunctions<REGEX>> {
 
-		private final Regex origin;
+		private final REGEX origin;
 		private String literals;
 
 		private boolean negated = false;
@@ -1182,26 +1088,26 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 		private boolean includeOpenBracket = false;
 		private boolean includeCloseBracket = false;
 
-		public RangeBuilder(Regex original) {
+		public RangeBuilder(REGEX original) {
 			this.origin = original;
 		}
 
-		public RangeBuilder(Regex original, Character lowest, Character highest) {
+		public RangeBuilder(REGEX original, Character lowest, Character highest) {
 			this(original);
 			addRange(lowest, highest);
 		}
 
-		public RangeBuilder(Regex original, String literals) {
+		public RangeBuilder(REGEX original, String literals) {
 			this(original);
 			addLiterals(literals);
 		}
 
-		protected final RangeBuilder addRange(Character lowest, Character highest) {
+		protected final RangeBuilder<REGEX> addRange(Character lowest, Character highest) {
 			this.literals = lowest + "-" + highest;
 			return this;
 		}
 
-		protected final RangeBuilder addLiterals(String literals1) {
+		protected final RangeBuilder<REGEX> addLiterals(String literals1) {
 			this.literals = literals1.replaceAll("-", "").replaceAll("]", "");
 			this.includeMinus = literals1.contains("-");
 			this.includeOpenBracket = literals1.contains("[");
@@ -1209,39 +1115,39 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 			return this;
 		}
 
-		public RangeBuilder not() {
+		public RangeBuilder<REGEX> not() {
 			this.negated = true;
 			return this;
 		}
 
-		public RangeBuilder negated() {
+		public RangeBuilder<REGEX> negated() {
 			return not();
 		}
 
-		public RangeBuilder includeMinus() {
+		public RangeBuilder<REGEX> includeMinus() {
 			includeMinus = true;
 			return this;
 		}
 
-		public RangeBuilder and(Character lowest, Character highest) {
+		public RangeBuilder<REGEX> and(Character lowest, Character highest) {
 			return addRange(lowest, highest);
 		}
 
-		public RangeBuilder and(String literals) {
+		public RangeBuilder<REGEX> and(String literals) {
 			return addLiterals(literals);
 		}
 
-		public RangeBuilder excluding(Character lowest, Character highest) {
-			excluding(new RangeBuilder(Regex.startingAnywhere(), lowest, highest));
+		public RangeBuilder<REGEX> excluding(Character lowest, Character highest) {
+			excluding(new RangeBuilder<>(Regex.startingAnywhere(), lowest, highest));
 			return this;
 		}
 
-		public RangeBuilder excluding(String literals) {
-			excluding(new RangeBuilder(Regex.startingAnywhere(), literals));
+		public RangeBuilder<REGEX> excluding(String literals) {
+			excluding(new RangeBuilder<>(Regex.startingAnywhere(), literals));
 			return this;
 		}
 
-		public RangeBuilder excluding(RangeBuilder newRange) {
+		public RangeBuilder<REGEX> excluding(RangeBuilder<?> newRange) {
 			this.literals = this.literals + "-" + newRange.encloseInBrackets();
 			return this;
 		}
@@ -1256,7 +1162,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 					+ "]";
 		}
 
-		public Regex closeRange() {
+		public REGEX closeRange() {
 			return origin.extend(new UnescapedSequence(encloseInBrackets()));
 		}
 	}
