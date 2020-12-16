@@ -30,7 +30,11 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,7 +52,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	private Regex() {
 	}
 
-	public abstract String getRegexp();
+	public abstract String getRegex();
 
 	/**
 	 * Create a new empty regular expression.
@@ -537,7 +541,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	}
 
 	/**
-	 * Adds a check for one or more word characters(\w) to the regular expression
+	 * Adds a check for one or more word characters(\w+) to the regular expression
 	 * without grouping.
 	 *
 	 * <p>
@@ -665,7 +669,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	 */
 	@Override
 	public Regex capture(Regex regexp) {
-		return new UnescapedSequence("(" + regexp.getRegexp() + ")");
+		return new UnescapedSequence("(" + regexp.getRegex() + ")");
 	}
 
 	/**
@@ -796,31 +800,119 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	}
 
 	protected final Pattern getCompiledVersion() {
+		return getPattern();
+	}
+
+	protected final Pattern getPattern() {
 		if (compiledVersion == null) {
-			final String regexp = this.getRegexp();
+			final String regexp = this.getRegex();
 			compiledVersion = Pattern.compile(regexp);
 		}
 		return compiledVersion;
 	}
 
 	public boolean matchesEntireString(String string) {
-		return getCompiledVersion().matcher(string).matches();
+		return getMatcher(string).matches();
 	}
 
 	public boolean matchesWithinString(String string) {
-		return getCompiledVersion().matcher(string).find();
+		return getMatcher(string).find();
 	}
 
-	public Stream<MatchResult> getResultsStream(String string) {
-		return getCompiledVersion().matcher(string).results();
+	@Override
+	public RegexGroup.NamedCapture<Regex> namedCapture(String name) {
+		return new RegexGroup.NamedCapture<>(this, name);
 	}
 
+	public Stream<MatchResult> getMatchResultsStream(String string) {
+		return getMatcher(string).results();
+	}
+
+	protected Matcher getMatcher(String string) {
+		return getCompiledVersion().matcher(string);
+	}
+
+	/**
+	 *
+	 * Convenient access to Matcher.group().
+	 *
+	 * Returns the input subsequence matched by the previous match.
+	 *
+	 * <p>
+	 * For a matcher <i>m</i> with input sequence <i>s</i>, the expressions
+	 * <i>m.</i>{@code group()} and
+	 * <i>s.</i>{@code substring(}<i>m.</i>{@code start(),}&nbsp;<i>m.</i>{@code end())}
+	 * are equivalent.  </p>
+	 *
+	 * <p>
+	 * Note that some patterns, for example {@code a*}, match the empty string.
+	 * This method will return the empty string when the pattern successfully
+	 * matches the empty string in the input.  </p>
+	 *
+	 * @return The (possibly empty) subsequence matched by the previous match, in
+	 * string form
+	 *
+	 * @throws IllegalStateException If no match has yet been attempted, or if the
+	 * previous match operation failed
+	 */
 	public String getFirstMatch(String string) {
-		return getCompiledVersion().matcher(string).group();
+		return getMatcher(string).group();
 	}
 
+	/**
+	 * Convenient access to Matcher.toMatchResult.
+	 * <p>
+	 * Returns the match state of this matcher as a {@link MatchResult}. The
+	 * result is unaffected by subsequent operations performed upon this matcher.
+	 *
+	 * @return a {@code MatchResult} with the state of this matcher
+	 * @since 1.5
+	 */
 	public MatchResult getMatchResult(String string) {
-		return getCompiledVersion().matcher(string).toMatchResult();
+		return getMatcher(string).toMatchResult();
+	}
+
+	public Optional<String> getNamedMatch(String string, String name) {
+		final String found = getMatcher(string).group(name);
+		if (found == null) {
+			return Optional.empty();
+		} else {
+			return Optional.of(found);
+		}
+	}
+
+	public HashMap<String, String> getAllNamedGroups(String string) {
+		HashMap<String, String> resultMap = new HashMap<String, String>(0);
+		try {
+			Matcher matcher = getMatcher(string);
+			if (matcher.find()) {
+				Class<? extends Pattern> patternClass = getPattern().getClass();
+				Method method = patternClass.getDeclaredMethod("namedGroups");
+				method.setAccessible(true);
+				Object invoke = method.invoke(getPattern());
+				@SuppressWarnings("unchecked")
+				Map<String, Integer> map = (Map<String, Integer>) invoke;
+				if (map.size() > 0) {
+					for (String name : map.keySet()) {
+						final String group = matcher.group(name);
+						if (group != null) {
+							resultMap.put(name, group);
+						}
+					}
+				}
+			}
+		} catch (NoSuchMethodException ex) {
+			Logger.getLogger(Regex.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SecurityException ex) {
+			Logger.getLogger(Regex.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IllegalAccessException ex) {
+			Logger.getLogger(Regex.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IllegalArgumentException ex) {
+			Logger.getLogger(Regex.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InvocationTargetException ex) {
+			Logger.getLogger(Regex.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return resultMap;
 	}
 
 	/**
@@ -907,10 +999,12 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	 * @param highest
 	 * @return the start of a range.
 	 */
+	@Override
 	public RangeBuilder<Regex> openRange(char lowest, char highest) {
 		return new RangeBuilder<>(this, lowest, highest);
 	}
 
+	@Override
 	public RangeBuilder<Regex> openRange(String literals) {
 		return new RangeBuilder<>(this, literals);
 	}
@@ -928,30 +1022,29 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 	 *
 	 * @return a new regular expression
 	 */
-	public static RegexGroup.Or startGroup() {
-		return new RegexGroup.Or(startingAnywhere());
-	}
-
-	/**
-	 * Extends this regular expression with an OR grouping.
-	 *
-	 * <p>
-	 * for instance, use this to generate "(FRED|EMILY|GRETA|DONALD)".
-	 *
-	 * <p>
-	 * {@code Regex regex =  Regex.startAnywhere().literal("Project ").startGroup().literal("A").or().literal("B").closeGroup();
-	 * } produces "Project (A|B)".
-	 *
-	 * @return a new regular expression
-	 */
-	public RegexGroup.Or openGroup() {
-		return new RegexGroup.Or(this);
+	public static RegexGroup.Or<Regex> startGroup() {
+		return new RegexGroup.Or<>(startingAnywhere());
 	}
 
 	public List<String> getAllMatches(String string) {
-		Matcher matcher = this.getCompiledVersion().matcher(string);
+		Matcher matcher = getMatcher(string);
 		List<String> matches = matcher.results().map(m -> m.group()).collect(Collectors.toList());
 		return matches;
+	}
+
+	public List<String> getAllGroups(String string) {
+		Matcher matcher = getMatcher(string);
+		List<String> groups = new ArrayList<>(0);
+		while (matcher.find()) {
+			int count = matcher.groupCount();
+			for (int i = 0; i < count; i++) {
+				final String foundGroup = matcher.group(i);
+				if (foundGroup != null) {
+					groups.add(foundGroup);
+				}
+			}
+		}
+		return groups;
 	}
 
 	@Override
@@ -964,8 +1057,8 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 				);
 	}
 
-	public RegexGroup.CaseInsensitive caseInsensitiveGroup() {
-		return new RegexGroup.CaseInsensitive(this);
+	public RegexGroup.CaseInsensitive<Regex> caseInsensitiveGroup() {
+		return new RegexGroup.CaseInsensitive<>(this);
 	}
 
 	public static class SingleCharacter extends Regex {
@@ -977,7 +1070,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 		}
 
 		@Override
-		public String getRegexp() {
+		public String getRegex() {
 			return "" + literal;
 		}
 	}
@@ -1004,7 +1097,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 		}
 
 		@Override
-		public String getRegexp() {
+		public String getRegex() {
 			return "" + literal;
 		}
 	}
@@ -1022,7 +1115,7 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 		}
 
 		@Override
-		public String getRegexp() {
+		public String getRegex() {
 			return "" + literal;
 		}
 	}
@@ -1038,32 +1131,12 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 		}
 
 		@Override
-		public String getRegexp() {
-			return first.getRegexp() + second.getRegexp();
+		public String getRegex() {
+			return first.getRegex() + second.getRegex();
 		}
 	}
 
-//	private static class Or extends Regex {
-//
-//		private final SeparatedString sepString;
-//
-//		public Or(Regex first, Regex... regexps) {
-//			sepString = SeparatedString
-//					.forSeparator("|")
-//					.withThisBeforeEachTerm("(")
-//					.withThisAfterEachTerm(")")
-//					.add(first.getRegexp())
-//					.addAll(
-//							(t) -> {
-//								return t.getRegexp();
-//							}, regexps);
-//		}
-//
-//		@Override
-//		public String getRegexp() {
-//			return sepString.toString();
-//		}
-//	}
+	@Deprecated
 	public static class Group extends Regex {
 
 		private final Regex regexp;
@@ -1073,8 +1146,8 @@ public abstract class Regex implements HasRegexFunctions<Regex> {
 		}
 
 		@Override
-		public String getRegexp() {
-			return "(" + regexp.getRegexp() + ")";
+		public String getRegex() {
+			return "(" + regexp.getRegex() + ")";
 		}
 	}
 
