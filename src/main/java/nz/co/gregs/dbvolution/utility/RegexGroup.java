@@ -36,13 +36,15 @@ import java.util.List;
 /**
  *
  * @author gregorygraham
+ * @param <THIS>
+ * @param <REGEX>
  */
-public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRegexFunctions<THIS> {
+public abstract class RegexGroup<THIS extends RegexGroup<THIS, REGEX>, REGEX extends HasRegexFunctions<REGEX>> implements HasRegexFunctions<THIS> {
 
-	private final Regex origin;
+	private final REGEX origin;
 	private Regex current = Regex.startingAnywhere();
 
-	public RegexGroup(Regex original) {
+	public RegexGroup(REGEX original) {
 		this.origin = original;
 	}
 
@@ -56,12 +58,12 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 	/**
 	 * @return the origin
 	 */
-	public Regex getOrigin() {
+	public REGEX getOrigin() {
 		return origin;
 	}
 
-	public Regex closeGroup() {
-		return getOrigin().unescaped(this.getRegexp());
+	public REGEX closeGroup() {
+		return getOrigin().unescaped(this.getRegex());
 	}
 
 	@Override
@@ -541,55 +543,84 @@ public abstract class RegexGroup<THIS extends RegexGroup<THIS>> implements HasRe
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public Regex.RangeBuilder<THIS> openRange(char lowest, char highest) {
 		return new Regex.RangeBuilder<THIS>((THIS) this, lowest, highest);
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public Regex.RangeBuilder<THIS> openRange(String literals) {
 		return new Regex.RangeBuilder<THIS>((THIS) this, literals);
 	}
 
-	public static class Or extends RegexGroup<Or> {
+	@Override
+	@SuppressWarnings("unchecked")
+	public NamedCapture<REGEX> namedCapture(String name) {
+		return new NamedCapture<>((REGEX)this, name);
+	}
+
+	public static class Or<REGEX extends HasRegexFunctions<REGEX>> extends RegexGroup<Or<REGEX>, REGEX> {
 
 		private final List<String> ors = new ArrayList<>(0);
 
-		protected Or(Regex original) {
+		protected Or(REGEX original) {
 			super(original);
 		}
 
-		protected Or(Regex original, List<String> previousOptions) {
+		protected Or(REGEX original, List<String> previousOptions) {
 			super(original);
 			ors.addAll(previousOptions);
 		}
 
-		public Or or() {
-			ors.add(getCurrent().getRegexp());
-			return new Or(getOrigin(), ors);
+		public Or<REGEX> or() {
+			ors.add(getCurrent().getRegex());
+			return new Or<>(getOrigin(), ors);
 		}
 
 		@Override
-		public String getRegexp() {
-			final String regexp = getCurrent().getRegexp();
+		public String getRegex() {
+			final String regexp = getCurrent().getRegex();
 			ors.add(regexp);
 			final SeparatedString groupedString = SeparatedString.of(ors).separatedBy("|").withPrefix("(").withSuffix(")");
 			return groupedString.toString();
 		}
 	}
 
-	public static class CaseInsensitive extends RegexGroup<CaseInsensitive> {
+	public static class NamedCapture<REGEX extends HasRegexFunctions<REGEX>> extends RegexGroup<NamedCapture<REGEX>, REGEX> {
 
-		public CaseInsensitive(Regex original) {
+		private final List<String> ors = new ArrayList<>(0);
+		private final String name;
+
+		protected NamedCapture(REGEX original, String name) {
+			super(original);
+			this.name = name;
+		}
+
+		@Override
+		public String getRegex() {
+			final String regexp = getCurrent().getRegex();
+			return "(?<" + name + ">" + regexp + ")";
+		}
+
+		public REGEX endCapture() {
+			return closeGroup();
+		}
+	}
+
+	public static class CaseInsensitive<REGEX extends HasRegexFunctions<REGEX>> extends RegexGroup<CaseInsensitive<REGEX>,REGEX> {
+
+		public CaseInsensitive(REGEX original) {
 			super(original);
 		}
 
 		@Override
-		public String getRegexp() {
-			final String regexp = getCurrent().getRegexp();
+		public String getRegex() {
+			final String regexp = getCurrent().getRegex();
 			return "(?i)" + regexp + "(?-i)";
 		}
 
-		public Regex caseInsensitiveEnd() {
+		public REGEX caseInsensitiveEnd() {
 			return closeGroup();
 		}
 	}
