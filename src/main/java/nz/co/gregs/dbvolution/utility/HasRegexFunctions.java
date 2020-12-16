@@ -40,7 +40,7 @@ import static nz.co.gregs.dbvolution.utility.Regex.startingAnywhere;
  */
 public interface HasRegexFunctions<REGEX extends HasRegexFunctions<REGEX>> {
 
-	public String getRegexp();
+	public String getRegex();
 
 	/**
 	 * Adds a check for a positive or negative integer to the regular expression
@@ -214,6 +214,10 @@ public interface HasRegexFunctions<REGEX extends HasRegexFunctions<REGEX>> {
 
 	REGEX dot();
 
+	default REGEX endOfInput(){
+		return endOfTheString();
+	}
+
 	REGEX endOfTheString();
 
 	REGEX escapeCharacter();
@@ -239,6 +243,8 @@ public interface HasRegexFunctions<REGEX extends HasRegexFunctions<REGEX>> {
 	REGEX negativeInteger();
 
 	REGEX newline();
+	
+	RegexGroup.NamedCapture<?> namedCapture(String name);
 
 	REGEX nonWhitespace();
 
@@ -302,6 +308,23 @@ public interface HasRegexFunctions<REGEX extends HasRegexFunctions<REGEX>> {
 	REGEX plus();
 
 	REGEX positiveInteger();
+
+	/**
+	 * Extends this regular expression with an OR grouping.
+	 *
+	 * <p>
+	 * for instance, use this to generate "(FRED|EMILY|GRETA|DONALD)".
+	 *
+	 * <p>
+	 * {@code Regex regex =  Regex.startAnywhere().literal("Project ").startGroup().literal("A").or().literal("B").closeGroup();
+	 * } produces "Project (A|B)".
+	 *
+	 * @return a new regular expression
+	 */
+	@SuppressWarnings("unchecked")
+	public default RegexGroup.Or<REGEX> openGroup() {
+		return new RegexGroup.Or<>((REGEX)this);
+	}
 
 	REGEX questionMark();
 
