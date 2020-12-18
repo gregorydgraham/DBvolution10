@@ -69,6 +69,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.RegexBuilder;
 import nz.co.gregs.separatedstring.SeparatedString;
@@ -593,8 +594,8 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 *
 	 *
-	 * @return TRUE if the database needs indexes for the groupEverythingBeforeThis by columns, FALSE
- otherwise.
+	 * @return TRUE if the database needs indexes for the
+	 * groupEverythingBeforeThis by columns, FALSE otherwise.
 	 */
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
@@ -6932,30 +6933,31 @@ public abstract class DBDefinition implements Serializable {
 		Long minutes = 0l;
 		Long seconds = 0L;
 		Long nanos = 0L;
-		System.out.println("INTERVALSTR: <" + intervalStr + ">");
+//		System.out.println("INTERVALSTR: <" + intervalStr + ">");
 		int durationPartsOffset = getParseDurationPartOffset();
 		String[] numbers = intervalStr.split("[^-0-9]+");
-		if (numbers.length == durationPartsOffset + 1 || numbers.length == durationPartsOffset + 2) {
+		List<Match> singleUnitValues = SINGLE_UNIT_INTERVAL_STRING_REGEX.getAllMatches(intervalStr);
+		if (singleUnitValues.size() > 0) {
 			// only one time type specified i.e. days, seconds, months, ...
 			// 2 days, 5.03 seconds, -2 months,...
-			String number = numbers[durationPartsOffset];
+			String number = singleUnitValues.get(0).getNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_VALUE);
 			negated = number.startsWith("-");
 			Long numberValue = Math.abs(Double.valueOf(number).longValue());
-			if (intervalStr.endsWith("days")) {
+			String unit = singleUnitValues.get(0).getNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_UNIT);
+			if (unit.toLowerCase().contains("day")) {
 				days = numberValue;
-			} else if (intervalStr.endsWith("hours")) {
+			} else if (unit.toLowerCase().contains("hour")) {
 				hours = numberValue;
-			} else if (intervalStr.endsWith("minutes")) {
+			} else if (unit.toLowerCase().contains("minute")) {
 				minutes = numberValue;
 			} else {
 				//seconds only
-				seconds = numberValue;
+				Double realSeconds = Math.abs(Double.valueOf(number));
+				seconds = realSeconds.longValue();
 				// check for nanos
-				if (numbers.length == durationPartsOffset + 2) {
-					number = numbers[durationPartsOffset + 1];
-					negated = negated || number.startsWith("-");
-					final String subsecondStr = number;
-					nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+				Double realNanos = realSeconds - seconds;
+				if (realNanos != 0.0d) {
+					nanos = Math.abs(Math.round(realNanos * (Math.pow(10, 9))));
 				}
 			}
 		} else if (numbers.length == durationPartsOffset + 3) {
@@ -6972,7 +6974,6 @@ public abstract class DBDefinition implements Serializable {
 		} else if (numbers.length == durationPartsOffset + 4) {
 			// either x days hours:minutes:seconds
 			// or hours:minutes:seconds:nanos
-//			if (DURATION_PATTERN_DAYHOURSMINUTESSECONDS.matcher(intervalStr).find()) {
 			if (DURATION_PATTERN_DAYHOURSMINUTESSECONDS.matchesWithinString(intervalStr)) {
 				// x days hours:minutes:seconds
 				String number = numbers[durationPartsOffset];
@@ -7035,8 +7036,41 @@ public abstract class DBDefinition implements Serializable {
 		}
 		return duration;
 	}
-//	protected static final String DURATION_REGEX_DAYHOURSMINUTESSECONDS = "[-0-9]+[^-0-9]+[-0-9]+:[-0-9]+:[-0-9]+";
-//	Pattern DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Pattern.compile(DURATION_REGEX_DAYHOURSMINUTESSECONDS);
+	protected static final String SINGLE_UNIT_INTERVAL_STRING_REGEX_UNIT = "unit";
+	protected static final String SINGLE_UNIT_INTERVAL_STRING_REGEX_VALUE = "value";
+	final Regex daysRegex
+			= RegexBuilder.startingAnywhere()
+					.beginCaseInsensitiveSection()
+					.literal("day").once().literal('s').onceOrNotAtAll()
+					.endCaseInsensitiveSection();
+
+	final Regex hoursRegex
+			= RegexBuilder.startingAnywhere()
+					.beginCaseInsensitiveSection()
+					.literal("hour").once().literal('s').onceOrNotAtAll()
+					.endCaseInsensitiveSection();
+
+	final Regex minutesRegex
+			= RegexBuilder.startingAnywhere()
+					.beginCaseInsensitiveSection()
+					.literal("minute").once().literal('s').onceOrNotAtAll()
+					.endCaseInsensitiveSection();
+
+	Regex SINGLE_UNIT_INTERVAL_STRING_REGEX
+			= RegexBuilder.startingAnywhere()
+					.literalCaseInsensitive("interval").onceOrNotAtAll()
+					.space().onceOrNotAtAll()
+					.beginNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_VALUE)
+					.numberIncludingScientificNotation().once()
+					.endNamedCapture()
+					.space().once()
+					.beginNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_UNIT)
+					.beginCaseInsensitiveSection()
+					.anyOf("DAY", "HOUR", "MINUTE", "SECOND").once().literal("S").onceOrNotAtAll()
+					.endCaseInsensitiveSection()
+					.endNamedCapture()
+					.endOfTheString();
+
 	// -2 days 00:00:00
 	// 1 days 00:00:5.5
 	// 0 days 00:00:-5.5
@@ -7051,8 +7085,10 @@ public abstract class DBDefinition implements Serializable {
 			.anyCharacterBetween('0', '9').atLeastOnce()
 			.literal(':').once()
 			.literal('-').onceOrNotAtAll()
-			.anyCharacterBetween('0', '9').atLeastOnce().add(RegexBuilder.startingAnywhere().dot().digits()
-	).onceOrNotAtAll();
+			.anyCharacterBetween('0', '9').atLeastOnce()
+			.add(
+					RegexBuilder.startingAnywhere().dot().digits()
+			).onceOrNotAtAll();
 
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet.");
