@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.expressions.search.SearchAcross;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.dbvolution.expressions.search.SearchString;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;

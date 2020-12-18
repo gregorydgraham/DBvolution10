@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedString;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard

@@ -65,13 +65,13 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.regex.Pattern;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.dbvolution.utility.Regex;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.RegexBuilder;
+import nz.co.gregs.separatedstring.SeparatedString;
 
 /**
  *
@@ -7040,18 +7040,18 @@ public abstract class DBDefinition implements Serializable {
 	// -2 days 00:00:00
 	// 1 days 00:00:5.5
 	// 0 days 00:00:-5.5
-	Regex DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Regex.startingAnywhere()
+	Regex DURATION_PATTERN_DAYHOURSMINUTESSECONDS = RegexBuilder.startingAnywhere()
 			.literal('-').onceOrNotAtAll()
-			.anyBetween('0', '9').atLeastOnce()
-			.openRange('0', '9').includeMinus().negated().closeRange().atLeastOnce()
+			.anyCharacterBetween('0', '9').atLeastOnce()
+			.beginRange('0', '9').includeMinus().negated().endRange().atLeastOnce()
 			.literal('-').onceOrNotAtAll()
-			.anyBetween('0', '9').atLeastOnce()
+			.anyCharacterBetween('0', '9').atLeastOnce()
 			.literal(':').once()
 			.literal('-').onceOrNotAtAll()
-			.anyBetween('0', '9').atLeastOnce()
+			.anyCharacterBetween('0', '9').atLeastOnce()
 			.literal(':').once()
 			.literal('-').onceOrNotAtAll()
-			.anyBetween('0', '9').atLeastOnce().add(Regex.startingAnywhere().dot().digits()
+			.anyCharacterBetween('0', '9').atLeastOnce().add(RegexBuilder.startingAnywhere().dot().digits()
 	).onceOrNotAtAll();
 
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {

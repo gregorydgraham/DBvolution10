@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedString;
 import org.joda.time.Period;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 

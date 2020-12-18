@@ -60,7 +60,7 @@ import nz.co.gregs.dbvolution.results.LocalDateResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedString;
 
 /**
  *

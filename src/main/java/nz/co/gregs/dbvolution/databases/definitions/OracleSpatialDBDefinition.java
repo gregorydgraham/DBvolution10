@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.internal.oracle.xe.Line2DFunctions;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedString;
 
 /**
  * A subclass of OracleDB that contains definitions of standard Spatial

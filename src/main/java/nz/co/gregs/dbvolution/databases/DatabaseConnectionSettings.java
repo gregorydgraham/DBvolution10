@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.utility.DefaultString;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedString;
 
 /**
  * A standardized collection of the database connection settings.
