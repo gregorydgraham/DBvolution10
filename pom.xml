@@ -1595,7 +1595,7 @@
 		</dependency>
 		<dependency>
 			<groupId>nz.co.gregs</groupId>
-			<artifactId>Regexi</artifactId>
+			<artifactId>regexi</artifactId>
 			<version>1.4</version>
 			<type>jar</type>
 		</dependency>
