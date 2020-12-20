@@ -253,7 +253,7 @@ public abstract class AbstractTest {
 
 	private static MSSQLServer2017ContainerDB getMSSQLServerContainerDatabase() {
 		if (MSSQLSERVER_CONTAINER_DATABASE == null) {
-			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServer2017ContainerDB.getLabelledInstance("MySQL Container DB");
+			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServer2017ContainerDB.getLabelledInstance("MSSQLServer Container DB");
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE;
 	}
