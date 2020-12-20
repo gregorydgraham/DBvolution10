@@ -65,6 +65,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -6927,23 +6928,23 @@ public abstract class DBDefinition implements Serializable {
 			return null;
 		}
 		Duration duration;
-		boolean negated;
+		boolean negated = false;
 		Long days = 0l;
 		Long hours = 0l;
 		Long minutes = 0l;
 		Long seconds = 0L;
 		Long nanos = 0L;
 //		System.out.println("INTERVALSTR: <" + intervalStr + ">");
-		int durationPartsOffset = getParseDurationPartOffset();
-		String[] numbers = intervalStr.split("[^-0-9]+");
+//		int durationPartsOffset = getParseDurationPartOffset();
+//		String[] numbers = intervalStr.split("[^-0-9]+");
 		List<Match> singleUnitValues = SINGLE_UNIT_INTERVAL_STRING_REGEX.getAllMatches(intervalStr);
 		if (singleUnitValues.size() > 0) {
 			// only one time type specified i.e. days, seconds, months, ...
 			// 2 days, 5.03 seconds, -2 months,...
-			String number = singleUnitValues.get(0).getNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_VALUE);
-			negated = number.startsWith("-");
+			String number = singleUnitValues.get(0).getNamedCapture(INTERVAL_SINGLEUNIT_VALUE);
+			negated = negated || number.startsWith("-");
 			Long numberValue = Math.abs(Double.valueOf(number).longValue());
-			String unit = singleUnitValues.get(0).getNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_UNIT);
+			String unit = singleUnitValues.get(0).getNamedCapture(INTERVAL_SINGLEUNIT_UNIT);
 			if (unit.toLowerCase().contains("day")) {
 				days = numberValue;
 			} else if (unit.toLowerCase().contains("hour")) {
@@ -6960,70 +6961,53 @@ public abstract class DBDefinition implements Serializable {
 					nanos = Math.abs(Math.round(realNanos * (Math.pow(10, 9))));
 				}
 			}
-		} else if (numbers.length == durationPartsOffset + 3) {
+		} else {
 			// hours:minutes:seconds
-			String number = numbers[durationPartsOffset];
-			negated = number.startsWith("-");
-			hours = Math.abs(Long.valueOf(number));
-			number = numbers[durationPartsOffset + 1];
-			negated = negated || number.startsWith("-");
-			minutes = Math.abs(Long.valueOf(number));
-			number = numbers[durationPartsOffset + 2];//---
-			negated = negated || number.startsWith("-");
-			seconds = Math.abs(Long.valueOf(number));
-		} else if (numbers.length == durationPartsOffset + 4) {
 			// either x days hours:minutes:seconds
 			// or hours:minutes:seconds:nanos
-			if (DURATION_PATTERN_DAYHOURSMINUTESSECONDS.matchesWithinString(intervalStr)) {
-				// x days hours:minutes:seconds
-				String number = numbers[durationPartsOffset];
-				negated = number.startsWith("-");
-				days = Math.abs(Long.valueOf(number));
-				number = numbers[durationPartsOffset + 1];
-				negated = negated || number.startsWith("-");
-				hours = Math.abs(Long.valueOf(number));
-				number = numbers[durationPartsOffset + 2];//---
-				negated = negated || number.startsWith("-");
-				minutes = Math.abs(Long.valueOf(number));
-				number = numbers[durationPartsOffset + 3];
-				negated = negated || number.startsWith("-");
-				seconds = Math.abs(Long.valueOf(number));
-			} else {
-				//hours:minutes:seconds:nanos
-				String number = numbers[durationPartsOffset];
-				negated = number.startsWith("-");
-				hours = Math.abs(Long.valueOf(number));
-				number = numbers[durationPartsOffset + 1];
-				negated = negated || number.startsWith("-");
-				minutes = Math.abs(Long.valueOf(number));
-				number = numbers[durationPartsOffset + 2];//---
-				negated = negated || number.startsWith("-");
-				seconds = Math.abs(Long.valueOf(number));
-				if (numbers.length == durationPartsOffset + 4) {
-					number = numbers[durationPartsOffset + 3];
+			//hours:minutes:seconds:nanos
+			// x days hours:minutes:seconds:nanos
+			// INTERVAL 0 0:-2:0.0 DAY TO SECOND
+			
+			var optional = INTERVAL_MULTIUNIT_REGEX.getFirstMatchFrom(intervalStr);
+			if (optional.isPresent()) {
+				Match firstMatch = optional.get();
+
+				String number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_DAYS);
+				System.out.println("NUMBER: " + number);
+				if (number != null && !number.isEmpty()) {
 					negated = negated || number.startsWith("-");
-					final String subsecondStr = number;
-					nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+					days = Math.abs(Long.valueOf(number));
 				}
-			}
-		} else {
-			String number = numbers[durationPartsOffset];
-			negated = number.startsWith("-");
-			days = Math.abs(Long.valueOf(number));
-			number = numbers[durationPartsOffset + 1];
-			negated = negated || number.startsWith("-");
-			hours = Math.abs(Long.valueOf(number));
-			number = numbers[durationPartsOffset + 2];//---
-			negated = negated || number.startsWith("-");
-			minutes = Math.abs(Long.valueOf(number));
-			number = numbers[durationPartsOffset + 3];
-			negated = negated || number.startsWith("-");
-			seconds = Math.abs(Long.valueOf(number));
-			if (numbers.length == durationPartsOffset + 5) {
-				number = numbers[durationPartsOffset + 4];
-				negated = negated || number.startsWith("-");
-				final String subsecondStr = number;
-				nanos = Math.abs(Math.round(Long.valueOf(subsecondStr) * (Math.pow(10, 9 - subsecondStr.length()))));
+				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_HOURS);
+				System.out.println("NUMBER: " + number);
+				if (number != null && !number.isEmpty()) {
+					negated = negated || number.startsWith("-");
+					hours = Math.abs(Long.valueOf(number));
+				}
+				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_MINUTES);
+				System.out.println("NUMBER: " + number);
+				System.out.println("NUMBER: " + number);
+				if (number != null && !number.isEmpty()) {
+					negated = negated || number.startsWith("-");
+					minutes = Math.abs(Long.valueOf(number));
+				}
+				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_SECONDS);
+				if (number != null && !number.isEmpty()) {
+					negated = negated || number.startsWith("-");
+					Double realSeconds = Math.abs(Double.valueOf(number));
+					seconds = realSeconds.longValue();
+					// check for nanos
+					Double realNanos = realSeconds - seconds;
+					if (realNanos != 0.0d) {
+						nanos = Math.abs(Math.round(realNanos * (Math.pow(10, 9))));
+					}
+				}
+				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_NANOS);
+				if (number != null && !number.isEmpty()) {
+					negated = negated || number.startsWith("-");
+					nanos = Math.abs(Long.valueOf(number));
+				}
 			}
 		}
 		duration = Duration.ofDays(days)
@@ -7036,8 +7020,29 @@ public abstract class DBDefinition implements Serializable {
 		}
 		return duration;
 	}
-	protected static final String SINGLE_UNIT_INTERVAL_STRING_REGEX_UNIT = "unit";
-	protected static final String SINGLE_UNIT_INTERVAL_STRING_REGEX_VALUE = "value";
+	
+	private static final String INTERVAL_MULTIUNIT_DAYS = "days";
+	private static final String INTERVAL_MULTIUNIT_HOURS = "hours";
+	private static final String INTERVAL_MULTIUNIT_MINUTES = "minutes";
+	private static final String INTERVAL_MULTIUNIT_SECONDS = "seconds";
+	private static final String INTERVAL_MULTIUNIT_NANOS = "nanos";
+	private static final Regex INTERVAL_MULTIUNIT_REGEX = RegexBuilder.startingAnywhere()
+			.beginCaseInsensitiveSection().literal("INTERVAL ").endCaseInsensitiveSection().onceOrNotAtAll()
+			.literal("'").onceOrNotAtAll()
+			.beginNamedCapture(INTERVAL_MULTIUNIT_DAYS).numberLike().onceOrNotAtAll().endNamedCapture()
+			.beginGroup().space().once()
+			.beginCaseInsensitiveSection().literal("day").once().literal('s').onceOrNotAtAll().endCaseInsensitiveSection()
+			.onceOrNotAtAll().space().onceOrNotAtAll().endGroup().onceOrNotAtAll()
+			.beginNamedCapture(INTERVAL_MULTIUNIT_HOURS).numberLike().once().endNamedCapture()
+			.literal(":")
+			.beginNamedCapture(INTERVAL_MULTIUNIT_MINUTES).numberLike().once().endNamedCapture()
+			.literal(":")
+			.beginNamedCapture(INTERVAL_MULTIUNIT_SECONDS).numberLikeIncludingScientificNotation().once().endNamedCapture()
+			.beginNamedCapture(INTERVAL_MULTIUNIT_NANOS).number().onceOrNotAtAll().endNamedCapture()
+			.literal("'").onceOrNotAtAll();
+	
+	protected static final String INTERVAL_SINGLEUNIT_UNIT = "unit";
+	protected static final String INTERVAL_SINGLEUNIT_VALUE = "value";
 	final Regex daysRegex
 			= RegexBuilder.startingAnywhere()
 					.beginCaseInsensitiveSection()
@@ -7060,11 +7065,11 @@ public abstract class DBDefinition implements Serializable {
 			= RegexBuilder.startingAnywhere()
 					.literalCaseInsensitive("interval").onceOrNotAtAll()
 					.space().onceOrNotAtAll()
-					.beginNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_VALUE)
+					.beginNamedCapture(INTERVAL_SINGLEUNIT_VALUE)
 					.numberIncludingScientificNotation().once()
 					.endNamedCapture()
 					.space().once()
-					.beginNamedCapture(SINGLE_UNIT_INTERVAL_STRING_REGEX_UNIT)
+					.beginNamedCapture(INTERVAL_SINGLEUNIT_UNIT)
 					.beginCaseInsensitiveSection()
 					.anyOf("DAY", "HOUR", "MINUTE", "SECOND").once().literal("S").onceOrNotAtAll()
 					.endCaseInsensitiveSection()
