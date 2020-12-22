@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  *
@@ -58,7 +59,8 @@ public class Postgres10ContainerDB extends PostgresDB {
 	}
 
 	public static Postgres10ContainerDB getLabelledInstance(String label, String containerRepo, String tag) {
-		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(containerRepo + ":" + tag);
+		DockerImageName imageName = DockerImageName.parse(containerRepo + ":" + tag).asCompatibleSubstituteFor("postgres");
+		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(imageName);
 //		PostgreSQLContainer<?> container = (PostgreSQLContainer) new PostgisContainerProvider().newInstance("10");
 		ContainerUtils.startContainer(container);
 		try {
