@@ -426,6 +426,23 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "ST_Y(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),1))";
 	}
 
+	/**
+	 * Generate the SQL to apply rounding to the Number expressions with the
+	 * specified number of decimal places.
+	 *
+	 * <p>
+	 * MySQL 8.0.22 ROUND doesn't support more than 4 decimal places so use the alternative
+	 * method. </p>
+	 *
+	 * @param number the number value
+	 * @param decimalPlaces the number value of the decimal places required.
+	 * @return SQL
+	 */
+	@Override
+	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
+		throw new UnsupportedOperationException();
+	}
+
 	@Override
 	public boolean supportsHyperbolicFunctionsNatively() {
 		return false;
