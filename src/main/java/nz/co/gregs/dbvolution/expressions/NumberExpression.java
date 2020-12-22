@@ -2330,7 +2330,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @param expressionsToOrderBy
 	 * @return
 	 */
-	public NumberExpression runningTotal(RangeExpression[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
+	public NumberExpression runningTotal(RangeExpression<?,?,?>[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
 		return this.sum().over().partition(expressionsToPartitionBy).orderBy(expressionsToOrderBy).withoutFrame();
 	}
 
