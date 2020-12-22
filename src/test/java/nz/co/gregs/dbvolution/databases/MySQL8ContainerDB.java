@@ -62,7 +62,7 @@ public class MySQL8ContainerDB extends MySQLDB {
 	}
 
 	public static MySQL8ContainerDB createNewInstance(String label) {
-		return createNewInstance(label, Versions.v8_0_21);
+		return createNewInstance(label, Versions.v8_0);
 	}
 
 	public static MySQL8ContainerDB createNewInstance(String label, Versions tag) {
@@ -70,7 +70,6 @@ public class MySQL8ContainerDB extends MySQLDB {
 
 		final FinalisedMySQLContainerProvider provider = new FinalisedMySQLContainerProvider();
 		FinalisedMySQLContainer container = null;
-//		Versions tag = Versions.v8_0_21;
 		try {
 			LOG.info("Trying to create MySQL:" + tag);
 			container = provider.newInstance(tag);
@@ -114,6 +113,10 @@ public class MySQL8ContainerDB extends MySQLDB {
 
 	protected static class FinalisedMySQLContainerProvider extends JdbcDatabaseContainerProvider {
 
+		protected static final String DEFAULT_IMAGE = "mysql";
+		protected static final String DEFAULT_TAG = "8.0";
+		protected static final String DEFAULT_LATEST_TAG = "latest";
+
 		@Override
 		public boolean supports(String databaseType) {
 			return databaseType.equals(MySQLContainer.NAME);
@@ -125,13 +128,13 @@ public class MySQL8ContainerDB extends MySQLDB {
 		}
 
 		private FinalisedMySQLContainer newDefaultInstance() {
-			return new FinalisedMySQLContainer(MySQLContainer.DEFAULT_TAG);
+			return new FinalisedMySQLContainer(DEFAULT_TAG);
 		}
 
 		@Override
 		public FinalisedMySQLContainer newInstance(String tag) {
 			if (tag != null) {
-				return new FinalisedMySQLContainer(MySQLContainer.IMAGE + ":" + tag);
+				return new FinalisedMySQLContainer(DEFAULT_IMAGE + ":" + tag);
 			} else {
 				return newDefaultInstance();
 			}
@@ -146,7 +149,7 @@ public class MySQL8ContainerDB extends MySQLDB {
 		}
 
 		public FinalisedMySQLContainer newInstanceOfLatestVersion() {
-			return new FinalisedMySQLContainer(MySQLContainer.IMAGE + ":latest");
+			return new FinalisedMySQLContainer(DEFAULT_IMAGE + ":"+DEFAULT_LATEST_TAG);
 		}
 
 		@Override
@@ -159,12 +162,12 @@ public class MySQL8ContainerDB extends MySQLDB {
 	public static enum Versions {
 		v5,
 		v5_6,
-		v5_6_49,
+		v5_6_50, // This is likely to change as Oracle seems to like removing 3rd tier versions
 		v5_7,
-		v5_7_31,
+		v5_7_32, // This is likely to change as Oracle seems to like removing 3rd tier versions
 		v8,
 		v8_0,
-		v8_0_21,
+		v8_0_22, // This is likely to change as Oracle seems to like removing 3rd tier versions
 		latest;
 
 		@Override
