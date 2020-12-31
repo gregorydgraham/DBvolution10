@@ -2944,8 +2944,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			String returnStr = "";
 			final String onlyBoolStr = onlyBool.toSQLString(db);
 			returnStr = onlyBoolStr + " IS " + db.getNull();
-			if (db.requiredToProduceEmptyStringsForNull()) {
-				returnStr = " (" + returnStr + " OR " + onlyBoolStr + " = '') /* BooleanExpression 2948 */";
+			if (db.requiredToProduceEmptyStringsForNull()&& db.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
+				returnStr = " (" + returnStr + " OR " + onlyBoolStr + " = '') ";
 			}
 			return returnStr;
 		}
