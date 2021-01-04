@@ -494,7 +494,7 @@ public class SortProvider implements DBExpression {
 
 		protected String getNullsOrderingSimulatedSQLForNullsFirst(DBDefinition defn) {
 			if (usesEmptyStringForNull(defn)) {
-				return defn.doIfThenElseTransform(getExpressionSQL(defn) + " IS NULL", "0", "1");
+				return defn.doIfEmptyStringThenElse(getExpressionSQL(defn), "0", "1");
 			} else {
 				return defn.doIfThenElseTransform(defn.doIsNullTransform(getExpressionSQL(defn)), "0", "1");
 			}
@@ -508,7 +508,7 @@ public class SortProvider implements DBExpression {
 
 		protected String getNullsOrderingSimulatedSQLForNullsLast(DBDefinition defn) {
 			if (usesEmptyStringForNull(defn)) {
-				return defn.doIfThenElseTransform(getExpressionSQL(defn) + " IS NULL", "1", "0");
+				return defn.doIfEmptyStringThenElse(getExpressionSQL(defn), "1", "0");
 			} else {
 				return defn.doIfThenElseTransform(defn.doIsNullTransform(getExpressionSQL(defn)), "1", "0");
 			}
