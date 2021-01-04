@@ -2883,7 +2883,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		public String toSQLString(DBDefinition db) {
 			String returnStr = "";
 			final String onlyBoolStr = onlyBool.toSQLString(db);
-			if (db.requiredToProduceEmptyStringsForNull()) {
+			if (db.requiredToProduceEmptyStringsForNull() && db.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
 				returnStr = " NOT ((" + onlyBoolStr + " IS " + db.getNull() + ") OR (" + onlyBoolStr + " = '')) /* STRING VERSION */ ";
 			} else {
 				returnStr = onlyBoolStr + " IS NOT " + db.getNull();// for strings
