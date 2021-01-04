@@ -109,26 +109,40 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		List<DBString> distinctValuesForColumn = marque.getDistinctValuesOfColumn(database, marque.individualAllocationsAllowed);
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));
+			List<String> foundStrings = new ArrayList<>();
+			for (DBString val : distinctValuesForColumn) {
+				if (val != null && val.isNotNull()) {
+					Assert.assertThat(val.toString(),
+							anyOf(
+									is("Y"),
+									is("")
+							)
+					);
+					foundStrings.add((val.toString()));
+				}
+			}
+			Assert.assertThat(foundStrings.size(), is(2));
+			Assert.assertThat(foundStrings, hasItems("Y", ""));
+			Assert.assertThat(foundStrings.get(0), is(""));
+			Assert.assertThat(foundStrings.get(1), is("Y"));
 		} else {
 			Assert.assertThat(distinctValuesForColumn.size(), is(2));
-		}
 
-		List<String> foundStrings = new ArrayList<>();
-		for (DBString val : distinctValuesForColumn) {
-			if (val != null && val.isNotNull()) {
-				Assert.assertThat(val.toString(),
-						anyOf(
-								is("Y"),
-								is("")
-						)
-				);
-				foundStrings.add((val.toString()));
+			List<String> foundStrings = new ArrayList<>();
+			for (DBString val : distinctValuesForColumn) {
+				if (val != null && val.isNotNull()) {
+					Assert.assertThat(val.toString(),
+							anyOf(
+									is("Y")
+							)
+					);
+					foundStrings.add((val.toString()));
+				}
 			}
+			Assert.assertThat(foundStrings.size(), is(1));
+			Assert.assertThat(foundStrings, hasItems("Y"));
+			Assert.assertThat(foundStrings.get(0), is("Y"));
 		}
-		Assert.assertThat(foundStrings.size(), is(2));
-		Assert.assertThat(foundStrings, hasItems("Y", ""));
-		Assert.assertThat(foundStrings.get(0), is(""));
-		Assert.assertThat(foundStrings.get(1), is("Y"));
 	}
 
 	@Test
