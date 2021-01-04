@@ -296,16 +296,19 @@ public class SortProvider implements DBExpression {
 	}
 
 	protected boolean usesEmptyStringForNull(DBDefinition defn) {
-		if (hasQueryColumn()) {
-			final Object queryColumn1 = getQueryColumn().asExpressionColumn();
-			return (queryColumn1 instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
-		} else if (hasInnerExpression()) {
-			AnyExpression<?, ?, ?> expr = getInnerExpression();
-			return (expr instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
-		} else if (hasColumn()) {
-			DBExpression expr = getColumn().asExpression();
-			return (expr instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
+		if (defn.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
+			if (hasQueryColumn()) {
+				final Object queryColumn1 = getQueryColumn().asExpressionColumn();
+				return (queryColumn1 instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
+			} else if (hasInnerExpression()) {
+				AnyExpression<?, ?, ?> expr = getInnerExpression();
+				return (expr instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
+			} else if (hasColumn()) {
+				DBExpression expr = getColumn().asExpression();
+				return (expr instanceof StringExpression) && defn.requiredToProduceEmptyStringsForNull();
+			}
 		}
+
 		return false;
 	}
 
@@ -355,6 +358,7 @@ public class SortProvider implements DBExpression {
 
 	public SortProvider nullsLowest() {
 		return new SortProvider.NullsLowest(this);
+
 	}
 
 	public static class Ascending extends SortProvider {
