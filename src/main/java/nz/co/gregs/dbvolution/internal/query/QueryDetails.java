@@ -388,6 +388,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		long result = 0L;
 		try ( DBStatement dbStatement = db.getDBStatement()) {
 			final String sqlForCount = details.getSQLForCount(db, details);
+			printSQLIfRequired(options, details, sqlForCount);
 			try ( ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
 				while (resultSet.next()) {
 					result = resultSet.getLong(1);
@@ -1142,9 +1143,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, QueryOptions options, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
-		if (options.getPrintSQLBeforeExecution()) {
-			System.out.println("/* SQL for " + details.label + " */ " + details.getResultSQL());
-		}
+		printSQLIfRequired(options, details);
 
 		try ( DBStatement dbStatement = db.getDBStatement()) {
 			try ( ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
@@ -1176,6 +1175,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 					setAutoFilledFields(row);
 				}
 			}
+		}
+	}
+
+	private void printSQLIfRequired(QueryOptions options1, QueryDetails details) {
+		printSQLIfRequired(options1, details, details.getResultSQL());
+	}
+
+	private void printSQLIfRequired(QueryOptions options1, QueryDetails details,String sql) {
+		if (options1.getPrintSQLBeforeExecution()) {
+			System.out.println("/* SQL for " + details.label + " */ " + sql);
 		}
 	}
 
