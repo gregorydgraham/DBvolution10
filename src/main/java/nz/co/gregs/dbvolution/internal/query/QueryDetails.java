@@ -56,6 +56,7 @@ import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
 import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  *
@@ -866,7 +867,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			state.setHasBeenOrdered(true);
-			SeparatedString orderByClause = SeparatedString.byCommas();
+			SeparatedString orderByClause = SeparatedStringBuilder.byCommas();
 			for (SortProvider sorter : sortOrderColumns) {
 				if (!sorter.isWindowingFunction() || defn.supportsWindowingFunctionsInTheOrderByClause()) {
 					clause.addGroupByClauses(sorter.getGroupByClauses(defn));

@@ -74,6 +74,7 @@ import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.RegexBuilder;
 import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  *
@@ -1749,7 +1750,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @see StringExpression#append(nz.co.gregs.dbvolution.results.NumberResult)
 	 */
 	public String doConcatTransform(String firstString, String secondString, String... rest) {
-		SeparatedString sep = SeparatedString.startsWith("CONCAT(").separatedBy(", ").endsWith(")")
+		SeparatedString sep = SeparatedStringBuilder.startsWith("CONCAT(").separatedBy(", ").endsWith(")")
 				.add(firstString)
 				.add(secondString)
 				.addAll(rest);
@@ -6815,7 +6816,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doLeftPadTransform(String toPad, String padWith, String length) {
-		return SeparatedString
+		return SeparatedStringBuilder
 				.startsWith("LPAD(")
 				.separatedBy(", ")
 				.addAll(toPad, length, padWith)
@@ -6827,7 +6828,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doRightPadTransform(String toPad, String padWith, String length) {
-		return SeparatedString
+		return SeparatedStringBuilder
 				.startsWith("RPAD(")
 				.separatedBy(", ")
 				.addAll(toPad, length, padWith)

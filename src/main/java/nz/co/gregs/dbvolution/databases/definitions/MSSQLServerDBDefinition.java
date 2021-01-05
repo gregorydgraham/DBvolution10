@@ -44,6 +44,7 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
 import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -85,7 +86,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doConcatTransform(String firstString, String secondString, String... rest) {
-		SeparatedString sep = SeparatedString.startsWith("(").separatedBy("+").endsWith(")")
+		SeparatedString sep = SeparatedStringBuilder.startsWith("(").separatedBy("+").endsWith(")")
 				.add(firstString)
 				.add(secondString)
 				.addAll(rest);

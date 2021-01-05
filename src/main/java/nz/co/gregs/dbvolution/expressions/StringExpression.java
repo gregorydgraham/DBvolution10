@@ -37,6 +37,7 @@ import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.dbvolution.expressions.search.SearchString;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * StringExpression implements standard functions that produce a character or
@@ -588,7 +589,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(String... strings) {
-		final SearchString searchStr = new SearchString(this, SeparatedString.bySpaces().addAll(strings).toString());
+		final SearchString searchStr = new SearchString(this, SeparatedStringBuilder.bySpaces().addAll(strings).toString());
 		return searchStr.getComparisonExpression();
 	}
 
@@ -657,7 +658,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 */
 	public NumberExpression searchForRanking(String... strings) {
-		SeparatedString separatedBySpaces = SeparatedString.bySpaces();
+		SeparatedString separatedBySpaces = SeparatedStringBuilder.bySpaces();
 		separatedBySpaces.addAll(strings);
 		final SearchString searchStr = new SearchString(this, separatedBySpaces.toString());
 		return searchForRanking(searchStr);
@@ -2906,7 +2907,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 				return db.doLeftPadTransform(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db));
 			} else {
 				return "LPAD_SUBSTITUTE_REQUIRED("
-						+ SeparatedString
+						+ SeparatedStringBuilder
 								.startsWith("LPAD_SUBSTITUTE_REQUIRED(")
 								.addAll(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db))
 								.separatedBy(", ")

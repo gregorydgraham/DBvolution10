@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
 import nz.co.gregs.separatedstring.SeparatedString;
 import org.joda.time.Period;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * LocalDateTimeExpression implements standard functions that produce a
@@ -4980,7 +4981,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return SeparatedString
+			return SeparatedStringBuilder
 					.forSeparator(getSeparator(db))
 					.withPrefix(beforeValue(db))
 					.containing(

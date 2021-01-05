@@ -41,6 +41,7 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.utility.DefaultString;
 import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * A standardized collection of the database connection settings.
@@ -794,7 +795,7 @@ public class DatabaseConnectionSettings {
 	}
 
 	public static String encodeExtras(Map<String, String> extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
-		return SeparatedString
+		return SeparatedStringBuilder
 				.forSeparator(nameValuePairSeparator)
 				.withKeyValueSeparator(nameValueSeparator)
 				.withPrefix(prefix)
@@ -833,7 +834,7 @@ public class DatabaseConnectionSettings {
 
 	public static String encodeClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		SeparatedString csv
-				= SeparatedString
+				= SeparatedStringBuilder
 						.forSeparator("|")
 						.withPrefix("<")
 						.withSuffix(">");
@@ -844,7 +845,7 @@ public class DatabaseConnectionSettings {
 	}
 
 	public static List<DatabaseConnectionSettings> decodeClusterHosts(String clusterHosts) {
-		List<String> hosts = SeparatedString
+		List<String> hosts = SeparatedStringBuilder
 				.forSeparator("|")
 				.withPrefix("<")
 				.withSuffix(">")
@@ -950,7 +951,7 @@ public class DatabaseConnectionSettings {
 	}
 
 	public static Map<String, String> decodeExtras(String extras) {
-		return SeparatedString
+		return SeparatedStringBuilder
 				.forSeparator(";")
 				.withPrefix("")
 				.withSuffix("")

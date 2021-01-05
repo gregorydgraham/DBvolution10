@@ -61,6 +61,7 @@ import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  *
@@ -167,7 +168,7 @@ public class CaseExpression {
 
 		@Override
 		public String toSQLString(DBDefinition defn) {
-			return SeparatedString
+			return SeparatedStringBuilder
 					.startsWith(" CASE ")
 					.endsWith(" ELSE " + defaultValue.toSQLString(defn) + " END")
 					.addAll(

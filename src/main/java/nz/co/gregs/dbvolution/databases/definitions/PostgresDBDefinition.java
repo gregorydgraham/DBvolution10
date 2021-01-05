@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -83,7 +84,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return SeparatedString.startsWith("make_timestamp(").separatedBy(", ").endsWith(")")
+		return SeparatedStringBuilder.startsWith("make_timestamp(").separatedBy(", ").endsWith(")")
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				//				.add(
@@ -96,7 +97,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getInstantPartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return SeparatedString.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
+		return SeparatedStringBuilder.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				.toString();
@@ -104,7 +105,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return SeparatedString.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
+		return SeparatedStringBuilder.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				.add(
