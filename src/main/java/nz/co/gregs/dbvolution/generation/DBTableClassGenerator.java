@@ -44,9 +44,6 @@ import nz.co.gregs.dbvolution.datatypes.*;
  * create and modify. However with a complex existing database it can be easier
  * to use this class to generate the data model and then add the details.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBTableClassGenerator {
@@ -68,20 +65,18 @@ public class DBTableClassGenerator {
 	 * password, packageName, 1L, baseDirectory,new PrimaryKeyRecognisor(),new
 	 * ForeignKeyRecognisor());}
 	 *
-	 *
-	 *
-	 *
 	 * 1 Database exceptions may be thrown
 	 *
 	 * @param database database
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
+	 * @return 
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 */
-	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
-		generateClasses(database, packageName, baseDirectory, new Options());
+	public static DataRepo generateClasses(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
+		return generateClasses(database, packageName, baseDirectory, new Options());
 	}
 
 	/**
@@ -104,16 +99,17 @@ public class DBTableClassGenerator {
 	 * 1 Database exceptions may be thrown
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
+	 * @return 
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 *
 	 *
 	 */
-	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
+	public static DataRepo generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
 		Options opts = new Options();
 		opts.versionNumber = versionNumber;
-		generateClasses(database, packageName, baseDirectory, opts);
+		return generateClasses(database, packageName, baseDirectory, opts);
 	}
 
 	/**
@@ -136,37 +132,42 @@ public class DBTableClassGenerator {
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
 	 * @param options preferences for the class generation
+	 * @return 
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 */
-	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Options options) throws SQLException, FileNotFoundException, IOException {
+	public static DataRepo generateClasses(DBDatabase database, String packageName, String baseDirectory, Options options) throws SQLException, FileNotFoundException, IOException {
+		DataRepo datastore = new DataRepo(database, packageName);
 		String viewsPackage = packageName + ".views";
 		String viewsPath = viewsPackage.replaceAll("[.]", "/");
-		List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, options);
+		DataRepo generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, options);
+		datastore.addViews(generatedViews.getTables());
 
 		String tablesPackage = packageName + ".tables";
 		String tablesPath = tablesPackage.replaceAll("[.]", "/");
-		List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, options);
+		DataRepo generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, options);
+		datastore.addTables(generatedTables.getTables());
+
 		List<DBTableClass> allGeneratedClasses = new ArrayList<>();
-		allGeneratedClasses.addAll(generatedViews);
-		allGeneratedClasses.addAll(generatedTables);
+		allGeneratedClasses.addAll(datastore.getViews());
+		allGeneratedClasses.addAll(datastore.getTables());
 		generateAllJavaSource(allGeneratedClasses, options);
 
 		File dir = new File(baseDirectory + "/" + viewsPath);
 		if (dir.mkdirs() || dir.exists()) {
-			saveGeneratedClassesToDirectory(generatedViews, dir);
+			saveGeneratedClassesToDirectory(generatedViews.getViews(), dir);
 		} else {
 			throw new RuntimeException("Unable to Make Directories, QUITTING!");
 		}
 
 		dir = new File(baseDirectory + "/" + tablesPath);
 		if (dir.mkdirs() || dir.exists()) {
-			saveGeneratedClassesToDirectory(generatedTables, dir);
+			saveGeneratedClassesToDirectory(generatedTables.getTables(), dir);
 		} else {
 			throw new RuntimeException("Unable to Make Directories, QUITTING!");
 		}
-
+		return datastore;
 	}
 
 	/**
@@ -220,13 +221,13 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param options
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a List of DBTableClass instances representing the tables found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, Options options) throws SQLException {
+	public static DataRepo generateClassesOfTables(DBDatabase database, String packageName, Options options) throws SQLException {
 		return generateClassesOfObjectTypes(database, packageName, options, "TABLE");
 	}
 
@@ -245,14 +246,15 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param options
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a List of DBTableClass instances representing the views found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, Options options) throws SQLException {
-		return generateClassesOfObjectTypes(database, packageName, options, "VIEW");
+	public static DataRepo generateClassesOfViews(DBDatabase database, String packageName, Options options) throws SQLException {
+		final DataRepo dataRepo = new DataRepo(database, packageName);
+		dataRepo.addViews(generateClassesOfObjectTypes(database, packageName, options, "VIEW").getTables());
+		return dataRepo;
 	}
 
 	/**
@@ -268,19 +270,21 @@ public class DBTableClassGenerator {
 	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
 	 * and {@link ForeignKeyRecognisor} will be used.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a List of DBTableClass instances representing the tables and views
 	 * found on the database 1 Database exceptions may be thrown
 	 */
-	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase db, String packageName, Options options, String... dbObjectTypes) throws SQLException {
-		List<DBTableClass> dbTableClasses = new ArrayList<>();
+	private static DataRepo generateClassesOfObjectTypes(DBDatabase db, String packageName, Options options, String... dbObjectTypes) throws SQLException {
+		DataRepo datarepo = new DataRepo(db, packageName);
 
 		DBDatabase database = db;
 		if (db instanceof DBDatabaseCluster) {
-			database =((DBDatabaseCluster)db).getReadyDatabase();
+			database = ((DBDatabaseCluster) db).getReadyDatabase();
 		}
+
+//		List<DBTableClass> dbTableClasses = new ArrayList<>();
 		try (DBStatement dbStatement = database.getDBStatement()) {
 			DBConnection connection = dbStatement.getConnection();
 			String catalog = connection.getCatalog();
@@ -383,13 +387,14 @@ public class DBTableClassGenerator {
 							}
 						}
 
-						dbTableClasses.add(dbTableClass);
+//						dbTableClasses.add(dbTableClass);
+						datarepo.addTable(dbTableClass);
 					}
 				}
 			}
-			generateAllJavaSource(dbTableClasses, options);
+			generateAllJavaSource(datarepo.getTables(), options);
 		}
-		return dbTableClasses;
+		return datarepo;
 	}
 
 	static void generateAllJavaSource(List<DBTableClass> dbTableClasses, Options options) {
@@ -420,13 +425,28 @@ public class DBTableClassGenerator {
 	}
 
 	/**
+	 * Investigate the database schema and generate appropriate classes and return
+	 * DataRepo containing the database and the new source code.
+	 *
+	 * @param database
+	 * @param namespace
+	 * @return a DataRepo containing the DBDatabase and the associated classes
+	 * @throws java.sql.SQLException
+	 * @throws java.io.IOException
+	 */
+	public static DataRepo generateClassesOfViewsAndTables(DBDatabase database, final String namespace) throws SQLException, IOException {
+		var generateSchema = generateClassesOfObjectTypes(database, namespace, new Options(), "VIEW", "TABLE");
+		return generateSchema;
+	}
+
+	/**
 	 *
 	 * Returns a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
@@ -520,8 +540,8 @@ public class DBTableClassGenerator {
 	 * I.e. changes "_" into an uppercase letter.
 	 *
 	 * @param s	s
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return camel case version of the String
 	 */
 	public static String toClassCase(String s) {
@@ -546,8 +566,8 @@ public class DBTableClassGenerator {
 	 * I.e. changes "_" into an uppercase letter.
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return Camel Case version of S
 	 */
@@ -566,8 +586,8 @@ public class DBTableClassGenerator {
 	 * Capitalizes the first letter of the string
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return Capitalizes the first letter of the string
 	 */

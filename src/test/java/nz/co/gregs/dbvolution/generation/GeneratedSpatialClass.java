@@ -18,9 +18,6 @@ import static org.hamcrest.Matchers.is;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregorygraham
  */
 public class GeneratedSpatialClass extends AbstractTest {
@@ -36,7 +33,7 @@ public class GeneratedSpatialClass extends AbstractTest {
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());
 			int classesTested = 0;
-			List<DBTableClass> generateSchema;
+//			List<DBTableClass> generateSchema;
 			List<String> testClassNames = Arrays.asList(new String[]{"Spatialgen"});
 			List<String> testClasses = new ArrayList<String>();
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n"
@@ -70,9 +67,9 @@ public class GeneratedSpatialClass extends AbstractTest {
 					+ "\n"
 					+ "}\n"
 					+ "");
-			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
+			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
 //			System.out.println("Everything is OK");
-			for (DBTableClass dbcl : generateSchema) {
+			for (DBTableClass dbcl : generateSchema.getTables()) {
 				if (testClassNames.contains(dbcl.getClassName())) {
 					classesTested++;
 					boolean found = false;

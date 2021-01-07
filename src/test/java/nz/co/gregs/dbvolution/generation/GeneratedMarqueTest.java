@@ -47,8 +47,8 @@ import static org.hamcrest.Matchers.*;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ *
  *
  * @author Gregory Graham
  */
@@ -63,7 +63,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 		if (database instanceof H2MemoryDB) {
 			database.createTable(new TestAutoIncrementDetection());
 			int classesTested = 0;
-			List<DBTableClass> generateSchema;
+			DataRepo generateSchema;
 			List<String> testClassNames = Arrays.asList(new String[]{"CarCompany", "Companylogo", "LtCarcoLogo", "Marque", "TestAutoIncrementDetection"});
 			List<String> testClasses = new ArrayList<String>();
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CAR_COMPANY\") \npublic class CarCompany extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"UID_CARCOMPANY\")\n    @DBPrimaryKey\n    public DBInteger uidCarcompany = new DBInteger();\n\n}\n\n");
@@ -72,7 +72,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n" + "\n" + "import nz.co.gregs.dbvolution.*;\n" + "import nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\n" + "import nz.co.gregs.dbvolution.annotations.*;\n" + "\n" + "@DBTableName(\"MARQUE\") \n" + "public class Marque extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NUMERIC_CODE\")\n    public DBNumber numericCode = new DBNumber();\n\n    @DBColumn(\"UID_MARQUE\")\n    @DBPrimaryKey\n    public DBInteger uidMarque = new DBInteger();\n\n    @DBColumn(\"ISUSEDFORTAFROS\")\n    public DBString isusedfortafros = new DBString();\n\n    @DBColumn(\"FK_TOYSTATUSCLASS\")\n    public DBNumber fkToystatusclass = new DBNumber();\n\n    @DBColumn(\"INTINDALLOCALLOWED\")\n    public DBString intindallocallowed = new DBString();\n\n    @DBColumn(\"UPD_COUNT\")\n    public DBInteger updCount = new DBInteger();\n\n    @DBColumn(\"AUTO_CREATED\")\n    public DBString autoCreated = new DBString();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"PRICINGCODEPREFIX\")\n    public DBString pricingcodeprefix = new DBString();\n\n    @DBColumn(\"RESERVATIONSALWD\")\n    public DBString reservationsalwd = new DBString();\n\n    @DBColumn(\"CREATION_DATE\")\n    public DBDate creationDate = new DBDate();\n\n    @DBColumn(\"ENABLED\")\n    public DBBoolean enabled = new DBBoolean();\n\n    @DBColumn(\"FK_CARCOMPANY\")\n    public DBInteger fkCarcompany = new DBInteger();\n\n}\n\n");
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"TEST_AUTO_INCREMENT_DETECTION\") \npublic class TestAutoIncrementDetection extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"PK_UID\")\n    @DBPrimaryKey\n    @DBAutoIncrement\n    public DBInteger pkUid = new DBInteger();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n}\n\n");
 			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
-			for (DBTableClass dbcl : generateSchema) {
+			for (DBTableClass dbcl : generateSchema.getTables()) {
 				if (testClassNames.contains(dbcl.getClassName())) {
 					classesTested++;
 					boolean found = false;
@@ -99,14 +99,14 @@ public class GeneratedMarqueTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableForeignKey());
 			database.createTableWithForeignKeys(new CreateTableForeignKey());
+			
 			int classesTested = 0;
-			List<DBTableClass> generateSchema;
 			List<String> testClassNames = Arrays.asList(new String[]{"CreateTableForeignKey"});
 			List<String> testClasses = new ArrayList<String>();
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(Marque.class)\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
 
-			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
-			for (DBTableClass dbcl : generateSchema) {
+			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
+			for (DBTableClass dbcl : generateSchema.getTables()) {
 				if (testClassNames.contains(dbcl.getClassName())) {
 					classesTested++;
 					boolean found = false;
@@ -135,15 +135,13 @@ public class GeneratedMarqueTest extends AbstractTest {
 			database.dropTableNoExceptions(new CreateTableForeignKeyy());
 			database.createTableWithForeignKeys(new CreateTableForeignKeyy());
 			int classesTested = 0;
-			List<DBTableClass> generateSchema;
 			List<String> testClassNames = Arrays.asList(new String[]{"CreateTableForeignKeyy"});
 			List<String> testClasses = new ArrayList<String>();
-//			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(Marque.class)\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEYY\") \npublic class CreateTableForeignKeyy extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(value = Marque.class, column = \"UID_MARQUE\")\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(value = CarCompany.class, column = \"UID_CARCOMPANY\")\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
 			final Options options = new DBTableClassGenerator.Options();
 			options.includeForeignKeyColumnName = true;
-			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", options);
-			for (DBTableClass dbcl : generateSchema) {
+			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", options);
+			for (DBTableClass dbcl : generateSchema.getTables()) {
 				if (testClassNames.contains(dbcl.getClassName())) {
 					classesTested++;
 					boolean found = false;
@@ -169,7 +167,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 	public void testGetSchemaWithRecognisor() throws SQLException {
 		if (database instanceof H2MemoryDB) {
 			int classesTested = 0;
-			List<DBTableClass> generateSchema;
+			
 			List<String> testClassNames = Arrays.asList(new String[]{"CarCompany", "Companylogo", "LtCarcoLogo", "Marque"});
 			List<String> testGetSchemaWithRecognisorTestClasses = new ArrayList<String>();
 			testGetSchemaWithRecognisorTestClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CAR_COMPANY\") \npublic class CarCompany extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"UID_CARCOMPANY\")\n    @DBPrimaryKey\n    public DBInteger uidCarcompany = new DBInteger();\n\n}\n\n");
@@ -180,8 +178,8 @@ public class GeneratedMarqueTest extends AbstractTest {
 			DBTableClassGenerator.Options options = new DBTableClassGenerator.Options();
 			options.pkRecog = new UIDBasedPKRecognisor();
 			options.fkRecog = new FKBasedFKRecognisor();
-			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", options);
-			for (DBTableClass dbcl : generateSchema) {
+			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", options);
+			for (DBTableClass dbcl : generateSchema.getTables()) {
 				if (testClassNames.contains(dbcl.getClassName())) {
 					classesTested++;
 					boolean found = false;
@@ -208,8 +206,8 @@ public class GeneratedMarqueTest extends AbstractTest {
 					? new CachedCompiler(new File(System.getProperty("user.dir"), "src/test/java"), new File(System.getProperty("user.dir"), "target/compiled"))
 					: CompilerUtils.CACHED_COMPILER;
 
-			List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation.test", new Options());
-			for (DBTableClass dbcl : generateSchema) {
+			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation.test", new Options());
+			for (DBTableClass dbcl : generateSchema.getTables()) {
 				if (dbcl.getTableName().equals("CAR_COMPANY")
 						|| dbcl.getTableName().equals("MARQUE")
 						|| dbcl.getTableName().equals("LT_CARCO_LOGO")
@@ -217,7 +215,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 					final String javaSource = dbcl.getJavaSource();
 
 					Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), javaSource);
-//					Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), javaSource);
+					
 					Object newInstance = compiledClass.getDeclaredConstructor().newInstance();
 					DBRow row = (DBRow) newInstance;
 					List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
@@ -247,15 +245,15 @@ public class GeneratedMarqueTest extends AbstractTest {
 	public void testCompiling() throws SQLException, IOException, Exception {
 		List<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>(); // input for first compilation task
 		if (database instanceof H2SharedDB) {
-              // not supported in shared inastances of H2
+			// not supported in shared inastances of H2
 		} else {
-			List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
-			for (DBTableClass dbcl : generateSchema) {
+			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
+			for (DBTableClass dbcl : generateSchema.getTables()) {
 				compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.getJavaSource()));
 			}
 			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 			DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-			Boolean succeeded = false;
+			Boolean succeeded;
 			// Try to add the classes to the TARGET directory
 			try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null)) {
 				// Try to add the classes to the TARGET directory
@@ -271,6 +269,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 				succeeded = task.call();
 				for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
 					succeeded = false;
+					System.err.println("DIAGNOSTIC: " + diagnostic);
 				}
 			}
 			Assert.assertThat(succeeded, is(true));
