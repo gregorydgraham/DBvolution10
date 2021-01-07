@@ -30,40 +30,34 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
 /**
  * A DBDatabaseHandle makes it easy to switch between databases.
  *
  * <p>
  * This is intended to be useful for "superuser" applications rather than
- * everyday data entry or reporting.</p>
+ * everyday data entry or reporting.
  *
  * <p>
  * DBDatabaseHandle is a simple wrapper on a DBDatabase, with the addition of
  * the
  * {@link DBDatabaseHandle#setDatabase(nz.co.gregs.dbvolution.databases.DBDatabase) setDatabase method}.
  * This allows the underlying database to be changed for all references to this
- * object.</p>
+ * object.
  *
  * <p>
  * This allows for an application to be used with several databases while being
@@ -91,18 +85,18 @@ public class DBDatabaseHandle extends DBDatabase {
 	}
 
 	public DBDatabaseHandle(DBDatabase db) {
-		wrappedDatabase = wrappedDatabase;
+		wrappedDatabase = db;
 	}
 
-	public synchronized DBDatabaseHandle setDatabase(DBDatabase db) {
-		wrappedDatabase = wrappedDatabase;
+	public final synchronized DBDatabaseHandle setDatabase(DBDatabase db) {
+		wrappedDatabase = db;
 		return this;
 	}
 
 	/**
 	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
 	 *
-	 * @param statement the statement to use when adding features, DO NOT CLOSE
+	 * @param stmt the statement to use when adding features, DO NOT CLOSE
 	 * THIS STATEMENT .
 	 * @
 	 * throws ExceptionDuringDatabaseFeatureSetup database exceptions may occur
@@ -114,20 +108,20 @@ public class DBDatabaseHandle extends DBDatabase {
 	 * @see MySQLDB
 	 *
 	 */
+	@Override
 	public void addDatabaseSpecificFeatures(final Statement stmt) throws ExceptionDuringDatabaseFeatureSetup {
 	}
 
 	/**
 	 * Clones the DBDatabase
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a clone of the database.
 	 * @throws java.lang.CloneNotSupportedException
 	 * java.lang.CloneNotSupportedException
 	 *
 	 */
+	@Override
 	public DBDatabaseHandle clone() throws CloneNotSupportedException {
 		return new DBDatabaseHandle(wrappedDatabase.clone());
 	}
@@ -149,10 +143,12 @@ public class DBDatabaseHandle extends DBDatabase {
 	 * @return the preferred response to the exception
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
+	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		return wrappedDatabase.addFeatureToFixException(exp, intent);
 	}
 
+	@Override
 	public boolean isMemoryDatabase() {
 		return wrappedDatabase.isMemoryDatabase();
 	}
@@ -162,64 +158,78 @@ public class DBDatabaseHandle extends DBDatabase {
 	 *
 	 * <p>
 	 * There is no guarantee that the particular database instance uses this port,
-	 * check with your DBA.</p>
+	 * check with your DBA.
 	 *
 	 * @return the port number commonly used by this type of database
 	 */
+	@Override
 	public Integer getDefaultPort() {
 		return wrappedDatabase.getDefaultPort();
 	}
 
+	@Override
 	public SettingsBuilder<?, ?> getURLInterpreter() {
 		return wrappedDatabase.getURLInterpreter();
 	}
 
+	@Override
 	public void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
 		wrappedDatabase.setDefinitionBasedOnConnectionMetaData(clientInfo, metaData);
 	}
 
+	@Override
 	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement,
 			TR tableRow) throws SQLException {
 		wrappedDatabase.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 	}
 
+	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
-		dropTableNoExceptions(tableRow);
+		wrappedDatabase.dropTableNoExceptions(tableRow);
 	}
 
+	@Override
 	public Connection getConnectionFromDriverManager() throws SQLException {
 		return wrappedDatabase.getConnectionFromDriverManager();
 	}
 
+	@Override
 	public boolean supportsMicrosecondPrecision() {
 		return wrappedDatabase.supportsMicrosecondPrecision();
 	}
 
+	@Override
 	public boolean supportsNanosecondPrecision() {
 		return wrappedDatabase.supportsNanosecondPrecision();
 	}
 
+	@Override
 	public void stop() {
 		super.stop();
 		wrappedDatabase.stop();
 	}
 
+	@Override
 	public boolean tableExists(DBRow table) throws SQLException {
 		return wrappedDatabase.tableExists(table);
 	}
 
+	@Override
 	public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 		wrappedDatabase.createTable(newTableRow, includeForeignKeyClauses);
 	}
 
+	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return wrappedDatabase.executeDBQuery(query);
 	}
 
+	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		return wrappedDatabase.executeDBAction(action);
 	}
 
+	@Override
 	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
 		return wrappedDatabase.getDefinition();
 	}
