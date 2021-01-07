@@ -178,6 +178,12 @@ public class DataRepo {
 	}
 
 	public List<DBRow> getRows() {
+		try {
+			compile();
+		} catch (IOException ex) {
+			System.out.println("DATAREPO ERR: "+ex.getLocalizedMessage());
+			Logger.getLogger(DataRepo.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		List<DBRow> knownEntities = new ArrayList<DBRow>(0);
 		knownEntities.addAll(rows);
 		return knownEntities;
