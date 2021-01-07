@@ -135,7 +135,8 @@ public abstract class AbstractTest {
 			final PostgresDB postgres = getPostgresContainerDatabase();//PostgreSQLTestDatabase.getFromSettings("postgres");
 			final MySQLTestDatabase mysql = MySQLTestDatabase.getFromSettings("mysql");
 			final MSSQLServer2017ContainerDB sqlserver = getMSSQLServerContainerDatabaseForCluster();
-			final Oracle11XEContainerDB oracle = getOracleContainerDatabaseForCluster();
+//			final Oracle11XEContainerDB oracle = getOracleContainerDatabaseForCluster();
+			final Oracle11XEDB oracle = Oracle11XETestDB.getFromSettings("oraclexe");
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle",
 				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, postgres, mysql, sqlserver, oracle)});
 		}
