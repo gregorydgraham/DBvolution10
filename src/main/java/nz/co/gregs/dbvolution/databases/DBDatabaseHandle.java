@@ -88,7 +88,7 @@ public class DBDatabaseHandle extends DBDatabase {
 		wrappedDatabase = db;
 	}
 
-	public final synchronized DBDatabaseHandle setDatabase(DBDatabase db) {
+	public synchronized DBDatabaseHandle setDatabase(DBDatabase db) {
 		wrappedDatabase = db;
 		return this;
 	}
