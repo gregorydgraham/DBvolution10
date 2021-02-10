@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.generation.deprecated;
 
 import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
 import java.io.File;
@@ -340,7 +340,7 @@ public class DBTableClassGenerator {
 
 						try (ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null)) {
 							while (columns.next()) {
-								DBTableField dbTableField = new DBTableField();
+								var dbTableField = new DBTableField();
 								dbTableField.columnName = columns.getString("COLUMN_NAME");
 								dbTableField.fieldName = toFieldCase(dbTableField.columnName);
 								try {
@@ -369,7 +369,7 @@ public class DBTableClassGenerator {
 									dbTableField.isPrimaryKey = true;
 								}
 
-								database.getDefinition().sanityCheckDBTableField(dbTableField);
+//								database.getDefinition().sanityCheckDBTableField(dbTableField);
 
 								String[] pkData = fkNames.get(dbTableField.columnName);
 								if (pkData != null && pkData.length == 2) {
@@ -387,7 +387,6 @@ public class DBTableClassGenerator {
 							}
 						}
 
-//						dbTableClasses.add(dbTableClass);
 						datarepo.addTable(dbTableClass);
 					}
 				}

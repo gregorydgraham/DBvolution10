@@ -14,4 +14,4 @@
  * <p>
  * <b>Gregory Graham</b>
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.generation.deprecated;

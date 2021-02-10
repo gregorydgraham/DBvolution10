@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.generation.deprecated;
 
 /**
  * Stores information needed to automatically create a Java field from a
@@ -21,6 +21,7 @@ package nz.co.gregs.dbvolution.generation;
  *
  * @author Gregory Graham
  */
+@Deprecated
 public class DBTableField {
 
 	/**
@@ -52,11 +53,6 @@ public class DBTableField {
 	 */
 	public String referencesClass;
 
-	/**
-	 * Stores the name of the table referenced by this DBTableField if it is a
-	 * Foreign Key, otherwise null.
-	 */
-	public String referencedTable;
 	/**
 	 * Stores the name of the field in the referenced class referenced by this
 	 * column/field if this DBTableField is a foreign key, otherwise null.
@@ -105,6 +101,7 @@ public class DBTableField {
 	 * database.
 	 */
 	public String sqlDataTypeName;
+	String referencedTable;
 
 	@Override
 	public boolean equals(Object obj) {

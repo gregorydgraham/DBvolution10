@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.generation.deprecated;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
-import nz.co.gregs.dbvolution.generation.DBTableClassGenerator.Options;
+import nz.co.gregs.dbvolution.generation.deprecated.DBTableClassGenerator.Options;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -247,7 +247,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 		if (database instanceof H2SharedDB) {
 			// not supported in shared inastances of H2
 		} else {
-			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
+			DataRepo generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
 			for (DBTableClass dbcl : generateSchema.getTables()) {
 				compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.getJavaSource()));
 			}

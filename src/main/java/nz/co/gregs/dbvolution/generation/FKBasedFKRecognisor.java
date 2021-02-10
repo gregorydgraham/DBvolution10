@@ -1,35 +1,22 @@
 /*
- * Copyright 2013 Gregory Graham.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution.example;
+package nz.co.gregs.dbvolution.generation;
 
 import java.util.regex.Pattern;
-import nz.co.gregs.dbvolution.generation.deprecated.DBTableClassGenerator;
-import nz.co.gregs.dbvolution.generation.deprecated.ForeignKeyRecognisor;
 
 /**
- * An Example Class To Demonstrate Implementing A ForeignKeyRecognisor.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
- * @author Gregory Graham
+ * @author gregorygraham
  */
 public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
-
+	
 	Pattern fkStartPattern = Pattern.compile("^[fF][kK]_");
+
+	public FKBasedFKRecognisor() {
+	}
 
 	/**
 	 * Indicates that the column is a foreign key if the column name starts with
@@ -37,8 +24,6 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the column is a foreign key column, FALSE otherwise
 	 */
 	@Override
@@ -51,17 +36,13 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The name of the referenced column
 	 */
 	@Override
 	public String getReferencedColumn(String tableName, String columnName) {
 		if (isForeignKeyColumn(tableName, columnName)) {
 			String strippedOfFK = "";
-
 			strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_").replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
-
 			return strippedOfFK;
 		} else {
 			return null;
@@ -73,8 +54,6 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the name of the referenced table
 	 */
 	@Override
@@ -84,10 +63,11 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 			if (strippedOfFK.matches("^[0-9_]+$")) {
 				return "T_" + strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
 			} else {
-				return DBTableClassGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
+				return DataRepoGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
 			}
 		} else {
 			return null;
 		}
 	}
+	
 }

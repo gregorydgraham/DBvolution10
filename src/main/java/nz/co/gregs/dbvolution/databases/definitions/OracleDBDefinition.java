@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -52,7 +50,6 @@ import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
@@ -68,9 +65,6 @@ import nz.co.gregs.dbvolution.utility.TemporalStringParser;
  * <p>
  * Provides the base definitions used by all variants of the Oracle database
  * DBDefinition.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -501,9 +495,6 @@ public class OracleDBDefinition extends DBDefinition {
 	 * By default this method returns null as system tables are not a problem for
 	 * most databases.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a regexp pattern
 	 */
 	@Override
@@ -513,13 +504,11 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-//		return " (TO_CHAR("+dateSQL+",'D')+1)";
 		return "DECODE(trim(to_char((" + dateSQL + "), 'Day', 'NLS_DATE_LANGUAGE=ENGLISH')), 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday', 7)";
 	}
 
 	@Override
 	public String doInstantDayOfWeekTransform(String dateSQL) {
-//		return " (TO_CHAR("+dateSQL+",'D')+1)";
 		return "DECODE(trim(to_char((" + dateSQL + "), 'Day', 'NLS_DATE_LANGUAGE=ENGLISH')), 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday', 7)";
 	}
 
@@ -537,8 +526,6 @@ public class OracleDBDefinition extends DBDefinition {
 	 * Transform a Java Boolean into the equivalent in an SQL snippet.
 	 *
 	 * @param boolValue	boolValue
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
 	@Override
@@ -550,7 +537,6 @@ public class OracleDBDefinition extends DBDefinition {
 		} else {
 			return getFalseValue();
 		}
-//		return beginNumberValue() + (boolValue ? 1 : 0) + endNumberValue();
 	}
 
 	/**
@@ -558,9 +544,6 @@ public class OracleDBDefinition extends DBDefinition {
 	 *
 	 * <p>
 	 * The default method returns " TRUE ".
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return " TRUE "
 	 */
@@ -575,9 +558,6 @@ public class OracleDBDefinition extends DBDefinition {
 	 * <p>
 	 * The default method returns " FALSE ".
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return " FALSE "
 	 */
 	@Override
@@ -587,10 +567,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	/**
 	 * An SQL snippet that always evaluates to FALSE for this database.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
+	 * 
 	 * @return " 1=0 " or equivalent
 	 */
 	@Override
@@ -600,9 +577,6 @@ public class OracleDBDefinition extends DBDefinition {
 
 	/**
 	 * An SQL snippet that always evaluates to TRUE for this database.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return " 1=1 " or equivalent
 	 */
@@ -728,14 +702,10 @@ public class OracleDBDefinition extends DBDefinition {
 	 *
 	 * <p>
 	 * For each call of this method a new random number is generated.
-	 * </p>
 	 *
 	 * <p>
 	 * This method DOES NOT use the SQLServer built-in function as it does not
-	 * produce a different result for different rows in a single query.</p>
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * produce a different result for different rows in a single query.
 	 *
 	 * @return random number generating code
 	 */
@@ -782,9 +752,6 @@ public class OracleDBDefinition extends DBDefinition {
 	/**
 	 * Oracle does not differentiate between NULL and an empty string.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return FALSE.
 	 */
 	@Override
@@ -804,9 +771,6 @@ public class OracleDBDefinition extends DBDefinition {
 
 	/**
 	 * Provides the start of the DROP TABLE expression for this database.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return "DROP TABLE " or equivalent for the database.
 	 */
@@ -878,9 +842,6 @@ public class OracleDBDefinition extends DBDefinition {
 	/**
 	 * Creates the CURRENTTIME function for this database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the default implementation returns " CURRENT_TIMESTAMP "
 	 */
 	@Override
@@ -927,6 +888,7 @@ public class OracleDBDefinition extends DBDefinition {
 		return formatColumnName(primaryKeyColumnName);
 	}
 
+	@Override
 	public String getFromDualEquivalent() {
 		return " FROM DUAL ";
 	}

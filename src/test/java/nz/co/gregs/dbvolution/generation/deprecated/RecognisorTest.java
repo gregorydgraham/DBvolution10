@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.generation.deprecated;
 
+import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
+import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
  *
  * @author Gregory Graham
  */

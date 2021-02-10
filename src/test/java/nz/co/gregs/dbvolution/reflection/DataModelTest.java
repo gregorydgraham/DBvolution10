@@ -47,8 +47,6 @@ import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -135,9 +133,6 @@ public class DataModelTest extends AbstractTest {
 			Assert.assertTrue(constr.contains(constrString));
 			conMap.remove(constrString);
 		}
-//		for (Constructor<DBDatabase> constructor : conMap.values()) {
-//			System.out.println(constructor);
-//		}
 		Assert.assertThat(result.size(), is(knownStrings.size()));
 	}
 
@@ -161,7 +156,6 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBRowClasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowSubclasses();
-//		result.stream().forEachOrdered((t) -> System.out.println("" + t.toString()));
 
 		Map<String, Class<? extends DBRow>> foundMap = new HashMap<String, Class<? extends DBRow>>();
 		for (Class<? extends DBRow> clazz : result) {
@@ -273,7 +267,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$20MyClass");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.TypeAdaptorUsabilityTest$5MyTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$5TestAddress");
-		knownKeys.add("class nz.co.gregs.dbvolution.generation.GeneratedMarqueTest$TestAutoIncrementDetection");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.GeneratedMarqueTest$TestAutoIncrementDetection");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$34MyClass");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.NumberExpressionTest$RandomRow");
 		knownKeys.add("class nz.co.gregs.dbvolution.query.QueryGraphDepthFirstTest$TableA");
@@ -307,7 +301,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.BooleanExpressionTest$MarqueWithWindowingFunctions");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.Companylogo");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBEnumTest$GenericEnumTable");
-		knownKeys.add("class nz.co.gregs.dbvolution.generation.GeneratedMarqueTest$CreateTableForeignKeyy");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.GeneratedMarqueTest$CreateTableForeignKeyy");
 		knownKeys.add("class nz.co.gregs.dbvolution.example.CompanyText");
 		knownKeys.add("class nz.co.gregs.dbvolution.DBDatabaseTest$CreateTableTestClassWithNewColumns");
 		knownKeys.add("class nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossibleTest$FilledCarCoWithList");
@@ -409,6 +403,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$Customer");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBDateRepeatTest$DateRepeatDays");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.Spatialgen");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.Spatialgen");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBLargeTextTest$TextObjectWithAutoIncrement");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$9TestAddress");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$2TestCustomer");
@@ -423,7 +418,6 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$6MyClass");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.IntegerExpressionTest$MarqueWithLagAndLeadFunctions");
 		knownKeys.add("class nz.co.gregs.dbvolution.DBValidationTest$Fight");
-		knownKeys.add("class nz.co.gregs.dbvolution.generation.GeneratedMarqueTest$CreateTableForeignKey");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.TableHandlerTest$NonAnnotatedSubclassOfAnnotatedDBRow");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.PropertyTypeHandlerTest$28MyClass");
 		knownKeys.add("class nz.co.gregs.dbvolution.internal.properties.ForeignKeyHandlerTest$10TestCustomer");
@@ -474,34 +468,37 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.JavaObjectExpressionTest$JavaObjectExpressionTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LargeTextExpressionTest$ExampleTableForLargeText");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBNumberStatisticsTest$DBNumberStatisticsTestDBRowClass");
-//		knownKeys.add("");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.GranityRepoGeneratorTest$CreateTableForeignKey");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.GranityRepoGeneratorTest$CreateTableForeignKeyy");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.GranityRepoGeneratorTest$TestAutoIncrementDetection");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.LtCarcoLogo");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.GeneratedMarqueTest$CreateTableForeignKey");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.Marque");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.Companylogo");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.CarCompany");
 
+		boolean allClassesKnown = true;
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {
+				allClassesKnown = false;
 				System.out.println("NOT FOUND DBRow: ~" + knownString + "~");
-				foundKeys.stream().forEachOrdered((t) -> {
-					System.out.println("EXISTING DBRow: ~" + t + "~");
-				});
 			}
-			Assert.assertTrue(foundKeys.contains(knownString));
 			foundKeys.remove(knownString);
 		}
 		for (String foundString : foundKeys) {
 			if (!knownKeys.contains(foundString)) {
+				allClassesKnown = false;
 				System.out.println("UNKNOWN DBRow: " + foundString + "");
-				result.stream().forEachOrdered((t) -> {
-					System.out.println("EXPECTED DBRow: " + t);
-				});
 			}
-			Assert.assertTrue(knownKeys.contains(foundString));
 		}
+		Assert.assertThat(allClassesKnown, is(true));
 		Assert.assertThat(result.size(), is(knownKeys.size()));
 	}
 
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		Assert.assertThat(result.size(), is(122));
+		Assert.assertThat(result.size(), is(130));
 	}
 
 	@Test
@@ -522,7 +519,6 @@ public class DataModelTest extends AbstractTest {
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
-//		Assert.assertThat(dbDatabaseCreationMethods.size(), is(6));
 		Assert.assertThat(dbDatabaseCreationMethods.size(), is(2));
 	}
 

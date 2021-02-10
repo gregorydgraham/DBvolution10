@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.example;
 
-import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
+import nz.co.gregs.dbvolution.generation.deprecated.PrimaryKeyRecognisor;
 
 /**
  * An Example Provide To Demonstrate Implementing A PrimaryKeyRecognisor.

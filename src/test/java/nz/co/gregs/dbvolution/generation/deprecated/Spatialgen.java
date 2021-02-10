@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.generation.deprecated;
 
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.*;

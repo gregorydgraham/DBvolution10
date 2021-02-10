@@ -1604,6 +1604,12 @@
 			<version>1.2</version>
 			<type>jar</type>
 		</dependency>
+	 <dependency>
+	  <groupId>org.burningwave</groupId>
+	  <artifactId>core</artifactId>
+	  <version>8.15.1</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>

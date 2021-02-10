@@ -21,7 +21,6 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,9 +48,6 @@ import org.joda.time.Period;
  * <p>
  * This DBDefinition is automatically included in {@link SQLiteDB} instances,
  * and you should not need to use it directly.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -175,8 +171,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 * method.
 	 *
 	 * @param lob the type of large object that is being processed
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -189,8 +183,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 * method.
 	 *
 	 * @param lob the type of large object that is being processed
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -203,8 +195,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 * method.
 	 *
 	 * @param lob the type of large object that is being processed
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -224,8 +214,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 * value.
 	 *
 	 * @param lob the DBLargeObject which we are querying about.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE.
 	 */
 	@Override
@@ -245,8 +233,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 * value.
 	 *
 	 * @param lob the DBLargeObject which we are querying about.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE.
 	 */
 	@Override
@@ -297,12 +283,10 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 *
 	 * <p>
 	 * SQLite ROUND doesn't support negative decimal places so use the alternative
-	 * method. </p>
+	 * method.
 	 *
 	 * @param number the number value
 	 * @param decimalPlaces the number value of the decimal places required.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
 	@Override
@@ -406,9 +390,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	/**
 	 * Indicates whether the database supports the modulus function.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the default implementation returns TRUE.
 	 */
@@ -999,9 +980,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 * Return the function name for the Natural Logarithm function.
 	 *
 	 * <p>
-	 * For SQLite this method returns <b>log</b></p>
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * For SQLite this method returns <b>log</b>
 	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */

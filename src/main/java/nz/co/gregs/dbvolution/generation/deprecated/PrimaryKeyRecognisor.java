@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.generation.deprecated;
 
 /**
  * A Helper class to capture naming conventions of databases.
@@ -29,6 +29,7 @@ package nz.co.gregs.dbvolution.generation;
  * <p>
  * Extend the methods of this class to help DBvolution automatically recognize
  * the PKs within your schema.
+ *
  *
  * @author Gregory Graham
  */
