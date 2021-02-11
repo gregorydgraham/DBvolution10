@@ -457,6 +457,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized boolean getSupportsDifferenceBetweenNullAndEmptyString() {
+		checkSupportForDifferenceBetweenNullAndEmptyString();
 		return supportsDifferenceBetweenNullAndEmptyString;
 	}
 
