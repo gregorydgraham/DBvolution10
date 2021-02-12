@@ -464,6 +464,9 @@ public class ClusterDetails implements Serializable {
 	private void checkSupportForDifferenceBetweenNullAndEmptyString() {
 		boolean supportsDifference = true;
 		for (DBDatabase database : getAllDatabases()) {
+			System.out.println("DATABASE: "+database.toString());
+			System.out.println("NATIVE SUPPORT: "+database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively());
+			System.out.println("REQUIRED: "+database.getDefinition().requiredToProduceEmptyStringsForNull());
 			supportsDifference = supportsDifference && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
 		}
 		setSupportsDifferenceBetweenNullAndEmptyString(supportsDifference);
