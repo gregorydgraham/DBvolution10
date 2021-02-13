@@ -470,6 +470,8 @@ public class ClusterDetails implements Serializable {
 			supportsDifference = supportsDifference && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
 		}
 		setSupportsDifferenceBetweenNullAndEmptyString(supportsDifference);
+			System.out.println("DATABASE: "+toString());
+			System.out.println("SUPPORTS: "+supportsDifferenceBetweenNullAndEmptyString);
 	}
 
 	public void printAllFormerDatabases() {
