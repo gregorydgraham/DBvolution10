@@ -33,7 +33,6 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
@@ -3309,7 +3308,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final LocalDateExpression left = getFirst();
@@ -3351,7 +3350,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final LocalDateExpression left = getFirst();
@@ -3390,7 +3389,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final LocalDateExpression left = getFirst();
