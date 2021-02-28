@@ -24,14 +24,12 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
-import nz.co.gregs.separatedstring.SeparatedString;
 import org.joda.time.Period;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
@@ -60,9 +58,6 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
  * Generally you get a LocalDateTimeExpression from a column or value using
  * {@link LocalDateTimeExpression#value(java.util.LocalDateTime) } or
  * {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBLocalDateTime)}.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -3879,7 +3874,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final LocalDateTimeExpression left = getFirst();
@@ -3921,7 +3916,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final LocalDateTimeExpression left = getFirst();
@@ -3960,7 +3955,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final LocalDateTimeExpression left = getFirst();
