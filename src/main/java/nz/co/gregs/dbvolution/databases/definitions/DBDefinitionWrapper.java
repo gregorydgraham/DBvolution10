@@ -2547,4 +2547,9 @@ class DBDefinitionWrapper extends DBDefinition {
 		return base.requiresAddingTimeZoneToCurrentLocalDateTime();
 	}
 
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return base.supportsDateRepeatDatatypeFunctions();
+	}
+
 }

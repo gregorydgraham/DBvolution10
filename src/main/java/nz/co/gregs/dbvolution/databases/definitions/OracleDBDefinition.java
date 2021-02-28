@@ -123,7 +123,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	public ZonedDateTime parseZonedDateTimeFromGetString(String inputFromResultSet) throws DateTimeParseException {
 //		try {
-			return TemporalStringParser.toZonedDateTime(inputFromResultSet);
+		return TemporalStringParser.toZonedDateTime(inputFromResultSet);
 //		} catch (DateTimeParseException ex) {
 //			Logger.getLogger(OracleDBDefinition.class.getName()).log(Level.INFO, "Failed To Parse supplied date: " + inputFromResultSet, ex);
 //			throw new DateTimeParseException("Parsing of datetime result failed: " + inputFromResultSet, inputFromResultSet, 0, ex);
@@ -567,7 +567,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	/**
 	 * An SQL snippet that always evaluates to FALSE for this database.
-	 * 
+	 *
 	 * @return " 1=0 " or equivalent
 	 */
 	@Override
@@ -891,6 +891,11 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String getFromDualEquivalent() {
 		return " FROM DUAL ";
+	}
+
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return false;
 	}
 
 }

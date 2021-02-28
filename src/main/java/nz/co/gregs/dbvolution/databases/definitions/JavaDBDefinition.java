@@ -376,4 +376,9 @@ public class JavaDBDefinition extends DBDefinition {
 //	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
 //		return "TIMESTAMP('" + DATETIME_FORMAT.format(date) + "')";
 //	}
+
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return false;
+	}
 }

@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.DBInstant;
@@ -43,12 +42,9 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  * This DBDefinition is automatically included in {@link H2DB} instances, and
  * you should not need to use it directly.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
-public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
+public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1L;
 
@@ -732,4 +728,10 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	public String doInsertInstantTimeZoneTransform(String instantValueWithCorrectTZ, String dateValue) {
 		return "/*insert timezone*/dateadd(minute, extract(timezone_minute from " + instantValueWithCorrectTZ + "), dateadd(hour, extract(timezone_hour from " + instantValueWithCorrectTZ + "), " + dateValue + "))/*!insert timezone*/";
 	}
+
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return true;
+	}
+
 }

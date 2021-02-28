@@ -42,9 +42,6 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * This DBDefinition is automatically included in {@link MySQLDB} instances, and
  * you should not need to use it directly.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class MySQLDBDefinition extends DBDefinition {
@@ -757,37 +754,24 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean supportsTimeZones() {
 		return false;
 	}
-
-//	@Override
-//	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
-//		if (interval == null) {
-//			return null;
-//		}
-//		int days = (int) interval.toDaysPart();
-//		int hours = interval.toHoursPart();
-//		int minutes = interval.toMinutesPart();
-//
-//		int nanos = interval.toNanosPart();
-//		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
-//		String intervalString
-//				= "'INTERVAL "
-//				+ days
-//				+ " " + hours
-//				+ ":" + minutes
-//				+ ":" + seconds
-//				+ " DAY TO SECOND'";
-//		return intervalString;
-//	}
+	
 	@Override
 	public boolean supportsDurationNatively() {
 		return false;
 	}
 
+	@Override
 	protected String getCurrentDateTimeFunction() {
 		return " SYSDATE() ";
 	}
 
+	@Override
 	public boolean requiresAddingTimeZoneToCurrentLocalDateTime() {
 		return true;
 	}
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return false;
+	}
+
 }

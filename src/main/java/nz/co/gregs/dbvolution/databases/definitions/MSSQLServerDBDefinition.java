@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -54,9 +53,6 @@ import org.apache.commons.lang3.ArrayUtils;
  * <p>
  * This DBDefinition is automatically included in {@link MSSQLServerDB}
  * instances, and you should not need to use it directly.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -1438,29 +1434,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String getDefaultOrderingClause() {
 		return "ORDER BY (SELECT NULL)";
 	}
-
-//	@Override
-//	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
-//		if (interval == null) {
-//			return null;
-//		}
-//		int days = (int) interval.toDaysPart();
-//		int hours = interval.toHoursPart();
-//		int minutes = interval.toMinutesPart();
-//
-//		int nanos = interval.toNanosPart();
-//		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
-//		String intervalString
-//				= "'INTERVAL "
-//				+ days
-//				+ " " + hours
-//				+ ":" + minutes
-//				+ ":" + seconds
-//				+ " DAY(18) TO SECOND(9)'";
-//		return intervalString;
-//	}
+	
 	@Override
 	public boolean supportsDurationNatively() {
 		return false;
 	}
+	
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return false;
+	}
+
 }

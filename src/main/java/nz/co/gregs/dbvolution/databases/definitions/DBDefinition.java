@@ -64,7 +64,6 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -7187,6 +7186,10 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public boolean requiresAddingTimeZoneToCurrentLocalDateTime() {
+		return false;
+	}
+
+	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
 	}
 }

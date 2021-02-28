@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
 import java.text.*;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
@@ -32,7 +31,6 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
-import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
@@ -43,9 +41,6 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
  * This DBDefinition is automatically included in {@link PostgresDB} and
  * {@link PostgresDBOverSSL} instances, and you should not need to use it
  * directly.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -1178,9 +1173,15 @@ public class PostgresDBDefinition extends DBDefinition {
 	public DBExpression transformToSelectableType(DBExpression columnExpression) {
 		return super.transformToSelectableType(columnExpression);
 	}
-	
+
 	@Override
 	public int getParseDurationPartOffset() {
 		return 0;
 	}
+
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return false;
+	}
+
 }

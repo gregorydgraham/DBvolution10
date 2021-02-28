@@ -16,8 +16,6 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.InformixDB;
@@ -31,9 +29,6 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
  * <p>
  * This DBDefinition is automatically included in {@link InformixDB} instances,
  * and you should not need to use it directly.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -289,13 +284,8 @@ public class InformixDBDefinition extends DBDefinition {
 		return false;
 	}
 
-//	@Override
-//	public String getLocalDateFormattedForQuery(LocalDate date) {
-//		return "TO_DATE('" + dateFormat.format(date) + "','" + INFORMIX_DATE_FORMAT + "')";
-//	}
-//
-//	@Override
-//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
-//		return "TO_DATE('" + dateFormat.format(date) + "','" + INFORMIX_DATE_FORMAT + "')";
-//	}
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return false;
+	}
 }

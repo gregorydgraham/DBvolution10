@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
@@ -51,7 +50,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
+public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1L;
 
@@ -1139,4 +1138,9 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	public boolean supportsDurationNatively() {
 		return false;
 	}
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return true;
+	}
+
 }

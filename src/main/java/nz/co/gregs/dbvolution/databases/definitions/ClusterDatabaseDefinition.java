@@ -69,5 +69,10 @@ public class ClusterDatabaseDefinition extends DBDefinition {
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		throw new UnsupportedOperationException("Clusters Do Not Support These Operations Directly");
 	}
+
+	@Override
+	public boolean supportsDateRepeatDatatypeFunctions() {
+		return false;
+	}
 	
 }
