@@ -7192,4 +7192,8 @@ public abstract class DBDefinition implements Serializable {
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
 	}
+
+	public boolean supportsDurationDatatypeFunctions() {
+		return false;
+	}
 }

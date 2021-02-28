@@ -2552,4 +2552,9 @@ class DBDefinitionWrapper extends DBDefinition {
 		return base.supportsDateRepeatDatatypeFunctions();
 	}
 
+	@Override
+	public boolean supportsDurationDatatypeFunctions() {
+		return base.supportsDurationDatatypeFunctions();
+	}
+
 }
