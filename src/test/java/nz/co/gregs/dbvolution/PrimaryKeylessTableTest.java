@@ -29,10 +29,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class PrimaryKeylessTableTest extends AbstractTest {
@@ -55,7 +51,9 @@ public class PrimaryKeylessTableTest extends AbstractTest {
 						is(testableSQLWithoutColumnAliases("select __78874071.name db_241667647, __78874071.uid_carcompany db112832814, _1617907935.fk_car_company db_238514883, _1617907935.fk_company_logo db_1915875486 from [car_company] as __78874071 inner join [lt_carco_logo] as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany )")),
 						is(testableSQLWithoutColumnAliases("select __78874071.name db_242652735, __78874071.uid_carcompany db559213902, _1617907935.fk_car_company db1646770429, _1617907935.fk_company_logo db_1568052350 from car_company as __78874071 inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) ;")),
 						is(testableSQLWithoutColumnAliases("select 78874071.name db1834098234, 78874071.uid_carcompany db_144385433, 1617907935.fk_car_company db_1191378222, 1617907935.fk_company_logo db_1389867923 from car_company 78874071 inner join lt_carco_logo 1617907935 on( 1617907935.fk_car_company = 78874071.uid_carcompany )")),
-						is(testableSQLWithoutColumnAliases("select \"_78874071\".name db1834098234, \"_78874071\".uid_carcompany db_144385433, \"1617907935\".fk_car_company db_1191378222, \"1617907935\".fk_company_logo db_1389867923 from car_company \"_78874071\" inner join lt_carco_logo \"1617907935\" on( \"1617907935\".fk_car_company = \"_78874071\".uid_carcompany )"))
+						is(testableSQLWithoutColumnAliases("select \"_78874071\".name db1834098234, \"_78874071\".uid_carcompany db_144385433, \"1617907935\".fk_car_company db_1191378222, \"1617907935\".fk_company_logo db_1389867923 from car_company \"_78874071\" inner join lt_carco_logo \"1617907935\" on( \"1617907935\".fk_car_company = \"_78874071\".uid_carcompany )")),
+						is(testableSQLWithoutColumnAliases("select coalesce(__78874071.name,'') db_241667647, __78874071.uid_carcompany db112832814, _1617907935.fk_car_company db_238514883, _1617907935.fk_company_logo db_1915875486 from car_company as __78874071 inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) ;")),
+						is(testableSQLWithoutColumnAliases("select coalesce(__78874071.name,'') db_242652735, __78874071.uid_carcompany db559213902, _1617907935.fk_car_company db1646770429, _1617907935.fk_company_logo db_1568052350 from car_company as __78874071 inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) ;"))
 				));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(0));
