@@ -31,7 +31,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.InstantColumn;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
@@ -3807,7 +3806,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final InstantExpression left = getFirst();
@@ -3849,7 +3848,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final InstantExpression left = getFirst();
@@ -3888,7 +3887,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final InstantExpression left = getFirst();
