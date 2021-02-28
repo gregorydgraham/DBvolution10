@@ -303,7 +303,8 @@ public class OuterJoinTest extends AbstractTest {
 				anyOf(
 						containsString(testableSQL("(__78874071.name) >= 'ford'")),
 						containsString(testableSQL("(__78874071.name) >= N'ford'")),
-						containsString(testableSQL("\"_78874071\".name) >= 'ford'"))
+						containsString(testableSQL("\"_78874071\".name) >= 'ford'")),
+						containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) >= 'ford'"))
 				)
 		);
 		Assert.assertThat(testableSQL(sqlForQuery),
@@ -311,7 +312,8 @@ public class OuterJoinTest extends AbstractTest {
 						containsString(testableSQL("(__78874071.name) <= 'toyota'")),
 						containsString(testableSQL("(__78874071.name) <= N'toyota'")),
 						containsString(testableSQL("(\"__78874071\".name) <= 'toyota'")),
-						containsString(testableSQL("(\"_78874071\".name) <= 'toyota'"))
+						containsString(testableSQL("(\"_78874071\".name) <= 'toyota'")),
+						containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) <= 'toyota'"))
 				)
 		);
 		Assert.assertThat(testableSQL(sqlForQuery),
@@ -329,12 +331,14 @@ public class OuterJoinTest extends AbstractTest {
 								containsString(testableSQL("(__78874071.name) >= 'ford'")),
 								containsString(testableSQL("(\"__78874071\".name) >= 'ford'")),
 								containsString(testableSQL("(\"_78874071\".name) >= 'ford'")),
-								containsString(testableSQL("(__78874071.name) >= N'ford'"))),
+								containsString(testableSQL("(__78874071.name) >= N'ford'")),
+								containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) >= 'ford'"))),
 						anyOf(
 								containsString(testableSQL("(__78874071.name) <= 'toyota'")),
 								containsString(testableSQL("(\"__78874071.name\") <= 'toyota'")),
 								containsString(testableSQL("(\"_78874071.name\") <= 'toyota'")),
-								containsString(testableSQL("(__78874071.name) <= N'toyota'"))),
+								containsString(testableSQL("(__78874071.name) <= N'toyota'")),
+								containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) <= 'toyota'"))),
 						anyOf(
 								containsString(testableSQL("__1997432637.enabled = TRUE")),
 								containsString(testableSQL("\"__1997432637.enabled\" = TRUE")),
