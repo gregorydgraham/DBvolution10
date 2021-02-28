@@ -34,7 +34,6 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDurationDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.DurationResult;
@@ -4094,7 +4093,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDurationDatatypeFunctions) {
+			if (db.supportsDurationDatatypeFunctions()) {
 				return db.doDateMinusDurationTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final DateExpression left = getFirst();
@@ -4171,7 +4170,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		protected String doExpressionTransformation(DBDefinition db) {
-			if (db instanceof SupportsDurationDatatypeFunctions) {
+			if (db.supportsDurationDatatypeFunctions()) {
 				return db.doDatePlusDurationTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				final DateExpression left = getFirst();
