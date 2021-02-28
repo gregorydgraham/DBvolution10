@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
@@ -30,9 +29,6 @@ import nz.co.gregs.dbvolution.results.DurationResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregory.graham
  */
@@ -899,7 +895,7 @@ public class DurationExpression extends RangeExpression<Duration, DurationResult
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateRepeatGetDaysTransform(getFirst().toSQLString(db));
 			} else {
 				return BooleanExpression.isNull(getFirst()).ifThenElse(
@@ -930,7 +926,7 @@ public class DurationExpression extends RangeExpression<Duration, DurationResult
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateRepeatGetHoursTransform(getFirst().toSQLString(db));
 			} else {
 				return BooleanExpression.isNull(getFirst()).ifThenElse(
@@ -957,7 +953,7 @@ public class DurationExpression extends RangeExpression<Duration, DurationResult
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateRepeatGetMinutesTransform(getFirst().toSQLString(db));
 			} else {
 				return BooleanExpression.isNull(getFirst()).ifThenElse(
@@ -984,7 +980,7 @@ public class DurationExpression extends RangeExpression<Duration, DurationResult
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+			if (db.supportsDateRepeatDatatypeFunctions()) {
 				return db.doDateRepeatGetSecondsTransform(getFirst().toSQLString(db));
 			} else {
 				return BooleanExpression.isNull(getFirst()).ifThenElse(
