@@ -1064,9 +1064,9 @@ public class StringExpressionTest extends AbstractTest {
 			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
 			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
 			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
-			final String lagTest = (String)expect[4];//oracleSafeStrings((String) expect[4]);
+			final String lagTest = oracleSafeStrings((String) expect[4]);
 			Assert.assertThat(got.lag.getValue(), is(lagTest));
-			final String leadTest = (String)expect[5];//oracleSafeStrings((String) expect[5]);
+			final String leadTest = oracleSafeStrings((String) expect[5]);
 			Assert.assertThat(got.lead.getValue(), is(leadTest));
 		}
 	}
