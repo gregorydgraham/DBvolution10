@@ -133,15 +133,17 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				if (val != null && val.isNotNull()) {
 					Assert.assertThat(val.toString(),
 							anyOf(
+									is(""),
 									is("Y")
 							)
 					);
 					foundStrings.add((val.toString()));
 				}
 			}
-			Assert.assertThat(foundStrings.size(), is(1));
-			Assert.assertThat(foundStrings, hasItems("Y"));
-			Assert.assertThat(foundStrings.get(0), is("Y"));
+			Assert.assertThat(foundStrings.size(), is(2));
+			Assert.assertThat(foundStrings, hasItems("Y", ""));
+			Assert.assertThat(foundStrings.get(0), is(""));
+			Assert.assertThat(foundStrings.get(1), is("Y"));
 		}
 	}
 
