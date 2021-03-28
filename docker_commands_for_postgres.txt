@@ -1,0 +1,22 @@
+-- IP Address for connections is the IP of the host machine (for instance 192.168.0.2)
+
+-- Remember to start the Docker app
+
+-- Get latest version
+docker pull postgis/postgis:10-3.0-alpine
+
+-- Start the container
+-- -name oracle_container is the name of the container for docker control purposes
+-- OPTIONAL -v /Users/gregorygraham/Projects/Oracle:/Oracle is the volume where we'll store the data 
+-- OPTIONAL -i is interactive (keep stdin open), 
+-- OPTIONAL --cap-add=SYS_TIME adds linux capabilities for sys_time
+-- -e 'TZ=Pacific/Auckland' sets the container timezone to the time where I do my test (needs improving)
+-- -p 6543:5432 is the port of the host and container
+--  -e POSTGRES_PASSWORD=mysecretpassword is the password for connecting to the postgres database
+-- -d is detach "Run container in background and print container ID"
+docker run --name postgres_fullcluster -e 'TZ=Pacific/Auckland' -p 6543:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgis/postgis:10-3.0-alpine
+
+
+-- Stop and remove the container
+docker container stop postgres_fullcluster ; docker container rm postgres_fullcluster
+
