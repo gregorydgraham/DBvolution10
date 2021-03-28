@@ -1,0 +1,22 @@
+-- IP Address for connections is the IP of the host machine (for instance 192.168.0.2)
+
+-- Remember to start the Docker app
+
+-- Get latest version (you might need to use "docker login" first)
+docker pull mysql/8
+
+-- Start the container
+-- -name mysql is the name of the container for docker control purposes
+-- OPTIONAL -v /Users/gregorygraham/Projects/MySQL:/MySQL is the volume where we'll store the data 
+-- OPTIONAL -i is interactive (keep stdin open), 
+-- OPTIONAL --cap-add=SYS_TIME adds linux capabilities for sys_time
+-- -e 'TZ=Pacific/Auckland' sets the container timezone to the time where I do my test (needs improving)
+-- -p 3306:3306 is the port of the host and container
+-- -e MYSQL_ROOT_PASSWORD=secret is the password for the DBA account within mysql
+-- -d is detach "Run container in background and print container ID"
+docker run --name mysql -e 'TZ=Pacific/Auckland' -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secret -d mysql:8
+
+
+-- Stop and remove the container
+docker container stop mysql ; docker container rm mysql
+
