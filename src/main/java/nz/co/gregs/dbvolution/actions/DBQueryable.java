@@ -52,8 +52,6 @@ public interface DBQueryable {
 	 * row for internal use.
 	 *
 	 * @param db the target database.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The complete list of all actions performed to complete this action
 	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
@@ -64,5 +62,7 @@ public interface DBQueryable {
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException ;
 
 	public String toSQLString(DBDatabase db);
+
+	public DBDatabase getWorkingDatabase();
 
 }

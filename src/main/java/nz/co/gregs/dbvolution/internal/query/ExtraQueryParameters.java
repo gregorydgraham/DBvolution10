@@ -28,53 +28,18 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.generation;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.H2MemoryDB;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import org.junit.*;
+package nz.co.gregs.dbvolution.internal.query;
 
 /**
  *
  * @author gregorygraham
  */
-public class GranityRepoTest {
+public class ExtraQueryParameters {
+	
+	boolean requiredToProduceEmptyStringForNull;
 
-	public GranityRepoTest() {
+	public ExtraQueryParameters(boolean requiredToProduceEmptyStringForNull) {
+		this.requiredToProduceEmptyStringForNull = requiredToProduceEmptyStringForNull;
 	}
-
-	@Test
-	public void testEasyCompiling() throws SQLException, IOException, Exception {
-		DBDatabase database = H2MemoryDB.createANewRandomDatabase();
-		database.createTable(new Marque());
-		database.createTable(new CarCompany());
-		database.createTable(new Companylogo());
-		database.createTable(new LtCarcoLogo());
-
-		var repo = DataRepoGenerator.generateClasses(database, "nz.co.gregs.dbvolution.generation.compiling.dbtableclassgenerator");
-		repo.getRows().stream().forEach(r -> 
-				System.out.println(r.getClass().getCanonicalName())
-		);
-		// Run separately we get 8 classes
-		// but run with other tests we get 50
-		assertThat(repo.getRows().size(), is(7));
-	}
-
-	@Test
-	public void testDataRepoCreation() throws SQLException, IOException, Exception {
-		DBDatabase database = H2MemoryDB.createANewRandomDatabase();
-		database.createTable(new Marque());
-		database.createTable(new CarCompany());
-		database.createTable(new Companylogo());
-		database.createTable(new LtCarcoLogo());
-		var repo = DataRepo.getDataRepoFor(database, "nz.co.gregs.dbvolution.generation.compiling.granityrepo");
-		repo.getRows().stream().forEach(r -> 
-				System.out.println(r.getClass().getCanonicalName())
-		);
-		assertThat(repo.getRows().size(), is(7));
-	}
+	
 }

@@ -47,6 +47,7 @@ class QueryCanceller implements Runnable {
 	private final DBStatement statement;
 	private final Date timestamp;
 	private final String sql;
+	private boolean queryWasCancelled = false;
 
 	QueryCanceller(DBStatement statement, String sql) {
 		this.statement = statement;
@@ -60,6 +61,7 @@ class QueryCanceller implements Runnable {
 			System.out.println("CANCELLER: Cancelling query - "+sql);
 			System.out.println("CANCELLER: after ... " + ((0.0+((new Date()).getTime() - timestamp.getTime()))/1000.0) + "seconds");
 			statement.cancel();
+			setQueryWasCancelled(true);
 		} catch (SQLException ex) {
 			Logger.getLogger(QueryDetails.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -70,7 +72,8 @@ class QueryCanceller implements Runnable {
 
 	public static Long getStandardCancelOffset() {
 		if (standardCancelOffset == null) {
-			long targetTicks = 2000000000l;// about 1s worth of ops on the reference platform
+			long targetTicks = 2000l;
+//			long targetTicks = 2000000000l;// about 1s worth of ops on the reference platform
 			long ticks = 0;
 			Date startDate = new Date();
 			while (ticks < targetTicks) {
@@ -87,5 +90,13 @@ class QueryCanceller implements Runnable {
 
 	public ScheduledFuture<?> schedule(Long timeoutTimeInMilliseconds) {
 		return TIMER_SERVICE.schedule(this, timeoutTimeInMilliseconds, TimeUnit.MILLISECONDS);
+	}
+
+	private synchronized void setQueryWasCancelled(boolean b) {
+		queryWasCancelled = true;
+	}
+
+	public synchronized boolean queryWasCancelled() {
+		return queryWasCancelled;
 	}
 }

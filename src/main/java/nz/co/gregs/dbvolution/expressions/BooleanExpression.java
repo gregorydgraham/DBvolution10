@@ -648,13 +648,11 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * and {@link LargeObjectExpression}.
 	 *
 	 * @param possibleNullExpression the expression to be tested
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
 		if (possibleNullExpression instanceof StringExpression) {
-			return isNotNull((StringExpression) possibleNullExpression);
+			return isNotNull((StringResult) possibleNullExpression);
 		} else {
 			return new BooleanExpression(new IsNotNullExpression(possibleNullExpression));
 		}
@@ -672,8 +670,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * and {@link LargeObjectExpression}.
 	 *
 	 * @param possibleNullExpression the expression to be tested
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNotNull(StringResult possibleNullExpression) {
@@ -2881,7 +2877,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			String returnStr = "";
+			String returnStr;
 			final String onlyBoolStr = onlyBool.toSQLString(db);
 			if (db.requiredToProduceEmptyStringsForNull() && db.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
 				returnStr = " NOT ((" + onlyBoolStr + " IS " + db.getNull() + ") OR (" + onlyBoolStr + " = '')) /* STRING VERSION */ ";

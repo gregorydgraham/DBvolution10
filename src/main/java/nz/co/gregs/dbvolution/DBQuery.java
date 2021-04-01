@@ -296,7 +296,7 @@ public class DBQuery implements Serializable {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return details.getSQLForQuery(database, new QueryState(details), QueryType.SELECT, this.details.getOptions());
+		return details.getSQLForQueryEasily(database);
 	}
 
 	/**
@@ -1844,6 +1844,7 @@ public class DBQuery implements Serializable {
 	 */
 	protected void refreshQuery() {
 		blankResults();
+		setReturnEmptyStringForNullString(details.getReturnEmptyStringForNullString());
 	}
 
 	void setRawSQL(String rawQuery) {

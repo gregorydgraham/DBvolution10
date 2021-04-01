@@ -62,7 +62,6 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.VendorSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
-import nz.co.gregs.dbvolution.utility.TimeZoneGuesser;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -112,7 +111,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private boolean terminated = false;
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
-	private Exception exception = null;
+	private Throwable exception = null;
 	private ScheduledFuture<?> regularThreadPoolFuture;
 	private boolean hasCreatedRequiredTables = false;
 
@@ -618,7 +617,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 			synchronized (this) {
 				if (needToAddDatabaseSpecificFeatures) {
-					try ( DBStatement createStatement = connection.createDBStatement()) {
+					try (DBStatement createStatement = connection.createDBStatement()) {
 						try {
 							addDatabaseSpecificFeatures(createStatement.getInternalStatement());
 						} catch (ExceptionDuringDatabaseFeatureSetup exceptionDuringDBCreation) {
@@ -911,8 +910,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param <R> the row affected
 	 * @param exampleRow the example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 */
@@ -1334,8 +1331,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param <R> the table affected
 	 * @param example the example row to use in the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBTable instance for the example provided
 	 */
 	public <R extends DBRow> DBTable<R> getDBTable(R example) {
@@ -1446,6 +1441,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	synchronized void printSQLIfRequested(String sqlString, PrintStream out) {
 		if (printSQLBeforeExecuting) {
+			out.println("DATABASE: "+this.toString());
 			out.println(sqlString);
 		}
 	}
@@ -1705,7 +1701,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		List<PropertyWrapper<?, ?, ?>> spatial2DFields = new ArrayList<>();
 
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString, QueryIntention.CREATE_TABLE);
 
 			//Oracle style trigger based auto-increment keys
@@ -1764,7 +1760,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				}
 			}
 			if (fkClauses.size() > 0) {
-				try ( DBStatement statement = getDBStatement()) {
+				try (DBStatement statement = getDBStatement()) {
 					for (String fkClause : fkClauses) {
 						statement.execute(fkClause, QueryIntention.CREATE_FOREIGN_KEY);
 					}
@@ -1808,7 +1804,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 		}
 		if (fkClauses.size() > 0) {
-			try ( DBStatement statement = getDBStatement()) {
+			try (DBStatement statement = getDBStatement()) {
 				for (String fkClause : fkClauses) {
 					statement.execute(fkClause, QueryIntention.DROP_FOREIGN_KEY);
 				}
@@ -1850,7 +1846,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 		//Create indexes
 		if (indexClauses.size() > 0) {
-			try ( DBStatement statement = getDBStatement()) {
+			try (DBStatement statement = getDBStatement()) {
 				for (String indexClause : indexClauses) {
 					statement.execute(indexClause, QueryIntention.CREATE_INDEX);
 				}
@@ -1888,7 +1884,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
 		String sqlString = sqlScript.toString();
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString, QueryIntention.DROP_TABLE);
 			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 		}
@@ -1964,11 +1960,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * While DBDefinition is important, unless you are implementing support for a
 	 * new database you probably don't need this.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
+	@Override
 	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
 		return definition;
 	}
@@ -2501,11 +2495,11 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return settings.getDataSource();
 	}
 
-	public void setLastException(Exception except) {
+	public void setLastException(Throwable except) {
 		this.exception = except;
 	}
 
-	public Exception getLastException() {
+	public Throwable getLastException() {
 		return this.exception;
 	}
 
@@ -2526,6 +2520,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	public boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return getDefinition().canProduceNullStrings(); //getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
+	}
+
+	protected boolean requiredToProduceEmptyStringForNull() {
+		return !supportsDifferenceBetweenNullAndEmptyString();
 	}
 
 	protected boolean hasCreatedRequiredTables() {
@@ -2605,6 +2603,15 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
+	@Override
+	public void handleErrorDuringExecutingSQL(DBDatabase suspectDatabase, Throwable sqlException, String sqlString) {
+		;
+	}
+
+	public boolean supportsPolygonDatatype() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 	public static enum ResponseToException {
 		REPLACECONNECTION(),
 		REQUERY(),
@@ -2665,7 +2672,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		boolean tableExists = false;
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
-			try ( DBStatement dbStatement = getDBStatement()) {
+			try (DBStatement dbStatement = getDBStatement()) {
 				DBConnection conn = dbStatement.getConnection();
 				ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
 				if (rset.next()) {
@@ -2674,7 +2681,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 		} else {
 			String testQuery = getDefinition().getTableExistsSQL(table);
-			try ( DBStatement dbStatement = getDBStatement()) {
+			try (DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(
 						testQuery,
 						"CHECK FOR TABLE " + table.getTableName(),
@@ -2728,8 +2735,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				.setQueryTimeout(10000)
 				.setBlankQueryAllowed(true)
 				.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
-		try ( DBStatement dbStatement = getDBStatement()) {
-			try ( ResultSet resultSet = dbStatement.executeQuery(
+		try (DBStatement dbStatement = getDBStatement()) {
+			try (ResultSet resultSet = dbStatement.executeQuery(
 					testQuery,
 					"CHECK TABLE STRUCTURE FOR " + table.getTableName(),
 					QueryIntention.SIMPLE_SELECT_QUERY)) {
@@ -2770,7 +2777,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
 
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			try {
 				boolean execute = dbStatement.execute(sqlString, QueryIntention.ADD_COLUMN_TO_TABLE);
 

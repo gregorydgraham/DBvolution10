@@ -655,10 +655,10 @@ public class NumberExpressionTest extends AbstractTest {
 	@Test
 	public void testGreatestOfCollection() throws SQLException {
 		Marque marq = new Marque();
-		DBQuery dbQuery = database.getDBQuery(marq);
+		DBQuery dbQuery = database.getDBQuery(marq).setPrintSQLBeforeExecution(true);
 		ArrayList<NumberResult> vals = new ArrayList<NumberResult>();
 		vals.add(marq.column(marq.uidMarque).numberResult());
-		vals.add(NumberExpression.value(900000.0));
+		vals.add(NumberExpression.value(9000000.0));
 		vals.add(NumberExpression.value(800000.0));
 		dbQuery.addCondition(
 				NumberExpression.greatestOf(vals)
@@ -666,9 +666,9 @@ public class NumberExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(20));
+		Assert.assertThat(allRows.size(), is(2));
 		Marque marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(9971178));
 	}
 
 	@Test
@@ -1248,7 +1248,9 @@ public class NumberExpressionTest extends AbstractTest {
 	@Test
 	public void testCountIf() throws SQLException {
 		CountIfRow randRow = new CountIfRow();
-		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
+		database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).getAllRows());
+		database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).setSortOrder(randRow.column(randRow.countif)).getAllRows());
+		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true).setPrintSQLBeforeExecution(true);
 		dbQuery.setSortOrder(randRow.column(randRow.countif));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 

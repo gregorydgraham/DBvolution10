@@ -35,6 +35,7 @@ import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,8 +49,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.DBTable;
@@ -161,7 +160,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		details = new ClusterDetails();
 		details.setClusterLabel(clusterLabel);
 		details.setAutoRebuild(config.isUseAutoRebuild());
-		details.setAutoReconnect(config.useAutoReconnect);
+		details.setAutoReconnect(config.isUseAutoReconnect());
 		setLabel(clusterLabel);
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
 		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
@@ -477,6 +476,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @param except the exception that caused the database to be quarantined
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
+	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -486,7 +486,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the
 	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
-	public void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
+	public void quarantineDatabase(DBDatabase database, Throwable except) throws UnableToRemoveLastDatabaseFromClusterException {
 		details.quarantineDatabase(database, except);
 	}
 
@@ -926,196 +926,186 @@ public class DBDatabaseCluster extends DBDatabase {
 		return result;
 	}
 
-	@Override
-	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.getRows(report, examples);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<>(0);
-	}
-
-	@Override
-	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.getAllRows(report, examples);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<>(0);
-	}
-
-	@Override
-	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.get(report, examples);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<>(0);
-	}
-
-	@Override
-	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow row, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.get(expectedNumberOfRows, row, rows);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<>(0);
-	}
-
-	@Override
-	public List<DBQueryRow> getByExamples(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.getByExamples(row, rows);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<>(0);
-	}
-
-	@Override
-	public List<DBQueryRow> get(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.get(row, rows);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<>(0);
-	}
-
-	@Override
-	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
-				} catch (SQLException | AccidentalBlankQueryException | UnexpectedNumberOfRowsException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<R>(0);
-	}
-
-	@Override
-	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.get(expectedNumberOfRows, exampleRow);
-				} catch (SQLException | AccidentalBlankQueryException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<R>(0);
-	}
-
-	@Override
-	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.getByExample(exampleRow);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-		return new ArrayList<R>(0);
-	}
-
-	@Override
-	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBDatabase readyDatabase;
-		boolean finished = false;
-		do {
-			readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					return readyDatabase.get(exampleRow);
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					};
-				}
-			}
-		} while (!finished);
-		return new ArrayList<R>(0);
-	}
-
+//	@Override
+//	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.getRows(report, examples);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<>(0);
+//	}
+//	@Override
+//	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.getAllRows(report, examples);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<>(0);
+//	}
+//	@Override
+//	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.get(report, examples);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<>(0);
+//	}
+//	@Override
+//	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow row, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.get(expectedNumberOfRows, row, rows);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<>(0);
+//	}
+//	@Override
+//	public List<DBQueryRow> getByExamples(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.getByExamples(row, rows);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<>(0);
+//	}
+//	@Override
+//	public List<DBQueryRow> get(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.get(row, rows);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<>(0);
+//	}
+//	@Override
+//	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
+//				} catch (SQLException | AccidentalBlankQueryException | UnexpectedNumberOfRowsException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<R>(0);
+//	}
+//	@Override
+//	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.get(expectedNumberOfRows, exampleRow);
+//				} catch (SQLException | AccidentalBlankQueryException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<R>(0);
+//	}
+//	@Override
+//	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.getByExample(exampleRow);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					}
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<R>(0);
+//	}
+//	@Override
+//	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+//		DBDatabase readyDatabase;
+//		boolean finished = false;
+//		do {
+//			readyDatabase = getReadyDatabase();
+//			synchronized (readyDatabase) {
+//				try {
+//					return readyDatabase.get(exampleRow);
+//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
+//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+//						throw e;
+//					};
+//				}
+//			}
+//		} while (!finished);
+//		return new ArrayList<R>(0);
+//	}
 	@Override
 	public DBConnection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnection should not be used.");
@@ -1188,25 +1178,31 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		DBQueryable actionsPerformed = query;
-		boolean finished = false;
-		while (!finished) {
-			final DBDatabase readyDatabase = getReadyDatabase();
-			synchronized (readyDatabase) {
-				try {
-					actionsPerformed = readyDatabase.executeDBQuery(query);
-					finished = true;
-				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
+		try {
+			return super.executeDBQuery(query);
+		} catch (AccidentalBlankQueryException | AccidentalCartesianJoinException errorWithTheQueryException) {
+			throw errorWithTheQueryException;
+		} catch (NoAvailableDatabaseException errorWithTheClusterException) {
+			throw errorWithTheClusterException;
+		} catch (SQLException e) {
+			if (handleExceptionDuringQuery(e, query.getWorkingDatabase()).equals(HandlerAdvice.ABORT)) {
+				quarantineDatabase(query.getWorkingDatabase(), e);
+				throw e;
 			}
 		}
-		return actionsPerformed;
+		return query;
 	}
 
-	private static ArrayList<Class<? extends Exception>> okExceptions
+	@Override
+	public void handleErrorDuringExecutingSQL(DBDatabase suspectDatabase, Throwable sqlException, String sqlString) {
+		try {
+			this.quarantineDatabase(suspectDatabase, sqlException);
+		} catch (UnableToRemoveLastDatabaseFromClusterException doesntNeedToBeHandledAsItsAutomaticAndNotManual) {
+			;
+		}
+	}
+
+	private static ArrayList<Class<? extends Exception>> ABORTING_EXCEPTIONS
 			= new ArrayList<Class<? extends Exception>>() {
 		private static final long serialVersionUID = 1l;
 
@@ -1216,6 +1212,8 @@ public class DBDatabaseCluster extends DBDatabase {
 			add(AccidentalDroppingOfTableException.class);
 			add(CloneNotSupportedException.class);
 			add(AccidentalCartesianJoinException.class);
+			add(AccidentalBlankQueryException.class);
+			add(SQLTimeoutException.class);
 		}
 	};
 
@@ -1226,15 +1224,15 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private HandlerAdvice handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
-		if (!okExceptions.contains(e.getClass())) {
+		if (ABORTING_EXCEPTIONS.contains(e.getClass())) {
+			return HandlerAdvice.ABORT;
+		} else {
 			if (size() < 2) {
 				return HandlerAdvice.ABORT;
 			} else {
 				quarantineDatabase(readyDatabase, e);
 				return HandlerAdvice.REQUERY;
 			}
-		} else {
-			return HandlerAdvice.ABORT;
 		}
 	}
 
@@ -1381,6 +1379,8 @@ public class DBDatabaseCluster extends DBDatabase {
 							}
 						}
 					}
+				} catch (Throwable e) {
+					throw e;
 				} finally {
 					releaseTemplateDatabase(template);
 				}

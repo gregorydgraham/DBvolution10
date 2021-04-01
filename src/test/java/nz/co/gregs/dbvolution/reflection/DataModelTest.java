@@ -468,9 +468,9 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.JavaObjectExpressionTest$JavaObjectExpressionTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.expressions.LargeTextExpressionTest$ExampleTableForLargeText");
 		knownKeys.add("class nz.co.gregs.dbvolution.datatypes.DBNumberStatisticsTest$DBNumberStatisticsTestDBRowClass");
-		knownKeys.add("class nz.co.gregs.dbvolution.generation.GranityRepoGeneratorTest$CreateTableForeignKey");
-		knownKeys.add("class nz.co.gregs.dbvolution.generation.GranityRepoGeneratorTest$CreateTableForeignKeyy");
-		knownKeys.add("class nz.co.gregs.dbvolution.generation.GranityRepoGeneratorTest$TestAutoIncrementDetection");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.DataRepoGeneratorTest$CreateTableForeignKey");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.DataRepoGeneratorTest$CreateTableForeignKeyy");
+		knownKeys.add("class nz.co.gregs.dbvolution.generation.DataRepoGeneratorTest$TestAutoIncrementDetection");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.LtCarcoLogo");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.GeneratedMarqueTest$CreateTableForeignKey");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.Marque");

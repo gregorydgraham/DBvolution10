@@ -183,7 +183,7 @@ public class DBRowSubclassGenerator {
 	private static void getClassFromGenerator(UnitSourceGenerator generator, DBTableClass dbt) {
 //		System.out.println("\nGenerated code:\n" + dbt.getJavaSource());
 		//With this we store the generated source to a path
-		generator.storeToClassPath(System.getProperty("user.home") + "/granity/temp");
+		generator.storeToClassPath(System.getProperty("user.home") + "/dbvolution/temp");
 		ComponentSupplier componentSupplier = ComponentContainer.getInstance();
 		ClassFactory classFactory = componentSupplier.getClassFactory();
 		//this method compile all compilation units and upload the generated classes to default

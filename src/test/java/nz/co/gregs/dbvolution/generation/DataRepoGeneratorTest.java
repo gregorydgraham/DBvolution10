@@ -44,9 +44,9 @@ import static org.hamcrest.Matchers.*;
  *
  * @author Gregory Graham
  */
-public class GranityRepoGeneratorTest {
+public class DataRepoGeneratorTest {
 
-	public GranityRepoGeneratorTest() {
+	public DataRepoGeneratorTest() {
 	}
 
 	@Test

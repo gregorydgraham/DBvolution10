@@ -22,8 +22,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -39,6 +37,10 @@ public class DBIsNullOperator extends DBOperator {
 	@Override
 	public BooleanExpression generateWhereExpression(DBDefinition db, DBExpression column) {
 		DBExpression genericExpression = column;
-		return this.invertOperator ? BooleanExpression.isNotNull(genericExpression) : BooleanExpression.isNull(genericExpression);
+		if (this.invertOperator) {
+			return BooleanExpression.isNotNull(genericExpression);
+		} else {
+			return BooleanExpression.isNull(genericExpression);
+		}
 	}
 }

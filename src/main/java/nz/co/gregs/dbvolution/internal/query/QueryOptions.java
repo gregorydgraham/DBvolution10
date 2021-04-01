@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.internal.query;
 import java.io.Serializable;
 import java.util.Arrays;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
 
 /**
@@ -42,6 +43,7 @@ public class QueryOptions implements Serializable {
 	private boolean queryIsNativeQuery = true;
 	private QueryType queryType = QueryType.SELECT;
 	private boolean printSQLBeforeExecution = false;
+	private DBDatabase originalDatabase;
 
 	public QueryOptions() {
 		super();
@@ -335,6 +337,16 @@ public class QueryOptions implements Serializable {
 		return queryDatabase;
 	}
 
+	private DBDefinition queryDefinition;
+
+	public final void setQueryDefinition(DBDefinition db) {
+		queryDefinition = db;
+	}
+
+	public DBDefinition getQueryDefinition() {
+		return queryDefinition;
+	}
+
 	private void setMatchAllConditions(boolean matchAllConditions) {
 		this.matchAll = matchAllConditions;
 	}
@@ -349,5 +361,13 @@ public class QueryOptions implements Serializable {
 
 	public boolean getPrintSQLBeforeExecution() {
 		return printSQLBeforeExecution;
+	}
+
+	protected void setOriginalDatabase(DBDatabase database) {
+		originalDatabase = database;
+	}
+
+	public DBDatabase getOriginalDatabase() {
+		return originalDatabase;
 	}
 }

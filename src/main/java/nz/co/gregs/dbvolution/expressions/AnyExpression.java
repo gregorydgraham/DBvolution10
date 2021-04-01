@@ -122,7 +122,11 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		return (getInnerResult() == null) ? db.getNull() : getInnerResult().toSQLString(db);
+		if (getInnerResult() == null) {
+			return this.nullExpression().toSQLString(db);// db.getNull();
+		} else {
+			return getInnerResult().toSQLString(db);
+		}
 	}
 
 	/**

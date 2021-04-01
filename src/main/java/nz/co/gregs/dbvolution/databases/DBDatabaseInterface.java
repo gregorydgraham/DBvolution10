@@ -139,5 +139,7 @@ interface DBDatabaseInterface {
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException;
 
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException;
+	
+	public void handleErrorDuringExecutingSQL(DBDatabase suspectDatabase, Throwable sqlException, String sqlString);
 
 }

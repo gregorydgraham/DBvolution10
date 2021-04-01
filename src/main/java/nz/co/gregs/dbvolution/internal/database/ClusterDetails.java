@@ -109,14 +109,10 @@ public class ClusterDetails implements Serializable {
 					setSupportsDifferenceBetweenNullAndEmptyString(false);
 				}
 			} else {
-				if  (databaseSupportsDifferenceBetweenNullAndEmptyString) {
+				if (databaseSupportsDifferenceBetweenNullAndEmptyString) {
 					// currently the cluster and query should avoid any need to change the database behaviour
 				}
 			}
-//			boolean result = supportsDifferenceBetweenNullAndEmptyString1 && database.supportsDifferenceBetweenNullAndEmptyString();
-//			if (result != supportsDifferenceBetweenNullAndEmptyString1) {
-//			setSupportsDifferenceBetweenNullAndEmptyString(result);
-//			}
 
 			if (clusterContainsDatabase(database)) {
 				readyDatabases.remove(database);
@@ -165,13 +161,15 @@ public class ClusterDetails implements Serializable {
 		return db;
 	}
 
-	public synchronized void quarantineDatabase(DBDatabase databaseToQuarantine, Exception except) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
+	public synchronized void quarantineDatabase(DBDatabase databaseToQuarantine, Throwable except) throws UnableToRemoveLastDatabaseFromClusterException {
 		DBDatabase database = getClusteredVersionOfDatabase(databaseToQuarantine);
-		if (hasTooFewReadyDatabases() && readyDatabases.contains(database)) {
-			// Unable to quarantine the only remaining database
-			throw new UnableToRemoveLastDatabaseFromClusterException();
-		} else {
-//			except.printStackTrace();
+		if (clusterContainsDatabase(database)) {
+			if (hasTooFewReadyDatabases() && readyDatabases.contains(database)) {
+				// Unable to quarantine the only remaining database
+				throw new UnableToRemoveLastDatabaseFromClusterException();
+			}
+
+			System.out.println("QUARANTINING: " + databaseToQuarantine.toString());
 			database.setLastException(except);
 
 			readyDatabases.remove(database);
@@ -181,6 +179,7 @@ public class ClusterDetails implements Serializable {
 			queuedActions.remove(database);
 
 			quarantinedDatabases.add(database);
+			
 			setAuthoritativeDatabase();
 		}
 	}
@@ -464,14 +463,9 @@ public class ClusterDetails implements Serializable {
 	private void checkSupportForDifferenceBetweenNullAndEmptyString() {
 		boolean supportsDifference = true;
 		for (DBDatabase database : getAllDatabases()) {
-			System.out.println("DATABASE: "+database.toString());
-			System.out.println("NATIVE SUPPORT: "+database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively());
-			System.out.println("REQUIRED: "+database.getDefinition().requiredToProduceEmptyStringsForNull());
-			supportsDifference = supportsDifference && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
+			supportsDifference = supportsDifference && database.supportsDifferenceBetweenNullAndEmptyString();
 		}
 		setSupportsDifferenceBetweenNullAndEmptyString(supportsDifference);
-			System.out.println("DATABASE: "+toString());
-			System.out.println("SUPPORTS: "+supportsDifferenceBetweenNullAndEmptyString);
 	}
 
 	public void printAllFormerDatabases() {

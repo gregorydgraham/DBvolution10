@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
+import nz.co.gregs.dbvolution.internal.query.ExtraQueryParameters;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
@@ -102,8 +103,6 @@ public class DBTable<E extends DBRow> {
 	 * @param <E> DBRow type
 	 * @param database database
 	 * @param example example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an instance of the supplied example
 	 */
 	public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {

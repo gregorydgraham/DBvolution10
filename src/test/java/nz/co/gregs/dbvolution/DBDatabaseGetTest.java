@@ -34,9 +34,6 @@ import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBDatabaseGetTest extends AbstractTest {
@@ -54,7 +51,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 				.getDBTable(new Marque())
 				.setBlankQueryAllowed(true)
 				.getAllRows();
-		Assert.assertTrue("Incorrect number of marques retreived", allMarques.size() == marqueRows.size());
+		Assert.assertTrue("Incorrect number of marques retrieved", allMarques.size() == marqueRows.size());
 	}
 
 	@Test
@@ -147,14 +144,14 @@ public class DBDatabaseGetTest extends AbstractTest {
 		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> gotMarques = database.get(literalQuery);
 		database.setPrintSQLBeforeExecuting(false);
-		
+
 		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
 		if (notOracle) {
 			Assert.assertEquals(2, gotMarques.size());
 		} else {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
 		}
-		
+
 		if (notOracle) {
 			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
 		} else {
@@ -164,11 +161,18 @@ public class DBDatabaseGetTest extends AbstractTest {
 
 	@Test
 	public void testIsNotNull() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
 		Marque literalQuery = new Marque();
+
 		literalQuery.individualAllocationsAllowed.excludedValues((String) null);
 		List<Marque> gotMarques = database.get(literalQuery);
+
+//		var query = database.getDBQuery(literalQuery).addCondition(literalQuery.column(literalQuery.individualAllocationsAllowed).isNotNullAndNotEmpty());
+//		List<Marque> gotMarques = query.getAllInstancesOf(literalQuery);
+
+		database.setPrintSQLBeforeExecuting(false);
 		final Long fullTableCount = database.getDBTable(new Marque()).count();
-		
+
 		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
 
 		if (notOracle) {

@@ -39,16 +39,12 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
-import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
-import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
+import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
@@ -88,7 +84,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private String rawSQLClause = "";
 	private List<DBQueryRow> results = new ArrayList<>();
 	private String resultSQL;
-	private Integer resultsPageIndex = 0;
+	private int resultsPageIndex = 0;
 	private Integer resultsRowLimit = -1;
 	private Long queryCount = null;
 	private transient QueryGraph queryGraph;
@@ -97,10 +93,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
 	private boolean returnEmptyStringForNullString = false;
+	private DBDatabase workingDatabase;
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the allQueryTables
 	 */
@@ -109,8 +104,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the requiredQueryTables
 	 */
@@ -119,8 +112,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the optionalQueryTables
 	 */
@@ -129,8 +122,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the assumedQueryTables
 	 */
@@ -139,8 +132,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the options
 	 */
@@ -149,8 +142,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the extraExamples
 	 */
@@ -161,8 +154,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	/**
 	 * Get all conditions involved in this query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @param database the database
 	 * @return all conditions in the query
@@ -191,8 +184,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the conditions
 	 */
@@ -201,8 +194,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the expressionColumns
 	 */
@@ -211,8 +204,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the dbReportGroupByColumns
 	 */
@@ -221,8 +214,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the existingInstances
 	 */
@@ -246,8 +239,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	/**
 	 * Return the requirement for a GROUP BY clause.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return TRUE if the GROUP BY clause is required, otherwise FALSE.
 	 */
@@ -267,8 +260,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	/**
 	 * Get the SELECT clause used during the query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the SELECT clause defined earlier
 	 */
@@ -277,8 +270,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the havingColumns
 	 */
@@ -322,7 +315,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the results
 	 */
 	public synchronized List<DBQueryRow> getResults() {
-		return results;
+		return results != null ? results.subList(0, results.size()): null;
 	}
 
 	/**
@@ -376,8 +369,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	public synchronized void clearResults() {
 		setResults(new ArrayList<DBQueryRow>());
-		setResultsRowLimit(options.getRowLimit());
-		setResultsPageIndex(options.getPageIndex());
+//		setResultsRowLimit(options.getRowLimit());
+//		setResultsPageIndex(options.getPageIndex());
 		setResultSQL(null);
 	}
 
@@ -387,10 +380,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException, LoopDetectedInRecursiveSQL {
 		long result = 0L;
-		try ( DBStatement dbStatement = db.getDBStatement()) {
-			final String sqlForCount = details.getSQLForCount(db, details);
+		try (DBStatement dbStatement = db.getDBStatement()) {
+			final String sqlForCount = details.getSQLForCount(details, options);
 			printSQLIfRequired(options, details, sqlForCount);
-			try ( ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
+			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
 				while (resultSet.next()) {
 					result = resultSet.getLong(1);
 				}
@@ -399,19 +392,29 @@ public class QueryDetails implements DBQueryable, Serializable {
 		queryCount = result;
 	}
 
-	private synchronized String getSQLForCount(DBDatabase database, QueryDetails details) {
-		if (!getDatabaseDefinition(database).supportsFullOuterJoinNatively()) {
+	private synchronized String getSQLForCount(QueryDetails details, QueryOptions options) {
+
+		if (!options.getQueryDefinition().supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM ("
-					+ getSQLForQuery(database, new QueryState(details), QueryType.SELECT, details.getOptions())
+					+ getSQLForQuery(new QueryState(details), QueryType.SELECT, details.getOptions())
 							.replaceAll("; *$", "")
 					+ ") A"
-					+ getDatabaseDefinition(database).endSQLStatement();
+					+ options.getQueryDefinition().endSQLStatement();
 		} else {
-			return getSQLForQuery(database, new QueryState(details), QueryType.COUNT, details.getOptions());
+			return getSQLForQuery(new QueryState(details), QueryType.COUNT, details.getOptions());
 		}
+//		if (!getDatabaseDefinition(database).supportsFullOuterJoinNatively()) {
+//			return "SELECT COUNT(*) FROM ("
+//					+ getSQLForQuery(database, new QueryState(details), QueryType.SELECT, details.getOptions())
+//							.replaceAll("; *$", "")
+//					+ ") A"
+//					+ getDatabaseDefinition(database).endSQLStatement();
+//		} else {
+//			return getSQLForQuery(database, new QueryState(details), QueryType.COUNT, details.getOptions());
+//		}
 	}
 
-	public synchronized String getSQLForQuery(DBDatabase database, QueryState queryState, QueryType queryType, QueryOptions options) {
+	protected synchronized String getSQLForQuery(QueryState queryState, QueryType queryType, QueryOptions options) {
 		try {
 			String sqlString = "";
 			final List<DBRow> allQueryTablesList = getAllQueryTables();
@@ -421,7 +424,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 				initialiseQueryGraph();
 
-				DBDefinition defn = getDatabaseDefinition(database);
+				DBDefinition defn = options.getQueryDefinition(); //getDatabaseDefinition(database);
 				StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
 				int columnIndex = 1;
 				boolean groupByIsRequired = false;
@@ -495,7 +498,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 									String joiner = needsJoiner ? options.isUseANSISyntax() ? " join " : fromClauseTableSeparator : "";
 									fromClause
 											.append(joiner)
-											.append(expression.createSQLForFromClause(database));
+											.append(expression.createSQLForFromClause(options.getQueryDatabase()));
 									fromClauseTableSeparator = ", " + lineSep;
 									if (options.isUseANSISyntax()
 											&& defn.requiresOnClauseForAllJoins()
@@ -506,7 +509,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 												.append(defn.endOnClause());
 									}
 									if (!expression.isWindowingFunction()) {
-										final String groupBySQL = expression.createSQLForGroupByClause(database);
+										final String groupBySQL = expression.createSQLForGroupByClause(options.getQueryDatabase());
 										if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
 											groupByClause.append(groupByColSep).append(groupBySQL);
 											groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
@@ -584,7 +587,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 						if (expression.isComplexExpression()) {
 							fromClause
 									.append(options.isUseANSISyntax() ? " join " : fromClauseTableSeparator)
-									.append(expression.createSQLForFromClause(database));
+									.append(expression.createSQLForFromClause(options.getQueryDatabase()));
 							if (options.isUseANSISyntax()
 									&& defn.requiresOnClauseForAllJoins()
 									&& queryState.hasHadATableAdded()) {
@@ -595,7 +598,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 							}
 							fromClauseTableSeparator = (options.isUseANSISyntax() ? " join " : ", ") + lineSep;
 							if (!expression.isWindowingFunction()) {
-								final String groupBySQL = expression.createSQLForGroupByClause(database);
+								final String groupBySQL = expression.createSQLForGroupByClause(options.getQueryDatabase());
 								if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
 									groupByClause.append(groupByColSep).append(groupBySQL);
 									groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
@@ -648,7 +651,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					} else if (options.getPageIndex() > 0 || options.getRowLimit() > 0) {
 						orderByClauseFinal = defn.getDefaultOrderingClause() + lineSep;
 					}
-					havingClause = getHavingClause(database, options);
+					havingClause = getHavingClause(options.getQueryDatabase(), options);
 					if (!havingClause.trim().isEmpty()) {
 						havingClause += lineSep;
 					}
@@ -685,7 +688,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 						&& !queryState.isQueryOnDual()
 						&& queryState.isFullOuterJoin()
 						&& !defn.supportsFullOuterJoinNatively()) {
-					sqlString = getSQLForFakeFullOuterJoin(database, sqlString, queryState, this, options, queryType);
+					sqlString = getSQLForFakeFullOuterJoin(options.getQueryDatabase(), sqlString, queryState, this, options, queryType);
 				}
 			}
 			return sqlString;
@@ -947,8 +950,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 *
 	 * @param querySQL
 	 * @param options
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a fake full outer join query for databases that don't support FULL
 	 * OUTER joins
 	 */
@@ -970,7 +973,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		} else {
 			// Watch out for the infinite loop
 			options.setCreatingNativeQuery(false);
-			String reversedQuery = getSQLForQuery(database, new QueryState(details), QueryType.REVERSESELECT, options);
+			String reversedQuery = getSQLForQuery(new QueryState(details), QueryType.REVERSESELECT, options);
 			options.setCreatingNativeQuery(true);
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
@@ -1017,9 +1020,29 @@ public class QueryDetails implements DBQueryable, Serializable {
 		sortOrderColumns = null;
 	}
 
-	private synchronized void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
+	private synchronized DBDatabase prepareForQuery(DBDatabase database, QueryOptions options) {
 		clearResults();
-		setResultSQL(this.getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options));
+		options.setOriginalDatabase(database);
+		setReturnEmptyStringForNullString(
+				getReturnEmptyStringForNullString()
+				|| !database.supportsDifferenceBetweenNullAndEmptyString()
+		);
+		DBDatabase dbToQueryWith = database;
+		if (dbToQueryWith instanceof DBDatabaseCluster) {
+			dbToQueryWith = ((DBDatabaseCluster) dbToQueryWith).getReadyDatabase();
+		// set the working database that will be quarantined from the cluster after an error
+		this.setWorkingDatabase(dbToQueryWith);
+		}
+		
+		// make sure the query database is an actual database
+		while (dbToQueryWith instanceof DBDatabaseCluster) {
+			dbToQueryWith = ((DBDatabaseCluster) dbToQueryWith).getReadyDatabase();
+		}
+		
+		options.setQueryDatabase(dbToQueryWith);
+		options.setQueryDefinition(getDatabaseDefinition(options.getQueryDatabase()));
+
+		return dbToQueryWith;
 	}
 
 	public synchronized boolean needsResults(QueryOptions options) {
@@ -1030,7 +1053,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				|| getResults().isEmpty()
 				|| !getResultsPageIndex().equals(options.getPageIndex())
 				|| !getResultsRowLimit().equals(options.getRowLimit())
-				|| !getResultSQL().equals(getSQLForQuery(queryDatabase, new QueryState(this), QueryType.SELECT, options));
+				|| !getResultSQL().equals(getSQLForQuery(new QueryState(this), QueryType.SELECT, options));
 	}
 
 	@Override
@@ -1053,25 +1076,44 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
+	public synchronized String getSQLForQueryEasily(DBDatabase db) {
+		QueryType queryType = getOptions().getQueryType();
+		getOptions().setQueryType(QueryType.GENERATESQLFORSELECT);
+		prepareForQuery(db, options);
+		String sql = getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions());
+		getOptions().setQueryType(queryType);
+		return sql;
+	}
+
+	public synchronized String getSQLForCountEasily(DBDatabase db) {
+		QueryType queryType = getOptions().getQueryType();
+		getOptions().setQueryType(QueryType.GENERATESQLFORCOUNT);
+		prepareForQuery(db, options);
+		String sql = getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions());
+		getOptions().setQueryType(queryType);
+		return sql;
+	}
+
 	@Override
 	public synchronized DBQueryable query(DBDatabase db) throws SQLException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
-		getOptions().setQueryDatabase(db);
+		prepareForQuery(db, options);
+//		getOptions().setQueryDatabase(db);
 		final QueryType queryType = getOptions().getQueryType();
 		switch (queryType) {
 			case COUNT:
 				getResultSetCount(db, this);
 				break;
 			case ROWSFORPAGE:
-				getAllRowsForPage(db);
+				getAllRowsForPage(options);
 				break;
 			case GENERATESQLFORSELECT:
-				this.setResultSQL(getSQLForQuery(db, new QueryState(this), QueryType.SELECT, getOptions()));
+				this.setResultSQL(getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions()));
 				break;
 			case GENERATESQLFORCOUNT:
-				this.setResultSQL(getSQLForCount(db, this));
+				this.setResultSQL(getSQLForCount(this, options));
 				break;
 			case SELECT:
-				fillResultSetInternal(db, this, getOptions());
+				fillResultSetInternal(this, getOptions());
 				break;
 			default:
 				throw new UnsupportedOperationException("Query Type Not Supported: " + queryType);
@@ -1079,15 +1121,15 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return this;
 	}
 
-	public synchronized void getAllRowsForPage(DBDatabase database) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
-		final QueryOptions opts = getOptions();
+	protected synchronized void getAllRowsForPage(QueryOptions opts) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
+//		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
-		final DBDefinition defn = getDatabaseDefinition(database);
+		final DBDefinition defn = opts.getQueryDefinition();//getDatabaseDefinition(database);
 
 		if (defn.supportsPagingNatively(opts)) {
 			opts.setPageIndex(pageNumber);
 			if (needsResults(opts)) {
-				fillResultSetInternal(database, this, options);
+				fillResultSetInternal(this, options);
 			}
 			setCurrentPage(getResults());
 		} else {
@@ -1097,7 +1139,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				tempOptions.setRowLimit((pageNumber + 1) * opts.getRowLimit());
 				if (needsResults(tempOptions) || tempOptions.getRowLimit() > getResults().size()) {
 					setOptions(tempOptions);
-					database.executeDBQuery(this);
+					opts.getQueryDatabase().executeDBQuery(this);
 					setOptions(opts);
 				}
 			} else {
@@ -1107,7 +1149,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					tempOptions.setQueryType(QueryType.SELECT);
 					setOptions(tempOptions);
 
-					database.executeDBQuery(this);
+					opts.getQueryDatabase().executeDBQuery(this);
 
 					setOptions(opts);
 				}
@@ -1125,13 +1167,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	protected synchronized void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
-		prepareForQuery(db, options);
+	protected synchronized void fillResultSetInternal(QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
 
-		final DBDefinition defn = getDatabaseDefinition(db);
+		setResultSQL(this.getSQLForQuery(new QueryState(this), QueryType.SELECT, options));
 
-		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db) && details.getRawSQLClause().isEmpty()) {
-			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), willCreateBlankQuery(db), details.getRawSQLClause().isEmpty());
+		final DBDefinition defn = options.getQueryDefinition();
+
+		if (!options.isBlankQueryAllowed() && QueryDetails.this.willCreateBlankQuery(options) && details.getRawSQLClause().isEmpty()) {
+			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), QueryDetails.this.willCreateBlankQuery(options), details.getRawSQLClause().isEmpty());
 		}
 
 		if (!options.isCartesianJoinAllowed()
@@ -1140,14 +1183,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 			throw new AccidentalCartesianJoinException(details);
 		}
 		// all set to execute the query
-		fillResultSetFromSQL(db, details, options, defn, details.getResultSQL());
+		fillResultSetFromSQL(details, options, defn, details.getResultSQL());
 	}
 
-	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, QueryOptions options, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
-		printSQLIfRequired(options, details);
-
-		try ( DBStatement dbStatement = db.getDBStatement()) {
-			try ( ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
+	protected synchronized void fillResultSetFromSQL(QueryDetails details, QueryOptions options, final DBDefinition defn, String sqlString) throws AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL, SQLTimeoutException, SQLException {
+		ArrayList<DBQueryRow> foundRows = new ArrayList<DBQueryRow>();
+		try (DBStatement dbStatement = options.getQueryDatabase().getDBStatement()) {
+			printSQLIfRequired(options, details);
+			try (ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
 				DBQueryRow queryRow;
 				while (resultSet.next()) {
 					queryRow = new DBQueryRow(this);
@@ -1155,9 +1198,21 @@ public class QueryDetails implements DBQueryable, Serializable {
 					setExpressionColumns(defn, resultSet, queryRow);
 
 					setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
-					details.getResults().add(queryRow);
+					foundRows.add(queryRow);
 				}
+//				details.setResults(foundRows);
 			}
+//		} catch (SQLException sqlException) {
+//			StackTraceElement[] trace = sqlException.getStackTrace();
+//			System.out.println("" + sqlException.getMessage());
+//			System.out.println("" + sqlException.getLocalizedMessage());
+//			System.out.println("" + trace[0]);
+//			System.out.println("" + trace[1]);
+//			System.out.println("" + trace[2]);
+//			System.out.println("" + trace[3]);
+//			System.out.println("" + trace[4]);
+//			System.out.println("" + trace[5]);
+//			System.out.println("" + trace[6]);
 		} catch (Throwable e) {
 			StackTraceElement[] trace = e.getStackTrace();
 			System.out.println("" + e.getMessage());
@@ -1167,30 +1222,43 @@ public class QueryDetails implements DBQueryable, Serializable {
 			System.out.println("" + trace[2]);
 			System.out.println("" + trace[3]);
 			System.out.println("" + trace[4]);
+			System.out.println("" + trace[5]);
+			System.out.println("" + trace[6]);
+			options.getOriginalDatabase().handleErrorDuringExecutingSQL(getWorkingDatabase(), e, sqlString);
+//			final DBDatabase cluster = options.getOriginalDatabase();
+//			if (cluster instanceof DBDatabaseCluster) {
+//				try {
+//					((DBDatabaseCluster) cluster).quarantineDatabase(options.getQueryDatabase(), e);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException unable) {
+//					throw new SQLException(e);
+//				}
+//			} else {
 			throw e;
+//			}
 		}
-		for (DBQueryRow result : details.getResults()) {
+		for (DBQueryRow result : foundRows) {
 			List<DBRow> rows = result.getAll();
 			for (DBRow row : rows) {
 				if (row != null) {
-					setAutoFilledFields(row);
+					setAutoFilledFields(foundRows, row);
 				}
 			}
 		}
+		details.setResults(foundRows);
 	}
 
 	private void printSQLIfRequired(QueryOptions options1, QueryDetails details) {
 		printSQLIfRequired(options1, details, details.getResultSQL());
 	}
 
-	private void printSQLIfRequired(QueryOptions options1, QueryDetails details,String sql) {
+	private void printSQLIfRequired(QueryOptions options1, QueryDetails details, String sql) {
 		if (options1.getPrintSQLBeforeExecution()) {
 			System.out.println("/* SQL for " + details.label + " */ " + sql);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	synchronized void setAutoFilledFields(DBRow row) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	synchronized void setAutoFilledFields(List<DBQueryRow> allRows, DBRow row) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {
@@ -1220,7 +1288,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 						} catch (IllegalArgumentException | SecurityException ex) {
 							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
 						}
-						List<DBRow> relatedInstancesFromQuery = getRelatedInstancesFromQuery(row, fieldInstance);
+						List<DBRow> relatedInstancesFromQuery = getRelatedInstancesFromQueryResults(allRows, row, fieldInstance);
 						if (arrayRequired) {
 							Object newInstance = Array.newInstance(requiredClass, relatedInstancesFromQuery.size());
 							for (int index = 0; index < relatedInstancesFromQuery.size(); index++) {
@@ -1237,7 +1305,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					}
 				}
 			}
-		} catch (UnacceptableClassForAutoFillAnnotation | UnableToInstantiateDBRowSubclassException | SQLException | NegativeArraySizeException | IllegalArgumentException | ArrayIndexOutOfBoundsException ex) {
+		} catch (UnacceptableClassForAutoFillAnnotation | UnableToInstantiateDBRowSubclassException | NegativeArraySizeException | IllegalArgumentException | ArrayIndexOutOfBoundsException ex) {
 			throw new RuntimeException("Unable To AutoFill Field", ex);
 		}
 	}
@@ -1249,15 +1317,19 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @param <R> DBRow
 	 * @param row the instance that the examples connect to.
 	 * @param example example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return all instances of {@code example} that are connected to this
 	 * instance in the {@code query} 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBRow row, R example) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		List<R> instances = new ArrayList<>();
 		final List<DBQueryRow> allRows = getAllRows();
+		return getRelatedInstancesFromQueryResults(allRows, row, example);
+	}
+
+	private <R extends DBRow> List<R> getRelatedInstancesFromQueryResults(final List<DBQueryRow> allRows, DBRow row, R example) {
+		List<R> instances = new ArrayList<>();
 		for (DBQueryRow qrow : allRows) {
 			DBRow versionOfThis = qrow.get(row);
 			R versionOfThat = qrow.get(example);
@@ -1268,13 +1340,18 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return instances;
 	}
 
-	public synchronized boolean willCreateBlankQuery(DBDatabase db) {
+	public synchronized boolean willCreateBlankQuery(DBDatabase database) {
+		prepareForQuery(database, options);
+		return QueryDetails.this.willCreateBlankQuery(options);
+	}
+
+	protected synchronized boolean willCreateBlankQuery(QueryOptions options) {
 		boolean willCreateBlankQuery = true;
 		for (DBRow table : getAllQueryTables()) {
-			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(getDatabaseDefinition(db));
+			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(options.getQueryDefinition());
 		}
 		for (DBRow table : getExtraExamples()) {
-			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(getDatabaseDefinition(db));
+			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(options.getQueryDefinition());
 		}
 		willCreateBlankQuery = willCreateBlankQuery && getHavingColumns().length == 0;
 		return willCreateBlankQuery && (getConditions().isEmpty());
@@ -1285,8 +1362,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 *
 	 * @param statement dbStatement
 	 * @param sql sql
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the ResultSet returned from the actual database. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -1296,9 +1373,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException, LoopDetectedInRecursiveSQL {
 		final Long timeoutTime = this.getTimeoutInMilliseconds();
 		ScheduledFuture<?> cancelHandle = null;
+		QueryCanceller canceller = null;
 		if (timeoutTime > 0) {
 			if (timeoutTime != null && timeoutTime > 0) {
-				final QueryCanceller canceller = new QueryCanceller(statement, sql);
+				canceller = new QueryCanceller(statement, sql);
 				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 			}
 		}
@@ -1306,6 +1384,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 		if (cancelHandle != null) {
 			cancelHandle.cancel(true);
+		}
+		if (canceller != null && canceller.queryWasCancelled()) {
+			throw new SQLTimeoutException("Query Timed Out");
 		}
 		return queryResults;
 	}
@@ -1408,8 +1489,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 *
 	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
 	 * @param newInstance newInstance
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of existing rows.
 	 */
 	protected Map<String, DBRow> setExistingInstancesForTable(Map<String, DBRow> existingInstancesOfThisTableRow, DBRow newInstance) {
@@ -1436,9 +1515,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @param defn the database definition
 	 * @param newInstance newInstance
 	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the exisinting instance of the provided row, or the row itself if
+	 * @return the existing instance of the provided row, or the row itself if
 	 * none exists.
 	 */
 	protected DBRow getOrSetExistingInstanceForRow(DBDefinition defn, DBRow newInstance, Map<String, DBRow> existingInstancesOfThisTableRow) {
@@ -1525,12 +1602,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	@Override
 	public synchronized String toSQLString(DBDatabase db) {
-		getOptions().setQueryDatabase(db);
+//		getOptions().setQueryDatabase(db);
+		prepareForQuery(db, options);
 		switch (getOptions().getQueryType()) {
 			case COUNT:
-				return getSQLForCount(db, this);
+				return getSQLForCount(this, options);
 			default:
-				return getSQLForQuery(db, new QueryState(this), QueryType.SELECT, getOptions());
+				return getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions());
 		}
 	}
 
@@ -1550,6 +1628,15 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	public boolean getReturnEmptyStringForNullString() {
 		return returnEmptyStringForNullString;
+	}
+
+	public void setWorkingDatabase(DBDatabase database) {
+		workingDatabase = database;
+	}
+
+	@Override
+	public DBDatabase getWorkingDatabase() {
+		return workingDatabase;
 	}
 
 	private static class OrderByClause {

@@ -4060,7 +4060,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the CHOOSE function.
 	 *
 	 * <p>
-	 * Used by {@link #doChooseTransformation(java.lang.String, java.util.List)
+	 * Used by {@link #doChooseTransformation(java.lang.String, java.util.List) 
 	 * } to connect to the correct database function.
 	 *
 	 *
