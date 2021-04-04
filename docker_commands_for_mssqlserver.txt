@@ -17,6 +17,9 @@ docker pull microsoft/mssql-server-linux
 -- -d is detach "Run container in background and print container ID"
 docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d microsoft/mssql-server-linux
 
+-- Apple silicon (while SQLServer isn't available for ARM chips)
+docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=Password23' -p 1433:1433 --name sqlserver_container -d mcr.microsoft.com/azure-sql-edge
+
 -- Start the container in winter
 docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d microsoft/mssql-server-linux
 
