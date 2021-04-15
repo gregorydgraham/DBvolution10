@@ -315,7 +315,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the results
 	 */
 	public synchronized List<DBQueryRow> getResults() {
-		return results != null ? results.subList(0, results.size()): null;
+		return results != null ? results.subList(0, results.size()) : null;
 	}
 
 	/**
@@ -1030,15 +1030,15 @@ public class QueryDetails implements DBQueryable, Serializable {
 		DBDatabase dbToQueryWith = database;
 		if (dbToQueryWith instanceof DBDatabaseCluster) {
 			dbToQueryWith = ((DBDatabaseCluster) dbToQueryWith).getReadyDatabase();
-		// set the working database that will be quarantined from the cluster after an error
-		this.setWorkingDatabase(dbToQueryWith);
+			// set the working database that will be quarantined from the cluster after an error
+			this.setWorkingDatabase(dbToQueryWith);
 		}
-		
+
 		// make sure the query database is an actual database
 		while (dbToQueryWith instanceof DBDatabaseCluster) {
 			dbToQueryWith = ((DBDatabaseCluster) dbToQueryWith).getReadyDatabase();
 		}
-		
+
 		options.setQueryDatabase(dbToQueryWith);
 		options.setQueryDefinition(getDatabaseDefinition(options.getQueryDatabase()));
 
@@ -1200,41 +1200,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 					setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
 					foundRows.add(queryRow);
 				}
-//				details.setResults(foundRows);
 			}
-//		} catch (SQLException sqlException) {
-//			StackTraceElement[] trace = sqlException.getStackTrace();
-//			System.out.println("" + sqlException.getMessage());
-//			System.out.println("" + sqlException.getLocalizedMessage());
-//			System.out.println("" + trace[0]);
-//			System.out.println("" + trace[1]);
-//			System.out.println("" + trace[2]);
-//			System.out.println("" + trace[3]);
-//			System.out.println("" + trace[4]);
-//			System.out.println("" + trace[5]);
-//			System.out.println("" + trace[6]);
 		} catch (Throwable e) {
 			StackTraceElement[] trace = e.getStackTrace();
 			System.out.println("" + e.getMessage());
 			System.out.println("" + e.getLocalizedMessage());
-			System.out.println("" + trace[0]);
-			System.out.println("" + trace[1]);
-			System.out.println("" + trace[2]);
-			System.out.println("" + trace[3]);
-			System.out.println("" + trace[4]);
-			System.out.println("" + trace[5]);
-			System.out.println("" + trace[6]);
+			for (int i = 0; i < 11 && i < trace.length; i++) {
+				System.out.println("" + trace[i]);
+			}
 			options.getOriginalDatabase().handleErrorDuringExecutingSQL(getWorkingDatabase(), e, sqlString);
-//			final DBDatabase cluster = options.getOriginalDatabase();
-//			if (cluster instanceof DBDatabaseCluster) {
-//				try {
-//					((DBDatabaseCluster) cluster).quarantineDatabase(options.getQueryDatabase(), e);
-//				} catch (UnableToRemoveLastDatabaseFromClusterException unable) {
-//					throw new SQLException(e);
-//				}
-//			} else {
 			throw e;
-//			}
 		}
 		for (DBQueryRow result : foundRows) {
 			List<DBRow> rows = result.getAll();
