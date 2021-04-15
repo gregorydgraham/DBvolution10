@@ -31,15 +31,8 @@ package nz.co.gregs.dbvolution.internal.database;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +45,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException;
 import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
+import nz.co.gregs.dbvolution.generation.DBTableClass;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.encryption.Encryption_Internal;
 import org.apache.commons.logging.Log;
@@ -74,6 +68,7 @@ public class ClusterDetails implements Serializable {
 	private final List<DBDatabase> quarantinedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
+	private final Set<DBRow> trackedTables = Collections.synchronizedSet(new HashSet<DBRow>());
 	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
 	private final Preferences prefs = Preferences.userNodeForPackage(this.getClass());
@@ -169,7 +164,7 @@ public class ClusterDetails implements Serializable {
 				throw new UnableToRemoveLastDatabaseFromClusterException();
 			}
 
-			System.out.println("QUARANTINING: " + databaseToQuarantine.toString());
+			System.out.println("QUARANTINING: " + databaseToQuarantine.getSettings().toString());
 			database.setLastException(except);
 
 			readyDatabases.remove(database);
@@ -179,7 +174,7 @@ public class ClusterDetails implements Serializable {
 			queuedActions.remove(database);
 
 			quarantinedDatabases.add(database);
-			
+
 			setAuthoritativeDatabase();
 		}
 	}
@@ -235,9 +230,29 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public DBRow[] getRequiredTables() {
-		synchronized (requiredTables) {
-			return requiredTables.toArray(new DBRow[]{});
+	public synchronized DBRow[] getTrackedTables() {
+		var tables = new ArrayList<DBRow>();
+		tables.addAll(requiredTables);
+		tables.addAll(trackedTables);
+		return tables.toArray(new DBRow[]{});
+	}
+
+	public void setTrackedTables(Collection<DBRow> rows) {
+		synchronized (trackedTables) {
+			trackedTables.clear();
+			trackedTables.addAll(rows);
+		}
+	}
+
+	public void addTrackedTable(DBRow row) {
+		synchronized (trackedTables) {
+			trackedTables.add(row);
+		}
+	}
+
+	public void addTrackedTables(Collection<DBRow> rows) {
+		synchronized (trackedTables) {
+			trackedTables.addAll(rows);
 		}
 	}
 
