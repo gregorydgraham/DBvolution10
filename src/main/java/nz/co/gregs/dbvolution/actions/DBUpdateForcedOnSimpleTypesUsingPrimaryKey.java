@@ -26,7 +26,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  * Provides support for the abstract concept of updating rows without primary
@@ -36,9 +35,6 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTypes {
@@ -47,15 +43,8 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 
 	DBUpdateForcedOnSimpleTypesUsingPrimaryKey(DBRow row) {
 		super(row);
-		var props = this.row.getNonPrimaryKeyPropertyWrappers();
-		for (var prop : props) {
-			prop.getQueryableDatatype().setChanged();
-		}
-//		try {
-//			System.out.println(""+this.getSQLStatements(new H2MemoryDB()));
-//		} catch (SQLException ex) {
-//			Logger.getLogger(DBUpdateForcedOnSimpleTypesUsingPrimaryKey.class.getName()).log(Level.SEVERE, null, ex);
-//		}
+		var props = this.row.getNonPrimaryKeyNonDynamicPropertyWrappers();
+		props.forEach(prop -> prop.getQueryableDatatype().setChanged());
 	}
 
 	/**
