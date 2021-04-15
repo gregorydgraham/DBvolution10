@@ -37,12 +37,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1186,7 +1181,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			throw errorWithTheClusterException;
 		} catch (SQLException e) {
 			if (handleExceptionDuringQuery(e, query.getWorkingDatabase()).equals(HandlerAdvice.ABORT)) {
-				quarantineDatabase(query.getWorkingDatabase(), e);
+				quarantineDatabaseAutomatically(query.getWorkingDatabase(), e);
 				throw e;
 			}
 		}
@@ -1195,6 +1190,10 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void handleErrorDuringExecutingSQL(DBDatabase suspectDatabase, Throwable sqlException, String sqlString) {
+		quarantineDatabaseAutomatically(suspectDatabase, sqlException);
+	}
+
+	private void quarantineDatabaseAutomatically(DBDatabase suspectDatabase, Throwable sqlException) {
 		try {
 			this.quarantineDatabase(suspectDatabase, sqlException);
 		} catch (UnableToRemoveLastDatabaseFromClusterException doesntNeedToBeHandledAsItsAutomaticAndNotManual) {
@@ -1230,7 +1229,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			if (size() < 2) {
 				return HandlerAdvice.ABORT;
 			} else {
-				quarantineDatabase(readyDatabase, e);
+				quarantineDatabaseAutomatically(readyDatabase, e);
 				return HandlerAdvice.REQUERY;
 			}
 		}
@@ -1240,7 +1239,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		if (size() < 2) {
 			return HandlerAdvice.ABORT;
 		} else {
-			quarantineDatabase(readyDatabase, e);
+			quarantineDatabaseAutomatically(readyDatabase, e);
 			return HandlerAdvice.REQUERY;
 		}
 	}
@@ -1339,42 +1338,27 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					// Check that we're not synchronising the reference database
 					if (!template.getSettings().equals(secondary.getSettings())) {
-						final DBRow[] requiredTables = details.getRequiredTables();
-						for (DBRow table : requiredTables) {
-							if (true) {
-								if (template.tableExists(table)) {
-									// Make sure it exists in the new database
-									if (secondary.tableExists(table) == false) {
-										secondary.createTable(table);
-									}
-									// Check that the table has data
-									final DBTable<DBRow> primaryTable = template.getDBTable(table);
-									final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
-									final Long primaryTableCount = primaryTable.count();
-									final Long secondaryTableCount = secondaryTable.count();
-									if (primaryTableCount > 0) {
-										final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
-										// Check that the new database has data
-										if (secondaryTableCount == 0) {
-											LOG.info("CLUSTER FILLING NEW DATABASE TABLE " + table.getTableName());
-											List<DBRow> allRows = primaryData.getAllRows();
-											secondaryTable.insert(allRows);
-										} else if (!secondaryTableCount.equals(primaryTableCount)) {
-											// Something is different in the data so correct it
-											LOG.info("CLUSTER REBUILDING NEW DATABASE TABLE " + table.getTableName());
-											secondary.deleteAll(table);
-											List<DBRow> allRows = primaryData.getAllRows();
-											secondary.insert(allRows);
-										} else {
-											//ensure the rows are the same with a forced update
-											LOG.info("CLUSTER UPDATING NEW DATABASE TABLE " + table.getTableName());
-											List<DBRow> allRows = primaryData.getAllRows();
-											secondary.updateAnyway(allRows);
-										}
-									} else if (secondaryTableCount > 0) {
-										LOG.info("CLUSTER EMPTYING NEW DATABASE TABLE " + table.getTableName());
-										secondary.deleteAll(table);
-									}
+						final DBRow[] trackedTables = getTrackedTables();
+						for (DBRow table : trackedTables) {
+							// make sure the table exists in the cluster already
+							if (template.tableExists(table)) {
+								// Make sure it exists in the new database
+								if (secondary.tableExists(table) == true) {
+									secondary.preventDroppingOfTables(false);
+									secondary.dropTableNoExceptions(table);
+								}
+								System.out.println("CREATING: " + table.getClass().getCanonicalName());
+								secondary.createTable(table);
+								// Check that the table has data
+								final DBTable<DBRow> primaryTable = template.getDBTable(table);
+								final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
+								final Long primaryTableCount = primaryTable.count();
+								if (primaryTableCount > 0) {
+									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
+									// Check that the new database has data
+									LOG.info("CLUSTER FILLING NEW DATABASE TABLE " + table.getTableName());
+									List<DBRow> allRows = primaryData.getAllRows();
+									secondaryTable.insert(allRows);
 								}
 							}
 						}
@@ -1387,7 +1371,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			}
 			synchronizeActions(secondary);
 		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
-			quarantineDatabase(secondary, ex);
+			quarantineDatabaseAutomatically(secondary, ex);
 			throw ex;
 		}
 	}
@@ -1407,19 +1391,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		boolean block = blocking || (details.getReadyDatabases().length < 2);
 		final DBDatabase[] dbs = details.getUnsynchronizedDatabases();
 		for (DBDatabase addedDatabase : dbs) {
-			SynchroniseTask task = new SynchroniseTask(this, addedDatabase) {
-				@Override
-				public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException {
-					cluster.synchronizeSecondaryDatabase(database);
-					return null;
-				}
-			};
+			SynchroniseTask task = new SynchroniseTask(this, addedDatabase);
 			if (block) {
-				try {
-					task.synchronise(this, addedDatabase);
-				} catch (SQLException ex) {
-					Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
-				}
+				task.synchronise(this, addedDatabase);
 			} else {
 				try {
 					ACTION_THREAD_POOL.submit(task);
@@ -1677,7 +1651,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private static abstract class SynchroniseTask implements Callable<Void> {
+	private static class SynchroniseTask implements Callable<Void> {
 
 		private final DBDatabaseCluster cluster;
 		private final DBDatabase database;
@@ -1688,25 +1662,28 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 
 		@Override
-		public Void call() throws Exception {
+		final public Void call() throws Exception {
 			return synchronise(getCluster(), getDatabase());
 		}
 
 		/**
 		 * @return the cluster
 		 */
-		public DBDatabaseCluster getCluster() {
+		final public DBDatabaseCluster getCluster() {
 			return cluster;
 		}
 
 		/**
 		 * @return the database
 		 */
-		public DBDatabase getDatabase() {
+		final public DBDatabase getDatabase() {
 			return database;
 		}
 
-		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
+		final public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException {
+			cluster.synchronizeSecondaryDatabase(database);
+			return null;
+		}
 	}
 
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
@@ -1725,6 +1702,22 @@ public class DBDatabaseCluster extends DBDatabase {
 			}
 		}
 		return str.toString();
+	}
+
+	public DBRow[] getTrackedTables() {
+		return details.getTrackedTables();
+	}
+
+	public void setTrackedTables(Collection<DBRow> rows) {
+		details.setTrackedTables(rows);
+	}
+
+	public void addTrackedTable(DBRow row) {
+		details.addTrackedTable(row);
+	}
+
+	public void addTrackedTables(Collection<DBRow> rows) {
+		details.addTrackedTables(rows);
 	}
 
 	public static class Configuration {
