@@ -41,7 +41,6 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  *
