@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -228,13 +229,16 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	@SuppressWarnings("deprecation")
 	public void selectDBRowExpressionAllMarquesWithinOracleCluster() throws Exception {
 		boolean supportsDifferenceBetweenNullAndEmptyString = database.supportsDifferenceBetweenNullAndEmptyString();
-		DBDatabase oracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
-		try (var cluster = new DBDatabaseCluster("test required empty for null cluster", oracle)) {
+		DBDatabase pseudoOracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
+		List<Marque> requiredRowsForMarqueTable = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+		pseudoOracle.createTable(new Marque());
+		pseudoOracle.insert(requiredRowsForMarqueTable);
+		try (var cluster = new DBDatabaseCluster("test required empty for null cluster", pseudoOracle)) {
+			cluster.addTrackedTable(new Marque());
 			cluster.addDatabaseAndWait(database);
 
-			final ExpressionRow expressionRow = new ExpressionRow();
-			final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow)
-					.setQueryLabel("selectDBRowExpressionAllMarques");
+			final var expressionRow = new ExpressionRow();
+			final var expressionTable = database.getDBTable(expressionRow).setQueryLabel("selectDBRowExpressionAllMarques");
 
 			final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
 
@@ -296,11 +300,15 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	@SuppressWarnings("deprecation")
 	public void selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase() throws Exception {
 
-		DBDatabase oracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
+		DBDatabase h2PretendingToBeOracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
 		try (DBDatabaseCluster cluster = new DBDatabaseCluster("test required empty for null cluster", database)) {
-			cluster.addDatabaseAndWait(oracle);
-
+			cluster.addTrackedTable(new ExpressionRow());
+			cluster.addDatabaseAndWait(h2PretendingToBeOracle);
+			
 			final ExpressionRow expressionRow = new ExpressionRow();
+			h2PretendingToBeOracle.getDBTable(expressionRow).setBlankQueryAllowed(true).getAllRows();
+			database.getDBTable(expressionRow).setBlankQueryAllowed(true).getAllRows();
+			
 			final DBTable<ExpressionRow> expressionTable = cluster.getDBTable(expressionRow)
 					.setQueryLabel("selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase");
 
