@@ -89,20 +89,12 @@ public abstract class AbstractTest {
 	}
 
 	public final DBDatabase getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull() throws SQLException {
-		final String name = "DatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull" + (Math.random());
-		return new H2MemoryDB(
-				new H2MemorySettingsBuilder()
-						.setLabel(name)
-						.setDatabaseName(name)
-						.setDefinition(
-								new H2DBDefinition() {
-							@Override
-							public Boolean supportsDifferenceBetweenNullAndEmptyStringNatively() {
-								return false;
-							}
-						}
-						)
-		);
+		final String name = "DatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull-" + (Math.round(Math.random()*1000000000));
+		return new H2MemorySettingsBuilder()
+				.setLabel(name)
+				.setDatabaseName(name)
+				.setDefinition(new H2DBDefinition().getOracleCompatibleVersion())
+				.getDBDatabase();
 	}
 
 	protected synchronized static void getDatabasesFromSettings() throws InvocationTargetException, IllegalArgumentException, IOException, InstantiationException, SQLException, IllegalAccessException, ClassNotFoundException, SecurityException, NoSuchMethodException {
