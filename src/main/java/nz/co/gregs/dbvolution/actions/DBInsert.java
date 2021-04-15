@@ -184,7 +184,12 @@ public class DBInsert extends DBAction {
 							}
 							if (allPKsHaveBeenSet) {
 								// The primary key has already been sorted for us so execute and move on.
-								statement.execute(sql,QueryIntention.INSERT_ROW);
+								try {
+									statement.execute(sql, QueryIntention.INSERT_ROW);
+								} catch (java.sql.SQLIntegrityConstraintViolationException alreadyExists) {
+									db.delete(table);
+									statement.execute(sql, QueryIntention.INSERT_ROW);
+								}
 							} else {
 								if (primaryKeys.size() == 1) {
 									QueryableDatatype<?> primaryKey = primaryKeys.get(0);
