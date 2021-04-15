@@ -756,6 +756,25 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
+	public List<PropertyWrapper<?, ?, ?>> getNonPrimaryKeyNonDynamicPropertyWrappers() {
+		synchronized (fkFields) {
+			if (fkFields.isEmpty()) {
+				var props = getWrapper().getColumnPropertyWrappers();
+
+				for (var prop : props) {
+					if (prop.isColumn()) {
+						if (!prop.isPrimaryKey()) {
+							if (!prop.hasColumnExpression()) {
+								fkFields.add(prop);
+							}
+						}
+					}
+				}
+			}
+			return fkFields;
+		}
+	}
+
 	/**
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
