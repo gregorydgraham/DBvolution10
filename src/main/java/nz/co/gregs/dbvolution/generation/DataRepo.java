@@ -88,7 +88,7 @@ public class DataRepo {
 		return knownEntities;
 	}
 
-	public List<DBTableClass> getKnownEntities() {
+	public List<DBTableClass> getAllKnownEntities() {
 		List<DBTableClass> knownEntities = new ArrayList<DBTableClass>(0);
 		knownEntities.addAll(views);
 		knownEntities.addAll(tables);
@@ -106,7 +106,7 @@ public class DataRepo {
 	}
 
 	void compile(Options options) {
-		final List<DBTableClass> knownEntities = getKnownEntities();
+		final List<DBTableClass> knownEntities = getAllKnownEntities();
 		DBRowSubclassGenerator.generate(knownEntities, options);
 		knownEntities.stream().forEach(t -> rows.add(t.getGeneratedInstance()));
 	}
