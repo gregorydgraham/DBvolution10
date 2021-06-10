@@ -78,7 +78,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<>();
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
-//	private DBDefinition databaseDefinition = null;
 	private String selectSQLClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 	private String rawSQLClause = "";
@@ -89,10 +88,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private Long queryCount = null;
 	private transient QueryGraph queryGraph;
 	private SortProvider[] sortOrderColumns;
-//	private ArrayList<PropertyWrapper> sortOrder;
 	private List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
-	private boolean returnEmptyStringForNullString = false;
 	private DBDatabase workingDatabase;
 
 	/**
@@ -369,8 +366,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	public synchronized void clearResults() {
 		setResults(new ArrayList<DBQueryRow>());
-//		setResultsRowLimit(options.getRowLimit());
-//		setResultsPageIndex(options.getPageIndex());
 		setResultSQL(null);
 	}
 
@@ -378,7 +373,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return queryCount;
 	}
 
-	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException, LoopDetectedInRecursiveSQL {
+	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
 		long result = 0L;
 		try (DBStatement dbStatement = db.getDBStatement()) {
 			final String sqlForCount = details.getSQLForCount(details, options);
@@ -396,22 +391,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 		if (!options.getQueryDefinition().supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM ("
-					+ getSQLForQuery(new QueryState(details), QueryType.SELECT, details.getOptions())
+					+ getSQLForQuery(new QueryState(details), QueryType.SELECT, options)
 							.replaceAll("; *$", "")
 					+ ") A"
 					+ options.getQueryDefinition().endSQLStatement();
 		} else {
-			return getSQLForQuery(new QueryState(details), QueryType.COUNT, details.getOptions());
+			return getSQLForQuery(new QueryState(details), QueryType.COUNT, options);
 		}
-//		if (!getDatabaseDefinition(database).supportsFullOuterJoinNatively()) {
-//			return "SELECT COUNT(*) FROM ("
-//					+ getSQLForQuery(database, new QueryState(details), QueryType.SELECT, details.getOptions())
-//							.replaceAll("; *$", "")
-//					+ ") A"
-//					+ getDatabaseDefinition(database).endSQLStatement();
-//		} else {
-//			return getSQLForQuery(database, new QueryState(details), QueryType.COUNT, details.getOptions());
-//		}
 	}
 
 	protected synchronized String getSQLForQuery(QueryState queryState, QueryType queryType, QueryOptions options) {
@@ -1022,25 +1008,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private synchronized DBDatabase prepareForQuery(DBDatabase database, QueryOptions options) {
 		clearResults();
-		options.setOriginalDatabase(database);
 		setReturnEmptyStringForNullString(
 				getReturnEmptyStringForNullString()
 				|| !database.supportsDifferenceBetweenNullAndEmptyString()
 		);
 		DBDatabase dbToQueryWith = database;
-		if (dbToQueryWith instanceof DBDatabaseCluster) {
-			dbToQueryWith = ((DBDatabaseCluster) dbToQueryWith).getReadyDatabase();
-			// set the working database that will be quarantined from the cluster after an error
-			this.setWorkingDatabase(dbToQueryWith);
-		}
-
-		// make sure the query database is an actual database
-		while (dbToQueryWith instanceof DBDatabaseCluster) {
-			dbToQueryWith = ((DBDatabaseCluster) dbToQueryWith).getReadyDatabase();
-		}
 
 		options.setQueryDatabase(dbToQueryWith);
-		options.setQueryDefinition(getDatabaseDefinition(options.getQueryDatabase()));
 
 		return dbToQueryWith;
 	}
@@ -1096,24 +1070,24 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	@Override
 	public synchronized DBQueryable query(DBDatabase db) throws SQLException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL {
-		prepareForQuery(db, options);
-//		getOptions().setQueryDatabase(db);
-		final QueryType queryType = getOptions().getQueryType();
+		final QueryOptions currentOptions = getOptions();
+		prepareForQuery(db, currentOptions);
+		final QueryType queryType = currentOptions.getQueryType();
 		switch (queryType) {
 			case COUNT:
 				getResultSetCount(db, this);
 				break;
 			case ROWSFORPAGE:
-				getAllRowsForPage(options);
+				getAllRowsForPage(currentOptions);
 				break;
 			case GENERATESQLFORSELECT:
-				this.setResultSQL(getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions()));
+				this.setResultSQL(getSQLForQuery(new QueryState(this), QueryType.SELECT, currentOptions));
 				break;
 			case GENERATESQLFORCOUNT:
-				this.setResultSQL(getSQLForCount(this, options));
+				this.setResultSQL(getSQLForCount(this, currentOptions));
 				break;
 			case SELECT:
-				fillResultSetInternal(this, getOptions());
+				fillResultSetInternal(this, currentOptions);
 				break;
 			default:
 				throw new UnsupportedOperationException("Query Type Not Supported: " + queryType);
@@ -1208,7 +1182,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			for (int i = 0; i < 11 && i < trace.length; i++) {
 				System.out.println("" + trace[i]);
 			}
-			options.getOriginalDatabase().handleErrorDuringExecutingSQL(getWorkingDatabase(), e, sqlString);
+			options.getQueryDatabase().handleErrorDuringExecutingSQL(getWorkingDatabase(), e, sqlString);
 			throw e;
 		}
 		for (DBQueryRow result : foundRows) {
@@ -1598,11 +1572,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	public void setReturnEmptyStringForNullString(boolean b) {
-		this.returnEmptyStringForNullString = b;
+//		this.returnEmptyStringForNullString = b;
+		getOptions().setRequireEmptyStringForNullString(b);
 	}
 
 	public boolean getReturnEmptyStringForNullString() {
-		return returnEmptyStringForNullString;
+//		return returnEmptyStringForNullString;
+		return getOptions().getRequireEmptyStringForNullString();
+
 	}
 
 	public void setWorkingDatabase(DBDatabase database) {
