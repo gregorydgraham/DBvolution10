@@ -32,8 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.ArrayList;
-import java.util.Random;
-import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 
@@ -114,18 +112,6 @@ public class DBStatementCluster extends DBStatement {
 			executed = Math.max(executed, next.executeUpdate(string, i));
 		}
 		return executed;
-	}
-
-	private DBStatement getRandomStatement() throws SQLException {
-		Random rand = new Random();
-		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
-		DBStatement randomElement = dbStatements.get(rand.nextInt(dbStatements.size()));
-		return randomElement;
-	}
-
-	@Override
-	public ResultSet getGeneratedKeys() throws SQLException {
-		return getRandomStatement().getGeneratedKeys();
 	}
 
 	@Override
@@ -256,11 +242,6 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public int getQueryTimeout() throws SQLException {
-		return getRandomStatement().getQueryTimeout();
-	}
-
-	@Override
 	public void setEscapeProcessing(boolean bln) throws SQLException {
 		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
 		for (DBStatement next : dbStatements) {
@@ -277,21 +258,11 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public int getMaxRows() throws SQLException {
-		return getRandomStatement().getMaxRows();
-	}
-
-	@Override
 	public void setMaxFieldSize(int i) throws SQLException {
 		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
 		for (DBStatement next : dbStatements) {
 			next.setMaxRows(i);
 		}
-	}
-
-	@Override
-	public int getMaxFieldSize() throws SQLException {
-		return getRandomStatement().getMaxFieldSize();
 	}
 
 	@Override
@@ -311,15 +282,4 @@ public class DBStatementCluster extends DBStatement {
 		}
 		return executed;
 	}
-
-	@Override
-	public ResultSet executeQuery(String string, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
-		return getRandomStatement().executeQuery(string, intent);
-	}
-
-	@Override
-	public ResultSet executeQuery(String string, String label, QueryIntention intent) throws SQLException, LoopDetectedInRecursiveSQL {
-		return getRandomStatement().executeQuery(string, label, intent);
-	}
-
 }
