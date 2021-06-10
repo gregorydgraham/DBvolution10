@@ -766,10 +766,6 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean requiresAddingTimeZoneToCurrentLocalDateTime() {
-		return true;
-	}
-	@Override
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
 	}
