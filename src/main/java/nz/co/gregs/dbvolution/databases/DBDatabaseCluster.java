@@ -109,7 +109,6 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
-	private final transient DBStatementCluster clusterStatement;
 
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
 		this(builder.getDatabaseName(), new Configuration(builder.getAutoRebuild(), builder.getAutoReconnect()));
@@ -151,7 +150,6 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config) {
 		super();
-		clusterStatement = new DBStatementCluster(this);
 		details = new ClusterDetails();
 		details.setClusterLabel(clusterLabel);
 		details.setAutoRebuild(config.isUseAutoRebuild());
@@ -300,10 +298,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	final public synchronized void setDatabaseName(String databaseName) {
 		super.setDatabaseName(databaseName);
 		details.setClusterLabel(databaseName);
-	}
-
-	private synchronized DBStatement getClusterStatement() {
-		return clusterStatement;
 	}
 
 	/**
@@ -611,6 +605,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, UnableToRemoveLastDatabaseFromClusterException {
+		removeTrackedTable(tableRow);
 		if (getPreventAccidentalDroppingOfTables()) {
 			throw new AccidentalDroppingOfTableException();
 		}
@@ -628,6 +623,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException, UnableToRemoveLastDatabaseFromClusterException {
+		removeTrackedTable(tableRow);
 		if (getPreventAccidentalDroppingOfTables()) {
 			throw new AccidentalDroppingOfTableException();
 		}
@@ -711,6 +707,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTableRow);
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -730,7 +727,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+	public synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTableRow);
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -754,6 +752,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
+		addTrackedTables(newTables);
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -768,6 +767,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void createTablesNoExceptions(DBRow... newTables) {
+		addTrackedTables(Arrays.asList(newTables));
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -782,6 +782,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
+		addTrackedTables(Arrays.asList(newTables));
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -796,6 +797,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTable);
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -810,6 +812,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTable);
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -921,186 +924,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		return result;
 	}
 
-//	@Override
-//	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.getRows(report, examples);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<>(0);
-//	}
-//	@Override
-//	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.getAllRows(report, examples);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<>(0);
-//	}
-//	@Override
-//	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.get(report, examples);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<>(0);
-//	}
-//	@Override
-//	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow row, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.get(expectedNumberOfRows, row, rows);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<>(0);
-//	}
-//	@Override
-//	public List<DBQueryRow> getByExamples(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.getByExamples(row, rows);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<>(0);
-//	}
-//	@Override
-//	public List<DBQueryRow> get(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.get(row, rows);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<>(0);
-//	}
-//	@Override
-//	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
-//				} catch (SQLException | AccidentalBlankQueryException | UnexpectedNumberOfRowsException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<R>(0);
-//	}
-//	@Override
-//	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.get(expectedNumberOfRows, exampleRow);
-//				} catch (SQLException | AccidentalBlankQueryException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<R>(0);
-//	}
-//	@Override
-//	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.getByExample(exampleRow);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					}
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<R>(0);
-//	}
-//	@Override
-//	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-//		DBDatabase readyDatabase;
-//		boolean finished = false;
-//		do {
-//			readyDatabase = getReadyDatabase();
-//			synchronized (readyDatabase) {
-//				try {
-//					return readyDatabase.get(exampleRow);
-//				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
-//					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
-//						throw e;
-//					};
-//				}
-//			}
-//		} while (!finished);
-//		return new ArrayList<R>(0);
-//	}
 	@Override
 	public DBConnection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnection should not be used.");
@@ -1108,7 +931,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
-		return getClusterStatement();
+		throw new UnsupportedOperationException("DBDatabase.getLowLevelStatement should not be used.");
 	}
 
 	@Override
@@ -1173,15 +996,20 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+		final DBDatabase workingDB = getReadyDatabase();
 		try {
-			return super.executeDBQuery(query);
+			query.setWorkingDatabase(workingDB);
+			// set oracle compatibility 
+			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString()&&!getDefinition().canProduceNullStrings());
+			// hand the job down to the next layer
+			return workingDB.executeDBQuery(query);
 		} catch (AccidentalBlankQueryException | AccidentalCartesianJoinException errorWithTheQueryException) {
 			throw errorWithTheQueryException;
 		} catch (NoAvailableDatabaseException errorWithTheClusterException) {
 			throw errorWithTheClusterException;
 		} catch (SQLException e) {
-			if (handleExceptionDuringQuery(e, query.getWorkingDatabase()).equals(HandlerAdvice.ABORT)) {
-				quarantineDatabaseAutomatically(query.getWorkingDatabase(), e);
+			if (handleExceptionDuringQuery(e, workingDB).equals(HandlerAdvice.ABORT)) {
+				quarantineDatabaseAutomatically(workingDB, e);
 				throw e;
 			}
 		}
@@ -1356,9 +1184,10 @@ public class DBDatabaseCluster extends DBDatabase {
 								if (primaryTableCount > 0) {
 									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 									// Check that the new database has data
-									LOG.info("CLUSTER FILLING NEW DATABASE TABLE " + table.getTableName());
+									LOG.info("CLUSTER FILLING NEW DATABASE TABLE " + secondary.getLabel() + ":" + table.getTableName());
 									List<DBRow> allRows = primaryData.getAllRows();
 									secondaryTable.insert(allRows);
+									LOG.info("CLUSTER FILLED  NEW DATABASE TABLE " + secondary.getLabel() + ":" + table.getTableName());
 								}
 							}
 						}
@@ -1372,7 +1201,6 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronizeActions(secondary);
 		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
 			quarantineDatabaseAutomatically(secondary, ex);
-			throw ex;
 		}
 	}
 
@@ -1718,6 +1546,22 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public void addTrackedTables(Collection<DBRow> rows) {
 		details.addTrackedTables(rows);
+	}
+
+	public void addTrackedTables(DBRow... rows) {
+		details.addTrackedTables(Arrays.asList(rows));
+	}
+
+	public void removeTrackedTable(DBRow row) {
+		details.removeTrackedTable(row);
+	}
+
+	public void removeTrackedTables(Collection<DBRow> rows) {
+		details.removeTrackedTables(rows);
+	}
+
+	public void removeTrackedTables(DBRow... rows) {
+		details.removeTrackedTables(Arrays.asList(rows));
 	}
 
 	public static class Configuration {
