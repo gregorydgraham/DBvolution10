@@ -85,6 +85,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		final DBDatabaseClusterTestTable testTable = new DBDatabaseClusterTestTable();
 
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.addTrackedTable(testTable);
 			Assert.assertTrue(cluster.tableExists(testTable));
 			final DBTable<DBDatabaseClusterTestTable> query = cluster
 					.getDBTable(testTable)
@@ -134,6 +135,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 				cluster.addDatabase(slowSynchingDB);
 				Assert.assertThat(cluster.getDatabaseStatus(slowSynchingDB), not(DBDatabaseCluster.Status.READY));
+				Assert.assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
 
 				int i = 1;
 				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY) {
@@ -149,9 +151,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				);
 
 				Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
-				Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
-				Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
-				Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
 
 				Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
 				Assert.assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
@@ -165,6 +164,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
 			Assert.assertTrue(cluster.tableExists(testTable));
+			cluster.addTrackedTable(testTable);
 			final DBTable<DBDatabaseClusterTestTable2> query = cluster
 					.getDBTable(testTable)
 					.setBlankQueryAllowed(true);
@@ -397,11 +397,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			};
 			cluster.addDatabaseAndWait(soloDB2);
-			Assert.assertThat(cluster.size(), is(2));
-			try {
-				cluster.createTable(new TableThatDoesExistOnTheCluster());
-			} catch (SQLException | AutoCommitActionDuringTransactionException e) {
-			}
 			Assert.assertThat(cluster.size(), is(1));
 		}
 	}
