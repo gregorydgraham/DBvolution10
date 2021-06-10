@@ -43,7 +43,7 @@ public class QueryOptions implements Serializable {
 	private boolean queryIsNativeQuery = true;
 	private QueryType queryType = QueryType.SELECT;
 	private boolean printSQLBeforeExecution = false;
-	private DBDatabase originalDatabase;
+	private boolean requireEmptyStringForNullString = false;
 
 	public QueryOptions() {
 		super();
@@ -62,6 +62,7 @@ public class QueryOptions implements Serializable {
 		setRowLimit(opts.getRowLimit());
 		setSortColumns(opts.getSortColumns());
 		setUseANSISyntax(opts.isUseANSISyntax());
+		setRequireEmptyStringForNullString(opts.getRequireEmptyStringForNullString());
 	}
 
 	/**
@@ -337,14 +338,13 @@ public class QueryOptions implements Serializable {
 		return queryDatabase;
 	}
 
-	private DBDefinition queryDefinition;
-
-	public final void setQueryDefinition(DBDefinition db) {
-		queryDefinition = db;
-	}
-
 	public DBDefinition getQueryDefinition() {
-		return queryDefinition;
+		final DBDefinition definition = getQueryDatabase().getDefinition();
+		if (getRequireEmptyStringForNullString()){
+			return definition.getOracleCompatibleVersion();
+		}else {
+			return definition;
+		}
 	}
 
 	private void setMatchAllConditions(boolean matchAllConditions) {
@@ -363,11 +363,17 @@ public class QueryOptions implements Serializable {
 		return printSQLBeforeExecution;
 	}
 
-	protected void setOriginalDatabase(DBDatabase database) {
-		originalDatabase = database;
+	/**
+	 * @return the requireEmptyStringForNullString
+	 */
+	public boolean getRequireEmptyStringForNullString() {
+		return requireEmptyStringForNullString;
 	}
 
-	public DBDatabase getOriginalDatabase() {
-		return originalDatabase;
+	/**
+	 * @param requireEmptyStringForNullString the requireEmptyStringForNullString to set
+	 */
+	public void setRequireEmptyStringForNullString(boolean requireEmptyStringForNullString) {
+		this.requireEmptyStringForNullString = requireEmptyStringForNullString;
 	}
 }
