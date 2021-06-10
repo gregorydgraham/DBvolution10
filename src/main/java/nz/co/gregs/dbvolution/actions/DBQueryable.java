@@ -59,10 +59,16 @@ public interface DBQueryable {
 	 */
 	public DBQueryable query(DBDatabase db) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException;
 
-	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException ;
+	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException;
 
 	public String toSQLString(DBDatabase db);
 
+	public void setWorkingDatabase(DBDatabase database);
+
 	public DBDatabase getWorkingDatabase();
+
+	public void setReturnEmptyStringForNullString(boolean produceEmptyStringsForNull);
+
+	public boolean getReturnEmptyStringForNullString();
 
 }
