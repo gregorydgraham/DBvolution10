@@ -809,7 +809,7 @@
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
 								<testMySQLContainer>true</testMySQLContainer>
-								<testPostgresContainer>true</testPostgresContainer>
+								<testPostgres>true</testPostgres>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -835,11 +835,12 @@
 								<!--<testMySQLContainer>true</testMySQLContainer>-->
 								<testMySQL>true</testMySQL>
 								<testPostgresContainer>true</testPostgresContainer>
+								<testPostgres>true</testPostgres>
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
 								<testFullCluster>true</testFullCluster>
-								<testMSSQLServerContainer>true</testMSSQLServerContainer>
-								<testOracleXEContainer>true</testOracleXEContainer>
+								<testMSSQLServer>true</testMSSQLServer>
+								<testOracleXE>true</testOracleXE>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -916,10 +917,12 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<testPostgresContainer>true</testPostgresContainer>
-								<testMySQLContainer>true</testMySQLContainer>
-								<testOracleXEContainer>true</testOracleXEContainer>
-								<testMSSQLServerContainer>true</testMSSQLServerContainer>
+								<testPostgres>true</testPostgres>
+								<!--<testPostgresContainer>true</testPostgresContainer>-->
+								<testMySQL>true</testMySQL>
+								<!--<testMySQLContainer>true</testMySQLContainer>-->
+								<testOracleXE>true</testOracleXE>
+								<testMSSQLServer>true</testMSSQLServer>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -970,7 +973,7 @@
 					<artifactId>ojdbc8</artifactId>
 					<version>19.3.0.0</version>
 				</dependency>
-				<!--				<dependency>
+<!--				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
 					<artifactId>ojdbc8</artifactId>
 					<version>19.3.0.0</version>
