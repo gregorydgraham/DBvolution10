@@ -148,15 +148,14 @@ public class DBDatabaseGetTest extends AbstractTest {
 		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
 		if (notOracle) {
 			Assert.assertEquals(2, gotMarques.size());
-		} else {
-			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
-		}
-
-		if (notOracle) {
 			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
 		} else {
-			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.getValue().isEmpty());
+			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
+			Assert.assertEquals(false, gotMarques.get(0).individualAllocationsAllowed.isNull());
+			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isEmptyOrNullString());
+			Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isEmptyString());
 		}
+
 	}
 
 	@Test
