@@ -123,6 +123,8 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			// Checking the table will generate exceptions
 			if (!intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
 				System.out.println("REPEATED EXCEPTIONS FROM: " + sql);
+				exp.printStackTrace();
+				ex.printStackTrace();
 			}
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
