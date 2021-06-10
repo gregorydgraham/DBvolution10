@@ -45,7 +45,6 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException;
 import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
-import nz.co.gregs.dbvolution.generation.DBTableClass;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.encryption.Encryption_Internal;
 import org.apache.commons.logging.Log;
@@ -256,6 +255,18 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
+	public void removeTrackedTable(DBRow row) {
+		synchronized (trackedTables) {
+			trackedTables.remove(row);
+		}
+	}
+
+	public void removeTrackedTables(Collection<DBRow> rows) {
+		synchronized (trackedTables) {
+			trackedTables.removeAll(rows);
+		}
+	}
+
 	public synchronized void readyDatabase(DBDatabase databaseToReady) throws SQLException {
 		DBDatabase secondary = getClusteredVersionOfDatabase(databaseToReady); // new DBDatabase(databaseToReady);
 		unsynchronizedDatabases.remove(secondary);
@@ -353,7 +364,7 @@ public class ClusterDetails implements Serializable {
 
 	private synchronized void setAuthoritativeDatabase() {
 		if (useAutoRebuild) {
-			for (DBDatabase db : allDatabases) {
+			for (DBDatabase db : readyDatabases) {
 				final String name = getClusterLabel();
 				if (!db.isMemoryDatabase() && name != null && !name.isEmpty()) {
 					final String encode = db.getSettings().encode();
