@@ -32,6 +32,7 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.separatedstring.SeparatedString;
@@ -219,5 +220,17 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	@Override
 	public final String getUsername() {
 		return getStoredSettings().getUsername();
+	}
+
+	@Override
+	public DataSource getDataSource() {
+		return getStoredSettings().getDataSource();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public SELF setDataSource(DataSource dataSource) {
+		getStoredSettings().setDataSource(dataSource);
+		return (SELF) this;
 	}
 }

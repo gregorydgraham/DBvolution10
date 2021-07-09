@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -111,5 +112,9 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF, DATABASE>, D
 	DBDefinition getDefaultDefinition();
 
 	SELF setDefinition(DBDefinition defn);
+	
+	DataSource getDataSource();
+
+	SELF setDataSource(DataSource dataSource);
 
 }
