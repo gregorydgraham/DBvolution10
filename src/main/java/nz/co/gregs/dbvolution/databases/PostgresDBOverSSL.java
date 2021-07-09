@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresOverSSLSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  * Extends the PostgreSQL database connection by adding SSL.
@@ -55,8 +54,8 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 *
 	 * @see DBDefinition
 	 */
-	protected PostgresDBOverSSL() {
-	}
+//	protected PostgresDBOverSSL() {
+//	}
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.

@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MariaDBSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
@@ -42,7 +41,11 @@ public class MariaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(DataSource ds) throws SQLException {
-		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
+		super(
+				new MariaDBSettingsBuilder()
+						.setDataSource(ds)
+		);
+//		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
 
 	/**

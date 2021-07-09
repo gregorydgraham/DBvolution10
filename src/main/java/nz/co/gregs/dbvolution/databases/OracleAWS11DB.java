@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleAWS11SettingsBuilder;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
@@ -66,8 +65,8 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 *
 	 * @see DBDefinition
 	 */
-	protected OracleAWS11DB() {
-	}
+//	protected OracleAWS11DB() {
+//	}
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.

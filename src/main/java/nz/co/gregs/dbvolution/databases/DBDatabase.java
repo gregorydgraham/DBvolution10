@@ -239,129 +239,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
-	 *
-	 * <p>
-	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
-	 *
-	 * @param definition - the subclass of DBDefinition that provides the syntax
-	 * for your database.
-	 * @param driverName the class name of the database driver
-	 * @param ds - a DataSource for the required database.
-	 * @throws java.sql.SQLException database errors
-	 * @see DBDefinition
-	 * @see OracleDB
-	 * @see MSSQLServerDB
-	 * @see MySQLDB
-	 * @see PostgresDB
-	 * @see H2DB
-	 * @see H2MemoryDB
-	 * @see InformixDB
-	 * @see MariaDB
-	 * @see MariaClusterDB
-	 * @see NuoDB
-	 */
-	public DBDatabase(DBDefinition definition, String driverName, DataSource ds) throws SQLException {
-		this();
-		setDBDatabaseClassInSettings();
-		this.definition = definition;
-		initDriver(driverName);
-		settings.setDataSource(ds);
-		setDBDatabaseClassInSettings();
-		createRequiredTables();
-		checkForTimezoneIssues();
-	}
-
-	/**
-	 * Define a new DBDatabase.
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
-	 *
-	 * <p>
-	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
-	 *
-	 * @param definition - the subclass of DBDefinition that provides the syntax
-	 * for your database.
-	 * @param driverName the class name of the database driver
-	 * @param dcs - a DatabaseConnectionSettings for the required database.
-	 * @throws java.sql.SQLException database errors
-	 * @see DBDefinition
-	 * @see OracleDB
-	 * @see MSSQLServerDB
-	 * @see MySQLDB
-	 * @see PostgresDB
-	 * @see H2DB
-	 * @see H2MemoryDB
-	 * @see InformixDB
-	 * @see MariaDB
-	 * @see MariaClusterDB
-	 * @see NuoDB
-	 */
-	@Deprecated
-	private DBDatabase(DBDefinition definition, String driverName, DatabaseConnectionSettings dcs) throws SQLException {
-		this();
-		this.definition = definition;
-		initDriver(driverName);
-		this.settings.copy(dcs);
-		this.setDatabaseName(settings.getDatabaseName());
-		setDBDatabaseClassInSettings();
-		createRequiredTables();
-		checkForTimezoneIssues();
-	}
-
-	/**
-	 * Define a new DBDatabase.
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
-	 *
-	 * <p>
-	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
-	 *
-	 * @param definition - the subclass of DBDefinition that provides the syntax
-	 * for your database.
-	 * @param driverName the class name of the database driver
-	 * @param settingsBuilder - a DatabaseConnectionSettings for the required
-	 * database.
-	 * @throws java.sql.SQLException database errors
-	 * @see DBDefinition
-	 * @see OracleDB
-	 * @see MSSQLServerDB
-	 * @see MySQLDB
-	 * @see PostgresDB
-	 * @see H2DB
-	 * @see H2MemoryDB
-	 * @see InformixDB
-	 * @see MariaDB
-	 * @see MariaClusterDB
-	 * @see NuoDB
-	 */
-	@Deprecated
-	private DBDatabase(DBDefinition definition, String driverName, SettingsBuilder<?, ?> settingsBuilder) throws SQLException {
-		this();
-		this.definition = definition;
-		initDriver(driverName);
-		this.settings.copy(settingsBuilder.toSettings());
-		this.setDatabaseName(settings.getDatabaseName());
-		setDBDatabaseClassInSettings(settingsBuilder);
-		createRequiredTables();
-		checkForTimezoneIssues();
-	}
-
-	/**
-	 * Define a new DBDatabase.
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Check the
 	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
 	 * database.
 	 *
@@ -400,46 +277,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		createRequiredTables();
 		checkForTimezoneIssues();
 	}
-
-	/**
-	 * Define a new DBDatabase.
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
-	 *
-	 * <p>
-	 * Create a new DBDatabase by providing the connection details
-	 *
-	 * @param definition - the subclass of DBDefinition that provides the syntax
-	 * for your database.
-	 * @param driverName - The name of the JDBC class that is the Driver for this
-	 * database.
-	 * @param jdbcURL - The JDBC URL to connect to the database.
-	 * @param username - The username to login to the database as.
-	 * @param password - The users password for the database.
-	 * @throws java.sql.SQLException database errors
-	 * @see DBDefinition
-	 * @see OracleDB
-	 * @see MySQLDB
-	 * @see MSSQLServerDB
-	 * @see H2DB
-	 * @see H2MemoryDB
-	 * @see InformixDB
-	 * @see PostgresDB
-	 */
-	@Deprecated
-	private DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		this();
-		this.definition = definition;
-		initDriver(driverName);
-		settings.copy(this.getSettingsFromJDBCURL(jdbcURL));
-		settings.setUsername(username);
-		settings.setPassword(password);
-		createRequiredTables();
-		checkForTimezoneIssues();
-	}
-
+	
 	private void initDriver(SettingsBuilder<?, ?> settings) {
 		if (settings instanceof VendorSettingsBuilder) {
 			final String newDriverName = ((VendorSettingsBuilder<?, ?>) settings).getDriverName();
@@ -1442,6 +1280,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	synchronized void printSQLIfRequested(String sqlString, PrintStream out) {
 		if (printSQLBeforeExecuting) {
 			out.println("DATABASE: "+this.toString());
+			out.println("SUPPORTS NULL STRING: "+this.supportsDifferenceBetweenNullAndEmptyString());
 			out.println(sqlString);
 		}
 	}
@@ -2731,10 +2570,14 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
 
 		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
-		String testQuery = getDBTable(table)
-				.setQueryTimeout(10000)
-				.setBlankQueryAllowed(true)
-				.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
+//		final String sqlForQuery = getDBTable(table)
+//				.setQueryTimeout(10000)
+//				.setBlankQueryAllowed(true)
+//				.setRowLimit(1).getSQLForQuery();
+//		String testQuery = sqlForQuery.replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
+//		System.out.println("ORIGINAL QUERY: "+sqlForQuery);
+//		System.out.println("ALTERED QUERY: "+testQuery);
+		String testQuery = definition.getTableStructureQuery(table, getDBTable(table));
 		try (DBStatement dbStatement = getDBStatement()) {
 			try (ResultSet resultSet = dbStatement.executeQuery(
 					testQuery,

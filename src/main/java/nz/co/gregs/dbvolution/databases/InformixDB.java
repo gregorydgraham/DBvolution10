@@ -50,7 +50,12 @@ public class InformixDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected InformixDB(DBDefinition definition, DataSource ds) throws SQLException {
-		super(definition, INFORMIXDRIVERNAME, ds);
+		super(
+				new InformixSettingsBuilder()
+						.setDataSource(ds)
+						.setDefinition(definition)
+		);
+//		super(definition, INFORMIXDRIVERNAME, ds);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
 	}

@@ -22,7 +22,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -77,9 +76,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @see OracleAWS11DB
 	 * @see OracleAWSDB
 	 */
-	protected OracleDB() {
-
-	}
+//	protected OracleDB() {
+//
+//	}
 
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
@@ -132,17 +131,6 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	@Deprecated
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(new Oracle11XESettingsBuilder().fromJDBCURL(jdbcURL, username, password).setDefinition(definition).setDriverName(driverName));
-	}
-
-	/**
-	 * Creates a DBDatabase instance.
-	 *
-	 * @param dbDefinition an oracle database definition instance
-	 * @param dataSource a data source to an Oracle database
-	 * @throws java.sql.SQLException database errors
-	 */
-	public OracleDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
-		super(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
 	}
 
 	/**

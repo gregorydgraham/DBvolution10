@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.JavaDBSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractJavaDBSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
@@ -44,8 +43,8 @@ public class JavaDB extends DBDatabase {
 	 * Default Constructor.
 	 *
 	 */
-	public JavaDB() {
-	}
+//	public JavaDB() {
+//	}
 
 	/**
 	 * Creates a new JavaDB instance that will connect to the DataSource.
@@ -54,7 +53,11 @@ public class JavaDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDB(DataSource dataSource) throws SQLException {
-		super(new JavaDBDefinition(), DRIVER_NAME, dataSource);
+		super(
+				new JavaDBSettingsBuilder()
+						.setDataSource(dataSource)
+		);
+//		super(new JavaDBDefinition(), DRIVER_NAME, dataSource);
 	}
 
 	/**

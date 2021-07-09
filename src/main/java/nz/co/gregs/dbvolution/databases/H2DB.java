@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SettingsBuilder;
-import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
@@ -79,9 +78,9 @@ public class H2DB extends DBDatabase {
 	 * Default constructor, try not to use this.
 	 *
 	 */
-	protected H2DB() {
-		super();
-	}
+//	protected H2DB() {
+//		super();
+//	}
 
 	/**
 	 * Creates a DBDatabase for a H2 database in the file supplied.
@@ -103,10 +102,10 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(File file, String username, String password) throws IOException, SQLException {
 		this(new H2SettingsBuilder()
-						.setDatabaseName(file.getCanonicalFile().toString())
-						.setUsername(username)
-						.setPassword(password)
-						.toSettings()
+				.setDatabaseName(file.getCanonicalFile().toString())
+				.setUsername(username)
+				.setPassword(password)
+				.toSettings()
 		);
 //		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
 	}
@@ -121,7 +120,10 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2DB(DataSource dataSource) throws SQLException {
-		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
+		super(
+				new H2SettingsBuilder().setDataSource(dataSource)
+		);
+//		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
 	}
 
 	/**
@@ -147,7 +149,7 @@ public class H2DB extends DBDatabase {
 	 * @param settings dataSource
 	 * @throws java.sql.SQLException database errors
 	 */
-	protected H2DB(AbstractH2SettingsBuilder<?,?> settings) throws SQLException {
+	protected H2DB(AbstractH2SettingsBuilder<?, ?> settings) throws SQLException {
 		super(settings);
 	}
 
@@ -166,10 +168,10 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		this(new H2SettingsBuilder()
-						.fromJDBCURL(jdbcURL)
-						.setUsername(username)
-						.setPassword(password)
-						.toSettings()
+				.fromJDBCURL(jdbcURL)
+				.setUsername(username)
+				.setPassword(password)
+				.toSettings()
 		);
 	}
 
@@ -198,8 +200,9 @@ public class H2DB extends DBDatabase {
 
 	/**
 	 * Creates a DBDatabase for a H2 database.
-	 * 
-	 * <p>Database exceptions may be thrown</p>
+	 *
+	 * <p>
+	 * Database exceptions may be thrown</p>
 	 *
 	 * @param settings
 	 * @throws java.sql.SQLException database errors
@@ -325,7 +328,6 @@ public class H2DB extends DBDatabase {
 //			return noPrefix.replaceAll("^file:", "").split(";", 2)[0];
 //		}
 //	}
-
 //	@Override
 //	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 //		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
@@ -375,7 +377,7 @@ public class H2DB extends DBDatabase {
 	private final static H2SettingsBuilder URL_PROCESSOR = new H2SettingsBuilder();
 
 	@Override
-	 public AbstractH2SettingsBuilder<?,?> getURLInterpreter() {
+	public AbstractH2SettingsBuilder<?, ?> getURLInterpreter() {
 		return URL_PROCESSOR;
 	}
 }

@@ -335,7 +335,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return addDatabaseWithWaiting(database, true);
 	}
 
-	private boolean addDatabaseWithWaiting(DBDatabase database, boolean wait) throws SQLException {
+	private synchronized boolean addDatabaseWithWaiting(DBDatabase database, boolean wait) throws SQLException {
 		boolean add = details.add(database);
 		synchronizeAddedDatabases(wait);
 		return add;
@@ -1153,7 +1153,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	private synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		try {
 			DBDatabase template = null;
 			try {

@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.JavaDBMemorySettingsBuilder;
-import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -41,8 +40,8 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * Default Constructor.
 	 *
 	 */
-	public JavaDBMemoryDB() {
-	}
+//	public JavaDBMemoryDB() {
+//	}
 
 	/**
 	 * Creates a new JavaDB instance that will connect to the DataSource.
@@ -51,7 +50,11 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public JavaDBMemoryDB(DataSource dataSource) throws SQLException {
-		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, dataSource);
+		super(
+				new JavaDBMemorySettingsBuilder()
+						.setDataSource(dataSource)
+		);
+//		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, dataSource);
 	}
 
 	/**
@@ -90,11 +93,11 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		this(new JavaDBMemorySettingsBuilder()
-						.setHost(host)
-						.setPort(port)
-						.setDatabaseName(database)
-						.setUsername(username)
-						.setPassword(password)
+				.setHost(host)
+				.setPort(port)
+				.setDatabaseName(database)
+				.setUsername(username)
+				.setPassword(password)
 		);
 	}
 
@@ -112,12 +115,12 @@ public class JavaDBMemoryDB extends DBDatabase {
 	public boolean isMemoryDatabase() {
 		return true;
 	}
-	
+
 	@Override
 	public Integer getDefaultPort() {
 		return 1527;
 	}
-	
+
 	@Override
 	public JavaDBMemorySettingsBuilder getURLInterpreter() {
 		return new JavaDBMemorySettingsBuilder();

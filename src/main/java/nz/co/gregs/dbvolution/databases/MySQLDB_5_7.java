@@ -20,7 +20,6 @@ import java.sql.Statement;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQL_5_7SettingsBuilder;
-import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
@@ -47,7 +46,10 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB_5_7(DataSource ds) throws SQLException {
-		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, ds);
+		super(
+				new MySQL_5_7SettingsBuilder().setDataSource(ds)
+		);
+//		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, ds);
 	}
 	
 	/**

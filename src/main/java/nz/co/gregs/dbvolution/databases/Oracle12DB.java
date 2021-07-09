@@ -45,9 +45,9 @@ public class Oracle12DB extends OracleDB {
 	 *
 	 *
 	 */
-	protected Oracle12DB() {
-		super();
-	}
+//	protected Oracle12DB() {
+//		super();
+//	}
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
@@ -56,7 +56,10 @@ public class Oracle12DB extends OracleDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(DataSource dataSource) throws SQLException {
-		super(new Oracle12DBDefinition(), dataSource);
+		super(
+				new Oracle12SettingsBuilder().setDataSource(dataSource)
+		);
+//		super(new Oracle12DBDefinition(), dataSource);
 	}
 
 	/**

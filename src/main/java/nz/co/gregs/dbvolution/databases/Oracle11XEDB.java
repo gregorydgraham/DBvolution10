@@ -67,9 +67,9 @@ public class Oracle11XEDB extends OracleDB {
 	 *
 	 * @see DBDefinition
 	 */
-	public Oracle11XEDB() {
-		super();
-	}
+//	public Oracle11XEDB() {
+//		super();
+//	}
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.
@@ -78,7 +78,10 @@ public class Oracle11XEDB extends OracleDB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle11XEDB(DataSource dataSource) throws SQLException {
-		super(new Oracle11XEDBDefinition(), dataSource);
+		super(
+				new Oracle11XESettingsBuilder().setDataSource(dataSource)
+		);
+//		super(new Oracle11XEDBDefinition(), dataSource);
 	}
 
 	/**

@@ -54,7 +54,11 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MySQLDB(DataSource ds) throws SQLException {
-		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, ds);
+		super(
+				new MySQLSettingsBuilder().setDataSource(ds)
+		);
+
+//		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, ds);
 	}
 
 	/**

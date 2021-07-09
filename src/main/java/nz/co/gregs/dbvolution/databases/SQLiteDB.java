@@ -25,8 +25,6 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import org.sqlite.SQLiteConfig;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
 
@@ -63,8 +61,8 @@ public class SQLiteDB extends DBDatabase {
 	 *
 	 * @see DBDefinition
 	 */
-	protected SQLiteDB() {
-	}
+//	protected SQLiteDB() {
+//	}
 
 	/**
 	 * Creates a DBDatabase tweaked for a SQLite database on the DataSource
@@ -74,7 +72,11 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public SQLiteDB(DataSource ds) throws SQLException {
-		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
+		super(
+				new SQLiteSettingsBuilder().setDataSource(ds)
+		);
+
+//		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
 	}
 
 	/**

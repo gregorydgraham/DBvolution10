@@ -25,8 +25,6 @@ import java.util.TimeZone;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractPostgresSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
@@ -89,9 +87,9 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 *
 	 * @see DBDefinition
 	 */
-	protected PostgresDB() {
-		super();
-	}
+//	protected PostgresDB() {
+//		super();
+//	}
 
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
@@ -100,7 +98,11 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public PostgresDB(DataSource ds) throws SQLException {
-		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, ds);
+		super(
+				new PostgresSettingsBuilder().setDataSource(ds)
+		);
+
+//		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, ds);
 	}
 
 	/**

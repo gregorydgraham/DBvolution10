@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleAWS11SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
@@ -70,8 +71,8 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @see OracleAWS11DB
 	 * @see OracleAWSDB
 	 */
-	protected OracleAWSDB() {
-	}
+//	protected OracleAWSDB() {
+//	}
 
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
@@ -145,7 +146,10 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWSDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
-		super(dbDefinition, dataSource);
+		super(
+				new OracleAWS11SettingsBuilder().setDataSource(dataSource)
+		);
+//		super(dbDefinition, dataSource);
 	}
 
 	@Override
