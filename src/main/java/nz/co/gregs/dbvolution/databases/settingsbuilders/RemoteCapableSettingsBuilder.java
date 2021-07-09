@@ -47,6 +47,14 @@ public interface RemoteCapableSettingsBuilder<SELF extends RemoteCapableSettings
 	}
 
 	@SuppressWarnings("unchecked")
+	public default SELF setPort(String port) {
+		if (port != null && !port.isEmpty()) {
+			getStoredSettings().setPort(port);
+		}
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
 	public default SELF setPort(int port) {
 		getStoredSettings().setPort("" + port);
 		return (SELF) this;
