@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -2555,6 +2556,11 @@ class DBDefinitionWrapper extends DBDefinition {
 	@Override
 	public boolean supportsDurationDatatypeFunctions() {
 		return base.supportsDurationDatatypeFunctions();
+	}
+	
+	@Override
+	public String getTableStructureQuery(DBRow table, DBTable<?> dbTable){
+		return base.getTableStructureQuery(table, dbTable);
 	}
 
 }

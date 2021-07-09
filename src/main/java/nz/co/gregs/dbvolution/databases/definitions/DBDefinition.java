@@ -64,6 +64,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -3471,11 +3472,10 @@ public abstract class DBDefinition implements Serializable {
 	 * a character or String type.
 	 */
 	public final String doIntegerToStringTransform(String integerExpression) {
-		final String transformed = doIntegerToStringTransformUnsafe(integerExpression);
 		if (requiredToProduceEmptyStringsForNull) {
-			return doStringIfNullUseEmptyStringTransform(transformed);
+			return doIfThenElseTransform(doIsNullTransform(integerExpression), getEmptyString(), doIntegerToStringTransformUnsafe(integerExpression));
 		} else {
-			return transformed;
+			return doIntegerToStringTransformUnsafe(integerExpression);
 		}
 	}
 
@@ -4060,7 +4060,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the CHOOSE function.
 	 *
 	 * <p>
-	 * Used by {@link #doChooseTransformation(java.lang.String, java.util.List) 
+	 * Used by {@link #doChooseTransformation(java.lang.String, java.util.List)
 	 * } to connect to the correct database function.
 	 *
 	 *
@@ -6967,7 +6967,7 @@ public abstract class DBDefinition implements Serializable {
 			//hours:minutes:seconds:nanos
 			// x days hours:minutes:seconds:nanos
 			// INTERVAL 0 0:-2:0.0 DAY TO SECOND
-			
+
 			var optional = INTERVAL_MULTIUNIT_REGEX.getFirstMatchFrom(intervalStr);
 			if (optional.isPresent()) {
 				Match firstMatch = optional.get();
@@ -7019,7 +7019,7 @@ public abstract class DBDefinition implements Serializable {
 		}
 		return duration;
 	}
-	
+
 	private static final String INTERVAL_MULTIUNIT_DAYS = "days";
 	private static final String INTERVAL_MULTIUNIT_HOURS = "hours";
 	private static final String INTERVAL_MULTIUNIT_MINUTES = "minutes";
@@ -7039,7 +7039,7 @@ public abstract class DBDefinition implements Serializable {
 			.beginNamedCapture(INTERVAL_MULTIUNIT_SECONDS).numberLikeIncludingScientificNotation().once().endNamedCapture()
 			.beginNamedCapture(INTERVAL_MULTIUNIT_NANOS).number().onceOrNotAtAll().endNamedCapture()
 			.literal("'").onceOrNotAtAll();
-	
+
 	protected static final String INTERVAL_SINGLEUNIT_UNIT = "unit";
 	protected static final String INTERVAL_SINGLEUNIT_VALUE = "value";
 	final Regex daysRegex
@@ -7195,5 +7195,14 @@ public abstract class DBDefinition implements Serializable {
 
 	public boolean supportsDurationDatatypeFunctions() {
 		return false;
+	}
+
+	public String getTableStructureQuery(DBRow table, DBTable<?> dbTable) {
+		final String sqlForQuery = dbTable
+				.setQueryTimeout(10000)
+				.setBlankQueryAllowed(true)
+				.setRowLimit(1).getSQLForQuery();
+		String testQuery = sqlForQuery.replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
+		return testQuery;
 	}
 }

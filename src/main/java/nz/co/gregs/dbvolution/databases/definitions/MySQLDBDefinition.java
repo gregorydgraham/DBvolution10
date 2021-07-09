@@ -428,8 +428,8 @@ public class MySQLDBDefinition extends DBDefinition {
 	 * specified number of decimal places.
 	 *
 	 * <p>
-	 * MySQL 8.0.22 ROUND doesn't support more than 4 decimal places so use the alternative
-	 * method. </p>
+	 * MySQL 8.0.22 ROUND doesn't support more than 4 decimal places so use the
+	 * alternative method. </p>
 	 *
 	 * @param number the number value
 	 * @param decimalPlaces the number value of the decimal places required.
@@ -754,7 +754,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean supportsTimeZones() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean supportsDurationNatively() {
 		return false;

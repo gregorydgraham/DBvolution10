@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
@@ -755,7 +756,7 @@ public class OracleDBDefinition extends DBDefinition {
 	 * @return FALSE.
 	 */
 	@Override
-	public Boolean supportsDifferenceBetweenNullAndEmptyStringNatively() {
+	public synchronized Boolean supportsDifferenceBetweenNullAndEmptyStringNatively() {
 		return false;
 	}
 
@@ -896,6 +897,22 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
+	}
+
+	@Override
+	public String getTableStructureQuery(DBRow table, DBTable<?> dbTable) {
+		final String sqlForQuery = " select *\n"
+				+ "  from ( select /*+ FIRST_ROWS(n) */\n"
+				+ "  a.*, ROWNUM rnum\n"
+				+ "      from (  SELECT  /*+ FIRST_ROWS(1) */ *"
+				+ " FROM  " + formatNameForDatabase(table.getTableName()) + " \n"
+				+ "\n"
+				+ "\n"
+				+ " ) a\n"
+				+ "      where ROWNUM <2\n"
+				+ "      )\n"
+				+ "where rnum  >= 1";
+		return sqlForQuery;
 	}
 
 }
