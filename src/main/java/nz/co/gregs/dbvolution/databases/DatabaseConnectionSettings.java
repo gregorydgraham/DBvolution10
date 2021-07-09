@@ -130,6 +130,10 @@ public class DatabaseConnectionSettings {
 	private static final String TOSTRING_SEPARATOR = ", ";
 	private String filename = "";
 
+	public static DatabaseConnectionSettings newSettings(){
+		return new DatabaseConnectionSettings();
+	}
+	
 	public DatabaseConnectionSettings() {
 		super();
 	}
@@ -702,58 +706,74 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param url the url to set
+	 * @return this instance
 	 */
-	public final void setUrl(String url) {
+	public final DatabaseConnectionSettings setUrl(String url) {
 		this.url = url == null ? "" : url;
+		return this;
 	}
 
 	/**
 	 * @param host the host to set
+	 * @return this instance
 	 */
-	public final void setHost(String host) {
+	public final DatabaseConnectionSettings setHost(String host) {
 		this.host = host == null ? "" : host;
+		return this;
 	}
 
 	/**
 	 * @param port the port to set
+	 * @return this instance
 	 */
-	public final void setPort(String port) {
+	public final DatabaseConnectionSettings setPort(String port) {
 		this.port = port == null ? "" : port;
+		return this;
 	}
 
 	/**
 	 * @param instance the instance to set
+	 * @return this instance
 	 */
-	public final void setInstance(String instance) {
+	public final DatabaseConnectionSettings setInstance(String instance) {
 		this.instance = instance == null ? "" : instance;
+		return this;
 	}
 
 	/**
 	 * @param database the database to set
+	 * @return this instance
 	 */
-	public final void setDatabaseName(String database) {
+	public final DatabaseConnectionSettings setDatabaseName(String database) {
 		this.database = database == null ? "" : database;
+		return this;
 	}
 
 	/**
 	 * @param username the username to set
+	 * @return this instance
 	 */
-	public final void setUsername(String username) {
+	public final DatabaseConnectionSettings setUsername(String username) {
 		this.username = username == null ? "" : username;
+		return this;
 	}
 
 	/**
 	 * @param password the password to set
+	 * @return this instance
 	 */
-	public final void setPassword(String password) {
+	public final DatabaseConnectionSettings setPassword(String password) {
 		this.password = password == null ? "" : password;
+		return this;
 	}
 
 	/**
 	 * @param schema the schema to set
+	 * @return this instance
 	 */
-	public final void setSchema(String schema) {
+	public final DatabaseConnectionSettings setSchema(String schema) {
 		this.schema = schema == null ? "" : schema;
+		return this;
 	}
 
 	/**
@@ -860,8 +880,9 @@ public class DatabaseConnectionSettings {
 		return collected;
 	}
 
-	public final void setDbdatabaseClass(String canonicalNameOfADBDatabaseSubclass) {
+	public final DatabaseConnectionSettings setDbdatabaseClass(String canonicalNameOfADBDatabaseSubclass) {
 		this.dbdatabase = canonicalNameOfADBDatabaseSubclass;
+		return this;
 	}
 
 	public final String getDbdatabaseClass() {
@@ -875,9 +896,11 @@ public class DatabaseConnectionSettings {
 	 * This label has no effect on the actual database connection.
 	 *
 	 * @param label an arbitrary name for the database
+	 * @return this instance
 	 */
-	public final void setLabel(String label) {
+	public final DatabaseConnectionSettings setLabel(String label) {
 		this.label = label;
+		return this;
 	}
 
 	/**
@@ -893,34 +916,39 @@ public class DatabaseConnectionSettings {
 		return this.label;
 	}
 
-	public final void setDataSource(DataSource ds) {
+	public final DatabaseConnectionSettings setDataSource(DataSource ds) {
 		dataSource = ds;
+		return this;
 	}
 
 	public final DataSource getDataSource() {
 		return dataSource;
 	}
 
-	public final void setProtocol(String protocol) {
+	public final DatabaseConnectionSettings setProtocol(String protocol) {
 		this.protocol = protocol;
+		return this;
 	}
 
 	public final String getProtocol() {
 		return protocol;
 	}
 
-	public final void setDefaultExtras(Map<String, String> defaultConfigurationExtras) {
+	public final DatabaseConnectionSettings setDefaultExtras(Map<String, String> defaultConfigurationExtras) {
 		defaultConfigurationExtras.forEach((t, u) -> {
 			this.extras.putIfAbsent(t, u);
 		});
+		return this;
 	}
 
-	public final void addExtra(String tag, String value) {
+	public final DatabaseConnectionSettings addExtra(String tag, String value) {
 		this.extras.put(tag, value);
+		return this;
 	}
 
-	public final void setFilename(String filename) {
+	public final DatabaseConnectionSettings setFilename(String filename) {
 		this.filename = filename;
+		return this;
 	}
 
 	public final String getFilename() {
@@ -931,9 +959,10 @@ public class DatabaseConnectionSettings {
 		return this.clusterHosts;
 	}
 
-	public final void setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+	public final DatabaseConnectionSettings setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		this.clusterHosts.clear();
 		addAllClusterHosts(clusterHosts);
+		return this;
 	}
 
 	public final void addClusterHost(DatabaseConnectionSettings clusterHost) {
