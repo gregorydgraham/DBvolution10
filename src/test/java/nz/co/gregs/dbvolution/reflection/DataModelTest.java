@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.OracleDB;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -65,14 +66,7 @@ public class DataModelTest extends AbstractTest {
 		}
 		Set<String> constr = conMap.keySet();
 		List<String> knownStrings = new ArrayList<>();
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase");
-		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase");
+		knownStrings.add("class nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$1");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$2");
 		for (String knownString : knownStrings) {
@@ -101,16 +95,7 @@ public class DataModelTest extends AbstractTest {
 		}
 		Set<String> constr = conMap.keySet();
 		List<String> knownStrings = new ArrayList<>();
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase()");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
-		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerLocalTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder) throws java.io.IOException,java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass() throws java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
@@ -134,6 +119,23 @@ public class DataModelTest extends AbstractTest {
 			conMap.remove(constrString);
 		}
 		Assert.assertThat(result.size(), is(knownStrings.size()));
+	}
+
+	public static class DatamodelTestDBClass extends H2MemoryDB {
+
+		private static final long serialVersionUID = 1L;
+
+		public DatamodelTestDBClass() throws SQLException {
+		}
+
+		public static DatamodelTestDBClass creation1() throws SQLException {
+			return new DatamodelTestDBClass();
+		}
+
+		public static DatamodelTestDBClass creation2() throws SQLException {
+			return new DatamodelTestDBClass();
+		}
+
 	}
 
 	@Test
