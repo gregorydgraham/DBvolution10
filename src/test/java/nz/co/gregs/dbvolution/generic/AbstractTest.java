@@ -35,12 +35,7 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.PostgresSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.*;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import org.h2.jdbcx.JdbcDataSource;
@@ -82,14 +77,14 @@ public abstract class AbstractTest {
 		if (databases.isEmpty()) {
 			getDatabasesFromSettings();
 		}
-		for (Object[] database : databases) {
+		databases.forEach(database -> {
 			System.out.println("Processing: Database " + database[0]);
-		}
+		});
 		return databases;
 	}
 
-	public final DBDatabase getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull() throws SQLException {
-		final String name = "DatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull-" + (Math.round(Math.random()*1000000000));
+	public synchronized final DBDatabase getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull() throws SQLException {
+		final String name = "DatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull-" + (Math.round(Math.random() * 1000000000));
 		return new H2MemorySettingsBuilder()
 				.setLabel(name)
 				.setDatabaseName(name)
@@ -124,9 +119,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testFullCluster") != null) {
 			final H2MemoryTestDB h2Mem = H2MemoryTestDB.getFromSettings("h2memory");
 			final SQLiteTestDB sqlite = SQLiteTestDB.getClusterDBFromSettings("sqlite", "full");
-			final PostgresDB postgres = PostgreSQLTestDatabase.getFromSettings("postgresfullcluster");
+			final PostgresDB postgres = PostgreSQLTestDatabaseProvider.getFromSettings("postgresfullcluster");
 //			final PostgresDB postgres = getPostgresContainerDatabase();
-			final MySQLTestDatabase mysql = MySQLTestDatabase.getFromSettings("mysql");
+			final MySQLDB mysql = MySQLTestDatabase.getFromSettings("mysql");
 			final MSSQLServerDB sqlserver = MSSQLServerLocalTestDB.getFromSettings("sqlserver");
 //			final MSSQLServer2017ContainerDB sqlserver = getMSSQLServerContainerDatabaseForCluster();
 //			final Oracle11XEContainerDB oracle = getOracleContainerDatabaseForCluster();
@@ -180,7 +175,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2DataSourceDB", H2TestDatabase.getFromSettingsUsingDataSource("h2datasource")});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-			databases.add(new Object[]{"PostgresSQL", PostgreSQLTestDatabase.getFromSettings("postgres")});
+			databases.add(new Object[]{"PostgresSQL", PostgreSQLTestDatabaseProvider.getFromSettings("postgres")});
 		}
 		if (System.getProperty("testPostgresContainer") != null) {
 			databases.add(new Object[]{"PostgresContainer", getPostgresContainerDatabase()});
@@ -415,7 +410,7 @@ public abstract class AbstractTest {
 		return database.supportsDifferenceBetweenNullAndEmptyString() ? expect : expect == null ? "" : expect;
 	}
 
-	private static class H2TestDatabase extends H2DB {
+	private static class H2TestDatabase {
 
 		public static final long serialVersionUID = 1l;
 
@@ -430,9 +425,9 @@ public abstract class AbstractTest {
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
 			if (file != null && !file.isEmpty()) {
-				return H2TestDatabaseFromFilename(file, username, password);
+				return getH2TestDatabaseFromFilename(file, username, password);
 			} else {
-				return new H2TestDatabase(url, username, password);
+				return new H2DB(url, username, password);
 			}
 		}
 
@@ -454,9 +449,9 @@ public abstract class AbstractTest {
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
 			if (file != null && !file.equals("")) {
-				return H2TestDatabaseFromFilename(file + "-cluster.h2db", username, password);
+				return getH2TestDatabaseFromFilename(file + "-cluster.h2db", username, password);
 			} else {
-				return new H2TestDatabase(url, username, password);
+				return new H2DB(url, username, password);
 			}
 		}
 
@@ -482,20 +477,16 @@ public abstract class AbstractTest {
 			return new H2DB(h2DataSource);
 		}
 
-		public static H2DB H2TestDatabaseFromFilename(String file, String username, String password) throws SQLException, IOException {
+		public static H2DB getH2TestDatabaseFromFilename(String file, String username, String password) throws SQLException, IOException {
 			return new H2DB(new File(file), username, password);
 		}
-
-		public H2TestDatabase(String url, String username, String password) throws SQLException {
-			super(url, username, password);
-		}
 	}
 
-	private static class MySQL56TestDatabase extends MySQLDB {
+	private static class MySQL56TestDatabase {
 
 		public static final long serialVersionUID = 1l;
 
-		public static MySQL56TestDatabase getFromSettings(String prefix) throws SQLException {
+		public static MySQLDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -504,19 +495,19 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return new MySQL56TestDatabase(url, username, password);
+			return new MySQLDB(url, username, password);
 		}
 
-		public MySQL56TestDatabase(String url, String username, String password) throws SQLException {
-			super(url, username, password);
-		}
+//		public MySQL56TestDatabase(String url, String username, String password) throws SQLException {
+//			super(url, username, password);
+//		}
 	}
 
-	private static class MySQLTestDatabase extends MySQLDB {
+	private static class MySQLTestDatabase {
 
 		public static final long serialVersionUID = 1l;
 
-		public static MySQLTestDatabase getFromSettings(String prefix) throws SQLException {
+		public static MySQLDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -525,10 +516,18 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return new MySQLTestDatabase(host, port, database, username, password, schema);
+			return new MySQLDB(
+					new MySQLSettingsBuilder()
+							.setHost(host)
+							.setPort(Integer.parseInt(port))
+							.setDatabaseName(database)
+							.setUsername(username)
+							.setPassword(password)
+							.setSchema(schema)
+			);
 		}
 
-		public static MySQLTestDatabase getClusterDBFromSettings(String prefix) throws SQLException {
+		public static MySQLDB getClusterDBFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -537,19 +536,27 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema") + "cluster";
-			return new MySQLTestDatabase(host, port, database, username, password, schema);
+			return new MySQLDB(
+					new MySQLSettingsBuilder()
+							.setHost(host)
+							.setPort(Integer.parseInt(port))
+							.setDatabaseName(database)
+							.setUsername(username)
+							.setPassword(password)
+							.setSchema(schema)
+			);
 		}
 
-		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) throws SQLException {
-			super(host, Integer.valueOf(port), database, username, password);
-		}
-
-		public MySQLTestDatabase(String url, String username, String password) throws SQLException {
-			super(url, username, password);
-		}
+//		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) throws SQLException {
+//			super(host, Integer.valueOf(port), database, username, password);
+//		}
+//
+//		public MySQLTestDatabase(String url, String username, String password) throws SQLException {
+//			super(url, username, password);
+//		}
 	}
 
-	private static class PostgreSQLTestDatabase extends PostgresDB {
+	private static class PostgreSQLTestDatabaseProvider {
 
 		private final static long serialVersionUID = 1l;
 
@@ -562,7 +569,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, database, username, password, schema);
+			return PostgreSQLTestDatabaseProvider.getTestDatabase(url, host, port, database, username, password, schema);
 		}
 
 		public static PostgresDB getClusterDBFromSettings(String prefix) throws SQLException {
@@ -574,7 +581,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, database, username, password, schema);
+			return PostgreSQLTestDatabaseProvider.getTestDatabase(url, host, port, database, username, password, schema);
 		}
 
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) throws SQLException {
