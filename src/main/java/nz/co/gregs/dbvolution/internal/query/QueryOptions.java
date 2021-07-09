@@ -44,6 +44,12 @@ public class QueryOptions implements Serializable {
 	private QueryType queryType = QueryType.SELECT;
 	private boolean printSQLBeforeExecution = false;
 	private boolean requireEmptyStringForNullString = false;
+	
+	private String rawSQL = null;
+	
+	private final int DEFAULT_TIMEOUT_IN_MILLISECONDS = 10000;
+	private int timeoutInMilliseconds = DEFAULT_TIMEOUT_IN_MILLISECONDS;
+	private String label = "UNLABELLED QUERY";
 
 	public QueryOptions() {
 		super();
@@ -375,5 +381,37 @@ public class QueryOptions implements Serializable {
 	 */
 	public void setRequireEmptyStringForNullString(boolean requireEmptyStringForNullString) {
 		this.requireEmptyStringForNullString = requireEmptyStringForNullString;
+	}
+
+	public synchronized void setRawSQL(String rawQuery) {
+		this.rawSQL = rawQuery;
+	}
+
+	public String getRawSQL() {
+		return rawSQL;
+	}
+
+	public void setTimeoutInMilliseconds(int milliseconds) {
+		this.timeoutInMilliseconds = milliseconds;
+	}
+
+	public void clearTimeout() {
+		this.timeoutInMilliseconds = DEFAULT_TIMEOUT_IN_MILLISECONDS;
+	}
+
+	public void setTimeoutToForever() {
+		this.timeoutInMilliseconds = -1;
+	}
+
+	public void setQueryLabel(String queryLabel) {
+		this.label = queryLabel;
+	}
+
+	public String getQueryLabel() {
+		return this.label;
+	}
+
+	public int getTimeoutInMilliseconds() {
+		return this.timeoutInMilliseconds;
 	}
 }
