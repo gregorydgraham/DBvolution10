@@ -45,7 +45,7 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
  */
 public interface ClusterCapableSettingsBuilder<SELF extends ClusterCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
 
-	void setClusterHosts(List<DatabaseConnectionSettings> hosts);
+	SELF setClusterHosts(List<DatabaseConnectionSettings> hosts);
 	List<DatabaseConnectionSettings> getClusterHosts();
 	
 	public default String encodeClusterHosts(List<DatabaseConnectionSettings> hosts) {

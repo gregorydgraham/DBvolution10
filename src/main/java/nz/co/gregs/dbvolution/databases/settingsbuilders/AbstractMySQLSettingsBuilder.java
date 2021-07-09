@@ -46,12 +46,13 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
  * @param <SELF> the type returned by all SELF methods
  * @param <DATABASE>
  */
-public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
+public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
 		extends AbstractVendorSettingsBuilder<SELF, DATABASE>
 		implements ClusterCapableSettingsBuilder<SELF, DATABASE>,
 		InstanceCapableSettingsBuilder<SELF, DATABASE>,
 		RemoteCapableSettingsBuilder<SELF, DATABASE>,
 		NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>,
+		SchemaCapableSettingsBuilder<SELF, DATABASE>,
 		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
@@ -164,9 +165,11 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
 
 	@Override
-	public void setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+	@SuppressWarnings("unchecked")
+	public SELF setClusterHosts(List<DatabaseConnectionSettings> hosts) {
 		this.clusterHost.clear();
 		this.clusterHost.addAll(hosts);
+		return (SELF) this;
 	}
 
 	@Override

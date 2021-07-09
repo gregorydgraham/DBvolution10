@@ -46,6 +46,7 @@ import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 public class NuoDBSettingsBuilder extends AbstractVendorSettingsBuilder<NuoDBSettingsBuilder, NuoDB>
 		implements
 		InstanceCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
+		RemoteCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
 		NamedDatabaseCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
 		SchemaCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB>,
 		ClusterCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB> {
@@ -62,6 +63,7 @@ public class NuoDBSettingsBuilder extends AbstractVendorSettingsBuilder<NuoDBSet
 	public DBDefinition getDefaultDefinition() {
 		return new NuoDBDefinition();
 	}
+
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;
@@ -135,13 +137,32 @@ public class NuoDBSettingsBuilder extends AbstractVendorSettingsBuilder<NuoDBSet
 	}
 
 	@Override
-	public void setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+	public NuoDBSettingsBuilder setClusterHosts(List<DatabaseConnectionSettings> hosts) {
 		this.clusterHost.clear();
 		this.clusterHost.addAll(hosts);
+		return this;
 	}
 
 	@Override
 	public List<DatabaseConnectionSettings> getClusterHosts() {
 		return this.clusterHost;
+	}
+
+	public NuoDBSettingsBuilder addBrokers(List<String> brokers) {
+		brokers.stream().forEachOrdered(broker
+				-> clusterHost.add(
+						new NuoDBSettingsBuilder().setHost(broker).toSettings()
+				)
+		);
+		return this;
+	}
+
+	public NuoDBSettingsBuilder addBrokers(List<String> brokers, List<Long> ports) {
+		for(int i = 0; i<brokers.size();i++){
+			clusterHost.add(
+					new NuoDBSettingsBuilder().setHost(brokers.get(i)).setPort(ports.get(i)).toSettings()
+			);
+		}
+		return this;
 	}
 }

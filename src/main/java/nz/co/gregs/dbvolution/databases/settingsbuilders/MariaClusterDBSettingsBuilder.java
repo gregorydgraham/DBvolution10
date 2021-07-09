@@ -30,7 +30,9 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.MariaClusterDB;
@@ -41,14 +43,14 @@ import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
  *
  * @author gregorygraham
  */
-public class MariaClusterDBSettingsBuilder 
+public class MariaClusterDBSettingsBuilder
 		extends AbstractVendorSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB>
-		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB>,
-		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB>,
-		NamedDatabaseCapableSettingsBuilder<MariaClusterDBSettingsBuilder,MariaClusterDB> {
+		implements InstanceCapableSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB>,
+		RemoteCapableSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB>,
+		NamedDatabaseCapableSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB>,
+		ClusterCapableSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
-
 
 	@Override
 	public String getDefaultDriverName() {
@@ -59,6 +61,7 @@ public class MariaClusterDBSettingsBuilder
 	public DBDefinition getDefaultDefinition() {
 		return new MariaDBDefinition();
 	}
+
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {
 		return DEFAULT_EXTRAS_MAP;
@@ -122,5 +125,31 @@ public class MariaClusterDBSettingsBuilder
 	@Override
 	public MariaClusterDB getDBDatabase() throws Exception {
 		return new MariaClusterDB(this);
+	}
+
+	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
+
+	@Override
+	public MariaClusterDBSettingsBuilder setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		this.clusterHost.clear();
+		this.clusterHost.addAll(hosts);
+		return this;
+	}
+
+	@Override
+	public List<DatabaseConnectionSettings> getClusterHosts() {
+		return this.clusterHost;
+	}
+
+	public MariaClusterDBSettingsBuilder addHosts(List<String> hosts, List<Long> ports) {
+		for (int i = 0; i < hosts.size(); i++) {
+			clusterHost.add(
+					new MariaClusterDBSettingsBuilder()
+							.setHost(hosts.get(i))
+							.setPort(ports.get(i))
+							.toSettings()
+			);
+		}
+		return this;
 	}
 }

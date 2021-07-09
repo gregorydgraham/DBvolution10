@@ -146,9 +146,11 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
 
 	@Override
-	public void setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+	@SuppressWarnings("unchecked")
+	public SELF setClusterHosts(List<DatabaseConnectionSettings> hosts) {
 		this.clusterHost.clear();
 		this.clusterHost.addAll(hosts);
+		return (SELF) this;
 	}
 
 	@Override
