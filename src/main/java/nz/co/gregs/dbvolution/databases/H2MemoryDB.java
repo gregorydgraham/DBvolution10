@@ -45,7 +45,7 @@ public class H2MemoryDB extends H2DB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2MemoryDB() throws SQLException {
-		this(new DatabaseConnectionSettings());
+		this(new H2MemorySettingsBuilder());
 	}
 
 	/**
