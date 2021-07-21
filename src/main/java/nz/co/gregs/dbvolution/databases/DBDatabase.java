@@ -277,7 +277,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		createRequiredTables();
 		checkForTimezoneIssues();
 	}
-	
+
 	private void initDriver(SettingsBuilder<?, ?> settings) {
 		if (settings instanceof VendorSettingsBuilder) {
 			final String newDriverName = ((VendorSettingsBuilder<?, ?>) settings).getDriverName();
@@ -1279,8 +1279,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	synchronized void printSQLIfRequested(String sqlString, PrintStream out) {
 		if (printSQLBeforeExecuting) {
-			out.println("DATABASE: "+this.toString());
-			out.println("SUPPORTS NULL STRING: "+this.supportsDifferenceBetweenNullAndEmptyString());
 			out.println(sqlString);
 		}
 	}
