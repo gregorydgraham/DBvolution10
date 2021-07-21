@@ -39,7 +39,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -155,30 +154,21 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 *
 	 *
 	 * @param database the database
+	 * @param options
 	 * @return all conditions in the query
 	 */
-	public synchronized List<BooleanExpression> getAllConditions(DBDatabase database) {
+	public synchronized List<BooleanExpression> getAllConditions(DBDatabase database, QueryOptions options) {
 		List<BooleanExpression> allConditions = new ArrayList<>();
 		for (DBRow entry : allQueryTables) {
-			allConditions.addAll(entry.getWhereClauseExpressions(getDatabaseDefinition(database), true));
+			allConditions.addAll(entry.getWhereClauseExpressions(options.getQueryDefinition(), true));
 		}
 		return allConditions;
 	}
 
-	private DBDefinition getDatabaseDefinition(DBDatabase database) throws NoAvailableDatabaseException {
-//		if (this.returnEmptyStringForNullString && database.getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively()) {
-		if (getReturnEmptyStringForNullString()) {
-			return getOracleCompatibleDBDefinition(database);
-		} else if (database.getDefinition().requiredToProduceEmptyStringsForNull()) {
-			return getOracleCompatibleDBDefinition(database);
-		}
-		return database.getDefinition();
-	}
-
-	private DBDefinition getOracleCompatibleDBDefinition(DBDatabase database) throws NoAvailableDatabaseException {
-		DBDefinition newInstance = database.getDefinition().getOracleCompatibleVersion();
-		return newInstance;
-	}
+//	private DBDefinition getOracleCompatibleDBDefinition(DBDatabase database) throws NoAvailableDatabaseException {
+//		DBDefinition newInstance = database.getDefinition().getOracleCompatibleVersion();
+//		return newInstance;
+//	}
 
 	/**
 	 *
@@ -283,9 +273,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 		Collections.addAll(this.havingColumns, havingColumns);
 	}
 
-//	public synchronized void setDefinition(DBDefinition database) {
-//		this.databaseDefinition = database;
-//	}
 	public void setQueryType(QueryType queryType) {
 		this.options.setQueryType(queryType);
 	}
@@ -674,7 +661,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 						&& !queryState.isQueryOnDual()
 						&& queryState.isFullOuterJoin()
 						&& !defn.supportsFullOuterJoinNatively()) {
-					sqlString = getSQLForFakeFullOuterJoin(options.getQueryDatabase(), sqlString, queryState, this, options, queryType);
+					sqlString = getSQLForFakeFullOuterJoin(sqlString, this, options);
 				}
 			}
 			return sqlString;
@@ -904,7 +891,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private synchronized String getHavingClause(DBDatabase database, QueryOptions options) {
 		BooleanExpression[] having = getHavingColumns();
-		final DBDefinition defn = getDatabaseDefinition(database);
+		final DBDefinition defn = options.getQueryDefinition();
 		String havingClauseStart = defn.getHavingClauseStart();
 		if (having.length == 1) {
 			return havingClauseStart + having[0].toSQLString(defn);
@@ -941,10 +928,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return a fake full outer join query for databases that don't support FULL
 	 * OUTER joins
 	 */
-	private synchronized String getSQLForFakeFullOuterJoin(DBDatabase database, String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
+	private synchronized String getSQLForFakeFullOuterJoin(String existingSQL, QueryDetails details, QueryOptions options) {
 		String sqlForQuery;
 		String unionOperator;
-		DBDefinition defn = getDatabaseDefinition(database);
+		DBDefinition defn = options.getQueryDefinition();
 		if (defn.supportsUnionDistinct()) {
 			unionOperator = defn.getUnionDistinctOperator();
 		} else {
@@ -1142,8 +1129,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	protected synchronized void fillResultSetInternal(QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
+		final String sqlForQuery = this.getSQLForQuery(new QueryState(this), QueryType.SELECT, options);
 
-		setResultSQL(this.getSQLForQuery(new QueryState(this), QueryType.SELECT, options));
+		setResultSQL(sqlForQuery);
 
 		final DBDefinition defn = options.getQueryDefinition();
 
