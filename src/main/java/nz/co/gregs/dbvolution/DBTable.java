@@ -79,11 +79,17 @@ public class DBTable<E extends DBRow> {
 		this.original = exampleRow;
 		exemplar = DBRow.copyDBRow(exampleRow);
 		this.database = database;
+		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
+			options.setRequireEmptyStringForNullString(true);
+		}
 	}
 
 	private synchronized DBQuery getQuery(DBDatabase db, E example) {
 		DBQuery query = db.getDBQuery(example);
-		if (options.getRequireEmptyStringForNullString() || !db.supportsDifferenceBetweenNullAndEmptyString()) {
+		if (!db.supportsDifferenceBetweenNullAndEmptyString()) {
+			options.setRequireEmptyStringForNullString(true);
+		}
+		if (options.getRequireEmptyStringForNullString()) {
 			query.setReturnEmptyStringForNullString(true);
 		}
 		if (options.getRowLimit() > 0) {
