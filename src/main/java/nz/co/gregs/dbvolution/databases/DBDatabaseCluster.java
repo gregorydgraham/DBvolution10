@@ -1000,7 +1000,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		try {
 			query.setWorkingDatabase(workingDB);
 			// set oracle compatibility 
-			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString()&&!getDefinition().canProduceNullStrings());
+			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString()||!getDefinition().canProduceNullStrings());
 			// hand the job down to the next layer
 			return workingDB.executeDBQuery(query);
 		} catch (AccidentalBlankQueryException | AccidentalCartesianJoinException errorWithTheQueryException) {
@@ -1175,7 +1175,6 @@ public class DBDatabaseCluster extends DBDatabase {
 									secondary.preventDroppingOfTables(false);
 									secondary.dropTableNoExceptions(table);
 								}
-								System.out.println("CREATING: " + table.getClass().getCanonicalName());
 								secondary.createTable(table);
 								// Check that the table has data
 								final DBTable<DBRow> primaryTable = template.getDBTable(table);
