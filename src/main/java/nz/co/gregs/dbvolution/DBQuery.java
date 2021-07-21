@@ -99,6 +99,7 @@ public class DBQuery implements Serializable {
 
 	protected DBQuery(DBDatabase database) {
 		this.database = database;
+		details.setReturnEmptyStringForNullString(!database.supportsDifferenceBetweenNullAndEmptyString());
 		setDefaultQueryLabel(Thread.currentThread().getStackTrace());
 		blankResults();
 	}
