@@ -44,12 +44,13 @@ public class QueryOptions implements Serializable {
 	private QueryType queryType = QueryType.SELECT;
 	private boolean printSQLBeforeExecution = false;
 	private boolean requireEmptyStringForNullString = false;
-	
+
 	private String rawSQL = null;
-	
+
 	private final int DEFAULT_TIMEOUT_IN_MILLISECONDS = 10000;
 	private int timeoutInMilliseconds = DEFAULT_TIMEOUT_IN_MILLISECONDS;
 	private String label = "UNLABELLED QUERY";
+	private DBDefinition workingDefinition;
 
 	public QueryOptions() {
 		super();
@@ -345,12 +346,13 @@ public class QueryOptions implements Serializable {
 	}
 
 	public DBDefinition getQueryDefinition() {
-		final DBDefinition definition = getQueryDatabase().getDefinition();
-		if (getRequireEmptyStringForNullString()){
-			return definition.getOracleCompatibleVersion();
-		}else {
-			return definition;
+		if (workingDefinition == null) {
+			workingDefinition = getQueryDatabase().getDefinition();
+			if (getRequireEmptyStringForNullString()) {
+				workingDefinition = workingDefinition.getOracleCompatibleVersion();
+			}
 		}
+		return workingDefinition;
 	}
 
 	private void setMatchAllConditions(boolean matchAllConditions) {
@@ -377,9 +379,10 @@ public class QueryOptions implements Serializable {
 	}
 
 	/**
-	 * @param requireEmptyStringForNullString the requireEmptyStringForNullString to set
+	 * @param requireEmptyStringForNullString the requireEmptyStringForNullString
+	 * to set
 	 */
-	public void setRequireEmptyStringForNullString(boolean requireEmptyStringForNullString) {
+	public final void setRequireEmptyStringForNullString(boolean requireEmptyStringForNullString) {
 		this.requireEmptyStringForNullString = requireEmptyStringForNullString;
 	}
 
