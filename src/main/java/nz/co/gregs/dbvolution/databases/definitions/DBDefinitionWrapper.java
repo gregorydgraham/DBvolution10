@@ -2557,10 +2557,27 @@ class DBDefinitionWrapper extends DBDefinition {
 	public boolean supportsDurationDatatypeFunctions() {
 		return base.supportsDurationDatatypeFunctions();
 	}
-	
+
 	@Override
-	public String getTableStructureQuery(DBRow table, DBTable<?> dbTable){
+	public String getTableStructureQuery(DBRow table, DBTable<?> dbTable) {
 		return base.getTableStructureQuery(table, dbTable);
 	}
 
+	@Override
+	public String doIntegerToStringTransform(String integerExpression) {
+		if (requiredToProduceEmptyStringsForNull()) {
+			return doIfThenElseTransform(doIsNullTransform(integerExpression), getEmptyString(), doIntegerToStringTransformUnsafe(integerExpression));
+		} else {
+			return doIntegerToStringTransformUnsafe(integerExpression);
+		}
+	}
+
+	@Override
+	public String doNumberToStringTransform(String numberExpression) {
+		if (requiredToProduceEmptyStringsForNull()) {
+			return doIfNullThenElse(numberExpression, getEmptyString(), doNumberToStringTransformUnsafe(numberExpression));
+		} else {
+			return doNumberToStringTransformUnsafe(numberExpression);
+		}
+	}
 }
