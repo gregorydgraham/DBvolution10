@@ -149,15 +149,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	/**
 	 * Get all conditions involved in this query.
-	 *
-	 *
-	 *
-	 *
+	 * 
 	 * @param database the database
 	 * @param options
 	 * @return all conditions in the query
 	 */
-	public synchronized List<BooleanExpression> getAllConditions(DBDatabase database, QueryOptions options) {
+	private synchronized List<BooleanExpression> getAllConditions(QueryOptions options) {
 		List<BooleanExpression> allConditions = new ArrayList<>();
 		for (DBRow entry : allQueryTables) {
 			allConditions.addAll(entry.getWhereClauseExpressions(options.getQueryDefinition(), true));
@@ -165,10 +162,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return allConditions;
 	}
 
-//	private DBDefinition getOracleCompatibleDBDefinition(DBDatabase database) throws NoAvailableDatabaseException {
-//		DBDefinition newInstance = database.getDefinition().getOracleCompatibleVersion();
-//		return newInstance;
-//	}
+	/**
+	 * Get all conditions involved in this query.
+	 *
+	 * @return all conditions in the query
+	 */
+	public List<BooleanExpression> getAllConditions() {
+		return getAllConditions(getOptions());
+	}
 
 	/**
 	 *
@@ -1475,22 +1476,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 		}
 		return existingInstance;
-
-//		DBRow existingInstance = newInstance;
-//		final List<PropertyWrapper> primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
-//		for (PropertyWrapper primaryKey : primaryKeys) {
-//			if (primaryKey != null) {
-//				final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
-//				if (qdt != null) {
-//					existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(defn));
-//					if (existingInstance == null) {
-//						existingInstance = newInstance;
-//						existingInstancesOfThisTableRow.put(qdt.toSQLString(defn), existingInstance);
-//					}
-//				}
-//			}
-//		}
-//		return existingInstance;
 	}
 
 	protected synchronized void setCurrentPage(List<DBQueryRow> results) {
@@ -1539,7 +1524,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	@Override
 	public synchronized String toSQLString(DBDatabase db) {
-//		getOptions().setQueryDatabase(db);
 		prepareForQuery(db, options);
 		switch (getOptions().getQueryType()) {
 			case COUNT:
@@ -1559,17 +1543,18 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return this.label;
 	}
 
+	@Override
 	public void setReturnEmptyStringForNullString(boolean b) {
-//		this.returnEmptyStringForNullString = b;
 		getOptions().setRequireEmptyStringForNullString(b);
 	}
 
+	@Override
 	public boolean getReturnEmptyStringForNullString() {
-//		return returnEmptyStringForNullString;
 		return getOptions().getRequireEmptyStringForNullString();
 
 	}
 
+	@Override
 	public void setWorkingDatabase(DBDatabase database) {
 		workingDatabase = database;
 	}
