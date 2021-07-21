@@ -3449,12 +3449,11 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a String of the SQL required to transform the number supplied into
 	 * a character or String type.
 	 */
-	public final String doNumberToStringTransform(String numberExpression) {
-		final String transformed = doNumberToStringTransformUnsafe(numberExpression);
-		if (requiredToProduceEmptyStringsForNull) {
-			return doStringIfNullUseEmptyStringTransform(transformed);
+	public String doNumberToStringTransform(String numberExpression) {
+		if (requiredToProduceEmptyStringsForNull()) {
+			return doIfNullThenElse(numberExpression, getEmptyString(), doNumberToStringTransformUnsafe(numberExpression));
 		} else {
-			return transformed;
+			return doNumberToStringTransformUnsafe(numberExpression);
 		}
 	}
 
@@ -3471,8 +3470,8 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a String of the SQL required to transform the number supplied into
 	 * a character or String type.
 	 */
-	public final String doIntegerToStringTransform(String integerExpression) {
-		if (requiredToProduceEmptyStringsForNull) {
+	public String doIntegerToStringTransform(String integerExpression) {
+		if (requiredToProduceEmptyStringsForNull()) {
 			return doIfThenElseTransform(doIsNullTransform(integerExpression), getEmptyString(), doIntegerToStringTransformUnsafe(integerExpression));
 		} else {
 			return doIntegerToStringTransformUnsafe(integerExpression);
@@ -6973,20 +6972,16 @@ public abstract class DBDefinition implements Serializable {
 				Match firstMatch = optional.get();
 
 				String number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_DAYS);
-				System.out.println("NUMBER: " + number);
 				if (number != null && !number.isEmpty()) {
 					negated = negated || number.startsWith("-");
 					days = Math.abs(Long.valueOf(number));
 				}
 				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_HOURS);
-				System.out.println("NUMBER: " + number);
 				if (number != null && !number.isEmpty()) {
 					negated = negated || number.startsWith("-");
 					hours = Math.abs(Long.valueOf(number));
 				}
 				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_MINUTES);
-				System.out.println("NUMBER: " + number);
-				System.out.println("NUMBER: " + number);
 				if (number != null && !number.isEmpty()) {
 					negated = negated || number.startsWith("-");
 					minutes = Math.abs(Long.valueOf(number));
