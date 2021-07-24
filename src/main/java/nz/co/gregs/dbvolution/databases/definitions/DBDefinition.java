@@ -2347,7 +2347,7 @@ public abstract class DBDefinition implements Serializable {
 	 * integer expression in the SQL.
 	 */
 	public String doBooleanToIntegerTransform(String booleanExpression) {
-		return " case when (" + booleanExpression + ") then 1 when not (" + booleanExpression + ") then 0 else null end ";
+		return " case when (" + booleanExpression + ") then 1 when not (" + booleanExpression + ") then 0 else " + getNull() + " end ";
 	}
 
 	/**
@@ -6480,11 +6480,11 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doFindNumberInStringTransform(String toSQLString) {
-		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') = " + toSQLString + " then null else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') end)";
+		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') = " + toSQLString + " then " + getNull() + " else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') end)";
 	}
 
 	public String doFindIntegerInStringTransform(String toSQLString) {
-		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*', '$1') = " + toSQLString + " then null else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*', '$1') end)";
+		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*', '$1') = " + toSQLString + " then " + getNull() + " else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*', '$1') end)";
 	}
 
 	public String doIntegerToNumberTransform(String toSQLString) {
