@@ -1024,10 +1024,7 @@ public class StringExpressionTest extends AbstractTest {
 						marq.column(marq.uidMarque).ascending()
 				);
 
-		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.setPrintSQLBeforeExecuting(false);
-//		query.printSQLForQuery();
 		Assert.assertThat(allRows.size(), is(22));
 
 		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
