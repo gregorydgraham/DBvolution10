@@ -983,7 +983,6 @@ public class LocalDateExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDate).toLocalDate().dayIs(23));
-//		query.printSQLForQuery();
 		List<MarqueWithLocalDate> got = query.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(18));
 
@@ -1476,7 +1475,6 @@ public class LocalDateExpressionTest extends AbstractTest {
 				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-//		query.printSQLForQuery();
 		Assert.assertThat(allRows.size(), is(22));
 
 		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
