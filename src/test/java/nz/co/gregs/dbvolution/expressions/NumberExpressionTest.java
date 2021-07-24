@@ -655,7 +655,7 @@ public class NumberExpressionTest extends AbstractTest {
 	@Test
 	public void testGreatestOfCollection() throws SQLException {
 		Marque marq = new Marque();
-		DBQuery dbQuery = database.getDBQuery(marq).setPrintSQLBeforeExecution(true);
+		DBQuery dbQuery = database.getDBQuery(marq);
 		ArrayList<NumberResult> vals = new ArrayList<NumberResult>();
 		vals.add(marq.column(marq.uidMarque).numberResult());
 		vals.add(NumberExpression.value(9000000.0));
@@ -1250,7 +1250,7 @@ public class NumberExpressionTest extends AbstractTest {
 		CountIfRow randRow = new CountIfRow();
 		database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).getAllRows());
 		database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).setSortOrder(randRow.column(randRow.countif)).getAllRows());
-		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true).setPrintSQLBeforeExecution(true);
+		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(randRow.column(randRow.countif));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -1409,7 +1409,7 @@ public class NumberExpressionTest extends AbstractTest {
 				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-//		query.printSQLForQuery();
+
 		Assert.assertThat(allRows.size(), is(22));
 
 		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
