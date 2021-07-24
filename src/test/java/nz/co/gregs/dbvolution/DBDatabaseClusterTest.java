@@ -216,13 +216,20 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			Assert.assertThat(cluster.size(), is(1));
+			
+			cluster.addTrackedTable(new Marque());
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
-			cluster.addDatabase(soloDB2);
+			cluster.addDatabaseAndWait(soloDB2);
+			Assert.assertThat(cluster.size(), is(2));
 
 			DBQuery query = cluster.getDBQuery(new Marque());
-			query.setRawSQL("blart = norn");
+			query.setRawSQL("and blart = norn");
 			try {
 				List<DBQueryRow> allRows = query.getAllRows();
+				// should throw an exception before this
+				System.out.println("ALLROWS: " + allRows.size());
+				Assert.fail("Failed to quarantine database after unsuccessful query");
 			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
 			}
 			Assert.assertThat(cluster.size(), is(1));
@@ -232,22 +239,29 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testLastDatabaseCannotBeRemovedAfterErrorInQuery() throws SQLException {
 		DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database);
+		cluster.addTrackedTable(new Marque());
 		try {
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
-			cluster.addDatabase(soloDB2);
+			cluster.addDatabaseAndWait(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
 
 			DBQuery query = cluster.getDBQuery(new Marque());
-			query.setRawSQL("blart = norn");
+			query.setRawSQL("and blart = norn");
 			try {
 				List<DBQueryRow> allRows = query.getAllRows();
+				Assert.fail("Failed to throw exception after unsuccessful query");
+			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
+			}
+			Assert.assertThat(cluster.size(), is(1));
+			query = cluster.getDBQuery(new Marque());
+			try {
+				List<DBQueryRow> allRows = query.getAllRows();
+				Assert.fail("Failed to throw exception after unsuccessful query");
 			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
 			}
 			Assert.assertThat(cluster.size(), is(1));
 		} finally {
-			Assert.assertThat(cluster.size(), Matchers.greaterThan(0));
 			cluster.dismantle();
-			Assert.assertThat(cluster.size(), is(0));
 		}
 	}
 
