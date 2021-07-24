@@ -145,7 +145,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public DBDatabaseCluster() {
-		this("", new Configuration(true, true));
+		this("", Configuration.autoRebuildAndReconnect());
 	}
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config) {
@@ -163,7 +163,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public DBDatabaseCluster(String clusterLabel) {
-		this(clusterLabel, new Configuration(true, true));
+		this(clusterLabel, Configuration.autoRebuildAndReconnect());
 	}
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config, DBDatabase... databases) throws SQLException {
@@ -1000,7 +1000,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		try {
 			query.setWorkingDatabase(workingDB);
 			// set oracle compatibility 
-			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString()||!getDefinition().canProduceNullStrings());
+			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString() || !getDefinition().canProduceNullStrings());
 			// hand the job down to the next layer
 			return workingDB.executeDBQuery(query);
 		} catch (AccidentalBlankQueryException | AccidentalCartesianJoinException errorWithTheQueryException) {
@@ -1008,12 +1008,14 @@ public class DBDatabaseCluster extends DBDatabase {
 		} catch (NoAvailableDatabaseException errorWithTheClusterException) {
 			throw errorWithTheClusterException;
 		} catch (SQLException e) {
-			if (handleExceptionDuringQuery(e, workingDB).equals(HandlerAdvice.ABORT)) {
+			final HandlerAdvice advice = handleExceptionDuringQuery(e, workingDB);
+			if (advice.equals(HandlerAdvice.REQUERY)) {
+				return executeDBQuery(query);
+			} else {
 				quarantineDatabaseAutomatically(workingDB, e);
 				throw e;
 			}
 		}
-		return query;
 	}
 
 	@Override
