@@ -355,7 +355,6 @@ public class DBDateRepeatTest extends AbstractTest {
 
 		Period myPeriod = new Period().withMillis(700);
 		marq.dateRepeatCol.setValue(myPeriod);
-		database.setPrintSQLBeforeExecuting(true);
 		database.insert(marq);
 		DateRepeatTable example = new DateRepeatTable();
 		example.pkid.setValue(marq.pkid);
@@ -367,7 +366,6 @@ public class DBDateRepeatTest extends AbstractTest {
 		database.update(got.get(0));got = database.get(example);
 		Assert.assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
 		
-		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	@Test
