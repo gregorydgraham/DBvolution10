@@ -382,11 +382,10 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 	public void testAggregatorWithWindowingFunctions() throws SQLException {
 		MarqueWithAggregatorAndDateWindowingFunctions marq = new MarqueWithAggregatorAndDateWindowingFunctions();
-//		database.setPrintSQLBeforeExecuting(true);
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(marq.column(marq.carCompany));
-//		query.printSQLForQuery();
+
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
@@ -459,15 +458,14 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 	public void testComplexWindowingFunctions() throws SQLException {
 		MarqueWithComplexWindowingFunction marq = new MarqueWithComplexWindowingFunction();
-//		database.setPrintSQLBeforeExecuting(true);
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(marq.column(marq.carCompany));
-//		query.printSQLForQuery();
+
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
-//		database.print(allRows);
+
 		MarqueWithComplexWindowingFunction got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
 		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
@@ -543,8 +541,6 @@ public class DateExpressionTest extends AbstractTest {
 		got = query.getAllRows();
 
 		if (got.size() != 1) {
-//			System.out.println("EXPECTED CREATION DATE: " + then);
-			query.printSQLForQuery();
 			database.getDBTable(marq).setBlankQueryAllowed(true).print();
 		}
 		Assert.assertThat(got.size(), is(1));
@@ -1641,9 +1637,7 @@ public class DateExpressionTest extends AbstractTest {
 
 	@Test
 	public void testSecondsFromReturnsDecimal() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
-//		database.setPrintSQLBeforeExecuting(false);
 		
 		allRows.forEach((row) -> {
 			if (row.subseconds.doubleValue() != 0.01) {
