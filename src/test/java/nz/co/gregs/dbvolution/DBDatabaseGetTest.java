@@ -141,9 +141,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 	public void testIsNull() throws SQLException {
 		Marque literalQuery = new Marque();
 		literalQuery.individualAllocationsAllowed.permittedValues((Object) null);
-		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> gotMarques = database.get(literalQuery);
-		database.setPrintSQLBeforeExecuting(false);
 
 		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
 		if (notOracle) {
@@ -160,16 +158,11 @@ public class DBDatabaseGetTest extends AbstractTest {
 
 	@Test
 	public void testIsNotNull() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
 		Marque literalQuery = new Marque();
 
 		literalQuery.individualAllocationsAllowed.excludedValues((String) null);
 		List<Marque> gotMarques = database.get(literalQuery);
 
-//		var query = database.getDBQuery(literalQuery).addCondition(literalQuery.column(literalQuery.individualAllocationsAllowed).isNotNullAndNotEmpty());
-//		List<Marque> gotMarques = query.getAllInstancesOf(literalQuery);
-
-		database.setPrintSQLBeforeExecuting(false);
 		final Long fullTableCount = database.getDBTable(new Marque()).count();
 
 		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
