@@ -71,7 +71,6 @@ public class OracleCompatibilityTest extends AbstractTest {
 		DBQuery query = database.getDBQuery()
 				.add(marque)
 				.setQueryLabel("testDBRowMethodWithDBString")
-				.setPrintSQLBeforeExecution(true)
 				.setReturnEmptyStringForNullString(true);
 		List<DBString> distinctValuesForColumn = query.getDistinctValuesOfColumn(marque.column(marque.individualAllocationsAllowed));
 		Assert.assertThat(distinctValuesForColumn.size(), is(2));
@@ -100,7 +99,6 @@ public class OracleCompatibilityTest extends AbstractTest {
 		final DBTable<Marque> dbTable = database
 				.getDBTable(marque)
 				.setQueryLabel("testDBTableMethodWithDBString")
-				.setPrintSQLBeforeExecution(true)
 				.setReturnEmptyStringForNullString(true);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
 		List<String> foundStrings = new ArrayList<String>();
@@ -130,8 +128,7 @@ public class OracleCompatibilityTest extends AbstractTest {
 		List<DBQueryRow> distinctCombinationsOfColumnValues
 				= database
 						.getDBQuery(carCo, marque)
-//						.setQueryLabel("testDBQueryVersion")
-						.setPrintSQLBeforeExecution(true)
+						.setQueryLabel("testDBQueryVersion")
 						.setBlankQueryAllowed(true)
 						.setReturnEmptyStringForNullString(true)
 						.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
