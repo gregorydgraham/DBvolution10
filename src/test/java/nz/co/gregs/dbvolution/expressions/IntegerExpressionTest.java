@@ -1355,7 +1355,6 @@ public class IntegerExpressionTest extends AbstractTest {
 				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-//		query.printSQLForQuery();
 		Assert.assertThat(allRows.size(), is(22));
 
 		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
