@@ -47,11 +47,16 @@ public class Postgres10ContainerDB extends PostgresDB {
 
 	protected final PostgreSQLContainer<?> storedContainer;
 
+	protected static final String DEFAULT_LABEL = "Unlabelled";
 	protected static final String DEFAULT_TAG = "10-3.0-alpine";
 	protected static final String DEFAULT_CONTAINER = "postgis/postgis";
 
 	public static Postgres10ContainerDB getInstance() {
-		return getLabelledInstance("Unlabelled");
+		return getLabelledInstance(DEFAULT_LABEL);
+	}
+
+	public static PostgresDB getInstance(String image, String tag) {
+		return getLabelledInstance(DEFAULT_LABEL, image, tag);
 	}
 
 	public static Postgres10ContainerDB getLabelledInstance(String unlabelled) {
