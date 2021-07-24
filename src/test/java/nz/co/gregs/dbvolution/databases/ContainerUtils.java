@@ -60,7 +60,7 @@ public class ContainerUtils {
 		container.withConnectTimeoutSeconds(300);
 	}
 
-	protected static void startContainer(JdbcDatabaseContainer<?> container) {
+	protected static void startContainer(JdbcDatabaseContainer<?> container) throws org.testcontainers.containers.ContainerLaunchException {
 		setStandardContainerSettings(container);
 		container.start();
 	}
