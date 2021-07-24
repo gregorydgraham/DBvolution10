@@ -832,9 +832,7 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<!--<testMySQLContainer>true</testMySQLContainer>-->
 								<testMySQL>true</testMySQL>
-								<testPostgresContainer>true</testPostgresContainer>
 								<testPostgres>true</testPostgres>
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
