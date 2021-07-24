@@ -143,9 +143,7 @@ public class DBTableGetTest extends AbstractTest {
 	public void testIsLiterallyNotWithNull() throws SQLException {
 		Marque literalQuery = new Marque();
 		literalQuery.getIntIndividualAllocationsAllowed().excludedValues(null, "YES", "");
-		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
-		database.setPrintSQLBeforeExecuting(false);
 		
 		Assert.assertThat(rowsByExample.size(), is(1));
 	}
