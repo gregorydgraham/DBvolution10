@@ -112,7 +112,6 @@ public class DBLocalDateTimeTest extends AbstractTest {
 
 	@Test
 	public void testCheckDatabaseLocalDateTime() throws UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, SQLException {
-		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testCheckDatabaseLocalDateTime()");
 
 		LocalDateTime databaseLocalDateTime = database.getCurrentLocalDatetime();
 
