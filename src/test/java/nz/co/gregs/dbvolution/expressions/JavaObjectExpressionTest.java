@@ -54,7 +54,6 @@ public class JavaObjectExpressionTest extends AbstractTest {
 
 	@After
 	public void after() throws AutoCommitActionDuringTransactionException, SQLException{
-		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new JavaObjectExpressionTable());
 	}
@@ -64,7 +63,6 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new JavaObjectExpressionTable());
 		database.createTable(new JavaObjectExpressionTable());
-		database.setPrintSQLBeforeExecuting(true);
 	}
 
 	@Test
