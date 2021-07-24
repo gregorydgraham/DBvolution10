@@ -65,7 +65,6 @@ public class DBDurationTest extends AbstractTest {
 	@Test
 	public void testNegativeSeconds() throws SQLException {
 		final DurationTable durationTable = new DurationTable();
-		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(durationTable);
 		database.createTable(durationTable);
@@ -74,7 +73,6 @@ public class DBDurationTest extends AbstractTest {
 		database.insert(durationTable);
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
-		database.setPrintSQLBeforeExecuting(false);
 
 		Assert.assertThat(allRows.size(), is(1));
 
@@ -84,7 +82,6 @@ public class DBDurationTest extends AbstractTest {
 	@Test
 	public void testNegativeDays() throws SQLException {
 		final DurationTable durationTable = new DurationTable();
-		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(durationTable);
 		database.createTable(durationTable);
@@ -93,7 +90,6 @@ public class DBDurationTest extends AbstractTest {
 		database.insert(durationTable);
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
-		database.setPrintSQLBeforeExecuting(false);
 
 		Assert.assertThat(allRows.size(), is(1));
 
@@ -103,7 +99,6 @@ public class DBDurationTest extends AbstractTest {
 	@Test
 	public void testNegativeHours() throws SQLException {
 		final DurationTable durationTable = new DurationTable();
-		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(durationTable);
 		database.createTable(durationTable);
@@ -112,7 +107,6 @@ public class DBDurationTest extends AbstractTest {
 		database.insert(durationTable);
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
-		database.setPrintSQLBeforeExecuting(false);
 
 		Assert.assertThat(allRows.size(), is(1));
 
@@ -122,7 +116,6 @@ public class DBDurationTest extends AbstractTest {
 	@Test
 	public void testNegativeMinutes() throws SQLException {
 		final DurationTable durationTable = new DurationTable();
-		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(durationTable);
 		database.createTable(durationTable);
@@ -131,8 +124,7 @@ public class DBDurationTest extends AbstractTest {
 		database.insert(durationTable);
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
-		database.setPrintSQLBeforeExecuting(false);
-
+		
 		Assert.assertThat(allRows.size(), is(1));
 
 		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
@@ -141,7 +133,6 @@ public class DBDurationTest extends AbstractTest {
 	@Test
 	public void testNegativeNanos() throws SQLException {
 		final DurationTable durationTable = new DurationTable();
-		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(durationTable);
 		database.createTable(durationTable);
@@ -151,7 +142,6 @@ public class DBDurationTest extends AbstractTest {
 		database.insert(durationTable);
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
-		database.setPrintSQLBeforeExecuting(false);
 
 		Assert.assertThat(allRows.size(), is(1));
 
