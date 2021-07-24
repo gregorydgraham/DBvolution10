@@ -182,11 +182,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "CAST((" + sql + ") as INTEGER)";
 	}
 
-//	@Override
-//	public String doBooleanToIntegerTransform(String columnName) {
-//		return "case when " + columnName + " is null then null when " + columnName + " then 1 else 0 end";
-////		return "(" + columnName + ")::integer";
-//	}
 	@Override
 	public String doIntegerToBitTransform(String columnName) {
 		return columnName + "::bit";
@@ -702,8 +697,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return StringFunctions.SUBSTRINGAFTER + "(" + fromThis + ", " + afterThis + ")";
 	}
 
-	//INSERT INTO BasicSpatialTable( myfirstgeom)  VALUES ( polygon 'POLYGON ((5 10, 6 10, 6 11, 5 11, 5 10))')
-	//INSERT INTO BasicSpatialTable( myfirstgeom)  VALUES ( polygon '((5,10), (6,10), (6,11), (5,11), (5,10))');
 	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 
