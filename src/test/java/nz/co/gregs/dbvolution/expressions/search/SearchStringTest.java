@@ -60,16 +60,6 @@ public class SearchStringTest extends AbstractTest {
 				marq.column(marq.name).ascending()
 		);
 
-//		query.printSQLForQuery();
-//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-//		int i = 0;
-//		for (DBQueryRow row : rows) {
-//			final SearchMarque marque = row.get(marq);
-//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
-
 		query.addCondition(searchExpr);
 
 		List<SearchMarque> got = query.getAllInstancesOf(marq);
@@ -113,16 +103,6 @@ public class SearchStringTest extends AbstractTest {
 				marq.column(marq.name).searchForRanking(searchString).descending(),
 				marq.column(marq.name).ascending()
 		);
-
-//		query.printSQLForQuery();
-//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-//		int i = 0;
-//		for (DBQueryRow row : rows) {
-//			final SearchMarque marque = row.get(marq);
-//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
 
 		query.addCondition(
 				marq.column(marq.name).searchFor(searchString)
@@ -208,16 +188,6 @@ public class SearchStringTest extends AbstractTest {
 				marq.column(marq.name).ascending()
 		);
 
-//		query.printSQLForQuery();
-//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-//		int i = 0;
-//		for (DBQueryRow row : rows) {
-//			final SearchMarque marque = row.get(marq);
-//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
-
 		query.addCondition(
 				searchString.getComparisonExpression()
 		);
@@ -248,17 +218,6 @@ public class SearchStringTest extends AbstractTest {
 				rankColumn.descending(),
 				marq.column(marq.name).ascending()
 		);
-
-//		query.printSQLForQuery();
-//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-//
-//		int i = 0;
-//		for (DBQueryRow row : rows) {
-//			final SearchMarque marque = row.get(marq);
-//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
 		
 		query.addCondition(rankColumn.isGreaterThan(0));
 
