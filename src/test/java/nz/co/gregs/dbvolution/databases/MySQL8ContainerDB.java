@@ -32,8 +32,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.MySQL8ContainerDB.Versions;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import org.apache.commons.logging.Log;
@@ -50,13 +48,19 @@ public class MySQL8ContainerDB extends MySQLDB {
 
 	private static final long serialVersionUID = 1l;
 	private static MySQL8ContainerDB staticDatabase = null;
+
+	protected static final String DEFAULT_LABEL = "Unlabelled";
+
+	public static MySQL8ContainerDB getInstance(String image, String tag) {
+		return createNewInstance(DEFAULT_LABEL, image, tag);
+	}
 	protected final MySQLContainer<?> storedContainer;
 
 	static final private Log LOG = LogFactory.getLog(MySQL8ContainerDB.class);
 
 	public static MySQL8ContainerDB getInstance() {
 		if (staticDatabase == null) {
-			staticDatabase = createNewInstance("Unlabelled");
+			staticDatabase = createNewInstance(DEFAULT_LABEL);
 		}
 		return staticDatabase;
 	}
@@ -66,13 +70,22 @@ public class MySQL8ContainerDB extends MySQLDB {
 	}
 
 	public static MySQL8ContainerDB createNewInstance(String label, Versions tag) {
-		MySQL8ContainerDB dbdatabase = null;
+		return createNewInstance(
+				label,
+				FinalisedMySQLContainerProvider.DEFAULT_IMAGE,
+				tag.toString()
+		);
+	}
+
+	protected static MySQL8ContainerDB createNewInstance(String label, String image, String tag) {
+		MySQL8ContainerDB dbdatabase;
 
 		final FinalisedMySQLContainerProvider provider = new FinalisedMySQLContainerProvider();
-		FinalisedMySQLContainer container = null;
+		FinalisedMySQLContainer container;
 		try {
-			LOG.info("Trying to create MySQL:" + tag);
-			container = provider.newInstance(tag);
+			final String imageAndTag = image + ":" + tag;
+			LOG.info("Trying to create MySQL from " + imageAndTag);
+			container = provider.newInstance(image, tag);
 			ContainerUtils.startContainer(container);
 			// create the actual dbdatabase
 			dbdatabase = new MySQL8ContainerDB(container,
@@ -128,13 +141,21 @@ public class MySQL8ContainerDB extends MySQLDB {
 		}
 
 		private FinalisedMySQLContainer newDefaultInstance() {
-			return new FinalisedMySQLContainer(DEFAULT_TAG);
+			return newInstance(DEFAULT_IMAGE, DEFAULT_TAG);
 		}
 
 		@Override
 		public FinalisedMySQLContainer newInstance(String tag) {
 			if (tag != null) {
-				return new FinalisedMySQLContainer(DEFAULT_IMAGE + ":" + tag);
+				return newInstance(DEFAULT_IMAGE, tag);
+			} else {
+				return newDefaultInstance();
+			}
+		}
+
+		public FinalisedMySQLContainer newInstance(String image, String tag) {
+			if (image != null && tag != null) {
+				return new FinalisedMySQLContainer(image + ":" + tag);
 			} else {
 				return newDefaultInstance();
 			}
@@ -149,7 +170,7 @@ public class MySQL8ContainerDB extends MySQLDB {
 		}
 
 		public FinalisedMySQLContainer newInstanceOfLatestVersion() {
-			return new FinalisedMySQLContainer(DEFAULT_IMAGE + ":"+DEFAULT_LATEST_TAG);
+			return newInstance(DEFAULT_IMAGE, DEFAULT_LATEST_TAG);
 		}
 
 		@Override
@@ -162,17 +183,30 @@ public class MySQL8ContainerDB extends MySQLDB {
 	public static enum Versions {
 		v5,
 		v5_6,
-		v5_6_50, // This is likely to change as Oracle seems to like removing 3rd tier versions
+		v5_6_latest("5.6.51"), // This is likely to change as Oracle seems to like removing 3rd tier versions
 		v5_7,
-		v5_7_32, // This is likely to change as Oracle seems to like removing 3rd tier versions
+		v5_7_latest("5.7.35"), // This is likely to change as Oracle seems to like removing 3rd tier versions
 		v8,
 		v8_0,
-		v8_0_22, // This is likely to change as Oracle seems to like removing 3rd tier versions
+		v8_0_latest("8.0.26"), // This is likely to change as Oracle seems to like removing 3rd tier versions
 		latest;
+		private final String actualTag;
+
+		private Versions() {
+			actualTag = null;
+		}
+
+		private Versions(String actualTag) {
+			this.actualTag = actualTag;
+		}
 
 		@Override
 		public String toString() {
-			return super.toString().replaceAll("_", ".").replaceFirst("v", "");
+			if (actualTag == null) {
+				return super.toString().replaceAll("_", ".").replaceFirst("v", "");
+			} else {
+				return actualTag;
+			}
 		}
 
 		public static Iterator<Versions> getIteratorLatestFirst() {
