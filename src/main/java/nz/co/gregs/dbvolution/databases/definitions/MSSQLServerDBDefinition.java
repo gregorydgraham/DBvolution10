@@ -361,7 +361,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doBooleanToIntegerTransform(String booleanExpression) {
-		return " case when (" + booleanExpression + ") then 1 when not (" + booleanExpression + ") then 0 else null end ";
+		return " case when (" + booleanExpression + ") then 1 when not (" + booleanExpression + ") then 0 else " + getNull() + " end ";
 	}
 
 	@Override
@@ -1434,12 +1434,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String getDefaultOrderingClause() {
 		return "ORDER BY (SELECT NULL)";
 	}
-	
+
 	@Override
 	public boolean supportsDurationNatively() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
