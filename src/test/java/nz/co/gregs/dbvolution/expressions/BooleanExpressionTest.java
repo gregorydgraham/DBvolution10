@@ -1043,7 +1043,6 @@ public class BooleanExpressionTest extends AbstractTest {
 					);
 
 			List<DBQueryRow> allRows = query.getAllRows();
-//			query.printSQLForQuery();
 			Assert.assertThat(allRows.size(), is(22));
 
 			MarqueWithWindowingFunctions got;// = allRows.get(0).get(marq);
@@ -1121,7 +1120,6 @@ public class BooleanExpressionTest extends AbstractTest {
 							marq.column(marq.carCompany).ascending(),
 							marq.column(marq.uidMarque).ascending()
 					);
-//			query.printSQLForQuery();
 			List<DBQueryRow> allRows = query.getAllRows();
 			
 			Assert.assertThat(allRows.size(), is(22));
@@ -1216,7 +1214,6 @@ public class BooleanExpressionTest extends AbstractTest {
 							marq.column(marq.uidMarque).ascending()
 					);
 			List<DBQueryRow> allRows = query.getAllRows();
-//			query.printSQLForQuery();
 			Assert.assertThat(allRows.size(), is(22));
 
 			MarqueWithEquivalentCaseStatements got;
