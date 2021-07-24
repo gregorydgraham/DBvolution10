@@ -1043,7 +1043,6 @@ public class InstantExpressionTest extends AbstractTest {
 		query.setQueryLabel("First");
 		query.addCondition(
 				marq.column(marq.creationInstant).dayIs(23));
-//		query.printSQLForQuery();
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(18));
 
@@ -1283,7 +1282,6 @@ public class InstantExpressionTest extends AbstractTest {
 		dbQuery.addCondition(marque.column(marque.creationInstant).toInstant().isIn(april2nd2011Instant, march23rd2013Instant)
 		);
 
-//		dbQuery.printSQLForQuery();
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(21));
@@ -1867,7 +1865,6 @@ public class InstantExpressionTest extends AbstractTest {
 				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-//		query.printSQLForQuery();
 		Assert.assertThat(allRows.size(), is(22));
 
 		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
