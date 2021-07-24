@@ -583,7 +583,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		
 		LocalDateTime databaseLocalDateTime = database.getCurrentLocalDatetime();
 
-		System.out.println("DATABASELOCALDATETIME: " + databaseLocalDateTime);
 		final LocalDateTime applicationLocalDateTime = LocalDateTime.now();
 		final LocalDateTime buffered = applicationLocalDateTime.minusMinutes(10);
 
