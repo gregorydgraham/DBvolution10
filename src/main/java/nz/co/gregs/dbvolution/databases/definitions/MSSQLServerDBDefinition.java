@@ -1388,12 +1388,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "(STRING_AGG(" + accumulateColumn + ", " + separator + "))";
+		return "(STRING_AGG(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + "))";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "(STRING_AGG(" + accumulateColumn + ", " + separator + ") WITHIN GROUP (ORDER BY " + orderByColumnName + "))";
+		return "(STRING_AGG(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + ") WITHIN GROUP (ORDER BY " + orderByColumnName + "))";
 	}
 
 	@Override

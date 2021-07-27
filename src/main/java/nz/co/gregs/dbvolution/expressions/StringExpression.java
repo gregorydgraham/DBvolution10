@@ -962,8 +962,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * exceptions.
 	 *
 	 * @param sqlPattern	sqlPattern
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLikeIgnoreCase(String sqlPattern) {
@@ -1022,8 +1020,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * lowercase first.
 	 *
 	 * @param numberResult	numberResult
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(NumberResult numberResult) {
@@ -1933,8 +1929,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
-	public StringExpression aggregate(StringResult separator) {
-		return new StringAggregateExpression(this, StringExpression.value(separator));
+	public StringExpression aggregate(String separator) {
+		return new StringAggregateExpression(this, separator);
 	}
 
 	/**
@@ -1960,50 +1956,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a StringExpression.
 	 */
 	public StringExpression aggregate(String separator, SortProvider orderBy) {
-		return aggregate(StringExpression.value(separator), orderBy);
-	}
-
-	/**
-	 * Creates a query expression that aggregates the current StringExpression
-	 * into a single string value.
-	 *
-	 * <p>
-	 * For a table with rows like {"First"} and {"Second"}, using aggregate(", ")
-	 * will return "First, Second".</p>
-	 *
-	 * <p>
-	 * Like all aggregates, return values will vary based on the other fields
-	 * returned by the queries. For instance if the table has rows like {1,
-	 * "First", 3} and {2, "Second", 3} and the query returns all the columns and
-	 * the string aggregate, the result will be {1, "First", 3, "First"} and {2,
-	 * "Second", 3, "Second"}. However if only the third column and the string
-	 * aggregate are returned then the result will be {3, "First, Second"}. Use {@link DBRow#setReturnFields(nz.co.gregs.dbvolution.columns.ColumnProvider...)}, {@link DBRow#setReturnFieldsToNone()
-	 * }, and similar methods to change the returned fields.
-	 * </p>
-	 *
-	 * @param separator	separator placed between all values
-	 * @param orderBy the sort ordering to use in the aggregator
-	 * @return a StringExpression.
-	 */
-	public StringExpression aggregate(StringResult separator, SortProvider orderBy) {
 		return new StringAggregateWithOrderByExpression(
 				this,
-				StringExpression.value(separator),
+				separator,
 				orderBy
 		);
-	}
-
-	/**
-	 * Creates a query expression that appends the supplied value to the current
-	 * StringExpression.
-	 *
-	 * @param separator	string2
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a StringExpression.
-	 */
-	public StringExpression aggregate(String separator) {
-		return this.aggregate(StringExpression.value(separator));
 	}
 
 	/**
@@ -3799,26 +3756,26 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringAggregateExpression extends DBBinaryStringFunction implements CanBeWindowingFunctionWithFrame<StringExpression> {
+	public class StringAggregateExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
-		public StringAggregateExpression(StringExpression columnToAccumulate, StringExpression separator) {
-			super(columnToAccumulate, separator);
+		public StringAggregateExpression(StringExpression columnToAccumulate, String separator) {
+			this.column = columnToAccumulate;
+			this.separator = separator;
 		}
 		private final static long serialVersionUID = 1l;
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return db.doStringAccumulateTransform(
-					super.first.toSQLString(db),
-					super.second.toSQLString(db),
-					super.first.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName());
+			return db.doStringAccumulateTransform(column.toSQLString(db),
+					separator,
+					column.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName());
 		}
 
 		@Override
 		public StringAggregateExpression copy() {
 			return new StringAggregateExpression(
-					first == null ? null : first.copy(),
-					second == null ? null : second.copy()
+					column == null ? null : column.copy(),
+					separator == null ? null : separator
 			);
 		}
 
@@ -3831,15 +3788,40 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		public WindowFunctionFramable<StringExpression> over() {
 			return new WindowFunctionFramable<>(new StringExpression(this));
 		}
+		protected StringExpression column;
+		protected String separator;
+
+		@Override
+		public DBString getQueryableDatatypeForExpressionValue() {
+			return new DBString();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<>();
+			if (column != null) {
+				hashSet.addAll(column.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (column == null) {
+				return true;
+			} else {
+				return column.isPurelyFunctional();
+			}
+		}
 	}
 
 	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		private final StringExpression columnToAccumulate;
-		private final StringExpression separator;
+		private final String separator;
 		private final SortProvider orderBy;
 
-		public StringAggregateWithOrderByExpression(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
+		public StringAggregateWithOrderByExpression(StringExpression columnToAccumulate, String separator, SortProvider orderBy) {
 			super();
 			this.columnToAccumulate = columnToAccumulate;
 			this.separator = separator;
@@ -3863,7 +3845,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		public StringAggregateWithOrderByExpression copy() {
 			return new StringAggregateWithOrderByExpression(
 					columnToAccumulate == null ? null : columnToAccumulate.copy(),
-					separator == null ? null : separator.copy(),
+					separator == null ? null : separator,
 					orderBy == null ? null : orderBy.copy()
 			);
 		}

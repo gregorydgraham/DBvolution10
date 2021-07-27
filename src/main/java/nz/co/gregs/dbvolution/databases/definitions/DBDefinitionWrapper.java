@@ -2314,7 +2314,7 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
-	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
+	public String doStringAccumulateTransform(StringExpression columnToAccumulate, String separator, SortProvider orderBy) {
 		return base.doStringAccumulateTransform(columnToAccumulate, separator, orderBy);
 	}
 

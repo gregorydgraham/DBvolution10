@@ -1025,12 +1025,12 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "GROUP_CONCAT(" + accumulateColumn + ", " + separator + ")";
+		return "GROUP_CONCAT(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + ")";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "GROUP_CONCAT(" + accumulateColumn + ", " + separator + ")";
+		return "GROUP_CONCAT(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + ")";
 	}
 
 	@Override
@@ -1112,27 +1112,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	public String doInstantSubsecondTransform(String dateExpression) {
 		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as BIGINT)))";
 	}
-
-//	@Override
-//	public String transformJavaDurationIntoDatabaseDuration(Duration interval) {
-//		if (interval == null) {
-//			return null;
-//		}
-//		int days = (int) interval.toDaysPart();
-//		int hours = interval.toHoursPart();
-//		int minutes = interval.toMinutesPart();
-//
-//		int nanos = interval.toNanosPart();
-//		double seconds = interval.toSecondsPart() + ((0.0d + nanos) / 1000000000.0);
-//		String intervalString
-//				= "'INTERVAL "
-//				+ days
-//				+ " " + hours
-//				+ ":" + minutes
-//				+ ":" + seconds
-//				+ " DAY TO SECOND'";
-//		return intervalString;
-//	}
 
 	@Override
 	public boolean supportsDurationNatively() {

@@ -857,12 +857,12 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "LISTAGG(" + accumulateColumn + ", " + separator + ") WITHIN GROUP( ORDER BY 1 )";
+		return "LISTAGG(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + ") WITHIN GROUP( ORDER BY 1 )";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "LISTAGG(" + accumulateColumn + ", " + separator + ")" + " WITHIN GROUP( ORDER BY " + orderByColumnName + ")";
+		return "LISTAGG(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + ")" + " WITHIN GROUP( ORDER BY " + orderByColumnName + ")";
 	}
 
 	private DBExpression transformToStandardDateFormatForRetrieval(DBExpression expression) {

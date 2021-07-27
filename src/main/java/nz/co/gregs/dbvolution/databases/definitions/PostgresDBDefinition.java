@@ -989,12 +989,12 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "STRING_AGG(" + accumulateColumn + ", " + separator + ")";
+		return "STRING_AGG(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + ")";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "STRING_AGG(" + accumulateColumn + ", " + separator + " ORDER BY " + orderByColumnName + ")";
+		return "STRING_AGG(" + accumulateColumn + ", " + doStringLiteralWrapping(separator) + " ORDER BY " + orderByColumnName + ")";
 	}
 
 	/**

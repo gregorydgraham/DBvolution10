@@ -532,6 +532,10 @@ public abstract class DBDefinition implements Serializable {
 		return toString.replaceAll("'", "''");
 	}
 
+	public String doStringLiteralWrapping(String stringLiteral) {
+		return beginStringValue() + safeString(stringLiteral) + endStringValue();
+	}
+
 	/**
 	 *
 	 * returns the required SQL to begin a line within the WHERE or ON Clause for
@@ -6718,21 +6722,21 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "GROUP_CONCAT(" + accumulateColumn + " SEPARATOR " + separator + ")";
+		return "GROUP_CONCAT(" + accumulateColumn + " SEPARATOR " + doStringLiteralWrapping(separator) + ")";
 	}
 
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "GROUP_CONCAT(" + accumulateColumn + " ORDER BY " + orderByColumnName + " SEPARATOR " + separator + ")";
+		return "GROUP_CONCAT(" + accumulateColumn + " ORDER BY " + orderByColumnName + " SEPARATOR " + doStringLiteralWrapping(separator) + ")";
 	}
 
 	public boolean requiresSortedSubselectForStringAggregate() {
 		return false;
 	}
 
-	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
+	public String doStringAccumulateTransform(StringExpression columnToAccumulate, String separator, SortProvider orderBy) {
 		return doStringAccumulateTransform(
 				columnToAccumulate.toSQLString(this),
-				separator.toSQLString(this),
+				separator,
 				orderBy.toSQLString(this),
 				columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
 		);

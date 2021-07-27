@@ -1177,14 +1177,14 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " for xml path('')),1,1,'')";
+		return "stuff((select  " + doStringLiteralWrapping(separator) + " + " + accumulateColumn + " from    " + referencedTable + " for xml path('')),1,1,'')";
 	}
 
 	@Override
-	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
+	public String doStringAccumulateTransform(StringExpression columnToAccumulate, String separator, SortProvider orderBy) {
 		return doStringAccumulateTransform(
 				columnToAccumulate.toSQLString(this),
-				separator.getInnerResult().toSQLString(this), // separator needs to be a literal for SQLServer
+				separator,
 				orderBy.toSQLString(this),
 				columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
 		);
@@ -1192,7 +1192,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "CAST(stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " order by " + orderByColumnName + " for xml path('')),1,2,'') as VARCHAR(1000))";
+		return "CAST(stuff((select  " + doStringLiteralWrapping(separator) + " + " + accumulateColumn + " from    " + referencedTable + " order by " + orderByColumnName + " for xml path('')),1,2,'') as VARCHAR(1000))";
 	}
 
 	@Override
@@ -1204,42 +1204,4 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	public boolean requiresReversingLineStringsFromDatabase() {
 		return false;
 	}
-
-//	@Override
-//	public String getLocalDateFormattedForQuery(LocalDate date) {
-//		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-//		DateFormat tzFormat = new SimpleDateFormat("Z");
-//		String tz = tzFormat.format(date);
-//		switch (tz.length()) {
-//			case 4:
-//				tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
-//				break;
-//			case 5:
-//				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
-//				break;
-//			default:
-//				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
-//		}
-//		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
-//		return result;
-//	}
-//
-//	@Override
-//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
-//		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-//		DateFormat tzFormat = new SimpleDateFormat("Z");
-//		String tz = tzFormat.format(date);
-//		switch (tz.length()) {
-//			case 4:
-//				tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
-//				break;
-//			case 5:
-//				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
-//				break;
-//			default:
-//				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
-//		}
-//		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
-//		return result;
-//	}
 }

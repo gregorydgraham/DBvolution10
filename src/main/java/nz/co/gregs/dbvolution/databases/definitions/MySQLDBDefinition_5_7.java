@@ -713,21 +713,11 @@ public class MySQLDBDefinition_5_7 extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT("+accumulateColumn+" SEPARATOR "+doStringLiteralWrapping(separator)+")";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+doStringLiteralWrapping(separator)+")";
 	}
-
-//	@Override
-//	public String getLocalDateFormattedForQuery(LocalDate date) {
-//		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
-//	}
-//
-//	@Override
-//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
-//		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
-//	}
 }
