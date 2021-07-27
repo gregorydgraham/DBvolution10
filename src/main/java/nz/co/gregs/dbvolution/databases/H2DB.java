@@ -33,9 +33,6 @@ import org.h2.jdbc.JdbcException;
 /**
  * Stores all the required functionality to use an H2 database.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class H2DB extends DBDatabase {
@@ -75,14 +72,6 @@ public class H2DB extends DBDatabase {
 	}
 
 	/**
-	 * Default constructor, try not to use this.
-	 *
-	 */
-//	protected H2DB() {
-//		super();
-//	}
-
-	/**
 	 * Creates a DBDatabase for a H2 database in the file supplied.
 	 *
 	 * <p>
@@ -107,7 +96,6 @@ public class H2DB extends DBDatabase {
 				.setPassword(password)
 				.toSettings()
 		);
-//		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
 	}
 
 	/**
@@ -123,7 +111,6 @@ public class H2DB extends DBDatabase {
 		super(
 				new H2SettingsBuilder().setDataSource(dataSource)
 		);
-//		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
 	}
 
 	/**
@@ -137,7 +124,6 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(DatabaseConnectionSettings dcs) throws SQLException {
 		super(new H2SettingsBuilder().fromSettings(dcs));
-//		super(new H2DBDefinition(), DRIVER_NAME, dcs);
 	}
 
 	/**
@@ -225,9 +211,6 @@ public class H2DB extends DBDatabase {
 	/**
 	 * Clones the DBDatabase
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a clone of the database.
 	 * @throws java.lang.CloneNotSupportedException
 	 * java.lang.CloneNotSupportedException
@@ -306,74 +289,16 @@ public class H2DB extends DBDatabase {
 		}
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:h2:" + settings.getDatabaseName();
-//	}
 	@Override
 	public boolean isMemoryDatabase() {
 		return getJdbcURL().contains(":mem:");
 	}
 
-//	@Override
-//	public String getFileFromJdbcURL() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
-//		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
-//			return noPrefix
-//					.replaceAll("tcp://", "")
-//					.replaceAll("ssl://", "").split("/", 2)[1];
-//		} else {
-//			return noPrefix.replaceAll("^file:", "").split(";", 2)[0];
-//		}
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		int protocolIndex = 2;
-//		int restIndex = 4;
-//		String[] firstSplit = jdbcURL.split(":", restIndex);
-//		set.setProtocol(firstSplit[protocolIndex]);
-//		if (!set.getProtocol().equals("tcp")
-//				&& !set.getProtocol().equals("ssl")
-//				&& !set.getProtocol().equals("mem")
-//				&& !set.getProtocol().equals("zip")
-//				&& !set.getProtocol().equals("file")) {
-//			set.setProtocol("file");
-//			restIndex -= 1;
-//			firstSplit = jdbcURL.split(":", restIndex);
-//		}
-//		String restString = firstSplit[restIndex - 1];
-//		if (restString.startsWith("//")) {
-//			String[] secondSplit = restString.split("/", 4);
-//			String hostAndPort = secondSplit[2];
-//			if (hostAndPort.contains(":")) {
-//				String[] thirdSplit = hostAndPort.split(":");
-//				set.setHost(thirdSplit[0]);
-//				set.setPort(thirdSplit[1]);
-//			} else {
-//				set.setHost(hostAndPort);
-//				set.setPort("" + getDefaultPort());
-//			}
-//			restString = secondSplit[3];
-//		}
-//		String[] fourthSplit = restString.split(";");
-//		set.setDatabaseName(fourthSplit[0]);
-//		if (fourthSplit.length > 1) {
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(fourthSplit[1], ";", "=", ";", ""));
-//		}
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 9123;
 	}
 
-//	@Override
-//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return H2DB.class;
-//	}
 	private final static H2SettingsBuilder URL_PROCESSOR = new H2SettingsBuilder();
 
 	@Override

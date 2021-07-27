@@ -26,9 +26,6 @@ import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 /**
  * Stores all the required functionality to use an H2 database in memory.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class H2MemoryDB extends H2DB {
@@ -150,12 +147,7 @@ public class H2MemoryDB extends H2DB {
 	public H2MemoryDB(DatabaseConnectionSettings dataSource) throws SQLException {
 		super(dataSource);
 	}
-
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
-//	}
+	
 	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {
 		return (H2MemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -170,15 +162,6 @@ public class H2MemoryDB extends H2DB {
 		}
 	}
 
-//	@Override
-//	public boolean isMemoryDatabase() {
-//		return true;
-//	}
-//	@Override
-//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return H2MemoryDB.class;
-//	}
-//	private final static H2MemorySettingsBuilder URL_PROCESSOR = new H2MemorySettingsBuilder();
 	@Override
 	public H2MemorySettingsBuilder getURLInterpreter() {
 		return new H2MemorySettingsBuilder();

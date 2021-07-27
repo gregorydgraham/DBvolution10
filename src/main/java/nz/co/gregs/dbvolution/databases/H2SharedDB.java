@@ -81,14 +81,6 @@ public class H2SharedDB extends H2DB {
 		super.addDatabaseSpecificFeatures(stmt);
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String hostname = settings.getHost() == null || settings.getHost().isEmpty() ? "localhost" : settings.getHost();
-//		String port = settings.getPort() == null || settings.getPort().isEmpty() ? "9123" : settings.getPort();
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:h2:tcp://" + hostname + ":" + port + "/" + settings.getDatabaseName();
-//	}
-
 	@Override
 	protected void startServerIfRequired() {
 		if (isLocalhostServer()) {
@@ -145,7 +137,6 @@ public class H2SharedDB extends H2DB {
 			tryToReachServer();
 			return false;
 		} catch (Exception ex) {
-//			LOG.info("Unable to reach server", ex);
 		}
 		return true;
 	}
@@ -154,15 +145,8 @@ public class H2SharedDB extends H2DB {
 		getConnectionFromDriverManager().close();
 	}
 
-//	@Override
-//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return H2SharedDB.class;
-//	}
-
 	@Override
 	public H2SharedSettingsBuilder getURLInterpreter() {
 		return new H2SharedSettingsBuilder();
 	}
-	
-
 }
