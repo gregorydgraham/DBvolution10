@@ -1191,7 +1191,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private void printSQLIfRequired(QueryOptions options1, QueryDetails details, String sql) {
 		if (options1.getPrintSQLBeforeExecution()) {
-			System.out.println("/* SQL for " + details.label + " */ " + sql);
+			System.out.println("/* SQL for " + details.label + " on "+details.getWorkingDatabase()+" */ " + sql);
 		}
 	}
 
