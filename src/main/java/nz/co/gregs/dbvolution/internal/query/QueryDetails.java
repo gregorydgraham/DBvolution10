@@ -364,7 +364,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
 		long result = 0L;
 		try (DBStatement dbStatement = db.getDBStatement()) {
-			final String sqlForCount = details.getSQLForCount(details, options);
+			final String sqlForCount = details.getSQLForCountInternal(details, options);
 			printSQLIfRequired(options, details, sqlForCount);
 			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
 				while (resultSet.next()) {
@@ -375,20 +375,20 @@ public class QueryDetails implements DBQueryable, Serializable {
 		queryCount = result;
 	}
 
-	private synchronized String getSQLForCount(QueryDetails details, QueryOptions options) {
+	private synchronized String getSQLForCountInternal(QueryDetails details, QueryOptions options) {
 
 		if (!options.getQueryDefinition().supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM ("
-					+ getSQLForQuery(new QueryState(details), QueryType.SELECT, options)
+					+ getSQLForQueryInternal(new QueryState(details), QueryType.SELECT, options)
 							.replaceAll("; *$", "")
 					+ ") A"
 					+ options.getQueryDefinition().endSQLStatement();
 		} else {
-			return getSQLForQuery(new QueryState(details), QueryType.COUNT, options);
+			return getSQLForQueryInternal(new QueryState(details), QueryType.COUNT, options);
 		}
 	}
 
-	protected synchronized String getSQLForQuery(QueryState queryState, QueryType queryType, QueryOptions options) {
+	protected synchronized String getSQLForQueryInternal(QueryState queryState, QueryType queryType, QueryOptions options) {
 		try {
 			String sqlString = "";
 			final List<DBRow> allQueryTablesList = getAllQueryTables();
@@ -947,7 +947,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		} else {
 			// Watch out for the infinite loop
 			options.setCreatingNativeQuery(false);
-			String reversedQuery = getSQLForQuery(new QueryState(details), QueryType.REVERSESELECT, options);
+			String reversedQuery = getSQLForQueryInternal(new QueryState(details), QueryType.REVERSESELECT, options);
 			options.setCreatingNativeQuery(true);
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
@@ -1015,7 +1015,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				|| getResults().isEmpty()
 				|| !getResultsPageIndex().equals(options.getPageIndex())
 				|| !getResultsRowLimit().equals(options.getRowLimit())
-				|| !getResultSQL().equals(getSQLForQuery(new QueryState(this), QueryType.SELECT, options));
+				|| !getResultSQL().equals(getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options));
 	}
 
 	@Override
@@ -1038,20 +1038,20 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	public synchronized String getSQLForQueryEasily(DBDatabase db) {
+	public synchronized String getSQLForQuery(DBDatabase db) {
 		QueryType queryType = getOptions().getQueryType();
 		getOptions().setQueryType(QueryType.GENERATESQLFORSELECT);
 		prepareForQuery(db, options);
-		String sql = getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions());
+		String sql = getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, getOptions());
 		getOptions().setQueryType(queryType);
 		return sql;
 	}
 
-	public synchronized String getSQLForCountEasily(DBDatabase db) {
+	public synchronized String getSQLForCount(DBDatabase db) {
 		QueryType queryType = getOptions().getQueryType();
 		getOptions().setQueryType(QueryType.GENERATESQLFORCOUNT);
 		prepareForQuery(db, options);
-		String sql = getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions());
+		String sql = getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, getOptions());
 		getOptions().setQueryType(queryType);
 		return sql;
 	}
@@ -1069,10 +1069,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 				getAllRowsForPage(currentOptions);
 				break;
 			case GENERATESQLFORSELECT:
-				this.setResultSQL(getSQLForQuery(new QueryState(this), QueryType.SELECT, currentOptions));
+				this.setResultSQL(getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, currentOptions));
 				break;
 			case GENERATESQLFORCOUNT:
-				this.setResultSQL(getSQLForCount(this, currentOptions));
+				this.setResultSQL(QueryDetails.this.getSQLForCountInternal(this, currentOptions));
 				break;
 			case SELECT:
 				fillResultSetInternal(this, currentOptions);
@@ -1130,7 +1130,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	protected synchronized void fillResultSetInternal(QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
-		final String sqlForQuery = this.getSQLForQuery(new QueryState(this), QueryType.SELECT, options);
+		final String sqlForQuery = this.getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options);
 
 		setResultSQL(sqlForQuery);
 
@@ -1527,9 +1527,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 		prepareForQuery(db, options);
 		switch (getOptions().getQueryType()) {
 			case COUNT:
-				return getSQLForCount(this, options);
+				return QueryDetails.this.getSQLForCountInternal(this, options);
 			default:
-				return getSQLForQuery(new QueryState(this), QueryType.SELECT, getOptions());
+				return getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, getOptions());
 		}
 	}
 

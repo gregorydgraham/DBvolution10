@@ -297,7 +297,7 @@ public class DBQuery implements Serializable {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return details.getSQLForQueryEasily(database);
+		return details.getSQLForQuery(database);
 	}
 
 	/**

@@ -448,8 +448,6 @@ public class OuterJoinTest extends AbstractTest {
 		// DBvolution will create an outer join to accomodate our instruction
 		dbQuery.addOptional(antagonistExample);
 
-//		database.print(database.getDBTable(new Antagonist()).setBlankQueryAllowed(true).getAllRows());
-//		System.out.println(""+dbQuery.getSQLForQuery());
 		// getting all the rows is similar to DBTable 
 		// but returns a collection of DBQueryRows
 		List<nz.co.gregs.dbvolution.DBQueryRow> allQueryRows
