@@ -105,12 +105,16 @@ public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMS
 	public String encodeHost(DatabaseConnectionSettings settings) {
 		final String databaseName = settings.getDatabaseName();
 		final String instance = settings.getInstance();
-		final String urlFromSettings
-				= settings.getHost()
-				+ (instance != null && !instance.isEmpty() ? "\\" + instance : "")
-				+ ":" + settings.getPort() + ";"
-				+ (databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";")
-				+ encodeExtras(settings, ";", "=", ";", "");
+		final String encodeExtras = encodeExtras(settings, ";", "=", ";", "");
+		final String databaseNameClause = databaseName == null || databaseName.isEmpty() ? "" : "databaseName=" + databaseName + ";";
+		final String instanceClause = instance != null && !instance.isEmpty() ? "\\" + instance : "";
+		final String hostClause = settings.getHost();
+		final String port = settings.getPort();
+		final String urlFromSettings	= hostClause
+				+ instanceClause
+				+ ":" + port + ";"
+				+ databaseNameClause
+				+ encodeExtras;
 		return urlFromSettings;
 	}
 
@@ -119,10 +123,6 @@ public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMS
 		return settings;
 	}
 
-//	@Override
-//	public Class<? extends DBDatabase> generatesURLForDatabase() {
-//		return MSSQLServerDB.class;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 1433;
