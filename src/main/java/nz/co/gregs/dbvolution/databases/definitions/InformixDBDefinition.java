@@ -37,14 +37,8 @@ public class InformixDBDefinition extends DBDefinition {
 	public static final long serialVersionUID = 1L;
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-	//TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
 	private static final String INFORMIX_DATE_FORMAT = "%Y-%m-%d %H:%M:%S%F3";
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-
-	@Override
-	public boolean prefersIndexBasedGroupByClause() {
-		return true;
-	}
 
 	@Override
 	public boolean prefersIndexBasedOrderByClause() {
@@ -65,19 +59,13 @@ public class InformixDBDefinition extends DBDefinition {
 				+ "||' '||" + hours
 				+ "||':'||" + minutes
 				+ "||':'||(" + seconds+"+"+subsecond+")"
-//				+ "||' '||" + timeZoneSign
-//				+ "||" + timeZoneHourOffset
-//				+ "||" + timeZoneMinuteOffSet
 				+ ", '" + INFORMIX_DATE_FORMAT + "')";
-		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	/**
 	 *
 	 * @param table table
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string of the table and column name for the select clause
 	 */
 	@Override
@@ -120,9 +108,6 @@ public class InformixDBDefinition extends DBDefinition {
 	 * <p>
 	 * Informix provides NVL only.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return "COALESCE"
 	 */
 	@Override
@@ -155,6 +140,7 @@ public class InformixDBDefinition extends DBDefinition {
 	 *
 	 * @return the default implementation returns " CURRENT_TIMESTAMP "
 	 */
+	@Override
 	protected String getCurrentZonedDateTimeFunction() {
 		return "(CURRENT)";
 	}
@@ -287,5 +273,10 @@ public class InformixDBDefinition extends DBDefinition {
 	@Override
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
+	}
+
+	@Override
+	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
+		return new GroupByClauseMethod[]{GroupByClauseMethod.INDEX};
 	}
 }

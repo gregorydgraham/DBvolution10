@@ -593,20 +593,6 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
-	 * Indicates that the database does not accept named GROUP BY columns and the
-	 * query generator should create the GROUP BY clause using indexes instead.
-	 *
-	 *
-	 *
-	 *
-	 * @return TRUE if the database needs indexes for the
-	 * groupEverythingBeforeThis by columns, FALSE otherwise.
-	 */
-	public boolean prefersIndexBasedGroupByClause() {
-		return false;
-	}
-
-	/**
 	 * Returns the start of an AND line for this database.
 	 *
 	 *
@@ -6751,12 +6737,12 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public DBExpression transformToSelectableType(DBExpression expression) {
-		if (expression instanceof StringResult) {
-			if (requiredToProduceEmptyStringsForNull) {
-				StringExpression expr = new StringExpression((StringResult) expression).ifDBNull("");
-				return expr;
-			}
-		}
+//		if (expression instanceof StringResult) {
+//			if (requiredToProduceEmptyStringsForNull) {
+//				StringExpression expr = new StringExpression((StringResult) expression).ifDBNull("");
+//				return expr;
+//			}
+//		}
 		return transformToStorableType(expression);
 	}
 
@@ -7203,5 +7189,19 @@ public abstract class DBDefinition implements Serializable {
 				.setRowLimit(1).getSQLForQuery();
 		String testQuery = sqlForQuery.replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
 		return testQuery;
+	}
+
+	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
+		return new GroupByClauseMethod[]{GroupByClauseMethod.EXPRESSION};
+	}
+
+	public static enum GroupByClauseMethod {
+		EXPRESSION,
+		SELECTEXPRESSION,
+		INDEX,
+		ALIAS;
+
+		GroupByClauseMethod() {
+		}
 	}
 }

@@ -123,38 +123,7 @@ public class OracleDBDefinition extends DBDefinition {
 	};
 
 	public ZonedDateTime parseZonedDateTimeFromGetString(String inputFromResultSet) throws DateTimeParseException {
-//		try {
 		return TemporalStringParser.toZonedDateTime(inputFromResultSet);
-//		} catch (DateTimeParseException ex) {
-//			Logger.getLogger(OracleDBDefinition.class.getName()).log(Level.INFO, "Failed To Parse supplied date: " + inputFromResultSet, ex);
-//			throw new DateTimeParseException("Parsing of datetime result failed: " + inputFromResultSet, inputFromResultSet, 0, ex);
-//		}
-//		if (inputFromResultSet == null || inputFromResultSet.isEmpty()) {
-//			return null;
-//		}
-//		ZonedDateTime zdt;
-//		DateTimeParseException storedException = new DateTimeParseException(inputFromResultSet, inputFromResultSet, 0);
-//		CharSequence subSequence = inputFromResultSet.subSequence(0, inputFromResultSet.length());
-//		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
-//			try {
-//				zdt = ZonedDateTime.parse(subSequence, format);
-//				return zdt;
-//			} catch (DateTimeParseException ex) {
-//				storedException = ex;
-//			}
-//		}
-//		String input = inputFromResultSet;
-//		input = input.replaceAll("\\+([0-9]):00", "+0$1:00");
-//		subSequence = input.subSequence(0, input.length());
-//		for (DateTimeFormatter format : PARSE_ZONEDDATETIME_FORMATS) {
-//			try {
-//				zdt = ZonedDateTime.parse(subSequence, format);
-//				return zdt;
-//			} catch (DateTimeParseException ex) {
-//				storedException = ex;
-//			}
-//		}
-//		throw storedException;
 	}
 
 	@Override

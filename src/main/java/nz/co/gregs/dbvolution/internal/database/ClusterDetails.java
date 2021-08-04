@@ -443,10 +443,11 @@ public class ClusterDetails implements Serializable {
 		setAuthoritativeDatabase();
 	}
 
-	public List<DBDatabase> getQuarantinedDatabases() {
+	public DBDatabase[] getQuarantinedDatabases() {
 		return quarantinedDatabases
 				.stream()
-				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll)
+				.toArray(new DBDatabase[]{});
 	}
 
 	public synchronized void removeAllDatabases() throws SQLException {

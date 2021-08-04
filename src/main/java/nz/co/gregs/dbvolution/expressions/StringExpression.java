@@ -71,14 +71,15 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	/**
 	 * Creates a StringExpression that will return a database NULL.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a StringExpression that resolves to NULL within the database
 	 */
 	@Override
 	public StringExpression nullExpression() {
 		return new StringExpression(new NullStringExpression());
+	}
+
+	public final static StringExpression emptyString() {
+		return new EmptyStringExpression();
 	}
 
 	/**
@@ -118,20 +119,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		stringNullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
 	}
 
-//	/**
-//	 * Creates a StringExpression from an arbitrary String object.
-//	 * 
-//	 * <p>Use {@link StringValue} instead.</p>
-//	 *
-//	 * <p>
-//	 * Essentially the same as {@link StringExpression#value(java.lang.String) }
-//	 *
-//	 * @param stringVariable	stringVariable
-//	 */
-//	protected StringExpression(String stringVariable) {
-//		super(new DBString(stringVariable));
-//		stringNullProtectionRequired = stringVariable == null || stringVariable.isEmpty();
-//	}
 	/**
 	 * Creates a StringExpression from an arbitrary DBString object.
 	 *
@@ -1964,13 +1951,21 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	/**
+	 * Convenience method to replace any null results from the expression into
+	 * empty strings.
+	 *
+	 * @return a StringExpression.
+	 */
+	public StringExpression replaceNullWithEmptyString() {
+		return this.replace(AnyExpression.nullString(), StringExpression.emptyString());
+	}
+
+	/**
 	 * Creates a query expression that replaces the supplied value within the
 	 * current StringExpression.
 	 *
 	 * @param findString findString
 	 * @param replaceWith replaceWith
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression replace(String findString, String replaceWith) {
@@ -3390,11 +3385,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			if (column != null) {
 				hashSet.addAll(column.getTablesInvolved());
 			}
-			for (StringResult second : values) {
-				if (second != null) {
-					hashSet.addAll(second.getTablesInvolved());
-				}
-			}
+			values.stream()
+					.filter(second -> (second != null))
+					.forEachOrdered(second -> hashSet.addAll(second.getTablesInvolved()));
 			return hashSet;
 		}
 
@@ -3436,6 +3429,28 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public NullStringExpression copy() {
 			return new NullStringExpression();
+		}
+	}
+
+	private static class EmptyStringExpression extends StringExpression {
+
+		public EmptyStringExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getEmptyString();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return true;
+		}
+
+		@Override
+		public EmptyStringExpression copy() {
+			return new EmptyStringExpression();
 		}
 	}
 
@@ -3668,11 +3683,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> sqlValues = new ArrayList<>();
-			for (StringResult value : values) {
-				if (!value.getIncludesNull()) {
-					sqlValues.add(value.toSQLString(db));
-				}
-			}
+			values.stream()
+					.filter(value -> (!value.getIncludesNull()))
+					.forEachOrdered(value -> sqlValues.add(value.toSQLString(db)));
 			return db.doInTransform(column.toSQLString(db), sqlValues);
 		}
 
@@ -3704,11 +3717,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> sqlValues = new ArrayList<>();
-			for (StringResult value : values) {
-				if (!value.getIncludesNull()) {
-					sqlValues.add(value.toSQLString(db));
-				}
-			}
+			values.stream()
+					.filter(value -> (!value.getIncludesNull()))
+					.forEachOrdered(value -> sqlValues.add(value.toSQLString(db)));
 			return db.doNotInTransform(column.toSQLString(db), sqlValues);
 		}
 
@@ -3817,6 +3828,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
+		private final static long serialVersionUID = 1l;
+		
 		private final StringExpression columnToAccumulate;
 		private final String separator;
 		private final SortProvider orderBy;
@@ -3826,11 +3839,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			this.columnToAccumulate = columnToAccumulate;
 			this.separator = separator;
 			this.orderBy = orderBy;
-			for (DBRow table : orderBy.getTablesInvolved()) {
-				table.setSortedSubselectRequired(orderBy);
-			}
+			orderBy
+					.getTablesInvolved()
+					.forEach(table -> table.setSortedSubselectRequired(orderBy));
 		}
-		private final static long serialVersionUID = 1l;
 
 		@Override
 		public String toSQLString(DBDefinition db) {

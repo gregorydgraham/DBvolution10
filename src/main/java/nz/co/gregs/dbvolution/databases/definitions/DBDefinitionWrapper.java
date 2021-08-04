@@ -211,11 +211,10 @@ class DBDefinitionWrapper extends DBDefinition {
 		return base.beginJoinClauseLine(options);
 	}
 
-	@Override
-	public boolean prefersIndexBasedGroupByClause() {
-		return base.prefersIndexBasedGroupByClause();
-	}
-
+//	@Override
+//	public boolean prefersIndexBasedGroupByClause() {
+//		return base.prefersIndexBasedGroupByClause();
+//	}
 	@Override
 	public String beginAndLine() {
 		return base.beginAndLine();
@@ -2579,5 +2578,10 @@ class DBDefinitionWrapper extends DBDefinition {
 		} else {
 			return doNumberToStringTransformUnsafe(numberExpression);
 		}
+	}
+
+	@Override
+	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
+		return base.preferredGroupByClauseMethod();
 	}
 }

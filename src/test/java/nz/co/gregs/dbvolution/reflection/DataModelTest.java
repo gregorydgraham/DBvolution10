@@ -478,6 +478,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.Marque");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.Companylogo");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.CarCompany");
+		knownKeys.add("class nz.co.gregs.dbvolution.OracleCompatibilityTest$CountIfRow");
 
 		boolean allClassesKnown = true;
 		for (String knownString : knownKeys) {

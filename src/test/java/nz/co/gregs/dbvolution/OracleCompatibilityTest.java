@@ -31,12 +31,18 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -186,6 +192,7 @@ public class OracleCompatibilityTest extends AbstractTest {
 				= database
 						.getDBTable(marque)
 						.setReturnEmptyStringForNullString(true)
+						.setPrintSQLBeforeExecution(true)
 						.setBlankQueryAllowed(true)
 						.setSortOrder(marque.column(marque.individualAllocationsAllowed)
 								.ascending()
@@ -230,4 +237,104 @@ public class OracleCompatibilityTest extends AbstractTest {
 
 		Assert.assertEquals(1, rowsByExample.size());
 	}
+
+	public static class CountIfRow extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString bigger = new DBString(this.column(uidMarque).isGreaterThan(10).ifThenElse("Bigger", "Smaller"));
+
+		@DBColumn
+		DBNumber countif = new DBNumber(NumberExpression.countIf(this.column(uidMarque).isGreaterThan(10)));
+
+		@DBColumn
+		DBNumber count = new DBNumber(NumberExpression.countAll());
+
+		{
+			this.setReturnFields(bigger, countif, count);
+		}
+	}
+
+	@Test
+	public void testCountIf() throws SQLException {
+			CountIfRow randRow = new CountIfRow();
+			DBQuery query = database.getDBQuery(randRow).setBlankQueryAllowed(true)
+					.setQueryLabel("CountIfTest")
+					.setPrintSQLBeforeExecution(true);
+			database.print(query.getAllRows());
+			database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).setSortOrder(randRow.column(randRow.countif)).getAllRows());
+			DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
+			dbQuery.setSortOrder(randRow.column(randRow.countif));
+			List<DBQueryRow> allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+
+			Assert.assertThat(allRows.size(), is(2));
+			Assert.assertThat(allRows.get(0).get(randRow).bigger.stringValue(), is("Smaller"));
+			Assert.assertThat(allRows.get(0).get(randRow).countif.intValue(), is(0));
+			Assert.assertThat(allRows.get(0).get(randRow).count.intValue(), is(2));
+			Assert.assertThat(allRows.get(1).get(randRow).bigger.stringValue(), is("Bigger"));
+			Assert.assertThat(allRows.get(1).get(randRow).countif.intValue(), is(20));
+			Assert.assertThat(allRows.get(1).get(randRow).count.intValue(), is(20));
+		
+		try ( DBDatabaseCluster cluster = new DBDatabaseCluster("CountIfClusterTest", getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull())) {
+			cluster.addDatabaseAndWait(database);
+			cluster.setRequeryPermitted(false);
+			randRow = new CountIfRow();
+			query = cluster.getDBQuery(randRow).setBlankQueryAllowed(true)
+					.setQueryLabel("CountIfClusterTest")
+					.setPrintSQLBeforeExecution(true);
+			cluster.print(query.getAllRows());
+			cluster.print(cluster.getDBQuery(randRow).setBlankQueryAllowed(true).setSortOrder(randRow.column(randRow.countif)).getAllRows());
+			dbQuery = cluster.getDBQuery(randRow).setBlankQueryAllowed(true);
+			dbQuery.setSortOrder(randRow.column(randRow.countif));
+			allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+			allRows = dbQuery.getAllRows();
+
+			Assert.assertThat(allRows.size(), is(2));
+			Assert.assertThat(allRows.get(0).get(randRow).bigger.stringValue(), is("Smaller"));
+			Assert.assertThat(allRows.get(0).get(randRow).countif.intValue(), is(0));
+			Assert.assertThat(allRows.get(0).get(randRow).count.intValue(), is(2));
+			Assert.assertThat(allRows.get(1).get(randRow).bigger.stringValue(), is("Bigger"));
+			Assert.assertThat(allRows.get(1).get(randRow).countif.intValue(), is(20));
+			Assert.assertThat(allRows.get(1).get(randRow).count.intValue(), is(20));
+		}
+	}
+	
+	
+	public static class MarqueReportWithBooleanExpressionCount extends DBReport {
+
+		private static final long serialVersionUID = 1L;
+
+		public Marque marque = new Marque();
+		@DBColumn
+		public DBBoolean greaterThan3 = new DBBoolean(marque.column(marque.carCompany).isGreaterThan(3));
+		@DBColumn
+		public DBNumber counted = new DBNumber(marque.column(marque.carCompany).isGreaterThan(3).count());
+
+		{
+			this.setSortOrder(greaterThan3, counted);
+		}
+
+	}
+
+	@Test
+	public void testCount() throws SQLException, ParseException {
+		MarqueReportWithBooleanExpressionCount marque = new MarqueReportWithBooleanExpressionCount();
+
+		List<MarqueReportWithBooleanExpressionCount> allRows = database.getAllRows(marque);
+
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).greaterThan3.booleanValue(), is(false));
+		Assert.assertThat(allRows.get(1).greaterThan3.booleanValue(), is(true));
+		Assert.assertThat(allRows.get(0).counted.intValue(), is(6));
+		Assert.assertThat(allRows.get(1).counted.intValue(), is(16));
+	}
+
 }

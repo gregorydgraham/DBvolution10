@@ -1944,49 +1944,49 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		return modeExpr;
 	}
 
-	private static abstract class DBUnaryBooleanArithmetic extends BooleanExpression {
-
-		private static final long serialVersionUID = 1L;
-
-		protected DBExpression onlyBool;
-
-		DBUnaryBooleanArithmetic(DBExpression bool) {
-			this.onlyBool = bool;
-		}
-
-		@Override
-		public DBBoolean getQueryableDatatypeForExpressionValue() {
-			return new DBBoolean();
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			String op = this.getEquationOperator(db);
-			String returnStr = onlyBool.toSQLString(db) + " " + op;
-			return returnStr;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return onlyBool == null ? new HashSet<DBRow>() : onlyBool.getTablesInvolved();
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return onlyBool.isAggregator();
-		}
-
-		protected abstract String getEquationOperator(DBDefinition db);
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (onlyBool == null) {
-				return true;
-			} else {
-				return onlyBool.isPurelyFunctional();
-			}
-		}
-	}
+//	private static abstract class DBUnaryBooleanArithmetic extends BooleanExpression {
+//
+//		private static final long serialVersionUID = 1L;
+//
+//		protected DBExpression onlyBool;
+//
+//		DBUnaryBooleanArithmetic(DBExpression bool) {
+//			this.onlyBool = bool;
+//		}
+//
+//		@Override
+//		public DBBoolean getQueryableDatatypeForExpressionValue() {
+//			return new DBBoolean();
+//		}
+//
+//		@Override
+//		public String toSQLString(DBDefinition db) {
+//			String op = this.getEquationOperator(db);
+//			String returnStr = onlyBool.toSQLString(db) + " " + op;
+//			return returnStr;
+//		}
+//
+//		@Override
+//		public Set<DBRow> getTablesInvolved() {
+//			return onlyBool == null ? new HashSet<DBRow>() : onlyBool.getTablesInvolved();
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return onlyBool.isAggregator();
+//		}
+//
+//		protected abstract String getEquationOperator(DBDefinition db);
+//
+//		@Override
+//		public boolean isPurelyFunctional() {
+//			if (onlyBool == null) {
+//				return true;
+//			} else {
+//				return onlyBool.isPurelyFunctional();
+//			}
+//		}
+//	}
 
 	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression {
 
@@ -2116,8 +2116,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the first
 		 */
@@ -2126,8 +2124,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the second
 		 */
@@ -2845,7 +2841,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			String returnStr = "";
+			String returnStr;
 			final String onlyBoolStr = onlyBool.toSQLString(db);
 			if (db.requiredToProduceEmptyStringsForNull()) {
 				returnStr = " (" + onlyBoolStr + " IS NOT " + db.getNull() + ") /* generic version */";
@@ -2909,7 +2905,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			String returnStr = "";
+			String returnStr;
 			final String onlyBoolStr = onlyBool.toSQLString(db);
 			returnStr = onlyBoolStr + " IS " + db.getNull();
 			return returnStr;
@@ -2937,10 +2933,10 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			String returnStr = "";
+			String returnStr;
 			final String onlyBoolStr = onlyBool.toSQLString(db);
 			returnStr = onlyBoolStr + " IS " + db.getNull();
-			if (db.requiredToProduceEmptyStringsForNull()&& db.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
+			if (db.requiredToProduceEmptyStringsForNull() && db.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
 				returnStr = " (" + returnStr + " OR " + onlyBoolStr + " = '') ";
 			}
 			return returnStr;
@@ -3019,7 +3015,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 					second == null ? null : second.copy()
 			);
 		}
-	}
+		}
 
 	protected class NumberIfThenElseExpression extends DBBooleanNumberNumberFunction {
 

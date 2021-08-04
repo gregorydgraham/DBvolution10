@@ -109,6 +109,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
+	private boolean requeryPermitted = true;
 
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
 		this(builder.getDatabaseName(), new Configuration(builder.getAutoRebuild(), builder.getAutoReconnect()));
@@ -131,6 +132,26 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public DBDatabaseClusterSettingsBuilder getURLInterpreter() {
 		return new DBDatabaseClusterSettingsBuilder();
+	}
+
+	public void waitUntilSynchronised() {
+		if (details.getAutoReconnect()) {
+			while (details.getQuarantinedDatabases().length > 0) {
+				try {
+					wait(1000);
+				} catch (InterruptedException ex) {
+					Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		}
+	}
+
+	public synchronized boolean requeryPermitted() {
+		return requeryPermitted;
+	}
+
+	public synchronized void setRequeryPermitted(boolean requeryAllowed) {
+		requeryPermitted = requeryAllowed;
 	}
 
 	public static enum Status {
@@ -373,7 +394,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
-	 * is present (optional operation). If this list does not contain the element,
+	 * is present (optional operation).If this list does not contain the element,
 	 * it is unchanged. More formally, removes the element with the lowest index
 	 * <code>i</code> such that
 	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
@@ -385,6 +406,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @return true if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
+	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -400,7 +422,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
-	 * is present (optional operation). If this list does not contain the element,
+	 * is present (optional operation).If this list does not contain the element,
 	 * it is unchanged. More formally, removes the element with the lowest index i
 	 * such that
 	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
@@ -412,6 +434,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @return true if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
+	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -430,10 +453,10 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
-	 * is present (optional operation). If this list does not contain the element,
-	 * it is unchanged. More formally, removes the element with the lowest index i
-	 * such that
-	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * is present (optional operation).If this list does not contain the element,
+ it is unchanged. More formally, removes the element with the lowest index i
+ such that
+ <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
 	 * (if such an element exists). Returns <code>true</code> if this list
 	 * contained the specified element (or equivalently, if this list changed as a
 	 * result of the call).
@@ -442,6 +465,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @return <code>true</code> if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
+	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -465,7 +489,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @param except the exception that caused the database to be quarantined
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
-	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -1009,7 +1032,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			throw errorWithTheClusterException;
 		} catch (SQLException e) {
 			final HandlerAdvice advice = handleExceptionDuringQuery(e, workingDB);
-			if (advice.equals(HandlerAdvice.REQUERY)) {
+			if (advice.equals(HandlerAdvice.REQUERY) && requeryPermitted()) {
 				return executeDBQuery(query);
 			} else {
 				quarantineDatabaseAutomatically(workingDB, e);
@@ -1286,7 +1309,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private String getStatusOfEjectedDatabases() {
-		return (new Date()).toString() + "Ejected Databases: " + details.getQuarantinedDatabases().size() + " of " + details.getAllDatabases().length;
+		return (new Date()).toString() + "Ejected Databases: " + details.getQuarantinedDatabases().length + " of " + details.getAllDatabases().length;
 	}
 
 	private String getStatusOfUnsynchronisedDatabases() {
@@ -1318,10 +1341,22 @@ public class DBDatabaseCluster extends DBDatabase {
 		details.setAutoRebuild(b);
 	}
 
+	/**
+	 * Returns set whether or not the cluster should automatically reconnect with
+	 * quarantined databases
+	 *
+	 * @param b the autoreconnect setting
+	 */
 	public final void setAutoReconnect(boolean b) {
 		details.setAutoReconnect(b);
 	}
 
+	/**
+	 * Returns true if the cluster is set to automatically reconnect with
+	 * quarantined databases
+	 *
+	 * @return the autoreconnect setting
+	 */
 	public final boolean getAutoReconnect() {
 		return details.getAutoReconnect();
 	}
@@ -1517,7 +1552,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
-		DBDatabase[] ejecta = details.getQuarantinedDatabases().toArray(new DBDatabase[]{});
+		DBDatabase[] ejecta = details.getQuarantinedDatabases();
 		for (DBDatabase ejected : ejecta) {
 			str.append(ejected.getSettings());
 			try {
