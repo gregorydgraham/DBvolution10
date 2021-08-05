@@ -89,21 +89,14 @@ public class TemporalStringParser {
 		// oracle sometimes produces unpadded time zone offsets
 		str = str.replaceFirst("(.*)([-+])([0-9][:]?[0-9]{2})$", "$1$20$3").replace("+0:00", "+00:00");
 		Exception exception = new DateTimeParseException(str, str.subSequence(0, str.length()), 0);
-		LOG.debug("PROCESSING; " + str);
 		final CharSequence sequence = str.subSequence(0, str.length());
 		for (Parser format : INSTANT_FORMATTERS) {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				zoneddatetime = ZonedDateTime.from(parsed);
-				LOG.debug("PARSE SUCCEEDED: " + format.toString());
-				LOG.debug("ORIGINAL: " + inputDateString);
-				LOG.debug("PARSED: " + sequence);
-				LOG.debug("TO: " + zoneddatetime);
 				return zoneddatetime;
 			} catch (Exception ex1) {
 				printException(inputDateString, format, exception);
-				LOG.debug("PARSE FAILED: " + format.toString());
-				LOG.debug("MESSAGE: " + ex1.getMessage());
 				if (ex1 instanceof DateTimeParseException) {
 					exception = ex1;
 				} else {
@@ -115,9 +108,6 @@ public class TemporalStringParser {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				zoneddatetime = ZonedDateTime.of(LocalDateTime.from(parsed), ZoneId.of("Z"));
-				LOG.debug("PARSE SUCCEEDED: " + format.toString());
-				LOG.debug("PARSED: " + sequence);
-				LOG.debug("TO: " + zoneddatetime);
 				return zoneddatetime;
 			} catch (Exception ex1) {
 				printException(sequence, format, exception);
@@ -158,10 +148,6 @@ public class TemporalStringParser {
 		if (zoneddatetime != null) {
 			return zoneddatetime;
 		} else {
-			System.out.println("nz.co.gregs.dbvolution.utility.TemporalStringParser.toZonedDateTime()");
-			System.out.println("FAILED TO PARSE DATE");
-			System.out.println("INPUTSTRING: " + inputDateString);
-			System.out.println("FINAL VERSION: " + str);
 			LOG.info("FAILED TO PARSE DATE");
 			LOG.info("INPUTSTRING: " + inputDateString);
 			LOG.info("TEST VERSION: " + str);
