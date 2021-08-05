@@ -163,7 +163,7 @@ public class ClusterDetails implements Serializable {
 				throw new UnableToRemoveLastDatabaseFromClusterException();
 			}
 
-			System.out.println("QUARANTINING: " + databaseToQuarantine.getSettings().toString());
+			LOG.warn("QUARANTINING: " + databaseToQuarantine.getSettings().toString());
 			database.setLastException(except);
 
 			readyDatabases.remove(database);
