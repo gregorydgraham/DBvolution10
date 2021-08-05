@@ -56,11 +56,6 @@ public class DataRepoTest {
 		database.createTable(new LtCarcoLogo());
 
 		var repo = DataRepoGenerator.generateClasses(database, "nz.co.gregs.dbvolution.generation.compiling.dbtableclassgenerator");
-		repo.getRows().stream().forEach(r -> 
-				System.out.println(r.getClass().getCanonicalName())
-		);
-		// Run separately we get 8 classes
-		// but run with other tests we get 50
 		assertThat(repo.getRows().size(), is(7));
 	}
 
@@ -72,9 +67,6 @@ public class DataRepoTest {
 		database.createTable(new Companylogo());
 		database.createTable(new LtCarcoLogo());
 		var repo = DataRepo.getDataRepoFor(database, "nz.co.gregs.dbvolution.generation.compiling.datarepo");
-		repo.getRows().stream().forEach(r -> 
-				System.out.println(r.getClass().getCanonicalName())
-		);
 		assertThat(repo.getRows().size(), is(7));
 	}
 }
