@@ -30,7 +30,6 @@
  */
 package nz.co.gregs.dbvolution.utility.encryption;
 
-import nz.co.gregs.dbvolution.utility.encryption.Encryption_BASE64_AES_GCM_NoPadding;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.*;
@@ -52,10 +51,7 @@ public class Encryption_BASE64_AES_GCM_NoPaddingTest {
 		try {
 			final String passphrase = "secret key of safety";
 			String encrypt = Encryption_BASE64_AES_GCM_NoPadding.encrypt(passphrase, original);
-			System.out.println(""+encrypt);
 			Assert.assertThat(encrypt, not(original));
-//			Assert.assertThat(encrypt, startsWith("BASE64_AES_CBC_PKCS5Padding|"));
-//			Assert.assertThat(encrypt, containsString("|REJWT0xVVElPTiBJViBTRQ==|"));
 
 			String decrypt = Encryption_BASE64_AES_GCM_NoPadding.decrypt(passphrase, encrypt);
 			Assert.assertThat(decrypt, is(original));
