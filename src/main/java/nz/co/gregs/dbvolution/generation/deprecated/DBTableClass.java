@@ -152,8 +152,6 @@ public class DBTableClass {
 		javaSrc.append(conceptBreak);
 
 		this.javaSource = javaSrc.toString();
-		System.out.println("nz.co.gregs.dbvolution.generation.DBTableClass.generateJavaSource()");
-		System.out.println(javaSource);
 		return this.getJavaSource();
 	}
 
