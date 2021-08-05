@@ -258,39 +258,37 @@ public class OracleCompatibilityTest extends AbstractTest {
 
 	@Test
 	public void testCountIf() throws SQLException {
-			CountIfRow randRow = new CountIfRow();
-			DBQuery query = database.getDBQuery(randRow).setBlankQueryAllowed(true)
-					.setQueryLabel("CountIfTest")
-					.setPrintSQLBeforeExecution(true);
-			database.print(query.getAllRows());
-			database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).setSortOrder(randRow.column(randRow.countif)).getAllRows());
-			DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
-			dbQuery.setSortOrder(randRow.column(randRow.countif));
-			List<DBQueryRow> allRows = dbQuery.getAllRows();
-			allRows = dbQuery.getAllRows();
-			allRows = dbQuery.getAllRows();
-			allRows = dbQuery.getAllRows();
-			allRows = dbQuery.getAllRows();
+		CountIfRow randRow = new CountIfRow();
+		DBQuery dbQuery = database.getDBQuery(randRow)
+				.setBlankQueryAllowed(true)
+				.setQueryLabel("CountIfTest")
+				.setSortOrder(randRow.column(randRow.countif));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		allRows = dbQuery.getAllRows();
+		allRows = dbQuery.getAllRows();
+		allRows = dbQuery.getAllRows();
+		allRows = dbQuery.getAllRows();
 
-			Assert.assertThat(allRows.size(), is(2));
-			Assert.assertThat(allRows.get(0).get(randRow).bigger.stringValue(), is("Smaller"));
-			Assert.assertThat(allRows.get(0).get(randRow).countif.intValue(), is(0));
-			Assert.assertThat(allRows.get(0).get(randRow).count.intValue(), is(2));
-			Assert.assertThat(allRows.get(1).get(randRow).bigger.stringValue(), is("Bigger"));
-			Assert.assertThat(allRows.get(1).get(randRow).countif.intValue(), is(20));
-			Assert.assertThat(allRows.get(1).get(randRow).count.intValue(), is(20));
-		
-		try ( DBDatabaseCluster cluster = new DBDatabaseCluster("CountIfClusterTest", getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull())) {
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).get(randRow).bigger.stringValue(), is("Smaller"));
+		Assert.assertThat(allRows.get(0).get(randRow).countif.intValue(), is(0));
+		Assert.assertThat(allRows.get(0).get(randRow).count.intValue(), is(2));
+		Assert.assertThat(allRows.get(1).get(randRow).bigger.stringValue(), is("Bigger"));
+		Assert.assertThat(allRows.get(1).get(randRow).countif.intValue(), is(20));
+		Assert.assertThat(allRows.get(1).get(randRow).count.intValue(), is(20));
+
+		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+
+		try (DBDatabaseCluster cluster = new DBDatabaseCluster("CountIfClusterTest", getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull())) {
+			cluster.createTable(new Marque());
+			cluster.insert(allMarques);
 			cluster.addDatabaseAndWait(database);
 			cluster.setRequeryPermitted(false);
 			randRow = new CountIfRow();
-			query = cluster.getDBQuery(randRow).setBlankQueryAllowed(true)
+			dbQuery = cluster.getDBQuery(randRow)
+					.setBlankQueryAllowed(true)
 					.setQueryLabel("CountIfClusterTest")
-					.setPrintSQLBeforeExecution(true);
-			cluster.print(query.getAllRows());
-			cluster.print(cluster.getDBQuery(randRow).setBlankQueryAllowed(true).setSortOrder(randRow.column(randRow.countif)).getAllRows());
-			dbQuery = cluster.getDBQuery(randRow).setBlankQueryAllowed(true);
-			dbQuery.setSortOrder(randRow.column(randRow.countif));
+					.setSortOrder(randRow.column(randRow.countif));
 			allRows = dbQuery.getAllRows();
 			allRows = dbQuery.getAllRows();
 			allRows = dbQuery.getAllRows();
@@ -306,8 +304,7 @@ public class OracleCompatibilityTest extends AbstractTest {
 			Assert.assertThat(allRows.get(1).get(randRow).count.intValue(), is(20));
 		}
 	}
-	
-	
+
 	public static class MarqueReportWithBooleanExpressionCount extends DBReport {
 
 		private static final long serialVersionUID = 1L;
