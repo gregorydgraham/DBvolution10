@@ -7192,11 +7192,11 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
-		return new GroupByClauseMethod[]{GroupByClauseMethod.EXPRESSION};
+		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION,GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
 	}
 
 	public static enum GroupByClauseMethod {
-		EXPRESSION,
+		GROUPBYEXPRESSION,
 		SELECTEXPRESSION,
 		INDEX,
 		ALIAS;

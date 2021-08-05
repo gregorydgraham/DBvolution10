@@ -736,7 +736,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	@Override
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
-		return new GroupByClauseMethod[]{GroupByClauseMethod.EXPRESSION,GroupByClauseMethod.SELECTEXPRESSION};
+		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION,GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
 	}
 	
 }
