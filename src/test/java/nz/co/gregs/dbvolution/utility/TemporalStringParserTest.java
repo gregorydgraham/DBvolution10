@@ -72,36 +72,17 @@ public class TemporalStringParserTest {
 		final String simplePattern = "yyyy-MM-dd HH:mm:ss.SZ";
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(simplePattern);
 		String formatted = formatter.format(originalDate);
-		System.out.println("FORMATTED: "+formatted);
 		OffsetDateTime parsed = OffsetDateTime.parse(formatted, formatter);
 		Assert.assertThat(parsed, is(originalDate));
-//		System.out.println("FORMATTED: "+formatted);
-		System.out.println("ORIGINAL: "+instantVersion);
 		Instant parsedVersion = TemporalStringParser.toInstant(formatted);
-		System.out.println("PARSED: "+instantVersion);
 		Assert.assertThat(parsedVersion, is(instantVersion));
-//		Assert.assertThat(TemporalStringParser.toInstant("2013-03-23 12:34:56.0 +0:00"), is(instantVersion));
 	}
 
 	@Test
 	public void testToZonedDateTime() {
-		String oracleZuluDate = "2011-04-01 12:02:03.0 +1:00";
-		OffsetDateTime parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
-		 oracleZuluDate = "2011-04-01 12:02:03.0001 +1:00";
-		 parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
-		//  uuuu-MM-dd HH:mm:ss.S VV
 		
-		String novemberFirst = "2020-11-01 00:48:18.8436";
+		String novemberFirst = "2020-11-01 00:48:18.8436 +0:00";
 		ZonedDateTime toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
-
-		novemberFirst = "2020-11-01 00:48:18.8436Z";
-		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
-		novemberFirst = "2020-11-01 00:48:18.8436 +0000";
-		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
-		novemberFirst = "2020-11-01 00:48:18.8436 +00:00";
-		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
-		novemberFirst = "2020-11-01 00:48:18.8436 +0:00";
-		toZonedDateTime = TemporalStringParser.toZonedDateTime(novemberFirst);
 		ZonedDateTime testDate = ZonedDateTime.of(2020, 11, 1, 0, 48, 18, 843600000, ZoneId.of("Z"));
 		Assert.assertThat(toZonedDateTime, is(testDate));
 	}
@@ -116,41 +97,23 @@ public class TemporalStringParserTest {
 		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S";
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(simplePattern);
 		String formatted = formatter.format(originalDate);
-		System.out.println("FORMATTED: "+formatted);
 		LocalDateTime parsed = LocalDateTime.parse(formatted, formatter);
 		Assert.assertThat(parsed, is(originalDate));
-//		System.out.println("FORMATTED: "+formatted);
-		System.out.println("ORIGINAL: "+originalDate);
 		LocalDateTime parsedVersion = TemporalStringParser.toLocalDateTime(formatted);
-		System.out.println("PARSED: "+parsedVersion);
 		Assert.assertThat(parsedVersion, is(originalDate));
 	}
 
 	@Test
 	public void testOracleZuluDate() throws Exception {
-		String oracleZuluDate = "2011-04-01 12:02:03.0 +00:00";
-//		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S X";
-//		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S XX";
-		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S XXX"; /*Works for +00:00, +01:00*/
-//		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S XXXX";
-//		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S O";
-//		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S OOOO";
-		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(simplePattern);
-		OffsetDateTime parsed = OffsetDateTime.parse(oracleZuluDate, formatter);
-		System.out.println("PARSED: "+parsed);
-
-		oracleZuluDate = "2011-04-01 12:02:03.0 +01:00";
-		parsed = OffsetDateTime.parse(oracleZuluDate, formatter);
-		System.out.println("PARSED: "+parsed);
-
-		oracleZuluDate = "2011-04-01 12:02:03.0 +1:00";
-		parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
-		System.out.println("PARSED: "+parsed);
+//		String oracleZuluDate = "2011-04-01 12:02:03.0 +00:00";
+//		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S XXX"; /*Works for +00:00, +01:00*/
+//		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(simplePattern);
+		String oracleZuluDate = "2011-04-01 12:02:03.0 +1:00";
+		OffsetDateTime parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
 		Assert.assertThat(parsed, is(OffsetDateTime.of(2011, 4, 1, 12, 2, 3, 0, ZoneOffset.ofHours(1))));
 
 		oracleZuluDate = "2011-04-01 12:02:03.0 +0:00";
 		parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
-		System.out.println("PARSED: "+parsed);
 		Assert.assertThat(parsed, is(OffsetDateTime.of(2011, 4, 1, 12, 2, 3, 0, ZoneOffset.UTC)));
 	}
 
