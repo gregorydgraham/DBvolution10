@@ -113,7 +113,6 @@ public class DataRepo {
 
 	public DBRow getInstanceForName(String className) {
 		for (DBRow row : rows) {
-			System.out.println("CHECKING: "+row.getClass().getCanonicalName());
 			if (row.getClass().getSimpleName().equals(className)) {
 				return row;
 			} else if (row.getClass().getCanonicalName().equals(className)) {
