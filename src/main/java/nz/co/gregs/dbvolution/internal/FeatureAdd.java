@@ -32,6 +32,8 @@ package nz.co.gregs.dbvolution.internal;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 
 /**
@@ -86,13 +88,14 @@ public interface FeatureAdd {
 					stmt.execute(sql);
 				} catch (Exception ex) {
 					final ExceptionDuringDatabaseFeatureSetup setupException = new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + featureName(), ex);
-					System.out.println("" + setupException.getMessage());
+					LOGGER.log(Level.SEVERE, "" + setupException.getMessage());
 					setupException.printStackTrace();
 					throw setupException;
 				}
 			}
 		}
 	}
+	static final Logger LOGGER = Logger.getLogger(FeatureAdd.class.getName());
 
 	public default String featureName() {
 		return name();
