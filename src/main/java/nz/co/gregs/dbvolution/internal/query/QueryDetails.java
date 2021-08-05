@@ -413,16 +413,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 				boolean groupByIsRequired = false;
 				var groupByColumnAlias = SeparatedStringBuilder
 						.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
-						.withPrefix(defn.beginGroupByClause())
-						.withSuffix(LINE_SEP);
+						.withPrefix(defn.beginGroupByClause());
 				var groupByColumnIndex = SeparatedStringBuilder
 						.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
-						.withPrefix(defn.beginGroupByClause())
-						.withSuffix(LINE_SEP);
+						.withPrefix(defn.beginGroupByClause());
 				var groupByColumnSelectExpression = SeparatedStringBuilder
 						.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
-						.withPrefix(defn.beginGroupByClause())
-						.withSuffix(LINE_SEP);
+						.withPrefix(defn.beginGroupByClause());
+				var groupByClause = SeparatedStringBuilder
+						.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
+						.withPrefix(defn.beginGroupByClause());
 				HashMap<PropertyWrapperDefinition<?, ?>, Integer> indexesOfSelectedColumns = new HashMap<>();
 				HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
 				StringBuilder fromClause = new StringBuilder();
@@ -434,11 +434,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 				}
 				final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
 				StringBuilder whereClause = new StringBuilder(initialWhereClause);
-				final StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
 				String havingClause;
 				String fromClauseTableSeparator = "";
 				String colSep = defn.getStartingSelectSubClauseSeparator();
-				String groupByColSep = "";
 
 				if (allQueryTablesListSize > 0) {
 					List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
@@ -477,11 +475,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 									groupByColumnAlias.add(columnAlias);
 									groupByColumnSelectExpression.add(selectColumn);
 									if (expression != null) {
-										groupByClause.append(groupByColSep).append(defn.transformToGroupableType(expression).toSQLString(defn));
-										groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + LINE_SEP;
+										groupByClause.add(defn.transformToGroupableType(expression).toSQLString(defn));
 									} else {
-										groupByClause.append(groupByColSep).append(selectColumn);
-										groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + LINE_SEP;
+										groupByClause.add(selectColumn);
 									}
 
 									indexesOfSelectedColumns.put(propWrapper.getPropertyWrapperDefinition(), columnIndex);
@@ -504,8 +500,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 									if (!expression.isWindowingFunction()) {
 										final String groupBySQL = expression.createSQLForGroupByClause(options.getQueryDatabase());
 										if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
-											groupByClause.append(groupByColSep).append(groupBySQL);
-											groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + LINE_SEP;
+											groupByClause.add(groupBySQL);
 											groupByIsRequired = true;
 										}
 									}
@@ -576,8 +571,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 							groupByColumnIndex.add("" + columnIndex);
 							groupByColumnAlias.add(columnAlias);
 							groupByColumnSelectExpression.add(selectColumn);
-							groupByClause.append(groupByColSep).append(defn.transformToGroupableType(expression).toSQLString(defn));
-							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + LINE_SEP;
+							groupByClause.add(defn.transformToGroupableType(expression).toSQLString(defn));
 
 						}
 						if (expression.isComplexExpression()) {
@@ -596,8 +590,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 							if (!expression.isWindowingFunction()) {
 								final String groupBySQL = expression.createSQLForGroupByClause(options.getQueryDatabase());
 								if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
-									groupByClause.append(groupByColSep).append(groupBySQL);
-									groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + LINE_SEP;
+									groupByClause.add(groupBySQL);
 									groupByIsRequired = true;
 								}
 							}
@@ -612,13 +605,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 					final DBExpression expression = entry.getValue();
 					if (!expression.isWindowingFunction()
 							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
-						groupByClause.append(groupByColSep).append(defn.transformToGroupableType(expression).toSQLString(defn));
-						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + LINE_SEP;
+						groupByClause.add(defn.transformToGroupableType(expression).toSQLString(defn));
 					}
 				}
 
 				// tidy up the raw SQL provided
-				String rawSQLClauseFinal = (getRawSQLClause().isEmpty() ? "" : getRawSQLClause() + LINE_SEP);
+				String rawSQLClauseFinal = (getRawSQLClause().isEmpty() ? "" : getRawSQLClause());
 
 				// Strip the unnecessary where clause if possible
 				if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
@@ -635,25 +627,18 @@ public class QueryDetails implements DBQueryable, Serializable {
 					}
 					OrderByClause orderByClause = getOrderByClause(queryState, defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
 					for (String str : orderByClause.getGroupByClauses()) {
-						groupByClause.append(groupByColSep).append(str);
-						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + LINE_SEP;
+						groupByClause.add(str);
 					}
 					String orderByClauseFinal = orderByClause.getOrderByClause();
 					if (!orderByClauseFinal.trim().isEmpty()) {
-						orderByClauseFinal += LINE_SEP;
 						queryState.setHasBeenOrdered(true);
 					} else if (options.getPageIndex() > 0 || options.getRowLimit() > 0) {
-						orderByClauseFinal = defn.getDefaultOrderingClause() + LINE_SEP;
+						orderByClauseFinal = defn.getDefaultOrderingClause();
 					}
 					havingClause = getHavingClause(options.getQueryDatabase(), options);
-					if (!havingClause.trim().isEmpty()) {
-						havingClause += LINE_SEP;
-					}
-//					String groupByClauseFinal = "";
 					List<String> groupByClauseFinal = new ArrayList<>();
 					if (isGroupedQuery() && groupByIsRequired) {
 						final DBDefinition.GroupByClauseMethod[] preferences = defn.preferredGroupByClauseMethod();
-//						final DBDefinition.GroupByClauseMethod preference = preferences[0];
 						for (DBDefinition.GroupByClauseMethod preference : preferences) {
 							switch (preference) {
 								case ALIAS:
@@ -665,22 +650,22 @@ public class QueryDetails implements DBQueryable, Serializable {
 								case SELECTEXPRESSION:
 									groupByClauseFinal.add(groupByColumnSelectExpression.toString());
 									break;
-								case EXPRESSION:
-									groupByClauseFinal.add(groupByClause.toString() + LINE_SEP);
+								case GROUPBYEXPRESSION:
+									groupByClauseFinal.add(groupByClause.toString());
 									break;
 								default:
-									// Default to the EXPRESSION method as it seems to the best supported
-									groupByClauseFinal.add(groupByClause.toString() + LINE_SEP);
+									// Default to the GROUPBYEXPRESSION method as it seems to the best supported
+									groupByClauseFinal.add(groupByClause.toString());
 									break;
 							}
 						}
 					}
 					if (groupByClauseFinal.size() > 0) {
 						for (String groupByClauseSQL : groupByClauseFinal) {
-							constructSQLStringFromSelectClauses(sqlList, defn, selectClause, fromClause, whereClause, rawSQLClauseFinal, groupByClauseSQL, havingClause, orderByClauseFinal, options, queryState);
+							sqlList.add(assembleSQLQuery(defn, selectClause, fromClause, whereClause, rawSQLClauseFinal, groupByClauseSQL, havingClause, orderByClauseFinal, options, queryState));
 						}
 					} else {
-						constructSQLStringFromSelectClauses(sqlList, defn, selectClause, fromClause, whereClause, rawSQLClauseFinal, "", havingClause, orderByClauseFinal, options, queryState);
+						sqlList.add(assembleSQLQuery(defn, selectClause, fromClause, whereClause, rawSQLClauseFinal, "", havingClause, orderByClauseFinal, options, queryState));
 					}
 
 				} else if (queryType == QueryType.COUNT) {
@@ -713,14 +698,21 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	protected void constructSQLStringFromSelectClauses(List<String> sqlString, DBDefinition defn, StringBuilder selectClause, StringBuilder fromClause, StringBuilder whereClause, String rawSQLClauseFinal, String groupByClauseSQL, String havingClause, String orderByClauseFinal, QueryOptions options1, QueryState queryState) {
-		sqlString.add(defn.doWrapQueryForPaging(selectClause.append(LINE_SEP)
-				.append(fromClause).append(LINE_SEP)
-				.append(whereClause).append(LINE_SEP)
-				.append(rawSQLClauseFinal)
-				.append(groupByClauseSQL)
-				.append(havingClause)
-				.append(orderByClauseFinal).append(options1.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(queryState, options1) : "").append(defn.endSQLStatement()).toString(), options1));
+	protected String assembleSQLQuery(DBDefinition defn, StringBuilder selectClause, StringBuilder fromClause, StringBuilder whereClause, String rawSQLClauseFinal, String groupByClauseSQL, String havingClause, String orderByClauseFinal, QueryOptions options1, QueryState queryState) {
+		return defn.doWrapQueryForPaging(
+				SeparatedStringBuilder
+						.lineSeparated()
+						.trimBlanks()
+						.add(selectClause.toString())
+						.add(fromClause.toString())
+						.add(whereClause.toString())
+						.add(rawSQLClauseFinal)
+						.add(groupByClauseSQL)
+						.add(havingClause)
+						.add(orderByClauseFinal)
+						.add(options1.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(queryState, options1) : "")
+						.add(defn.endSQLStatement()).toString(),
+				options1);
 	}
 
 	private synchronized void initialiseQueryGraph() {
@@ -1197,6 +1189,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	protected synchronized void fillResultSetFromSQL(QueryDetails details, QueryOptions options, final DBDefinition defn, List<String> sqlString) throws AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL, SQLTimeoutException, SQLException {
 		ArrayList<DBQueryRow> foundRows = new ArrayList<DBQueryRow>();
+		SQLException firstException = null;
+		boolean successfulQuery = false;
 		for (String sql : sqlString) {
 			try (DBStatement dbStatement = options.getQueryDatabase().getDBStatement()) {
 				printSQLIfRequired(options, details, sql);
@@ -1211,8 +1205,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 						foundRows.add(queryRow);
 					}
 				}
+				successfulQuery = true;
 				break;// we've successfully run the sql so carry on
-			} catch (Throwable e) {
+			} catch (SQLException e) {
 				StackTraceElement[] trace = e.getStackTrace();
 				System.out.println("" + e.getMessage());
 				System.out.println("" + e.getLocalizedMessage());
@@ -1220,22 +1215,24 @@ public class QueryDetails implements DBQueryable, Serializable {
 					System.out.println("" + trace[i]);
 				}
 				options.getQueryDatabase().handleErrorDuringExecutingSQL(getWorkingDatabase(), e, sql);
-				throw e;
-			}
-		}
-		for (DBQueryRow result : foundRows) {
-			List<DBRow> rows = result.getAll();
-			for (DBRow row : rows) {
-				if (row != null) {
-					setAutoFilledFields(foundRows, row);
+				if (firstException == null) {
+					firstException = e;
 				}
 			}
 		}
-		details.setResults(foundRows);
-	}
-
-	private void printSQLIfRequired(QueryOptions options1, QueryDetails details) {
-		printSQLIfRequired(options1, details, details.getResultSQL().get(0));
+		if (successfulQuery) {
+			for (DBQueryRow result : foundRows) {
+				List<DBRow> rows = result.getAll();
+				for (DBRow row : rows) {
+					if (row != null) {
+						setAutoFilledFields(foundRows, row);
+					}
+				}
+			}
+			details.setResults(foundRows);
+		} else {
+			throw firstException;
+		}
 	}
 
 	private void printSQLIfRequired(QueryOptions options1, QueryDetails details, String sql) {
