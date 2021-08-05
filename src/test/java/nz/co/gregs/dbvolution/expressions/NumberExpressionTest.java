@@ -22,6 +22,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -654,6 +655,10 @@ public class NumberExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGreatestOfCollection() throws SQLException {
+		if(database instanceof  DBDatabaseCluster){
+			DBDatabaseCluster cluster = (DBDatabaseCluster)database;
+			cluster.waitUntilSynchronised();
+		}
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		ArrayList<NumberResult> vals = new ArrayList<NumberResult>();
@@ -664,7 +669,10 @@ public class NumberExpressionTest extends AbstractTest {
 				NumberExpression.greatestOf(vals)
 						.is(marq.column(marq.uidMarque).numberResult())
 		);
-		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		List<DBQueryRow> allRows = dbQuery
+				.setQueryLabel("testGreatestOfCollection")
+				.setPrintSQLBeforeExecution(true)
+				.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(2));
 		Marque marque = allRows.get(0).get(marq);
@@ -1248,8 +1256,6 @@ public class NumberExpressionTest extends AbstractTest {
 	@Test
 	public void testCountIf() throws SQLException {
 		CountIfRow randRow = new CountIfRow();
-		database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).getAllRows());
-		database.print(database.getDBQuery(randRow).setBlankQueryAllowed(true).setSortOrder(randRow.column(randRow.countif)).getAllRows());
 		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(randRow.column(randRow.countif));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
