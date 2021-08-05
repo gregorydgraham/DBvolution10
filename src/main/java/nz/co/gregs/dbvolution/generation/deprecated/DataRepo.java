@@ -55,6 +55,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DataRepo {
 
+	protected static final Logger LOGGER = Logger.getLogger(DataRepo.class.getName());
+
 	private final DBDatabase database;
 	private final List<DBTableClass> views = new ArrayList<DBTableClass>(0);
 	private final List<DBTableClass> tables = new ArrayList<DBTableClass>(0);
@@ -158,7 +160,7 @@ public class DataRepo {
 					succeeded = task.call();
 					for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
 						succeeded = false;
-						System.out.println("DIAGNOSTIC: " + diagnostic);
+						LOGGER.log(Level.WARNING, "DIAGNOSTIC: {0}", diagnostic);
 					}
 					if (succeeded) {
 						for (JavaSourceFromString compilationUnit : compilationUnits) {
@@ -167,8 +169,8 @@ public class DataRepo {
 								rows.add(instance);
 								classes.put(instance.getClass().getCanonicalName(), instance.getClass());
 							} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | IOException ex) {
-								System.out.println("ERR: " + ex.getLocalizedMessage());
-								Logger.getLogger(DataRepo.class.getName()).log(Level.SEVERE, null, ex);
+//								System.out.println("ERR: " + ex.getLocalizedMessage());
+								LOGGER.log(Level.SEVERE, "ERR: " + ex.getLocalizedMessage(), ex);
 							}
 						}
 					}
@@ -236,8 +238,7 @@ public class DataRepo {
 		try {
 			compileWithJavaX();
 		} catch (IOException ex) {
-			System.out.println("DATAREPO ERR: " + ex.getLocalizedMessage());
-			Logger.getLogger(DataRepo.class.getName()).log(Level.SEVERE, null, ex);
+			LOGGER.log(Level.SEVERE, "DATAREPO ERR: " + ex.getLocalizedMessage(), ex);
 		}
 		List<DBRow> knownEntities = new ArrayList<DBRow>(0);
 		knownEntities.addAll(rows);
