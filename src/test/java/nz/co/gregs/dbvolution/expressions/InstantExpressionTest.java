@@ -93,7 +93,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		Instant systemInstant = database.getCurrentInstant();
 
-		System.out.println("SYSTEMINSTANT: " + systemInstant);
+//		System.out.println("SYSTEMINSTANT: " + systemInstant);
 		final Instant now = Instant.now();
 		final Instant buffered = now.minus(10, ChronoUnit.MINUTES);
 
