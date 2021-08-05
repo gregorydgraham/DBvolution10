@@ -144,7 +144,6 @@ public class DataModelTest extends AbstractTest {
 		for (Constructor<DBDatabase> constr : result) {
 			try {
 				constr.setAccessible(true);
-				System.out.println("PARAMETERLESS CONSTRUCTOR: " + constr.toString());
 				DBDatabase newInstance = constr.newInstance();
 				Assert.assertThat(newInstance, instanceOf(DBDatabase.class));
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
