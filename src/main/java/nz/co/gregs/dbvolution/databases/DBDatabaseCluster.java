@@ -1418,7 +1418,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		@Override
 		public void run() {
 			log.info("CLEANING UP CLUSTER...");
-			System.out.println("CLEANING UP CLUSTER...");
 			actionThreadPool.shutdown();
 			try {
 				details.removeAllDatabases();
@@ -1471,10 +1470,8 @@ public class DBDatabaseCluster extends DBDatabase {
 		return !details.getAutoRebuild() || !details.hasAuthoritativeDatabase();
 	}
 
-//	@Override
 	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
 		getClusterDetails().setSupportsDifferenceBetweenNullAndEmptyString(!required);
-//		super.setRequiredToProduceEmptyStringsForNull(required);
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {
