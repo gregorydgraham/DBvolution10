@@ -58,14 +58,15 @@ class QueryCanceller implements Runnable {
 	@Override
 	public void run() {
 		try {
-			System.out.println("CANCELLER: Cancelling query - "+sql);
-			System.out.println("CANCELLER: after ... " + ((0.0+((new Date()).getTime() - timestamp.getTime()))/1000.0) + "seconds");
+			LOGGER.log(Level.WARNING, "CANCELLER: Cancelling query - {0}", sql);
+			LOGGER.log(Level.WARNING, "CANCELLER: after ... {0} seconds", (0.0 + ((new Date()).getTime() - timestamp.getTime())) / 1000.0);
 			statement.cancel();
 			setQueryWasCancelled(true);
 		} catch (SQLException ex) {
 			Logger.getLogger(QueryDetails.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
+	protected static final Logger LOGGER = Logger.getLogger(QueryCanceller.class.getName());
 
 	private static Long standardCancelOffset = null;
 	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 15000;
