@@ -81,10 +81,6 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 					classesTested++;
 					boolean found = false;
 					for (String str : testClasses) {
-						System.out.println("" + dbcl.getJavaSource());
-//						final String testcaseLowercase = str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
-//						final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
-//						assertThat(sourceLowercase, is(testcaseLowercase));
 						assertThat(dbcl.getJavaSource(), is(str));
 						if (dbcl.getJavaSource().equals(str)) {
 							found = true;
