@@ -42,7 +42,9 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * @param <SELF>
  * @param <DATABASE>
  */
-public abstract class AbstractVendorSettingsBuilder<SELF extends AbstractVendorSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends AbstractSettingsBuilder<SELF, DATABASE> implements VendorSettingsBuilder<SELF, DATABASE> {
+public abstract class AbstractVendorSettingsBuilder<SELF extends AbstractVendorSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
+		extends AbstractSettingsBuilder<SELF, DATABASE> 
+		implements VendorSettingsBuilder<SELF, DATABASE> {
 
 	private String driverName = getDefaultDriverName();
 	private DBDefinition definition = getDefaultDefinition();
