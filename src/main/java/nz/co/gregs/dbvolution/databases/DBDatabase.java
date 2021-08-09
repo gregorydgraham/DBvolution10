@@ -427,7 +427,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 					while (connection == null) {
 						try {
 							connection = new DBConnectionSingle(this, getConnectionFromDriverManager());
-							LOG.debug("NEW CONNECTION: " + this.getUrlFromSettings(settings));
 							DatabaseMetaData metaData = connection.getMetaData();
 							LOG.debug("DATABASE: " + metaData.getDatabaseProductName() + " - " + metaData.getDatabaseProductVersion());
 							LOG.debug("DATABASE: " + metaData.getDriverName() + " - " + metaData.getDriverVersion());
@@ -2127,6 +2126,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			return null;
 		} else {
 			try {
+				LOG.debug("CREATING NEW CONNECTION: " + getJdbcURL());
 				return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
 			} catch (SQLException e) {
 				throw new DBRuntimeException("Connection Failed to URL " + getJdbcURL(), e);
