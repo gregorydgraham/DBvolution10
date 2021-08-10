@@ -454,9 +454,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation).If this list does not contain the element,
- it is unchanged. More formally, removes the element with the lowest index i
- such that
- <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * it is unchanged. More formally, removes the element with the lowest index i
+	 * such that
+	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
 	 * (if such an element exists). Returns <code>true</code> if this list
 	 * contained the specified element (or equivalently, if this list changed as a
 	 * result of the call).
@@ -1179,6 +1179,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+		final String clusterLabel = this.getLabel();
+		final String secondaryLabel = secondary.getLabel();
+		LOG.info(clusterLabel + " SYNCHRONISING: " + secondaryLabel);
 		try {
 			DBDatabase template = null;
 			try {
@@ -1191,16 +1194,22 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					// Check that we're not synchronising the reference database
 					if (!template.getSettings().equals(secondary.getSettings())) {
+						LOG.info(clusterLabel + " CAN SYNCHRONISE: " + secondaryLabel);
 						final DBRow[] trackedTables = getTrackedTables();
 						for (DBRow table : trackedTables) {
+							LOG.info(clusterLabel + " CHECKING TABLE: " + table.getTableName());
 							// make sure the table exists in the cluster already
 							if (template.tableExists(table)) {
+								LOG.info(clusterLabel + " INCLUDES TABLE: " + table.getTableName());
 								// Make sure it exists in the new database
 								if (secondary.tableExists(table) == true) {
+									LOG.info(clusterLabel + " REMOVING FROM " + secondaryLabel + ": " + table.getTableName());
 									secondary.preventDroppingOfTables(false);
 									secondary.dropTableNoExceptions(table);
 								}
+								LOG.info(clusterLabel + " CREATING ON " + secondaryLabel + ": " + table.getTableName());
 								secondary.createTable(table);
+								LOG.info(clusterLabel + " CREATED ON " + secondaryLabel + ": " + table.getTableName());
 								// Check that the table has data
 								final DBTable<DBRow> primaryTable = template.getDBTable(table);
 								final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
@@ -1208,12 +1217,13 @@ public class DBDatabaseCluster extends DBDatabase {
 								if (primaryTableCount > 0) {
 									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 									// Check that the new database has data
-									LOG.info("CLUSTER FILLING NEW DATABASE TABLE " + secondary.getLabel() + ":" + table.getTableName());
+									LOG.info(clusterLabel + " CLUSTER FILLING TABLE ON " + secondaryLabel + ":" + table.getTableName());
 									List<DBRow> allRows = primaryData.getAllRows();
 									secondaryTable.insert(allRows);
-									LOG.info("CLUSTER FILLED  NEW DATABASE TABLE " + secondary.getLabel() + ":" + table.getTableName());
+									LOG.info(clusterLabel + " FILLED TABLE ON " + secondaryLabel + ":" + table.getTableName());
 								}
 							}
+							LOG.info(clusterLabel + " FINSHED WITH TABLE: " + table.getTableName());
 						}
 					}
 				} catch (Throwable e) {
@@ -1222,6 +1232,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					releaseTemplateDatabase(template);
 				}
 			}
+			LOG.info(clusterLabel + " START SYNCHRONISING ACTIONS ON: " + secondaryLabel);
 			synchronizeActions(secondary);
 		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
 			quarantineDatabaseAutomatically(secondary, ex);
@@ -1550,18 +1561,26 @@ public class DBDatabaseCluster extends DBDatabase {
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] ejecta = details.getQuarantinedDatabases();
-		for (DBDatabase ejected : ejecta) {
-			str.append(ejected.getSettings());
-			try {
-				addDatabase(ejected);
-				str.append("").append(ejected.getLabel()).append(" added");
-			} catch (SQLException ex) {
-				quarantineDatabase(ejected, ex);
-				str.append("").append(ejected.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
-			} finally {
-				str.append("\n");
+		if (ejecta.length > 0) {
+			LOG.info(this.getLabel() + " HAS NO DATABASES TO RECONNECT");
+		} else {
+			for (DBDatabase ejected : ejecta) {
+				str.append(ejected.getSettings());
+				try {
+					LOG.info(this.getLabel() + " RECONNECTING DATABASE: " + ejected.getLabel());
+					addDatabase(ejected);
+					LOG.info(this.getLabel() + " RECONNECTED DATABASE: " + ejected.getLabel());
+					str.append("").append(ejected.getLabel()).append(" added");
+				} catch (SQLException ex) {
+					LOG.info(this.getLabel() + " RECONNECTION FAILED FOR DATABASE: " + ejected.getLabel());
+					quarantineDatabase(ejected, ex);
+					str.append("").append(ejected.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
+				} finally {
+					str.append("\n");
+				}
 			}
 		}
+
 		return str.toString();
 	}
 
@@ -1595,6 +1614,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public void removeTrackedTables(DBRow... rows) {
 		details.removeTrackedTables(Arrays.asList(rows));
+
 	}
 
 	public static class Configuration {
