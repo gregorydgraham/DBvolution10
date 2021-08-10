@@ -56,14 +56,12 @@ public class ReconnectionProcess extends RegularProcess {
 		if (database instanceof DBDatabaseCluster) {
 			DBDatabaseCluster cluster = (DBDatabaseCluster) database;
 			if (cluster.getAutoReconnect()) {
-				String msg = database.getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... \n";
+				String msg = database.getLabel()+ ": PREPARING TO RECONNECT DATABASES... \n";
 				LOGGER.info(msg);
 				str = msg;
 				try {
 					str += cluster.reconnectQuarantinedDatabases();
-				} catch (UnableToRemoveLastDatabaseFromClusterException ex) {
-					Logger.getLogger(ReconnectionProcess.class.getName()).log(Level.SEVERE, null, ex);
-				} catch (SQLException ex) {
+				} catch (UnableToRemoveLastDatabaseFromClusterException | SQLException ex) {
 					Logger.getLogger(ReconnectionProcess.class.getName()).log(Level.SEVERE, null, ex);
 				}
 				msg = database.getDatabaseName() + ": FINISHED RECONNECTING DATABASES...";
