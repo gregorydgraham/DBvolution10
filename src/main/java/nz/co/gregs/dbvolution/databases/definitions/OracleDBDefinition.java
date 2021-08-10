@@ -84,7 +84,7 @@ public class OracleDBDefinition extends DBDefinition {
 		if (date == null) {
 			return getNull();
 		}
-		return "/*getDateFormattedForQuery*/ TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER_WITH_TIMEZONE.format(date) + "','" + ORACLE_DATE_FORMAT_STRING_WITH_TIMEZONE + "') ";
+		return " TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER_WITH_TIMEZONE.format(date) + "','" + ORACLE_DATE_FORMAT_STRING_WITH_TIMEZONE + "') ";
 	}
 
 	@Override
