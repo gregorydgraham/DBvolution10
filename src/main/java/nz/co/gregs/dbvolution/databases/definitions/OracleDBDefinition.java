@@ -89,7 +89,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return "/*getDatePartsFormattedForQuery*/TO_TIMESTAMP_TZ("
+		return " TO_TIMESTAMP_TZ("
 				+ years
 				+ "||'-'||" + months
 				+ "||'-'||" + days
