@@ -63,10 +63,6 @@ public interface DBQueryable {
 
 	public String toSQLString(DBDatabase db);
 
-	public void setWorkingDatabase(DBDatabase database);
-
-	public DBDatabase getWorkingDatabase();
-
 	public void setReturnEmptyStringForNullString(boolean produceEmptyStringsForNull);
 
 	public boolean getReturnEmptyStringForNullString();
