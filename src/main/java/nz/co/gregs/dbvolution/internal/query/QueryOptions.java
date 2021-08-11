@@ -339,6 +339,8 @@ public class QueryOptions implements Serializable {
 
 	public final void setQueryDatabase(DBDatabase db) {
 		queryDatabase = db;
+		workingDefinition=null;
+		getQueryDefinition();
 	}
 
 	public DBDatabase getQueryDatabase() {
