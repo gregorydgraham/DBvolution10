@@ -16,10 +16,7 @@
 package nz.co.gregs.dbvolution.generic;
 
 import nz.co.gregs.dbvolution.databases.MSSQLServer2017ContainerDB;
-import nz.co.gregs.dbvolution.databases.Postgres10ContainerDB;
 import nz.co.gregs.dbvolution.databases.Oracle11XEContainerDB;
-import nz.co.gregs.dbvolution.databases.MySQL8ContainerDB;
-import java.io.File;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -96,14 +93,14 @@ public abstract class AbstractTest {
 		if (System.getProperty("testSmallCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", DBDatabaseCluster.Configuration.manual(),
-				SQLiteTestDB.getFromSettings(),
-				H2MemoryTestDB.getFromSettings("h2memory")
+				getSQLiteDBFromSystem(),
+				new H2MemorySettingsBuilder().fromSystemUsingPrefix("h2memory").getDBDatabase()
 				)});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
-				new DBDatabaseCluster("testSmallCluster", DBDatabaseCluster.Configuration.manual(),
-				SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
+				new DBDatabaseCluster("testBundledCluster", DBDatabaseCluster.Configuration.manual(),
+				getSQLiteDBFromSystem("bundle"),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
@@ -111,18 +108,18 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.manual(),
 				H2MemoryTestDB.getFromSettings("h2memory"),
-				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
-				PostgreSQLTestDatabaseProvider.getFromSettings("postgresfullcluster"),
-				MySQLTestDatabase.getFromSettings("mysql")
+				getSQLiteDBFromSystem("open"),
+				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
+				new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
 				)});
 		}
 		if (System.getProperty("testFullCluster") != null) {
 			final H2MemoryDB h2Mem = H2MemoryTestDB.getFromSettings("h2memory");
-			final SQLiteDB sqlite = SQLiteTestDB.getClusterDBFromSettings("sqlite", "full");
-			final PostgresDB postgres = PostgreSQLTestDatabaseProvider.getFromSettings("postgresfullcluster");
-			final MySQLDB mysql = MySQLTestDatabase.getFromSettings("mysql");
+			final SQLiteDB sqlite = getSQLiteDBFromSystem("full");
+			final PostgresDB postgres = new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase();
+			final MySQLDB mysql = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").setUseSSL(false).getDBDatabase();
 			final MSSQLServerDB sqlserver = MSSQLServerLocalTestDB.getFromSettings("sqlserver");
-			final Oracle11XEDB oracle = Oracle11XETestDB.getFromSettings("oraclexe");
+			final Oracle11XEDB oracle = new Oracle11XESettingsBuilder().fromSystemUsingPrefix("oraclexe").getDBDatabase();
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle",
 				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, postgres, mysql, sqlserver, oracle)});
 		}
@@ -130,33 +127,33 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("MySQL+Cluster", DBDatabaseCluster.Configuration.manual(),
 				H2MemoryTestDB.getFromSettings("h2memory"),
-				SQLiteTestDB.getFromSettings(),
-				PostgreSQLTestDatabaseProvider.getFromSettings("postgresfullcluster"),
-				MySQLTestDatabase.getFromSettings("mysqlcluster")
+				getSQLiteDBFromSystem(),
+				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
+				new MySQLSettingsBuilder().fromSystemUsingPrefix("mysqlcluster").getDBDatabase()
 				)});
 			databases.add(new Object[]{"MySQL",
-				MySQLTestDatabase.getFromSettings("mysql")
+				new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
 			});
 		}
 		if (System.getProperty("testSQLite") != null) {
-			databases.add(new Object[]{"SQLiteDB", SQLiteTestDB.getFromSettings()});
+			databases.add(new Object[]{"SQLiteDB", getSQLiteDBFromSystem()});
 		}
 		if (System.getProperty("testMySQL") != null) {
-			databases.add(new Object[]{"MySQLDB", MySQLTestDatabase.getFromSettings("mysql")});
+			databases.add(new Object[]{"MySQLDB", new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()});
 		}
 		if (System.getProperty("testMySQLContainer") != null) {
 			databases.add(new Object[]{"MySQLDBContainer",
-				MySQLTestDatabase.getFromSettings("mysqlcontainer")
+				new MySQLSettingsBuilder().fromSystemUsingPrefix("mysqlcontainer").getDBDatabase()
 			});
 		}
 		if (System.getProperty("testMySQL56") != null) {
-			databases.add(new Object[]{"MySQLDB-5.6", MySQL56TestDatabase.getFromSettings("mysql56")});
+			databases.add(new Object[]{"MySQLDB-5.6", new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql56").getDBDatabase()});
 		}
 		if (System.getProperty("testH2DB") != null) {
-			databases.add(new Object[]{"H2DB", H2TestDatabase.getFromSettings("h2")});
+			databases.add(new Object[]{"H2DB", new H2SettingsBuilder().fromSystemUsingPrefix("h2").getDBDatabase()});
 		}
 		if (System.getProperty("testH2SharedDB") != null) {
-			databases.add(new Object[]{"H2SharedDB", H2TestDatabase.getSharedDBFromSettings("h2shared")});
+			databases.add(new Object[]{"H2SharedDB", new H2SharedSettingsBuilder().fromSystemUsingPrefix("h2shared").getDBDatabase()});
 		}
 		if (System.getProperty("testH2FileDB") != null) {
 			//Quite convoluted creation but it's meant to test the file builder
@@ -171,22 +168,22 @@ public abstract class AbstractTest {
 			);
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
-			databases.add(new Object[]{"H2DataSourceDB", H2TestDatabase.getFromSettingsUsingDataSource("h2datasource")});
+			databases.add(new Object[]{"H2DataSourceDB", getH2SharedDatabase()});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-			databases.add(new Object[]{"PostgresSQL", PostgreSQLTestDatabaseProvider.getFromSettings("postgres")});
+			databases.add(new Object[]{"PostgresSQL", new PostgresSettingsBuilder().fromSystemUsingPrefix("postgres").getDBDatabase()});
 		}
 		if (System.getProperty("testPostgresContainer") != null) {
 			databases.add(new Object[]{
 				"PostgresContainer",
-				PostgreSQLTestDatabaseProvider.getFromSettings("postgrescontainer")
+				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgrescontainer").getDBDatabase()
 			});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracleXE") != null) {
-			databases.add(new Object[]{"OracleXEDB", Oracle11XETestDB.getFromSettings("oraclexe")});
+			databases.add(new Object[]{"OracleXEDB", new Oracle11XESettingsBuilder().fromSystemUsingPrefix("oraclexe").getDBDatabase()});
 		}
 		if (System.getProperty("testOracleXEContainer") != null) {
 			databases.add(new Object[]{"Oracle11XEContainer", getOracleContainerDatabase()});
@@ -205,21 +202,37 @@ public abstract class AbstractTest {
 		}
 	}
 
+	private static SQLiteDB getSQLiteDBFromSystem(String clusterName) throws Exception {
+		final SQLiteSettingsBuilder sqliteBuilder = new SQLiteSettingsBuilder().fromSystemUsingPrefix("sqlite");
+		sqliteBuilder.setFilename(sqliteBuilder.getFilename() + "-"+clusterName+"cluster.sqlite");
+		return sqliteBuilder.getDBDatabase();
+	}
+
+	private static SQLiteDB getSQLiteDBFromSystem() throws Exception {
+		final SQLiteSettingsBuilder sqliteBuilder = new SQLiteSettingsBuilder().fromSystemUsingPrefix("sqlite");
+		return sqliteBuilder.getDBDatabase();
+	}
+
+	protected static H2DB getH2SharedDatabase() throws SQLException {
+		final String prefix = "h2datasource";
+		String url = System.getProperty(prefix + ".url");
+		String username = System.getProperty(prefix + ".username");
+		String password = System.getProperty(prefix + ".password");
+		JdbcDataSource h2DataSource = new JdbcDataSource();
+		h2DataSource.setUser(username);
+		h2DataSource.setPassword(password);
+		h2DataSource.setURL(url);
+		final H2DB h2DB = new H2DB(h2DataSource);
+		return h2DB;
+	}
+
 	private static MSSQLServer2017ContainerDB MSSQLSERVER_CONTAINER_DATABASE = null;
-	private static MSSQLServer2017ContainerDB MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = null;
 
 	private static MSSQLServer2017ContainerDB getMSSQLServerContainerDatabase() {
 		if (MSSQLSERVER_CONTAINER_DATABASE == null) {
 			MSSQLSERVER_CONTAINER_DATABASE = MSSQLServer2017ContainerDB.getLabelledInstance("MSSQLServer Container DB");
 		}
 		return MSSQLSERVER_CONTAINER_DATABASE;
-	}
-
-	private static MSSQLServer2017ContainerDB getMSSQLServerContainerDatabaseForCluster() {
-		while (MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER == null) {
-			MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER = MSSQLServer2017ContainerDB.getLabelledInstance("MSSQLServer Container DB for Cluster Testing");
-		}
-		return MSSQLSERVER_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 
 	private static Oracle11XEContainerDB ORACLE_CONTAINER_DATABASE = null;
@@ -229,15 +242,6 @@ public abstract class AbstractTest {
 			ORACLE_CONTAINER_DATABASE = Oracle11XEContainerDB.getInstance();
 		}
 		return ORACLE_CONTAINER_DATABASE;
-	}
-
-	private static Oracle11XEContainerDB ORACLE_CONTAINER_DATABASE_FOR_CLUSTER = null;
-
-	private static Oracle11XEContainerDB getOracleContainerDatabaseForCluster() {
-		if (ORACLE_CONTAINER_DATABASE_FOR_CLUSTER == null) {
-			ORACLE_CONTAINER_DATABASE_FOR_CLUSTER = Oracle11XEContainerDB.getInstance();
-		}
-		return ORACLE_CONTAINER_DATABASE_FOR_CLUSTER;
 	}
 
 	public AbstractTest(Object testIterationName, Object db) {
@@ -376,239 +380,6 @@ public abstract class AbstractTest {
 
 	protected String oracleSafeStrings(String expect) throws NoAvailableDatabaseException {
 		return database.supportsDifferenceBetweenNullAndEmptyString() ? expect : expect == null ? "" : expect;
-	}
-
-	private static class H2TestDatabase {
-
-		public static final long serialVersionUID = 1l;
-
-		public static H2DB getFromSettings(String prefix) throws SQLException, IOException {
-			String url = System.getProperty(prefix + ".url");
-			String host = System.getProperty(prefix + ".host");
-			String port = System.getProperty(prefix + ".port");
-//			String instance = System.getProperty(prefix + ".instance");
-			String database = System.getProperty(prefix + ".database");
-			String username = System.getProperty(prefix + ".username");
-			String password = System.getProperty(prefix + ".password");
-//			String schema = System.getProperty(prefix + ".schema");
-			String file = System.getProperty(prefix + ".file");
-			if (file != null && !file.isEmpty()) {
-				return new H2FileSettingsBuilder()
-						.setFilename(file)
-						.setUsername(username)
-						.setPassword(password)
-						.getDBDatabase();
-//				return getH2TestDatabaseFromFilename(file, username, password);
-			} else if (url != null && !url.isEmpty()) {
-				return new H2SettingsBuilder()
-						.fromJDBCURL(url, username, password).getDBDatabase();
-			} else {
-				return new H2SettingsBuilder()
-						.setDatabaseName(database)
-						.setHost(host)
-						.setPort(port)
-						.setUsername(username)
-						.setPassword(password)
-						.getDBDatabase();
-//				return new H2DB(url, username, password);
-			}
-		}
-
-		public static DBDatabase getSharedDBFromSettings(String prefix)
-				throws SQLException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
-			settings.setDbdatabaseClass(H2SharedDB.class.getCanonicalName());
-			return settings.createDBDatabase();
-		}
-
-		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException, IOException {
-			String host = System.getProperty(prefix + ".host");
-			String port = System.getProperty(prefix + ".port");
-			String database = System.getProperty(prefix + ".database");
-			String username = System.getProperty(prefix + ".username");
-			String password = System.getProperty(prefix + ".password");
-			String file = System.getProperty(prefix + ".file");
-			if (file != null && !file.equals("")) {
-				return new H2FileSettingsBuilder()
-						.setFilename(file + "-cluster.h2db")
-						.setUsername(username)
-						.setPassword(password)
-						.getDBDatabase();
-			} else {
-				return new H2SettingsBuilder()
-						.setDatabaseName(database)
-						.setHost(host)
-						.setPort(port)
-						.setUsername(username)
-						.setPassword(password)
-						.getDBDatabase();
-			}
-		}
-
-		public static H2DB getFromSettingsUsingDataSource(String prefix) throws SQLException {
-			String url = System.getProperty(prefix + ".url");
-			String username = System.getProperty(prefix + ".username");
-			String password = System.getProperty(prefix + ".password");
-
-			JdbcDataSource h2DataSource = new JdbcDataSource();
-			h2DataSource.setUser(username);
-			h2DataSource.setPassword(password);
-			h2DataSource.setURL(url);
-			return H2TestDatabase.getDatabaseFromDataSource(h2DataSource);
-		}
-
-		private static H2DB getDatabaseFromDataSource(JdbcDataSource h2DataSource) throws SQLException {
-			return new H2DB(h2DataSource);
-		}
-
-		public static H2DB getH2TestDatabaseFromFilename(String file, String username, String password) throws SQLException, IOException {
-			return new H2DB(new File(file), username, password);
-		}
-
-		private H2TestDatabase() {
-		}
-	}
-
-	private static class MySQL56TestDatabase {
-
-		public static final long serialVersionUID = 1l;
-
-		public static MySQLDB getFromSettings(String prefix) throws SQLException, Exception {
-			String url = System.getProperty("" + prefix + ".url");
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			return new MySQLSettingsBuilder().setHost(host)
-					.setPort(port)
-					.setDatabaseName(database)
-					.setInstance(instance)
-					.setSchema(schema)
-					.setUsername(username)
-					.setPassword(password)
-					.getDBDatabase();
-		}
-
-		private MySQL56TestDatabase() {
-		}
-	}
-
-	private static class MySQLTestDatabase {
-
-		public static final long serialVersionUID = 1l;
-
-		public static MySQLDB getFromSettings(String prefix) throws SQLException {
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			return new MySQLDB(
-					new MySQLSettingsBuilder()
-							.setHost(host)
-							.setPort(port)
-							.setDatabaseName(database)
-							.setInstance(instance)
-							.setUsername(username)
-							.setPassword(password)
-							.setSchema(schema)
-			);
-		}
-
-		private MySQLTestDatabase() {
-		}
-	}
-
-	private static class PostgreSQLTestDatabaseProvider {
-
-		private final static long serialVersionUID = 1l;
-
-		public static PostgresDB getFromSettings(String prefix) throws SQLException {
-			String url = System.getProperty("" + prefix + ".url");
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String database = System.getProperty("" + prefix + ".database");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			String image = System.getProperty("" + prefix + ".image");
-			String tag = System.getProperty("" + prefix + ".tag");
-			if (image != null && !image.isEmpty()) {
-				if (image.equals("default") && tag.equals("default")) {
-					MySQL8ContainerDB.getInstance();
-				} else {
-					return Postgres10ContainerDB.getInstance(image, tag);
-				}
-			}
-			return PostgreSQLTestDatabaseProvider.getTestDatabase(url, host, port, database, username, password, schema);
-		}
-
-		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) throws SQLException {
-			return new PostgresDB(
-					new PostgresSettingsBuilder()
-							.setHost(host)
-							.setPort(port)
-							.setDatabaseName(database)
-							.setUsername(username)
-							.setPassword(password)
-			);
-		}
-
-		private PostgreSQLTestDatabaseProvider() {
-		}
-	}
-
-	private static class SQLiteTestDB {
-
-		private final static long serialVersionUID = 1l;
-
-		public static SQLiteDB getFromSettings() throws IOException, SQLException {
-			return getFromSettings("sqlite");
-		}
-
-		public static SQLiteDB getFromSettings(String prefix) throws IOException, SQLException {
-			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSystemUsingPrefix(prefix);
-			return new SQLiteDB(builder);
-		}
-
-		public static SQLiteDB getClusterDBFromSettings(String prefix, String name) throws IOException, SQLException {
-			SQLiteSettingsBuilder builder = new SQLiteSettingsBuilder().fromSystemUsingPrefix(prefix);
-			builder.setFilename(builder.getFilename() + "-" + name + "cluster.sqlite");
-			return new SQLiteDB(builder);
-
-		}
-
-		private SQLiteTestDB() {
-		}
-	}
-
-	private static class Oracle11XETestDB {
-
-		private final static long serialVersionUID = 1l;
-
-		public static Oracle11XEDB getFromSettings(String prefix) throws Exception {
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String instance = System.getProperty("" + prefix + ".instance");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			return new Oracle11XESettingsBuilder()
-					.setHost(host)
-					.setPort(port)
-					.setInstance(instance)
-					.setUsername(username)
-					.setPassword(password)
-					.getDBDatabase();
-		}
-
-		private Oracle11XETestDB() {
-		}
 	}
 
 	private static class MSSQLServerLocalTestDB {
