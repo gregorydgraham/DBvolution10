@@ -274,9 +274,7 @@ public class OuterJoinTest extends AbstractTest {
 		List<LinkCarCompanyAndLogo> links = dbQuery.getAllInstancesOf(new LinkCarCompanyAndLogo());
 
 		Assert.assertThat(links.size(), is(1));
-		for (DBQueryRow queryrow : allRows) {
-			Assert.assertThat(queryrow.get(new LinkCarCompanyAndLogo()).isEmptyRow(), is(true));
-		}
+		allRows.forEach(row -> Assert.assertThat(row.get(new LinkCarCompanyAndLogo()).isEmptyRow(), is(true)));
 	}
 
 	@Test
@@ -293,6 +291,7 @@ public class OuterJoinTest extends AbstractTest {
 		final String marqueCondition = "__1997432637.ENABLED = 1";
 		Assert.assertThat(sqlForQuery.indexOf(marqueCondition), is(sqlForQuery.lastIndexOf(marqueCondition)));
 		List<DBQueryRow> allRows = dbquery.getAllRows();
+		Assert.assertThat(allRows.size(), is(4));
 
 		dbquery = database.getDBQuery();
 		dbquery.add(marque);
@@ -304,6 +303,7 @@ public class OuterJoinTest extends AbstractTest {
 						containsString(testableSQL("(__78874071.name) >= 'ford'")),
 						containsString(testableSQL("(__78874071.name) >= N'ford'")),
 						containsString(testableSQL("\"_78874071\".name) >= 'ford'")),
+						containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) >= n'ford'")),
 						containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) >= 'ford'"))
 				)
 		);
@@ -313,6 +313,7 @@ public class OuterJoinTest extends AbstractTest {
 						containsString(testableSQL("(__78874071.name) <= N'toyota'")),
 						containsString(testableSQL("(\"__78874071\".name) <= 'toyota'")),
 						containsString(testableSQL("(\"_78874071\".name) <= 'toyota'")),
+						containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) <= n'toyota')))")),
 						containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) <= 'toyota'"))
 				)
 		);
@@ -321,8 +322,8 @@ public class OuterJoinTest extends AbstractTest {
 						containsString(testableSQL("__1997432637.enabled = 1")),
 						containsString(testableSQL("\"__1997432637\".enabled = 1")),
 						containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
-						containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))")
-						)
+						containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))")),
+						containsString(testableSQL("(( case when \\\"_1997432637\\\".enabled is null then null else \\\"_1997432637\\\".enabled end ) = ( case when 1 is null then null else 1 end ))"))
 				)
 		);
 		Assert.assertThat(testableSQL(sqlForQuery),
@@ -332,12 +333,14 @@ public class OuterJoinTest extends AbstractTest {
 								containsString(testableSQL("(\"__78874071\".name) >= 'ford'")),
 								containsString(testableSQL("(\"_78874071\".name) >= 'ford'")),
 								containsString(testableSQL("(__78874071.name) >= N'ford'")),
+								containsString(testableSQL("((((isnull(isnull(__78874071.name,n''),n'')) >= n'ford'")),
 								containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) >= 'ford'"))),
 						anyOf(
 								containsString(testableSQL("(__78874071.name) <= 'toyota'")),
 								containsString(testableSQL("(\"__78874071.name\") <= 'toyota'")),
 								containsString(testableSQL("(\"_78874071.name\") <= 'toyota'")),
 								containsString(testableSQL("(__78874071.name) <= N'toyota'")),
+								containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) <= n'toyota')))")),
 								containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) <= 'toyota'"))),
 						anyOf(
 								containsString(testableSQL("__1997432637.enabled = TRUE")),
@@ -459,17 +462,7 @@ public class OuterJoinTest extends AbstractTest {
 		// Now loop through the individual rows processing as you go
 		int antagonistFound = 0;
 		for (nz.co.gregs.dbvolution.DBQueryRow queryRow : allQueryRows) {
-
-			// A DBQueryRow contains all the individual rows from the table 
-			// that are associated with each other.
-			// Use the get method with an instance of the class you want to get
-			// the relevant row.
-			Encounter encounter = queryRow.get(encounterExample);
-			// Using blank instances is also ok
 			Antagonist antagonist = queryRow.get(new Antagonist());
-
-			// Watch out though!  
-			// Optional rows will be NULL if there is no relevant row
 			if (antagonist != null && !antagonist.isEmptyRow()) {
 				antagonistFound++;
 			}
