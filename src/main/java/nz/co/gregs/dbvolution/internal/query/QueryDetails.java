@@ -90,7 +90,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private SortProvider[] sortOrderColumns;
 	private List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
-	private DBDatabase workingDatabase;
+//	private DBDatabase workingDatabase;
 	private static final String LINE_SEP = System.getProperty("line.separator");
 
 	/**
@@ -315,7 +315,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	/**
 	 * @return the resultSQL
 	 */
-	public synchronized List<String> getResultSQL() {
+	public synchronized List<String> getSQLQueries() {
 		return resultSQL;
 	}
 
@@ -366,12 +366,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return queryCount;
 	}
 
-	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
+	private synchronized void getResultSetCount(DBDatabase db) throws SQLException {
 		long result = 0L;
 		try (DBStatement dbStatement = db.getDBStatement()) {
-			final List<String> sqlForCount = details.getSQLForCountInternal(details, options);
+			final List<String> sqlForCount = getSQLForCountInternal(this, options);
 			for (String sql : sqlForCount) {
-				printSQLIfRequired(options, details, sql);
+				printSQLIfRequired(sql);
 				try (ResultSet resultSet = dbStatement.executeQuery(sql, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
 					while (resultSet.next()) {
 						result = resultSet.getLong(1);
@@ -1032,28 +1032,26 @@ public class QueryDetails implements DBQueryable, Serializable {
 		sortOrderColumns = null;
 	}
 
-	private synchronized DBDatabase prepareForQuery(DBDatabase database, QueryOptions options) {
+	private synchronized void prepareForQuery(DBDatabase database, QueryOptions options) {
 		clearResults();
+		setResultSQL(null);
+		options.setQueryDatabase(database);
+		
 		setReturnEmptyStringForNullString(
 				getReturnEmptyStringForNullString()
 				|| !database.supportsDifferenceBetweenNullAndEmptyString()
 		);
-		DBDatabase dbToQueryWith = database;
-
-		options.setQueryDatabase(dbToQueryWith);
-
-		return dbToQueryWith;
 	}
 
 	public synchronized boolean needsResults(QueryOptions options) {
 		final DBDatabase queryDatabase = options.getQueryDatabase();
 		return getResults() == null
 				|| queryDatabase == null
-				|| getResultSQL() == null
+				|| getSQLQueries() == null
 				|| getResults().isEmpty()
 				|| !getResultsPageIndex().equals(options.getPageIndex())
 				|| !getResultsRowLimit().equals(options.getRowLimit())
-				|| !getResultSQL().equals(getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options));
+				|| !getSQLQueries().equals(getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options));
 	}
 
 	@Override
@@ -1101,7 +1099,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final QueryType queryType = currentOptions.getQueryType();
 		switch (queryType) {
 			case COUNT:
-				getResultSetCount(db, this);
+				getResultSetCount(db);
 				break;
 			case ROWSFORPAGE:
 				getAllRowsForPage(currentOptions);
@@ -1113,7 +1111,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				this.setResultSQL(QueryDetails.this.getSQLForCountInternal(this, currentOptions));
 				break;
 			case SELECT:
-				fillResultSetInternal(this, currentOptions);
+				fillResultSetInternal(currentOptions);
 				break;
 			default:
 				throw new UnsupportedOperationException("Query Type Not Supported: " + queryType);
@@ -1122,14 +1120,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	protected synchronized void getAllRowsForPage(QueryOptions opts) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
-//		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
-		final DBDefinition defn = opts.getQueryDefinition();//getDatabaseDefinition(database);
+		final DBDefinition defn = opts.getQueryDefinition();
 
 		if (defn.supportsPagingNatively(opts)) {
 			opts.setPageIndex(pageNumber);
 			if (needsResults(opts)) {
-				fillResultSetInternal(this, options);
+				fillResultSetInternal(options);
 			}
 			setCurrentPage(getResults());
 		} else {
@@ -1167,33 +1164,34 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	protected synchronized void fillResultSetInternal(QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
+	protected synchronized void fillResultSetInternal(QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
 		final List<String> sqlForQuery = this.getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options);
 
 		setResultSQL(sqlForQuery);
 
 		final DBDefinition defn = options.getQueryDefinition();
 
-		if (!options.isBlankQueryAllowed() && QueryDetails.this.willCreateBlankQuery(options) && details.getRawSQLClause().isEmpty()) {
-			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), QueryDetails.this.willCreateBlankQuery(options), details.getRawSQLClause().isEmpty());
+		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(options) && getRawSQLClause().isEmpty()) {
+			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), willCreateBlankQuery(options), getRawSQLClause().isEmpty());
 		}
 
 		if (!options.isCartesianJoinAllowed()
-				&& (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1
+				&& (getRequiredQueryTables().size() + getOptionalQueryTables().size()) > 1
 				&& queryGraph.willCreateCartesianJoin()) {
-			throw new AccidentalCartesianJoinException(details);
+			throw new AccidentalCartesianJoinException(this);
 		}
 		// all set to execute the query
-		fillResultSetFromSQL(details, options, defn, details.getResultSQL());
+		fillResultSetFromSQL(options, defn);
 	}
 
-	protected synchronized void fillResultSetFromSQL(QueryDetails details, QueryOptions options, final DBDefinition defn, List<String> sqlString) throws AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL, SQLTimeoutException, SQLException {
+	protected synchronized void fillResultSetFromSQL(QueryOptions options, final DBDefinition defn) throws AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL, SQLTimeoutException, SQLException {
 		ArrayList<DBQueryRow> foundRows = new ArrayList<DBQueryRow>();
 		SQLException firstException = null;
 		boolean successfulQuery = false;
-		for (String sql : sqlString) {
-			try (DBStatement dbStatement = options.getQueryDatabase().getDBStatement()) {
-				printSQLIfRequired(options, details, sql);
+		for (String sql : getSQLQueries()) {
+			final DBDatabase queryDatabase = options.getQueryDatabase();
+			try (DBStatement dbStatement = queryDatabase.getDBStatement()) {
+				printSQLIfRequired(sql);
 				try (ResultSet resultSet = getResultSetForSQL(dbStatement, sql)) {
 					DBQueryRow queryRow;
 					while (resultSet.next()) {
@@ -1201,7 +1199,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 						setExpressionColumns(defn, resultSet, queryRow);
 
-						setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
+						setQueryRowFromResultSet(defn, resultSet, this, queryRow, isGroupedQuery());
 						foundRows.add(queryRow);
 					}
 				}
@@ -1214,7 +1212,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				for (int i = 0; i < 11 && i < trace.length; i++) {
 					System.out.println("" + trace[i]);
 				}
-				options.getQueryDatabase().handleErrorDuringExecutingSQL(getWorkingDatabase(), e, sql);
+				queryDatabase.handleErrorDuringExecutingSQL(queryDatabase, e, sql);
 				if (firstException == null) {
 					firstException = e;
 				}
@@ -1229,15 +1227,15 @@ public class QueryDetails implements DBQueryable, Serializable {
 					}
 				}
 			}
-			details.setResults(foundRows);
+			setResults(foundRows);
 		} else {
 			throw firstException;
 		}
 	}
 
-	private void printSQLIfRequired(QueryOptions options1, QueryDetails details, String sql) {
-		if (options1.getPrintSQLBeforeExecution()) {
-			System.out.println("/* SQL for " + details.label + " on " + details.getWorkingDatabase() + " */ " + sql);
+	private void printSQLIfRequired(String sql) {
+		if (options.getPrintSQLBeforeExecution()) {
+			System.out.println("/* SQL for " + this.label + " on " + options.getQueryDatabase().getLabel() + " */ " + sql);
 		}
 	}
 
@@ -1600,15 +1598,17 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	}
 
-	@Override
-	public void setWorkingDatabase(DBDatabase database) {
-		workingDatabase = database;
-	}
-
-	@Override
-	public DBDatabase getWorkingDatabase() {
-		return workingDatabase;
-	}
+//	@Override
+//	public void setWorkingDatabase(DBDatabase database) {
+////		workingDatabase = database;
+//		options.setQueryDatabase(database);
+//	}
+//
+//	@Override
+//	public DBDatabase getWorkingDatabase() {
+////		return workingDatabase;
+//		return options.getQueryDatabase();
+//	}
 
 	private static class OrderByClause {
 
