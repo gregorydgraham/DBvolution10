@@ -1020,18 +1020,16 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		final DBDatabase workingDB = getReadyDatabase();
+		HandlerAdvice advice=HandlerAdvice.REQUERY;
 		try {
-			query.setWorkingDatabase(workingDB);
 			// set oracle compatibility 
 			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString() || !getDefinition().canProduceNullStrings());
 			// hand the job down to the next layer
 			return workingDB.executeDBQuery(query);
-		} catch (AccidentalBlankQueryException | AccidentalCartesianJoinException errorWithTheQueryException) {
+		} catch (AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException errorWithTheQueryException) {
 			throw errorWithTheQueryException;
-		} catch (NoAvailableDatabaseException errorWithTheClusterException) {
-			throw errorWithTheClusterException;
 		} catch (SQLException e) {
-			final HandlerAdvice advice = handleExceptionDuringQuery(e, workingDB);
+			advice = handleExceptionDuringQuery(e, workingDB);
 			if (advice.equals(HandlerAdvice.REQUERY) && requeryPermitted()) {
 				return executeDBQuery(query);
 			} else {
