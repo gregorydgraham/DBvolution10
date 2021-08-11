@@ -256,6 +256,11 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
+	public String doStringLiteralWrapping(String stringLiteral) {
+		return base.doStringLiteralWrapping(stringLiteral);
+	}
+
+	@Override
 	public String getCreateTableColumnsSeparator() {
 		return base.getCreateTableColumnsSeparator();
 	}
