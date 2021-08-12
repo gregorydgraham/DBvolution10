@@ -117,7 +117,7 @@ public abstract class AbstractTest {
 			final H2MemoryDB h2Mem = H2MemoryTestDB.getFromSettings("h2memory");
 			final SQLiteDB sqlite = getSQLiteDBFromSystem("full");
 			final PostgresDB postgres = new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase();
-			final MySQLDB mysql = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").setUseSSL(false).getDBDatabase();
+			final MySQLDB mysql = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase();
 			final MSSQLServerDB sqlserver = MSSQLServerLocalTestDB.getFromSettings("sqlserver");
 			final Oracle11XEDB oracle = new Oracle11XESettingsBuilder().fromSystemUsingPrefix("oraclexe").getDBDatabase();
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle",
