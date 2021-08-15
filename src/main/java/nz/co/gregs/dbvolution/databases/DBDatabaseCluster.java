@@ -979,28 +979,28 @@ public class DBDatabaseCluster extends DBDatabase {
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
 		try {
-			DBDatabase readyDatabase = getReadyDatabase();
+			DBDatabase firstDatabase = getReadyDatabase();
 			boolean finished = false;
 			do {
 				try {
 					if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
 						// Because of autoincrement PKs we need to execute on one database first
-						actionsPerformed = new ActionTask(this, readyDatabase, action).call();
-						removeActionFromQueue(readyDatabase, action);
+						actionsPerformed = new ActionTask(this, firstDatabase, action).call();
+						removeActionFromQueue(firstDatabase, action);
 						finished = true;
 					} else {
 						finished = true;
 					}
 				} catch (SQLException e) {
-					if (handleExceptionDuringAction(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+					if (handleExceptionDuringAction(e, firstDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
 				}
 			} while (!finished && size() > 1);
-			final DBDatabase[] readyDatabases = details.getReadyDatabases();
+			final DBDatabase[] databases = details.getReadyDatabases();
 			// Now execute on all the other databases
-			for (DBDatabase next : readyDatabases) {
-				if (action.runOnDatabaseDuringCluster(readyDatabase, next)) {
+			for (DBDatabase next : databases) {
+				if (action.runOnDatabaseDuringCluster(firstDatabase, next)) {
 					final ActionTask task = new ActionTask(this, next, action);
 					tasks.add(task);
 					removeActionFromQueue(next, action);
@@ -1020,7 +1020,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		final DBDatabase workingDB = getReadyDatabase();
-		HandlerAdvice advice=HandlerAdvice.REQUERY;
+		HandlerAdvice advice = HandlerAdvice.REQUERY;
 		try {
 			// set oracle compatibility 
 			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString() || !getDefinition().canProduceNullStrings());
