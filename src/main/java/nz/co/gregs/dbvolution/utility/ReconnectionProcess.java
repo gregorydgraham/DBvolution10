@@ -64,7 +64,7 @@ public class ReconnectionProcess extends RegularProcess {
 				} catch (UnableToRemoveLastDatabaseFromClusterException | SQLException ex) {
 					Logger.getLogger(ReconnectionProcess.class.getName()).log(Level.SEVERE, null, ex);
 				}
-				msg = database.getDatabaseName() + ": FINISHED RECONNECTING DATABASES...";
+				msg = database.getLabel() + ": FINISHED RECONNECTING DATABASES...";
 				LOGGER.info(msg);
 				str += "\n" + msg;
 			}
