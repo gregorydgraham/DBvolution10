@@ -301,7 +301,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	public void selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase() throws Exception {
 
 		DBDatabase h2PretendingToBeOracle = getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull();
-		try (DBDatabaseCluster cluster = new DBDatabaseCluster("test required empty for null cluster", database)) {
+		try (DBDatabaseCluster cluster = new DBDatabaseCluster("selectDBRowExpressionAllMarquesAfterAddingToClusterAndIntroducingOracleDatabase", DBDatabaseCluster.Configuration.manual(), database)) {
 			cluster.addTrackedTable(new ExpressionRow());
 			cluster.addDatabaseAndWait(h2PretendingToBeOracle);
 			
