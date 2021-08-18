@@ -233,7 +233,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		List<Marque> requiredRowsForMarqueTable = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		pseudoOracle.createTable(new Marque());
 		pseudoOracle.insert(requiredRowsForMarqueTable);
-		try (var cluster = new DBDatabaseCluster("test required empty for null cluster", pseudoOracle)) {
+		try (var cluster = new DBDatabaseCluster("test required empty for null cluster", DBDatabaseCluster.Configuration.manual(), pseudoOracle)) {
 			cluster.addTrackedTable(new Marque());
 			cluster.addDatabaseAndWait(database);
 
