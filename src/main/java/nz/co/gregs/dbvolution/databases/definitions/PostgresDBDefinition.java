@@ -82,11 +82,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return SeparatedStringBuilder.startsWith("make_timestamp(").separatedBy(", ").endsWith(")")
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
-				//				.add(
-				//						doConcatTransform(
-				//								"'" + timeZoneSign + "'", timeZoneHourOffset, doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
-				//						)
-				//				)
 				.toString();
 	}
 
@@ -152,16 +147,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		}
 	}
 
-//	@Override
-//	public String getOrderByDirectionClause(Boolean sortOrder) {
-//		if (sortOrder == null) {
-//			return "";
-//		} else if (sortOrder) {
-//			return " ASC NULLS FIRST ";
-//		} else {
-//			return " DESC NULLS LAST ";
-//		}
-//	}
 	@Override
 	public String getOrderByDescending() {
 		return " DESC ";
@@ -225,10 +210,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "((EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000) - (" + doTruncTransform(doSecondTransform(dateExpression), "0") + "))";
 	}
 
-//	@Override
-//	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-//		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 MILLISECOND' )";
-//	}
 	@Override
 	public String doDateAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 SECOND' )";
@@ -306,7 +287,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doCurrentDateOnlyTransform() {
-		return super.getCurrentDateOnlyFunctionName(); //To change body of generated methods, choose Tools | Templates.
+		return super.getCurrentDateOnlyFunctionName(); 
 	}
 
 	@Override
@@ -348,22 +329,13 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1)";
 	}
 
-//	@Override
-//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-//		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1000)";
-//	}
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " (EXTRACT(DOW FROM (" + dateSQL + "))+1)";
 	}
 
-//	@Override
-//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-//		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1000)";
-//	}
 	@Override
 	public String doInstantDayOfWeekTransform(String dateSQL) {
-//		return " (EXTRACT(DOW FROM (" + dateSQL + "))+1)";
 		return " (EXTRACT(DOW FROM (" + dateSQL + ") AT TIME ZONE 'UTC')+1)";
 	}
 
@@ -394,13 +366,11 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
-//		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
 		return "ST_OVERLAPS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
 	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
-//		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
 		return "((" + firstGeometry + ") && (" + secondGeometry + "))";
 	}
 
@@ -441,8 +411,6 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
-		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
-		// i.e. G1.within(G2) === G2.contains(G1)
 		return "ST_WITHIN((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
@@ -483,7 +451,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public boolean supportsHyperbolicFunctionsNatively() {
-		return false;//To change body of generated methods, choose Tools | Templates.
+		return false;
 	}
 
 	@Override
@@ -536,7 +504,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "POINT (" + point.getX() + ", " + point.getY() + ")";
 	}
 
-	//path '[(0,0),(1,1),(2,0)]'
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
 		StringBuilder str = new StringBuilder();
@@ -561,10 +528,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return "ST_ASTEXT(" + selectableName + ")::VARCHAR";
 		} else if (qdt instanceof DBInstant) {
 			return "(" + selectableName + ") at time zone 'UTC'";
-//			return "to_char((" + selectableName + ") at time zone 'UTC', 'YYYY-MM-DD HH:MI:SS.US')";
 		} else {
 			return super.doColumnTransformForSelect(qdt, selectableName);
-			//return selectableName;
 		}
 	}
 
@@ -579,16 +544,12 @@ public class PostgresDBDefinition extends DBDefinition {
 			final double y = Double.parseDouble(split[2]);
 			point = geometryFactory.createPoint(new Coordinate(x, y));
 		} else {
-//			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
 		}
 		return point;
 	}
 
-	// ((2,3),(2,3),(2,3),(2,3))
-	// POLYGON((2 3,2 4,3 4,3 3,2 3))
 	@Override
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
-		//String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<>();
 		Coordinate firstCoord = null;
@@ -616,7 +577,6 @@ public class PostgresDBDefinition extends DBDefinition {
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
-			//String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();
@@ -726,7 +686,6 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
-		//POINT (0.0, 0.0) => POLYGON((0.0, 0.0), ... )
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		for (String point : pointSQL) {
@@ -761,7 +720,6 @@ public class PostgresDBDefinition extends DBDefinition {
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
 		LineSegment lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
-			//String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();
@@ -877,10 +835,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return MultiPoint2DFunctions.ASLINE2D + "((" + first + "))::PATH";
 	}
 
-//	@Override
-//	public String doMultiPoint2DToPolygon2DTransform(String first) {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//	}
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String toSQLString) {
 		return "ST_YMIN(" + toSQLString + ")";
@@ -901,11 +855,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "ST_XMAX(" + toSQLString + ")";
 	}
 
-	// Relies on Java8 :(
-//	@Override
-//	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
-//		return "((" + dateSQL + ") AT TIME ZONE '" + timeZone.toZoneId().getId() + "') ";
-//	}
 	@Override
 	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeBinary) {
@@ -934,11 +883,6 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	/**
 	 * Return the function name for the Logarithm Base10 function.
-	 *
-	 * <p>
-	 * By default this method returns <b>log10</b></p>
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
@@ -1003,8 +947,6 @@ public class PostgresDBDefinition extends DBDefinition {
 	 *
 	 * @param number the number value
 	 * @param decimalPlaces the number value of the decimal places required.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
 	@Override
@@ -1015,21 +957,16 @@ public class PostgresDBDefinition extends DBDefinition {
 	/**
 	 * Creates the CURRENTTIME function for this database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the default implementation returns " CURRENT_TIMESTAMP "
 	 */
 	@Override
 	public String doCurrentUTCTimeTransform() {
 		return "(now())";
-//		return "(now() at time zone 'utc')";
 	}
 
 	@Override
 	public String doCurrentUTCDateTimeTransform() {
 		return "(now())";
-//		return "(now() at time zone 'utc')";
 	}
 
 	/**
@@ -1037,13 +974,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * that provides the year part of the date.
 	 *
 	 * @param dateExpression	dateExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a SQL snippet that will produce the year of the supplied date.
 	 */
 	@Override
 	public String doInstantYearTransform(String dateExpression) {
-//		return doNumberToIntegerTransform("EXTRACT(YEAR FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(YEAR FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1052,13 +986,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * that provides the month part of the date.
 	 *
 	 * @param dateExpression	dateExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a SQL snippet that will produce the month of the supplied date.
 	 */
 	@Override
 	public String doInstantMonthTransform(String dateExpression) {
-//		return doNumberToIntegerTransform("EXTRACT(MONTH FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(MONTH FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1071,13 +1002,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * part of Monday 25th of August 2014
 	 *
 	 * @param dateExpression	dateExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a SQL snippet that will produce the day of the supplied date.
 	 */
 	@Override
 	public String doInstantDayTransform(String dateExpression) {
-//		return doNumberToIntegerTransform("EXTRACT(DAY FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(DAY FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1086,13 +1014,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * that provides the hour part of the date.
 	 *
 	 * @param dateExpression	dateExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a SQL snippet that will produce the hour of the supplied date.
 	 */
 	@Override
 	public String doInstantHourTransform(String dateExpression) {
-//		return doNumberToIntegerTransform("EXTRACT(HOUR FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(HOUR FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1101,13 +1026,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * that provides the minute part of the date.
 	 *
 	 * @param dateExpression	dateExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a SQL snippet that will produce the minute of the supplied date.
 	 */
 	@Override
 	public String doInstantMinuteTransform(String dateExpression) {
-//		return doNumberToIntegerTransform("EXTRACT(MINUTE FROM " + dateExpression + ")");
 		return doNumberToIntegerTransform("EXTRACT(MINUTE FROM " + dateExpression + " AT TIME ZONE 'UTC')");
 	}
 
@@ -1116,13 +1038,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * that provides the second part of the date.
 	 *
 	 * @param dateExpression	dateExpression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a SQL snippet that will produce the second of the supplied date.
 	 */
 	@Override
 	public String doInstantSecondTransform(String dateExpression) {
-//		return "EXTRACT(SECOND FROM " + dateExpression + ")";
 		return "EXTRACT(SECOND FROM " + dateExpression + " AT TIME ZONE 'UTC')";
 	}
 
@@ -1134,19 +1053,15 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * the date expression provided. It should always return a value less than 1s.
 	 *
 	 * @param dateExpression the date from which to get the subsecond part of.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
 	@Override
 	public String doInstantSubsecondTransform(String dateExpression) {
-//		return "(EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000)";
 		return "(EXTRACT(MILLISECOND FROM " + dateExpression + " AT TIME ZONE 'UTC')/1000.0000)";
 	}
 
 	@Override
 	public String doInstantEndOfMonthTransform(String dateSQL) {
-//		return super.doInstantEndOfMonthTransform(dateSQL);
 		return "(((" + dateSQL + " at time zone 'UTC'+ (( CAST((EXTRACT(DAY FROM " + dateSQL + " AT TIME ZONE 'UTC')) as INTEGER) - 1)  * -1)*INTERVAL '1 DAY' )+ (1)*INTERVAL '1 MONTH')+ (-1)*INTERVAL '1 DAY' ) at time zone 'UTC'";
 	}
 
@@ -1155,12 +1070,10 @@ public class PostgresDBDefinition extends DBDefinition {
 		return true;
 	}
 
-	//2013-03-24 01:34:56+13
 	@Override
 	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
 		return TemporalStringParser.toInstant(inputFromResultSet);
 	}
-	//2013-03-24 01:34:56+13
 
 	@Override
 	public DBExpression transformToSelectableType(DBExpression columnExpression) {
