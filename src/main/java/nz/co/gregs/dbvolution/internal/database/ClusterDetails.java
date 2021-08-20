@@ -164,6 +164,7 @@ public class ClusterDetails implements Serializable {
 			}
 
 			LOG.warn("QUARANTINING: " + databaseToQuarantine.getSettings().toString());
+			LOG.warn("QUARANTINING: " + except.getLocalizedMessage());
 			database.setLastException(except);
 
 			readyDatabases.remove(database);
