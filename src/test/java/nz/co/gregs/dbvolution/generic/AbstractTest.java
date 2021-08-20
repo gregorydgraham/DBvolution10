@@ -91,11 +91,14 @@ public abstract class AbstractTest {
 
 	protected synchronized static void getDatabasesFromSettings() throws InvocationTargetException, IllegalArgumentException, IOException, InstantiationException, SQLException, IllegalAccessException, ClassNotFoundException, SecurityException, NoSuchMethodException, Exception {
 		if (System.getProperty("testSmallCluster") != null) {
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
-				new DBDatabaseCluster("testSmallCluster", DBDatabaseCluster.Configuration.manual(),
-				getSQLiteDBFromSystem(),
-				new H2MemorySettingsBuilder().fromSystemUsingPrefix("h2memory").getDBDatabase()
-				)});
+			final DBDatabaseCluster cluster
+					= new DBDatabaseCluster(
+							"testSmallCluster",
+							DBDatabaseCluster.Configuration.manual(),
+							getSQLiteDBFromSystem(),
+							new H2MemorySettingsBuilder().fromSystemUsingPrefix("h2memory").getDBDatabase()
+					);
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite", cluster});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
@@ -120,8 +123,10 @@ public abstract class AbstractTest {
 			final MySQLDB mysql = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase();
 			final MSSQLServerDB sqlserver = MSSQLServerLocalTestDB.getFromSettings("sqlserver");
 			final Oracle11XEDB oracle = new Oracle11XESettingsBuilder().fromSystemUsingPrefix("oraclexe").getDBDatabase();
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle",
-				new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, postgres, mysql, sqlserver, oracle)});
+			final DBDatabaseCluster cluster = new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, 
+					postgres, mysql,sqlserver, 
+					oracle);
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle", cluster});
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
@@ -204,7 +209,7 @@ public abstract class AbstractTest {
 
 	private static SQLiteDB getSQLiteDBFromSystem(String clusterName) throws Exception {
 		final SQLiteSettingsBuilder sqliteBuilder = new SQLiteSettingsBuilder().fromSystemUsingPrefix("sqlite");
-		sqliteBuilder.setFilename(sqliteBuilder.getFilename() + "-"+clusterName+"cluster.sqlite");
+		sqliteBuilder.setFilename(sqliteBuilder.getFilename() + "-" + clusterName + "cluster.sqlite");
 		return sqliteBuilder.getDBDatabase();
 	}
 
