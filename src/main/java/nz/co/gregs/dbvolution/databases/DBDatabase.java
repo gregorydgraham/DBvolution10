@@ -1709,6 +1709,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public synchronized void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
+		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
 		preventDDLDuringTransaction("DBDatabase.dropTable()");
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -1749,7 +1750,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param <TR> DBRow type
 	 * @param tableRow tableRow
 	 */
+	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
+		LOG.debug("DROPPING TABLE NOEXECEPTIONS: " + tableRow.getTableName());
 		try {
 			this.dropTable(tableRow);
 		} catch (SQLException exp) {
@@ -1883,7 +1886,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		String dropStr = getDefinition().getDropDatabase(databaseName);
 
 		printSQLIfRequested(dropStr);
-		LOG.info(dropStr);
+		LOG.debug(dropStr);
 		if (doIt) {
 			try {
 				this.doTransaction(new DBRawSQLTransaction(dropStr));
