@@ -626,8 +626,52 @@ public class DBDatabaseCluster extends DBDatabase {
 		return getReadyDatabase().willCreateBlankQuery(row);
 	}
 
+	/**
+	 * Drops a table from the database.
+	 *
+	 * <p>
+	 * The easy way to drop a table that might not exist. Will still throw a
+	 * AutoCommitActionDuringTransactionException if you use it during a
+	 * transaction or AccidentalDroppingOfTableException if dropping tables is
+	 * being prevented by DBvolution.
+	 * <p>
+	 * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)}
+	 * <p>
+	 * In General NEVER USE THIS METHOD.
+	 *
+	 * <p>
+	 * Seriously NEVER USE THIS METHOD.
+	 *
+	 * <p>
+	 * Your DBA will murder you.
+	 *
+	 * @param <TR> DBRow type
+	 * @param tableRow tableRow
+	 * @throws SQLException, AccidentalDroppingOfTableException,
+	 * AutoCommitActionDuringTransactionException
+	 */
+	@Override
+	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+		LOG.debug("DROPPING TABLE IFEXISTS: " + tableRow.getTableName());
+		removeTrackedTable(tableRow);
+		if (getPreventAccidentalDroppingOfTables()) {
+			throw new AccidentalDroppingOfTableException();
+		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = details.getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				synchronized (next) {
+					next.dropTableIfExists(tableRow);
+					finished = true;
+				}
+			}
+		} while (!finished);
+	}
+
 	@Override
 	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, UnableToRemoveLastDatabaseFromClusterException {
+		LOG.debug("DROPPING TABLE NOEXEC: " + tableRow.getTableName());
 		removeTrackedTable(tableRow);
 		if (getPreventAccidentalDroppingOfTables()) {
 			throw new AccidentalDroppingOfTableException();
@@ -646,6 +690,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException, UnableToRemoveLastDatabaseFromClusterException {
+		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
 		removeTrackedTable(tableRow);
 		if (getPreventAccidentalDroppingOfTables()) {
 			throw new AccidentalDroppingOfTableException();
@@ -751,6 +796,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		LOG.debug("CREATING TABLE: " + newTableRow.getTableName());
 		addTrackedTable(newTableRow);
 		boolean finished = false;
 		do {
@@ -975,6 +1021,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
+		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
@@ -1179,7 +1226,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final String clusterLabel = this.getLabel();
 		final String secondaryLabel = secondary.getLabel();
-		LOG.info(clusterLabel + " SYNCHRONISING: " + secondaryLabel);
+		LOG.debug(clusterLabel + " SYNCHRONISING: " + secondaryLabel);
 		try {
 			DBDatabase template = null;
 			try {
@@ -1192,22 +1239,22 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					// Check that we're not synchronising the reference database
 					if (!template.getSettings().equals(secondary.getSettings())) {
-						LOG.info(clusterLabel + " CAN SYNCHRONISE: " + secondaryLabel);
+						LOG.debug(clusterLabel + " CAN SYNCHRONISE: " + secondaryLabel);
 						final DBRow[] trackedTables = getTrackedTables();
 						for (DBRow table : trackedTables) {
-							LOG.info(clusterLabel + " CHECKING TABLE: " + table.getTableName());
+							LOG.debug(clusterLabel + " CHECKING TABLE: " + table.getTableName());
 							// make sure the table exists in the cluster already
 							if (template.tableExists(table)) {
-								LOG.info(clusterLabel + " INCLUDES TABLE: " + table.getTableName());
+								LOG.debug(clusterLabel + " INCLUDES TABLE: " + table.getTableName());
 								// Make sure it exists in the new database
 								if (secondary.tableExists(table) == true) {
-									LOG.info(clusterLabel + " REMOVING FROM " + secondaryLabel + ": " + table.getTableName());
+									LOG.debug(clusterLabel + " REMOVING FROM " + secondaryLabel + ": " + table.getTableName());
 									secondary.preventDroppingOfTables(false);
 									secondary.dropTableNoExceptions(table);
 								}
-								LOG.info(clusterLabel + " CREATING ON " + secondaryLabel + ": " + table.getTableName());
+								LOG.debug(clusterLabel + " CREATING ON " + secondaryLabel + ": " + table.getTableName());
 								secondary.createTable(table);
-								LOG.info(clusterLabel + " CREATED ON " + secondaryLabel + ": " + table.getTableName());
+								LOG.debug(clusterLabel + " CREATED ON " + secondaryLabel + ": " + table.getTableName());
 								// Check that the table has data
 								final DBTable<DBRow> primaryTable = template.getDBTable(table);
 								final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
@@ -1215,13 +1262,13 @@ public class DBDatabaseCluster extends DBDatabase {
 								if (primaryTableCount > 0) {
 									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 									// Check that the new database has data
-									LOG.info(clusterLabel + " CLUSTER FILLING TABLE ON " + secondaryLabel + ":" + table.getTableName());
+									LOG.debug(clusterLabel + " CLUSTER FILLING TABLE ON " + secondaryLabel + ":" + table.getTableName());
 									List<DBRow> allRows = primaryData.getAllRows();
 									secondaryTable.insert(allRows);
-									LOG.info(clusterLabel + " FILLED TABLE ON " + secondaryLabel + ":" + table.getTableName());
+									LOG.debug(clusterLabel + " FILLED TABLE ON " + secondaryLabel + ":" + table.getTableName());
 								}
 							}
-							LOG.info(clusterLabel + " FINSHED WITH TABLE: " + table.getTableName());
+							LOG.debug(clusterLabel + " FINSHED WITH TABLE: " + table.getTableName());
 						}
 					}
 				} catch (Throwable e) {
@@ -1230,7 +1277,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					releaseTemplateDatabase(template);
 				}
 			}
-			LOG.info(clusterLabel + " START SYNCHRONISING ACTIONS ON: " + secondaryLabel);
+			LOG.debug(clusterLabel + " START SYNCHRONISING ACTIONS ON: " + secondaryLabel);
 			synchronizeActions(secondary);
 		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
 			quarantineDatabaseAutomatically(secondary, ex);
@@ -1374,11 +1421,11 @@ public class DBDatabaseCluster extends DBDatabase {
 	public synchronized void stop() {
 		try {
 			shutdownClusterProcesses();
-			LOG.info("STOPPING: contained databases");
+			LOG.debug("STOPPING: contained databases");
 			for (DBDatabase db : details.getAllDatabases()) {
 				db.stop();
 			}
-			LOG.info("STOPPING: removing all databases");
+			LOG.debug("STOPPING: removing all databases");
 			details.removeAllDatabases();
 			super.stop();
 		} catch (SQLException ex) {
@@ -1426,7 +1473,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 		@Override
 		public void run() {
-			log.info("CLEANING UP CLUSTER...");
+			log.debug("CLEANING UP CLUSTER...");
 			actionThreadPool.shutdown();
 			try {
 				details.removeAllDatabases();
@@ -1470,7 +1517,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private synchronized void shutdownClusterProcesses() {
-		LOG.info("STOPPING: action thread pool");
+		LOG.debug("STOPPING: action thread pool");
 		ACTION_THREAD_POOL.shutdown();
 	}
 
