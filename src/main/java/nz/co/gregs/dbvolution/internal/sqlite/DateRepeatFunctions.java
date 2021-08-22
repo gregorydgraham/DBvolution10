@@ -98,6 +98,11 @@ public class DateRepeatFunctions {
 	/**
 	 *
 	 */
+	public final static String DATEREPEAT_NOTEQUALS_FUNCTION = "DBV_DATEREPEAT_NOTEQUALS";
+
+	/**
+	 *
+	 */
 	public final static String DATEREPEAT_LESSTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_LESSTHANEQUALS";
 
 	/**
@@ -116,6 +121,7 @@ public class DateRepeatFunctions {
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
 		Function.create(connection, DATEREPEAT_CREATION_FUNCTION, new DateRepeatFunctions.Create());
 		Function.create(connection, DATEREPEAT_EQUALS_FUNCTION, new DateRepeatFunctions.Equals());
+		Function.create(connection, DATEREPEAT_NOTEQUALS_FUNCTION, new DateRepeatFunctions.NotEquals());
 		Function.create(connection, DATEREPEAT_LESSTHAN_FUNCTION, new DateRepeatFunctions.LessThan());
 		Function.create(connection, DATEREPEAT_GREATERTHAN_FUNCTION, new DateRepeatFunctions.GreaterThan());
 		Function.create(connection, DATEREPEAT_LESSTHANEQUALS_FUNCTION, new DateRepeatFunctions.LessThanOrEqual());
@@ -251,6 +257,26 @@ public class DateRepeatFunctions {
 			} else {
 				int result = DateRepeatImpl.compareDateRepeatStrings(originalStr, compareToStr);
 				result(result == 0 ? 1 : 0);
+			}
+		}
+
+	}
+
+	/**
+	 * Implements DateRepeat NOT EQUALS for SQLite
+	 *
+	 */
+	public static class NotEquals extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String originalStr = value_text(0);
+			final String compareToStr = value_text(1);
+			if (originalStr == null || compareToStr == null) {
+				result((String) null);
+			} else {
+				int result = DateRepeatImpl.compareDateRepeatStrings(originalStr, compareToStr);
+				result(result == 0 ? 0 : 1);
 			}
 		}
 
