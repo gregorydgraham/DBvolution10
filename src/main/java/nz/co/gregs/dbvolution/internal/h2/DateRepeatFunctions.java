@@ -31,7 +31,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	CREATE("String", "Date original, Date compareTo", ""
-//			+ "import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return null;}\n"
 			+ "		int years = original.getYear() - compareTo.getYear();\n"
@@ -48,7 +47,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	EQUALS("boolean", "String original, String compareTo",""
-//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -67,8 +65,26 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
+	NOTEQUALS("boolean", "String original, String compareTo",""
+			+ "import java.util.*;",
+			"		if (original==null||compareTo==null){return false;}\n"
+			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
+			+ "		String[] splitCompareTo = compareTo.split(\"[A-Za-z]\");\n"
+			+ "		for (int i = 1; i < splitCompareTo.length; i++) { // Start at 1 because the first split is empty\n"
+			+ "			double intOriginal = Double.parseDouble(splitOriginal[i]);\n"
+			+ "			double intCompareTo = Double.parseDouble(splitCompareTo[i]);\n"
+			+ "			if (intOriginal > intCompareTo) {\n"
+			+ "				return true;\n"
+			+ "			}\n"
+			+ "			if (intOriginal < intCompareTo) {\n"
+			+ "				return true;\n"
+			+ "			}\n"
+			+ "		}\n"
+			+ "		return false;\n"),
+	/**
+	 *
+	 */
 	LESSTHAN("boolean", "String original, String compareTo",""
-//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -88,7 +104,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	LESSTHANEQUALS("boolean", "String original, String compareTo",""
-//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -108,7 +123,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	GREATERTHAN("boolean", "String original, String compareTo",""
-//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -128,7 +142,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	GREATERTHANEQUALS("boolean", "String original, String compareTo",""
-//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"		if (original==null||compareTo==null){return false;}\n"
 			+ "		String[] splitOriginal = original.split(\"[A-Za-z]\");\n"
@@ -148,7 +161,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	DATEADDITION("Date", "Date original, String dateRepeatInput",""
-//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"\n"
 			+ "		if (original == null || dateRepeatInput == null || dateRepeatInput.length() == 0) {\n"
@@ -178,7 +190,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	 *
 	 */
 	DATESUBTRACTION("Date", "Date original, String dateRepeatInput",""
-//			"import org.joda.time.Period;"
 			+ "import java.util.*;",
 			"\n"
 			+ "		if (original == null || dateRepeatInput == null || dateRepeatInput.length() == 0) {\n"
@@ -247,7 +258,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	private final String code;
 
 	DateRepeatFunctions(String returnType, String parameters, String imports, String code) {
-//		this.functionName = functionName;
 		this.returnType = returnType;
 		this.parameters = parameters;
 		this.imports = imports;
@@ -256,7 +266,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 	}
 
 	DateRepeatFunctions(String returnType, String parameters, String imports, String exceptions, String code) {
-//		this.functionName = functionName;
 		this.returnType = returnType;
 		this.parameters = parameters;
 		this.imports = imports;
