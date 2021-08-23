@@ -548,7 +548,13 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 
 	@Override
 	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " = " + rightHandSide + ")";
+		return DateRepeatFunctions.DATEREPEAT_EQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+//		return "(" + leftHandSide + " = " + rightHandSide + ")";
+	}
+	
+	@Override
+	public String doDateRepeatNotEqualsTransform(String leftHandSide, String rightHandSide) {
+		return DateRepeatFunctions.DATEREPEAT_NOTEQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
