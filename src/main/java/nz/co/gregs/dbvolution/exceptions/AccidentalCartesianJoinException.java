@@ -47,6 +47,6 @@ public class AccidentalCartesianJoinException extends RuntimeException {
 	 * @param details the query details
 	 */
 	public AccidentalCartesianJoinException(QueryDetails details) {
-		super("Accidental Cartesian Join Aborted: ensure you have added all the required tables, defined all primary and foreign keys, and are using the correct allowCartesianJoin() setting. SQL => " + details.getResultSQL());
+		super("Accidental Cartesian Join Aborted: ensure you have added all the required tables, defined all primary and foreign keys, and are using the correct allowCartesianJoin() setting. SQL => " + details.getSQLQueries());
 	}
 }
