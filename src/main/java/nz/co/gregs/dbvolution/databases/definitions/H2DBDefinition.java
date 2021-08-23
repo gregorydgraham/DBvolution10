@@ -309,6 +309,11 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	}
 
 	@Override
+	public String doDateRepeatNotEqualsTransform(String leftHandSide, String rightHandSide) {
+		return " " + DateRepeatFunctions.NOTEQUALS + "(" + leftHandSide + ", " + rightHandSide + ")";
+	}
+
+	@Override
 	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
 		return DateRepeatFunctions.LESSTHAN + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
