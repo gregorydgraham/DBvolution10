@@ -1918,6 +1918,10 @@ public abstract class DBDefinition implements Serializable {
 	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
 	 * that provides the second part of the date.
 	 *
+	 * <p>
+	 * Returns only the integer part of the second. Use {@link #doSecondAndSubsecondTransform(java.lang.String)
+	 * } or {@link #doSubsecondTransform(java.lang.String) to get the whole second value or the subsecond part
+	 *
 	 * @param dateExpression	dateExpression
 	 *
 	 *
@@ -1925,6 +1929,19 @@ public abstract class DBDefinition implements Serializable {
 	 */
 	public String doSecondTransform(String dateExpression) {
 		return "EXTRACT(SECOND FROM " + dateExpression + ")";
+	}
+
+	/**
+	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
+	 * that provides the second part of the date.
+	 *
+	 * @param dateExpression	dateExpression
+	 *
+	 *
+	 * @return a SQL snippet that will produce the second of the supplied date.
+	 */
+	public String doSecondAndSubsecondTransform(String dateExpression) {
+		return "EXTRACT(SECOND_MILLISECOND FROM " + dateExpression + ")";
 	}
 
 	/**
@@ -4352,7 +4369,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to create a DateRepeat from the dates
 	 */
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " - " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**
@@ -4365,7 +4382,6 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
-		//return "(" + leftHandSide + " = " + rightHandSide + ")";
 		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
@@ -4379,7 +4395,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatNotEqualsTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " <> " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**
@@ -4392,7 +4408,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " < " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**
@@ -4405,7 +4421,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " <= " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**
@@ -4418,7 +4434,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " > " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**
@@ -4431,7 +4447,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " >= " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**
@@ -4444,7 +4460,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to change the date by the required amount.
 	 */
 	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " + " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**
@@ -4457,7 +4473,11 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the SQL required to change the date by the required amount.
 	 */
 	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
-		return leftHandSide + "-" + rightHandSide;
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
+	}
+
+	public String doFormatAsDateRepeatSeconds(String numericSQL) {
+		return numericSQL;
 	}
 
 	/**
@@ -7192,7 +7212,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
-		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION,GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
+		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION, GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
 	}
 
 	public static enum GroupByClauseMethod {
