@@ -39,8 +39,6 @@ import org.joda.time.Period;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -112,6 +110,8 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 
+		Assert.assertThat(allRows.size(), is(22));
+
 		final Period oneYear = new Period().withYears(1);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isGreaterThanOrEqual(oneYear));
 		allRows = query.getAllRows();
@@ -121,6 +121,11 @@ public class DBDateRepeatTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThanOrEqual(oneYear));
 		allRows = query.getAllRows();
+
+		if (allRows.size() != 3) {
+			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
+			allRows.stream().forEachOrdered(r -> System.out.println("2011-04-02 within 1Y: " + marq.creationDate.getValue()));
+		}
 
 		Assert.assertThat(allRows.size(), is(3));
 	}
@@ -136,6 +141,11 @@ public class DBDateRepeatTest extends AbstractTest {
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).is(zero));
 		allRows = query.getAllRows();
 
+		if (allRows.size() != 3) {
+			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
+			allRows.stream().forEachOrdered(r -> System.out.println("2011-04-02: " + marq.creationDate.getValue()));
+		}
+
 		Assert.assertThat(allRows.size(), is(3));
 
 		query = database.getDBQuery(marq);
@@ -147,6 +157,11 @@ public class DBDateRepeatTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNull());
 		allRows = query.getAllRows();
+
+		if (allRows.size() != 1) {
+			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
+			allRows.stream().forEachOrdered(r -> System.out.println("CREATION DATE SHOULD BE NULL: " + "'" + r.get(marq).creationDate.getValue()));
+		}
 
 		Assert.assertThat(allRows.size(), is(1));
 	}
@@ -167,6 +182,10 @@ public class DBDateRepeatTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThan(oneYear, marq.column(marq.name).isGreaterThan("T")));
 		allRows = query.getAllRows();
+
+		if (allRows.size() != 3) {
+			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
+		}
 
 		Assert.assertThat(allRows.size(), is(3));
 	}
@@ -360,12 +379,13 @@ public class DBDateRepeatTest extends AbstractTest {
 		example.pkid.setValue(marq.pkid);
 		List<DateRepeatTable> got = database.get(example);
 		Assert.assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
-		
+
 		myPeriod = myPeriod.withSeconds(6).withMinutes(5).withHours(4).withDays(3).withMonths(2).withYears(1);
 		got.get(0).dateRepeatCol.setValue(myPeriod);
-		database.update(got.get(0));got = database.get(example);
+		database.update(got.get(0));
+		got = database.get(example);
 		Assert.assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
-		
+
 	}
 
 	@Test
