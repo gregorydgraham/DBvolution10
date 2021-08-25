@@ -651,6 +651,20 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	}
 
 	/**
+	 * Creates an SQL expression that returns the second and subsecond parts of this date
+	 * expression.
+	 *
+	 * <p>
+	 * Contains both the integer seconds and fractional seconds, use {@link #subsecond()} to retrieve the
+	 * fractional part.
+	 *
+	 * @return the second of this date expression as a number.
+	 */
+	public NumberExpression secondAndSubSecond() {
+		return new LocalDateTimeSecondAndSubsecondExpression(this);
+	}
+
+	/**
 	 * Creates an SQL expression that returns the fractions of a second part of
 	 * this date expression.
 	 *
@@ -3784,6 +3798,24 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		}
 	}
 
+	protected static class LocalDateTimeSecondAndSubsecondExpression extends LocalDateTimeExpressionWithNumberResult {
+
+		public LocalDateTimeSecondAndSubsecondExpression(LocalDateTimeExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doSecondAndSubsecondTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public LocalDateTimeSecondAndSubsecondExpression copy() {
+			return new LocalDateTimeSecondAndSubsecondExpression((LocalDateTimeExpression) getInnerResult().copy());
+		}
+	}
+
 	protected static class LocalDateTimeSubsecondExpression extends LocalDateTimeExpressionWithNumberResult {
 
 		public LocalDateTimeSubsecondExpression(LocalDateTimeExpression only) {
@@ -3888,9 +3920,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 										.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
 										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
 										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
-										.append(left.second().minus(right.second()).bracket())
-										.append(".")
-										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
+										.append(left.secondAndSubSecond().minus(right.secondAndSubSecond()).bracket())
 										.append(SECOND_SUFFIX)
 						).toSQLString(db);
 			}
