@@ -884,4 +884,43 @@ public class OracleDBDefinition extends DBDefinition {
 		return sqlForQuery;
 	}
 
+	@Override
+	public String doDateRepeatNotEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " <> " + rightHandSide + ")";
+	}
+
+	@Override
+	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " = " + rightHandSide + ")";
+	}
+
+	@Override
+	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " < " + rightHandSide + ")";
+	}
+
+	@Override
+	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " <= " + rightHandSide + ")";
+	}
+
+	@Override
+	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " > " + rightHandSide + ")";
+	}
+
+	@Override
+	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " >= " + rightHandSide + ")";
+	}
+
+	@Override
+	public String doSecondAndSubsecondTransform(String dateExpression) {
+		return "extract(second from " + dateExpression + ")";
+	}
+
+	@Override
+	public String doFormatAsDateRepeatSeconds(String numericSQL) {
+		return "to_char(" + numericSQL + ", 'fm90.099999999')";
+	}
 }
