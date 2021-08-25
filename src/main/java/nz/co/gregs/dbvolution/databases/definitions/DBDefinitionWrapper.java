@@ -711,6 +711,11 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
+	public String doSecondAndSubsecondTransform(String dateExpression) {
+		return base.doSecondAndSubsecondTransform(dateExpression);
+	}
+
+	@Override
 	public String doSubsecondTransform(String dateExpression) {
 		return base.doSubsecondTransform(dateExpression);
 	}
@@ -2588,5 +2593,10 @@ class DBDefinitionWrapper extends DBDefinition {
 	@Override
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
 		return base.preferredGroupByClauseMethod();
+	}
+
+	@Override
+	public String doFormatAsDateRepeatSeconds(String numericSQL) {
+		return base.doFormatAsDateRepeatSeconds(numericSQL);
 	}
 }
