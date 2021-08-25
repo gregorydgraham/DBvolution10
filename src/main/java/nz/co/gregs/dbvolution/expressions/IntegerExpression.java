@@ -51,9 +51,6 @@ import nz.co.gregs.dbvolution.results.SimpleNumericResult;
  * Generally you get a IntegerExpression from a column or value using {@link IntegerExpression#IntegerExpression(int)
  * } or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBInteger) }.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResult, DBInteger> implements IntegerResult {
@@ -92,8 +89,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * </ul>
 	 *
 	 * @param number a literal value to use in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -125,8 +120,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * </ul>
 	 *
 	 * @param number a literal value to use in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -258,8 +251,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * </ul>
 	 *
 	 * @param object a literal value to use in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -293,8 +284,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * </ul>
 	 *
 	 * @param object a literal value to use in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -314,9 +303,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Not that this does not produce a String like {@link Object#toString() },
 	 * but a {@link StringExpression} for use on the database side.</p>
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a StringExpression of the number expression.
 	 */
 	@Override
@@ -330,9 +316,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <p>
 	 * This method is useful to test numbers will fit within a specific field
 	 * size</p>
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the number of digits used in the integer part of this number.
 	 */
@@ -362,8 +345,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * String.
 	 *
 	 * @param string the string to append
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression append(String string) {
@@ -375,8 +356,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * StringResult.
 	 *
 	 * @param string the string to append
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a StringExpression
 	 */
 	public StringExpression append(StringResult string) {
@@ -387,8 +368,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Tests the IntegerExpression against the supplied integer.
 	 *
 	 * @param number the expression needs to evaluate to this number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -404,8 +385,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Tests the IntegerExpression against the supplied integer.
 	 *
 	 * @param number the expression needs to evaluate to this number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -421,8 +402,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Tests the IntegerExpression against the supplied integer.
 	 *
 	 * @param number the expression needs to evaluate to this number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -439,8 +420,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Tests the IntegerExpression against the supplied integer.
 	 *
 	 * @param number the expression needs to evaluate to this number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -452,8 +433,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Tests the IntegerExpression against the supplied IntegerExpression.
 	 *
 	 * @param integerExpression the expression needs to evaluate to this number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -465,8 +446,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Tests the IntegerExpression to see if the result is an even number.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
@@ -478,8 +459,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Tests the IntegerExpression to see if the result is an odd number.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
@@ -489,42 +470,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	/**
-	 * Tests the IntegerExpression against the value NULL and returns true if the
-	 * Integer Expression is not NULL.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }
-	 */
-//	@Override
-//	public BooleanExpression isNotNull() {
-//		return BooleanExpression.isNotNull(this);
-//	}
-
-	/**
-	 * Tests the IntegerExpression against the value NULL and returns true if the
-	 * Integer Expression is NULL.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }
-	 */
-//	@Override
-//	public BooleanExpression isNull() {
-//		return BooleanExpression.isNull(this);
-//	}
-
-	/**
 	 * Tests the IntegerExpression against the supplied number and returns true if
 	 * the Integer Expression is not equal to the number.
 	 *
 	 * @param number the expression needs to NOT evaluate to this number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -537,8 +488,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * true if the IntegerExpression is not equal to the number.
 	 *
 	 * @param number the expression needs to NOT evaluate to this number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -566,8 +517,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -597,8 +548,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(IntegerResult lowerBound, Number upperBound) {
@@ -627,8 +578,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(Number lowerBound, IntegerResult upperBound) {
@@ -657,8 +608,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerbound the smallest value
 	 * @param upperbound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(int lowerbound, int upperbound) {
@@ -684,8 +635,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(IntegerResult lowerBound, NumberResult upperBound) {
@@ -711,8 +662,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -739,8 +690,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -767,8 +718,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -795,8 +746,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -823,8 +774,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Integer lowerBound, IntegerResult upperBound) {
@@ -850,8 +801,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -878,8 +829,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(IntegerResult lowerBound, Integer upperBound) {
@@ -905,8 +856,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -933,8 +884,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Integer lowerBound, Integer upperBound) {
@@ -960,8 +911,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -991,8 +942,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, NumberResult upperBound) {
@@ -1023,8 +974,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -1056,8 +1007,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -1086,8 +1037,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, SimpleNumericResult<?> upperBound) {
@@ -1117,8 +1068,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
@@ -1148,8 +1099,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -1178,8 +1129,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(IntegerResult lowerBound, Integer upperBound) {
@@ -1207,8 +1158,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
@@ -1237,8 +1188,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, Number upperBound) {
@@ -1266,8 +1217,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, NumberResult upperBound) {
@@ -1279,8 +1230,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is less than number.
 	 *
 	 * @param number need to be smaller than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1293,8 +1244,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is less than number.
 	 *
 	 * @param number need to be smaller than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1307,8 +1258,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * TRUE if the value is less than the value supplied.
 	 *
 	 * @param numberExpression needs to be smaller than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1322,8 +1273,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is less than or equal to number.
 	 *
 	 * @param number needs to be smaller than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1336,8 +1287,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * TRUE if the value is less than the value supplied.
 	 *
 	 * @param numberExpression needs to be smaller than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1350,8 +1301,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is less than or equal to numberExpression.
 	 *
 	 * @param numberExpression needs to be smaller than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1365,8 +1316,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is less than or equal to numberExpression.
 	 *
 	 * @param numberExpression needs to be smaller than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1379,8 +1330,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is greater than number.
 	 *
 	 * @param number needs to be greater than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1394,8 +1345,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is greater than number.
 	 *
 	 * @param number needs to be greater than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1408,8 +1359,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is greater than number.
 	 *
 	 * @param number needs to be greater than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1423,8 +1374,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is greater than or equal to number.
 	 *
 	 * @param number needs to be greater than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1438,8 +1389,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is greater than or equal to number.
 	 *
 	 * @param number needs to be greater than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1452,8 +1403,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * value is greater than or equal to number.
 	 *
 	 * @param number needs to be greater than this
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1478,8 +1429,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Integer value, BooleanExpression fallBackWhenEquals) {
@@ -1502,8 +1453,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -1527,8 +1478,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Integer value, BooleanExpression fallBackWhenEquals) {
@@ -1551,8 +1502,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -1576,8 +1527,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -1590,8 +1541,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * returns true if the IntegerExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1612,8 +1563,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * returns true if the IntegerExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1635,8 +1586,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * returns true if the IntegerExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1653,8 +1604,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * returns true if the IntegerExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1673,8 +1624,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * returns true if the IntegerExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1696,8 +1647,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the least/smallest value from the list.
 	 */
 	public static IntegerExpression leastOf(Integer... possibleValues) {
@@ -1716,8 +1667,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the least/smallest value from the list.
 	 */
 	public static IntegerExpression leastOf(Long... possibleValues) {
@@ -1736,8 +1687,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the least/smallest value from the list.
 	 */
 	public static IntegerExpression leastOf(Number... possibleValues) {
@@ -1756,8 +1707,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the least/smallest value from the list.
 	 */
 	public static IntegerExpression leastOf(Collection<? extends IntegerResult> possibleValues) {
@@ -1776,8 +1727,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the least/smallest value from the list.
 	 */
 	public static IntegerExpression leastOf(IntegerResult... possibleValues) {
@@ -1792,8 +1743,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the largest of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the greatest/largest value from the list.
 	 */
 	public static IntegerExpression greatestOf(Integer... possibleValues) {
@@ -1812,8 +1763,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the largest of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the greatest/largest value from the list.
 	 */
 	public static IntegerExpression greatestOf(Number... possibleValues) {
@@ -1832,8 +1783,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the largest of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the greatest/largest value from the list.
 	 */
 	public static IntegerExpression greatestOf(Collection<? extends IntegerResult> possibleValues) {
@@ -1848,8 +1799,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the largest of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the greatest/largest value from the list.
 	 */
 	public static IntegerExpression greatestOf(IntegerResult... possibleValues) {
@@ -1861,8 +1812,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * within the query.
 	 *
 	 * @param alternative used if the expression is NULL
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression that will substitute the given value when the
 	 * IntegerExpression resolves to NULL.
 	 */
@@ -1875,8 +1826,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * within the query.
 	 *
 	 * @param alternative used if the expression is NULL
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression that will substitute the given value when the
 	 * IntegerExpression resolves to NULL.
 	 */
@@ -1889,8 +1840,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * within the query.
 	 *
 	 * @param alternative used if the expression is NULL
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression that will substitute the given value when the
 	 * IntegerExpression resolves to NULL.
 	 */
@@ -1901,8 +1852,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Adds an explicit bracket at this point in the expression chain.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression that will have the existing IntegerExpression
 	 * wrapped in brackets..
@@ -1920,8 +1871,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <p>
 	 * That is to say, if the number expression equals 2 then 2.exp() =&gt; e^2
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a number expression representing the exponential function of the
 	 * current function.
@@ -1937,8 +1888,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Computes the cosine of the expression assuming that the previous expression
 	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the cosine of the current number
 	 * expression.
@@ -1955,8 +1906,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
 	 * radians.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the hyperbolic cosine of the
 	 * current number expression.
@@ -1972,8 +1923,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Computes the sine of the expression assuming that the previous expression
 	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the sine of the current number
 	 * expression.
@@ -1990,8 +1941,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
 	 * radians.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the hyperbolic sine of the current
 	 * number expression.
@@ -2061,8 +2012,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
 	 * radians.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the tangent of the current number
 	 * expression.
@@ -2079,8 +2030,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * previous expression is in RADIANS. Use {@link #radians() } to convert
 	 * degrees into radians.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the hyperbolic tangent of the
 	 * current number expression.
@@ -2092,8 +2043,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Provides access to the database's absolute value function.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the absolute value of the current
 	 * number expression.
@@ -2108,8 +2059,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <p>
 	 * Synonym for {@link #abs() }.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the absolute value of the current
 	 * number expression.
@@ -2121,8 +2072,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Provides access to the database's inverse cosine function.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the inverse cosine of the current
 	 * number expression.
@@ -2134,8 +2085,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Provides access to the database's inverse sine function.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the inverse sine of the current
 	 * number expression.
@@ -2147,8 +2098,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Provides access to the database's inverse tangent function.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the inverse tangent of the current
 	 * number expression.
@@ -2176,8 +2127,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression representing the cosine of the current number
 	 * expression.
 	 */
@@ -2204,8 +2155,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression representing the cosine of the current number
 	 * expression.
 	 */
@@ -2232,8 +2183,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression representing the cosine of the current number
 	 * expression.
 	 */
@@ -2244,8 +2195,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Provides access to the database's cotangent function.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the cotangent of the current
 	 * number expression.
@@ -2260,8 +2211,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <p>
 	 * Converts radians to degrees.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the inverse tangent of the current
 	 * number expression.
@@ -2276,8 +2227,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <p>
 	 * Converts degrees to radians.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression representing the inverse tangent of the current
 	 * number expression.
@@ -2289,8 +2240,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * returns the Natural Logarithm of the current IntegerExpression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a NimberExpression of the natural logarithm of the current
 	 * expression.
@@ -2302,8 +2253,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * returns the Logarithm Base-10 of the current IntegerExpression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a NimberExpression of the logarithm base-10 of the current
 	 * expression.
@@ -2319,8 +2270,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
 	 *
 	 * @param n	n
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression power(IntegerExpression n) {
@@ -2334,8 +2285,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
 	 *
 	 * @param n	n
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression power(Integer n) {
@@ -2349,8 +2300,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
 	 *
 	 * @param n	n
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression power(Long n) {
@@ -2364,8 +2315,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
 	 *
 	 * @param n	n
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression power(Number n) {
@@ -2379,8 +2330,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
 	 *
 	 * @param n	n
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression power(NumberResult n) {
@@ -2391,8 +2342,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X is
 	 * negative, zero, or positive.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression
 	 */
@@ -2403,8 +2354,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Returns the square root of a nonnegative number X.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression
 	 */
@@ -2420,8 +2371,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public IntegerExpression round(Number decimalPlaces) {
@@ -2436,8 +2387,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public IntegerExpression round(IntegerResult decimalPlaces) {
@@ -2456,8 +2407,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * 1200</p>
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public IntegerExpression round(IntegerExpression decimalPlaces) {
@@ -2471,8 +2422,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression minus(IntegerExpression number) {
@@ -2486,8 +2437,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression minus(NumberExpression number) {
@@ -2501,8 +2452,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression minus(Integer num) {
@@ -2516,8 +2467,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression minus(Long num) {
@@ -2533,8 +2484,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression minus(Number num) {
@@ -2548,8 +2499,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression plus(IntegerResult number) {
@@ -2563,8 +2514,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression plus(NumberResult num) {
@@ -2578,8 +2529,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression plus(Number num) {
@@ -2593,8 +2544,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression plus(Long num) {
@@ -2608,8 +2559,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression plus(Integer num) {
@@ -2623,8 +2574,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression times(IntegerResult number) {
@@ -2638,8 +2589,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression times(Number num) {
@@ -2653,8 +2604,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression times(Integer num) {
@@ -2668,8 +2619,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression times(Long num) {
@@ -2683,8 +2634,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression times(NumberResult num) {
@@ -2698,8 +2649,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.dividedBy(y) =&gt; x / y.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression dividedBy(IntegerResult number) {
@@ -2713,8 +2664,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For a IntegerExpression x: x.dividedBy(y) =&gt; x / y.
 	 *
 	 * @param num	num
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression of a division operation.
 	 */
 	public NumberExpression dividedBy(Number num) {
@@ -2737,8 +2688,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * all databases.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression of a Modulus operation.
 	 */
 	public IntegerExpression mod(IntegerResult number) {
@@ -2762,8 +2713,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * all databases.
 	 *
 	 * @param num =&gt; MOD(this,num).
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression mod(Number num) {
@@ -2778,8 +2729,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a number expression.
 	 */
@@ -2810,8 +2761,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * {@link #modeSimple() The modeSimple()} method would return either 0 or 2
 	 * randomly for the same set.</p>
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the mode or null if undefined.
 	 */
@@ -2832,8 +2783,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * there is an equal probability of falling above or below it. For example: in
 	 * {9,9,7,6,5,3,3} the median is 6.</p>
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the median or null if undefined.
 	 */
@@ -2849,8 +2800,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * column supplied.
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the mode or null if undefined.
 	 */
@@ -2877,8 +2828,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
@@ -2903,8 +2854,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
@@ -2929,8 +2880,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression chooseWithDefault(String... stringsToChooseFrom) {
@@ -2957,8 +2908,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression chooseWithDefault(StringResult... stringsToChooseFrom) {
@@ -2977,8 +2928,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <p>
 	 * For use with {@link DBReport}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return A number expression representing the average of the grouped rows.
 	 */
@@ -2989,8 +2940,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Synonym for {@link IntegerExpression#standardDeviation() }.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
@@ -3002,8 +2953,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Synonym for {@link IntegerExpression#standardDeviation() }.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
@@ -3021,8 +2972,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * this aggregates the column or expression provided, rather than scanning a
 	 * list.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the greatest/largest value from the column.
 	 */
@@ -3038,8 +2989,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * } but this aggregates the column or expression provided, rather than
 	 * scanning a list.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the least/smallest value from the column.
 	 */
@@ -3050,8 +3001,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Aggregator that sum all the values from the column.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the sum of all the values from the column.
 	 */
@@ -3073,8 +3024,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Multiples this expression by itself to return the value squared.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression
 	 */
@@ -3085,8 +3036,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Multiples this expression by its square to return the value cubed.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a IntegerExpression
 	 */
@@ -3103,8 +3054,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Returns "+" for all zero or positive numbers and "-" for all negative
 	 * numbers.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a StringExpression that is either "+" or "-"
 	 */
@@ -3116,8 +3067,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Returns TRUE for all zero or positive numbers and FALSE for all negative
 	 * numbers.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return BooleanExpression
 	 */
@@ -3129,8 +3080,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * Returns FALSE for all zero or positive numbers and TRUE for all negative
 	 * numbers.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a BooleanExpression
 	 */
@@ -3141,8 +3092,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Returns TRUE for zero and FALSE for all other values.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a StringExpression that is either "+" or "-"
 	 */
@@ -3153,8 +3104,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	/**
 	 * Returns FALSE for zero and FALSE for all other values.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a StringExpression that is either "+" or "-"
 	 */
@@ -3381,8 +3332,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the first
 		 */
@@ -3391,8 +3340,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the second
 		 */
@@ -3583,8 +3530,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the column
 		 */
@@ -3593,8 +3538,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the values
 		 */
@@ -4753,7 +4696,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	/**
 	 * Synonym for lag.
-	 * 
+	 *
 	 * <p>
 	 * LAG() is a window function that provides access to a row at a specified
 	 * physical offset which comes before the current row.</p>
@@ -4811,7 +4754,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	/**
 	 * Synonym for lead.
-	 * 
+	 *
 	 * <p>
 	 * LEAD() is a window function that provides access to a row at a specified
 	 * physical offset which comes after the current row.</p>
@@ -4925,8 +4868,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the first
 		 */
@@ -4935,8 +4876,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the second
 		 */
@@ -4945,8 +4884,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the second
 		 */
