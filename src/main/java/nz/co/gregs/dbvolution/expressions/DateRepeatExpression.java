@@ -22,6 +22,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
+import static nz.co.gregs.dbvolution.expressions.AnyExpression.nullInteger;
+import static nz.co.gregs.dbvolution.expressions.IntegerExpression.*;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.results.AnyResult;
@@ -225,7 +227,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 */
 	@Override
 	public BooleanExpression isLessThan(DateRepeatResult anotherInstance) {
-		return new BooleanExpression(new IsLessThanExpression(this, anotherInstance));
+		return new IsLessThanExpression(this, anotherInstance);
 	}
 
 	/**
@@ -613,6 +615,10 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 		return this.getYears().times(12).plus(this.getMonths()).times(30).plus(this.getDays()).times(24).plus(this.getHours()).times(60).plus(this.getMinutes()).times(60).plus(this.getSeconds());
 	}
 
+	public Comparison comparison(DateRepeatExpression right) {
+		return new Comparison(this, right);
+	}
+
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
 
 		private static final long serialVersionUID = 1L;
@@ -674,6 +680,90 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
+	}
+
+	public static class Comparison extends IntegerExpression {
+
+		private static final long serialVersionUID = 1L;
+
+		private final DateRepeatExpression first;
+		private final DateRepeatExpression second;
+		private boolean requiresNullProtection;
+
+		Comparison(DateRepeatExpression first, DateRepeatResult second) {
+			this.first = first;
+			this.second = new DateRepeatExpression(second);
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		DateRepeatExpression getFirst() {
+			return first;
+		}
+
+		DateRepeatExpression getSecond() {
+			return second;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+
+		protected String doExpressionTransform(DBDefinition db) {
+			final DateRepeatExpression firstExpr = getFirst();
+			final DateRepeatExpression secondExpr = getSecond();
+			final IntegerExpression minusOne = IntegerExpression.value(-1);
+			final IntegerExpression zero = IntegerExpression.value(0);
+			final IntegerExpression one = IntegerExpression.value(1);
+			return firstExpr.isLessThan(secondExpr)
+					.ifTrueFalseNull(
+							minusOne,
+							firstExpr.is(secondExpr)
+									.ifTrueFalseNull(
+											zero,
+											one,
+											nullInteger()
+									),
+							nullInteger()
+					).toSQLString(db);
+		}
+
+		public BooleanExpression ifLesserEqualGreaterOrNull(BooleanExpression lesserResult, BooleanExpression equalResult, BooleanExpression greaterResult, BooleanExpression nullResult) {
+			return CaseExpression
+					.when(this.is(-1), lesserResult)
+					.when(this.is(0), equalResult)
+					.when(this.is(1), greaterResult)
+					.defaultValue(nullResult);
+		}
+
 	}
 
 	private static abstract class DateRepeatWithNumberResult extends NumberExpression {
@@ -823,7 +913,20 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			return db.doDateRepeatLessThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			final DateRepeatExpression firstExpr = getFirst();
+			final DateRepeatExpression secondExpr = getSecond();
+			final String firstSQL = firstExpr.toSQLString(db);
+			final String secondSQL = secondExpr.toSQLString(db);
+			try {
+				return db.doDateRepeatLessThanTransform(firstSQL, secondSQL);
+			} catch (UnsupportedOperationException exp) {
+				return CaseExpression
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
+						.when(firstExpr.stringResult().isLessThan(secondExpr.stringResult()), trueExpression())
+						.defaultValue(falseExpression())
+						.toSQLString(db);
+			}
 		}
 
 		@Override
@@ -844,7 +947,18 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			return db.doDateRepeatGreaterThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			try {
+				return db.doDateRepeatGreaterThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				final DateRepeatExpression firstExpr = this.getFirst();
+				final DateRepeatExpression secondExpr = this.getSecond();
+				return CaseExpression
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
+						.when(firstExpr.stringResult().isGreaterThan(secondExpr.stringResult()), trueExpression())
+						.defaultValue(falseExpression())
+						.toSQLString(db);
+			}
 		}
 
 		@Override
@@ -865,7 +979,18 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			return db.doDateRepeatLessThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			try {
+				return db.doDateRepeatLessThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				final DateRepeatExpression firstExpr = this.getFirst();
+				final DateRepeatExpression secondExpr = this.getSecond();
+				return CaseExpression
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
+						.when(firstExpr.stringResult().isLessThanOrEqual(secondExpr.stringResult()), trueExpression())
+						.defaultValue(falseExpression())
+						.toSQLString(db);
+			}
 		}
 
 		@Override
@@ -886,7 +1011,18 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 		@Override
 		protected String doExpressionTransform(DBDefinition db) {
-			return db.doDateRepeatGreaterThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			try {
+				return db.doDateRepeatGreaterThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				final DateRepeatExpression firstExpr = this.getFirst();
+				final DateRepeatExpression secondExpr = this.getSecond();
+				return CaseExpression
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
+						.when(firstExpr.stringResult().isGreaterThanOrEqual(secondExpr.stringResult()), trueExpression())
+						.defaultValue(falseExpression())
+						.toSQLString(db);
+			}
 		}
 
 		@Override
@@ -910,16 +1046,14 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 			try {
 				return db.doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} catch (UnsupportedOperationException exp) {
-				final DateRepeatExpression left = this.getFirst();
-				final DateRepeatExpression right = this.getSecond();
-				return BooleanExpression.allOf(
-						left.getYears().is(right.getYears()),
-						left.getMonths().is(right.getMonths()),
-						left.getDays().is(right.getDays()),
-						left.getHours().is(right.getHours()),
-						left.getMinutes().is(right.getMinutes()),
-						left.getSeconds().is(right.getSeconds())
-				).toSQLString(db);
+				final DateRepeatExpression firstExpr = this.getFirst();
+				final DateRepeatExpression secondExpr = this.getSecond();
+				return CaseExpression
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
+						.when(firstExpr.stringResult().is(secondExpr.stringResult()), trueExpression())
+						.defaultValue(falseExpression())
+						.toSQLString(db);
 			}
 		}
 
@@ -1328,8 +1462,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 		LagLeadFunction(DateRepeatExpression first, IntegerExpression second, DateRepeatExpression third) {
 			this.first = first;
-			this.second = second==null?value(1):second;
-			this.third = third==null?nullDateRepeat():third;
+			this.second = second == null ? value(1) : second;
+			this.third = third == null ? nullDateRepeat() : third;
 		}
 
 		@Override
