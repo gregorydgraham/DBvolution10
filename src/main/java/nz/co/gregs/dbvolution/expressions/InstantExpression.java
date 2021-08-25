@@ -2683,6 +2683,19 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	public InstantExpression setSecond(int i) {
 		return this.addSeconds(IntegerExpression.value(i).minus(this.second().integerResult()));
 	}
+/**
+	 * Creates an SQL expression that returns the second and subsecond parts of this date
+	 * expression.
+	 *
+	 * <p>
+	 * Contains both the integer seconds and fractional seconds, use {@link #subsecond()} to retrieve the
+	 * fractional part.
+	 *
+	 * @return the second of this date expression as a number.
+	 */
+	private NumberExpression secondAndSubsecond() {
+		return new InstantSecondAndSubsecondExpression(this);
+	}
 
 	private static abstract class FunctionWithInstantResult extends InstantExpression implements CanBeWindowingFunctionWithFrame<InstantExpression> {
 
@@ -3716,6 +3729,24 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 		}
 	}
 
+	protected static class InstantSecondAndSubsecondExpression extends InstantExpressionWithNumberResult {
+
+		public InstantSecondAndSubsecondExpression(InstantExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doSecondAndSubsecondTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public InstantSecondAndSubsecondExpression copy() {
+			return new InstantSecondAndSubsecondExpression((InstantExpression) getInnerResult().copy());
+		}
+	}
+
 	protected static class InstantSubsecondExpression extends InstantExpressionWithNumberResult {
 
 		public InstantSubsecondExpression(InstantExpression only) {
@@ -3820,9 +3851,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 										.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
 										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
 										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
-										.append(left.second().minus(right.second()).bracket())
-										.append(".")
-										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
+										.append(left.secondAndSubsecond().minus(right.secondAndSubsecond()).bracket().formatAsDateRepeatSeconds())
 										.append(SECOND_SUFFIX)
 						).toSQLString(db);
 			}
