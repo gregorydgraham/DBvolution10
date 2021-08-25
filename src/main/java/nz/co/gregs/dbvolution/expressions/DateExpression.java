@@ -642,6 +642,21 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
+	 * Creates an SQL expression that returns the seconds part of this date
+	 * expression.
+	 *
+	 * <p>
+	 * Contains seconds and sub-seconds, use {@link #subsecond()} to retrieve the
+	 * fractional part.
+	 *
+	 * @return the second of this date expression as a number.
+	 */
+	public NumberExpression secondAndSubsecond() {
+		return new NumberExpression(
+				new DateSecondAndSubsecondExpression(this));
+	}
+
+	/**
 	 * Creates an SQL expression that returns the fractions of a second part of
 	 * this date expression.
 	 *
@@ -3882,6 +3897,24 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
+	protected static class DateSecondAndSubsecondExpression extends DateExpressionWithIntegerResult {
+
+		public DateSecondAndSubsecondExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doSecondAndSubsecondTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateSecondAndSubsecondExpression copy() {
+			return new DateSecondAndSubsecondExpression((DateExpression) getInnerResult().copy());
+		}
+	}
+
 	protected static class DateSubsecondExpression extends DateExpressionWithIntegerResult {
 
 		public DateSubsecondExpression(DateExpression only) {
@@ -3986,9 +4019,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 										.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
 										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
 										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
-										.append(left.second().minus(right.second()).bracket())
-										.append(".")
-										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
+										.append(left.secondAndSubsecond().minus(right.secondAndSubsecond()).bracket().formatAsDateRepeatSeconds())
 										.append(SECOND_SUFFIX)
 						).toSQLString(db);
 			}
@@ -4026,9 +4057,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 										.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
 										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
 										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
-										.append(left.second().minus(right.second()).bracket())
-										.append(".")
-										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
+										.append(left.secondAndSubsecond().minus(right.secondAndSubsecond()).bracket().formatAsDateRepeatSeconds())
+//										.append(".")
+//										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
 										.append(SECOND_SUFFIX)
 						).toSQLString(db);
 			}
