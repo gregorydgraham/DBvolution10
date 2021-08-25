@@ -183,9 +183,6 @@ public class MySQLDBDefinition extends DBDefinition {
 	 * Provides the function of the function that provides the standard deviation
 	 * of a selection.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return "stddev"
 	 */
 	@Override
@@ -199,14 +196,15 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doSecondAndSubsecondTransform(String dateExpression) {
+		return "(EXTRACT(SECOND_MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
+	}
+
+	@Override
 	public String doInstantSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
 	}
 
-//	@Override
-//	public String doMillisecondTransform(String dateExpression) {
-//		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000.0)";
-//	}
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
 		return "TIMESTAMPDIFF(DAY, " + dateValue + "," + otherDateValue + ")";
@@ -770,4 +768,8 @@ public class MySQLDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	@Override
+	public String doFormatAsDateRepeatSeconds(String numericSQL) {
+		return "REGEXP_REPLACE(concat('',"+numericSQL+",  ''),'0+$','0')";
+	}
 }
