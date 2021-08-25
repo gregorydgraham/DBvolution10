@@ -1928,6 +1928,15 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		return this;
 	}
 
+	StringResult formatAsDateRepeatSeconds() {
+		return new StringExpression(this){
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.doFormatAsDateRepeatSeconds(getInnerResult().toSQLString(db));
+			}
+		};
+	}
+
 	public static class HyperbolicSineExpression extends DBUnaryFunction {
 
 		private final static long serialVersionUID = 1l;
