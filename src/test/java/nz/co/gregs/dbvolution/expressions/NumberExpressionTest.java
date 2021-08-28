@@ -671,7 +671,6 @@ public class NumberExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = dbQuery
 				.setQueryLabel("testGreatestOfCollection")
-				.setPrintSQLBeforeExecution(true)
 				.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(2));
