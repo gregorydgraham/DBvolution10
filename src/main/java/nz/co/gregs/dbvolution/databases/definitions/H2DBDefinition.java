@@ -226,20 +226,20 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 		return " CURRENT_TIMESTAMP(9) ";
 	}
 
-	@Override
-	public String getDefaultTimeZoneSign() {
-		return "case when extract(timezone_hour from current_timestamp(9))>=0 then '+' else '-' end";
-	}
-
-	@Override
-	public String getDefaultTimeZoneHour() {
-		return "extract(timezone_hour from current_timestamp(9))";
-	}
-
-	@Override
-	public String getDefaultTimeZoneMinute() {
-		return "extract(timezone_minute from current_timestamp(9))";
-	}
+//	@Override
+//	public String getDefaultTimeZoneSign() {
+//		return "case when extract(timezone_hour from current_timestamp(9))>=0 then '+' else '-' end";
+//	}
+//
+//	@Override
+//	public String getDefaultTimeZoneHour() {
+//		return "extract(timezone_hour from current_timestamp(9))";
+//	}
+//
+//	@Override
+//	public String getDefaultTimeZoneMinute() {
+//		return "extract(timezone_minute from current_timestamp(9))";
+//	}
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {

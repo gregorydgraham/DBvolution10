@@ -575,20 +575,20 @@ class DBDefinitionWrapper extends DBDefinition {
 		return base.doCurrentDateTimeTransform();
 	}
 
-	@Override
-	public String getDefaultTimeZoneSign() {
-		return base.getDefaultTimeZoneSign();
-	}
-
-	@Override
-	public String getDefaultTimeZoneHour() {
-		return base.getDefaultTimeZoneHour();
-	}
-
-	@Override
-	public String getDefaultTimeZoneMinute() {
-		return base.getDefaultTimeZoneMinute();
-	}
+//	@Override
+//	public String getDefaultTimeZoneSign() {
+//		return base.getDefaultTimeZoneSign();
+//	}
+//
+//	@Override
+//	public String getDefaultTimeZoneHour() {
+//		return base.getDefaultTimeZoneHour();
+//	}
+//
+//	@Override
+//	public String getDefaultTimeZoneMinute() {
+//		return base.getDefaultTimeZoneMinute();
+//	}
 
 	@Override
 	protected String getCurrentTimeFunction() {

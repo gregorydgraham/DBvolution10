@@ -1566,17 +1566,17 @@ public abstract class DBDefinition implements Serializable {
 		return getCurrentDateTimeFunction();
 	}
 
-	public String getDefaultTimeZoneSign() {
-		return "case when extract(timezone_hour from " + getCurrentZonedDateTimeFunction() + ")>=0 then '+' else '-' end";
-	}
-
-	public String getDefaultTimeZoneHour() {
-		return "extract(timezone_hour from " + getCurrentZonedDateTimeFunction() + ")";
-	}
-
-	public String getDefaultTimeZoneMinute() {
-		return "extract(timezone_minute from " + getCurrentZonedDateTimeFunction() + ")";
-	}
+//	public String getDefaultTimeZoneSign() {
+//		return "case when extract(timezone_hour from " + getCurrentZonedDateTimeFunction() + ")>=0 then '+' else '-' end";
+//	}
+//
+//	public String getDefaultTimeZoneHour() {
+//		return "extract(timezone_hour from " + getCurrentZonedDateTimeFunction() + ")";
+//	}
+//
+//	public String getDefaultTimeZoneMinute() {
+//		return "extract(timezone_minute from " + getCurrentZonedDateTimeFunction() + ")";
+//	}
 
 	/**
 	 * Defines the function used to get the current time from the database.
