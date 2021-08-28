@@ -206,8 +206,17 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doSecondAndSubsecondTransform(String dateExpression) {
+		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0)";
+	}
+	@Override
 	public String doSubsecondTransform(String dateExpression) {
-		return "((EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000) - (" + doTruncTransform(doSecondTransform(dateExpression), "0") + "))";
+		return "((EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0) - (" + doTruncTransform(doSecondTransform(dateExpression), "0") + "))";
+	}
+
+	@Override
+	public String doFormatAsDateRepeatSeconds(String numericSQL) {
+		return "to_char(" + numericSQL + ", 'fm90.099999999')";
 	}
 
 	@Override
