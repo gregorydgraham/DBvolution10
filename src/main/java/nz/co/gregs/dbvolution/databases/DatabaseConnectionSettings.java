@@ -130,10 +130,10 @@ public class DatabaseConnectionSettings {
 	private static final String TOSTRING_SEPARATOR = ", ";
 	private String filename = "";
 
-	public static DatabaseConnectionSettings newSettings(){
+	public static DatabaseConnectionSettings newSettings() {
 		return new DatabaseConnectionSettings();
 	}
-	
+
 	public DatabaseConnectionSettings() {
 		super();
 	}
@@ -596,12 +596,21 @@ public class DatabaseConnectionSettings {
 	}
 
 	public final void copy(DatabaseConnectionSettings newSettings) {
+		copySimpleFields(newSettings);
+		this.setExtras(newSettings.getExtras());
+	}
+
+	public void merge(DatabaseConnectionSettings settings) {
+		copySimpleFields(settings);
+		this.mergeExtras(settings.getExtras());
+	}
+
+	private void copySimpleFields(DatabaseConnectionSettings newSettings) {
 		this.setDataSource(newSettings.getDataSource());
 		this.setDatabaseName(newSettings.getDatabaseName());
 		this.setFilename(newSettings.getFilename());
 		this.setDbdatabaseClass(newSettings.getDbdatabaseClass());
 		this.setHost(newSettings.getHost());
-		this.setExtras(newSettings.getExtras());
 		this.setInstance(newSettings.getInstance());
 		this.setLabel(newSettings.getLabel());
 		this.setPassword(newSettings.getPassword());
@@ -798,6 +807,20 @@ public class DatabaseConnectionSettings {
 	}
 
 	/**
+	 * Adds the supplied values to the extras map, retaining any existing entries
+	 * and updating obsolete one.
+	 *
+	 * @param newExtras extra settings for the database
+	 * @return the extras
+	 */
+	public final DatabaseConnectionSettings mergeExtras(Map<String, String> newExtras) {
+		if (newExtras != null && !newExtras.isEmpty()) {
+			extras.putAll(newExtras);
+		}
+		return this;
+	}
+
+	/**
 	 * Adds or replaces the new values to the existing extras.
 	 *
 	 * @param newExtras extra settings for the database
@@ -822,21 +845,6 @@ public class DatabaseConnectionSettings {
 				.withSuffix(suffix)
 				.addAll(extras)
 				.toString();
-//		if (extras == null || extras.isEmpty()) {
-//			return "";
-//		}
-//		StringBuilder str = new StringBuilder();
-//		extras.entrySet().forEach((extra) -> {
-//			if (str.length() > 0) {
-//				str.append(nameValuePairSeparator);
-//			}
-//			str.append(extra.getKey()).append(nameValueSeparator).append(extra.getValue());
-//		});
-//		if (str.length() > 0) {
-//			return prefix + str.toString() + suffix;
-//		} else {
-//			return "";
-//		}
 	}
 
 	public static Map<String, String> decodeExtras(String extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
