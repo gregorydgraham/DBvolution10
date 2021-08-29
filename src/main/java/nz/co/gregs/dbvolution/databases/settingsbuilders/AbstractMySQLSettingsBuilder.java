@@ -57,12 +57,13 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>() {
 		{
-			put("createDatabaseIfNotExist", "true");
-			put("useUnicode", "yes");
+			put("autoReconnect", "true");
 			put("characterEncoding", "utf8");
 			put("characterSetResults", "utf8");
+			put("createDatabaseIfNotExist", "true");
 			put("verifyServerCertificate", "false");
-			put("useSSL", "true");
+			put("useUnicode", "yes");
+			put("useSSL", "false");
 		}
 	};
 
@@ -159,6 +160,12 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 	@SuppressWarnings("unchecked")
 	public SELF setVerifyServerCertificate(boolean b) {
 		getStoredSettings().addExtra("verifyServerCertificate", "" + b);
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public SELF setAutoReconnect(boolean b) {
+		getStoredSettings().addExtra("autoReconnect", "" + b);
 		return (SELF) this;
 	}
 
