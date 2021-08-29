@@ -126,7 +126,7 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	@Override
 	@SuppressWarnings("unchecked")
 	public final SELF fromSettings(DatabaseConnectionSettings settingsfromSystemUsingPrefix) {
-		getStoredSettings().copy(settingsfromSystemUsingPrefix);
+		getStoredSettings().merge(settingsfromSystemUsingPrefix);
 		return (SELF) this;
 	}
 
@@ -134,7 +134,7 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 	@SuppressWarnings("unchecked")
 	public final SELF fromSystemUsingPrefix(String prefix) {
 		DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix);
-		getStoredSettings().copy(settings);
+		getStoredSettings().merge(settings);
 		return (SELF) this;
 	}
 
