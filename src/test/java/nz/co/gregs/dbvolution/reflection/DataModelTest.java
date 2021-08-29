@@ -508,7 +508,6 @@ public class DataModelTest extends AbstractTest {
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
 		for (Method creator : dbDatabaseCreationMethods) {
 			creator.setAccessible(true);
-			System.out.println("CREATOR: " + creator.toGenericString());
 			try {
 				if (database instanceof SQLiteDB) {
 					DBDatabase db = (DBDatabase) creator.invoke(null);
@@ -674,7 +673,6 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marque, carCompany);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-		query.printAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
@@ -712,7 +710,6 @@ public class DataModelTest extends AbstractTest {
 						new ExampleEncodingInterpreter()
 				);
 		allRows = query.getAllRows();
-		query.printAllRows();
 
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
