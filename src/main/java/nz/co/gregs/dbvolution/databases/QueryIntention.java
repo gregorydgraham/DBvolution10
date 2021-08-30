@@ -51,20 +51,21 @@ public enum QueryIntention {
 	DROP_FOREIGN_KEY,
 	CREATE_INDEX,
 	CHECK_TABLE_EXISTS,
-	ADD_COLUMN_TO_TABLE, 
-	BULK_INSERT, 
-	BULK_DELETE, 
-	INSERT_ROW, 
-	RETRIEVE_LAST_INSERT, 
-	UPDATE_SEQUENCE, 
-	UPDATE_ROW, 
-	CREATE_DOMAIN, 
-	DROP_FUNCTION, 
-	CREATE_FUNCTION, 
-	ALLOW_IDENTITY_INSERT, 
-	CREATE_EXTENSION, 
-	SET_TIMEZONE, 
-	CREATE_TRIGGER_BASED_IDENTITY;
+	ADD_COLUMN_TO_TABLE,
+	BULK_INSERT,
+	BULK_DELETE,
+	INSERT_ROW,
+	RETRIEVE_LAST_INSERT,
+	UPDATE_SEQUENCE,
+	UPDATE_ROW,
+	CREATE_DOMAIN,
+	DROP_FUNCTION,
+	CREATE_FUNCTION,
+	ALLOW_IDENTITY_INSERT,
+	CREATE_EXTENSION,
+	SET_TIMEZONE,
+	CREATE_TRIGGER_BASED_IDENTITY, 
+	CHECK_TABLE_STRUCTURE;
 
 	boolean is(QueryIntention queryIntention) {
 		return this.equals(queryIntention);
@@ -73,7 +74,7 @@ public enum QueryIntention {
 	boolean isOneOf(QueryIntention... intents) {
 		boolean result = false;
 		for (QueryIntention intent : intents) {
-			result = result||this.is(intent);
+			result = result || this.is(intent);
 		}
 		return result;
 	}
