@@ -92,6 +92,7 @@ public class DBQuery implements Serializable {
 	private final QueryDetails details = new QueryDetails();
 	private transient QueryGraph queryGraph;
 	private transient JFrame queryGraphFrame = null;
+	private boolean ignoreExceptions;
 
 	public QueryDetails getQueryDetails() {
 		return details;
@@ -2548,5 +2549,16 @@ public class DBQuery implements Serializable {
 
 	public boolean getPrintSQLBeforeExecution() {
 		return this.details.getOptions().getPrintSQLBeforeExecution();
+	}
+
+	void setIgnoreExceptions(boolean b) {
+		this.details.setIgnoreExceptions(b);
+	}
+
+	/**
+	 * @return the ignoreExceptions
+	 */
+	boolean isIgnoreExceptions() {
+		return details.isIgnoreExceptions();
 	}
 }

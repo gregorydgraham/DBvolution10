@@ -89,7 +89,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		} catch (SQLException exp) {
 			try {
 				var statementDetails = new StatementDetails("UNLABELLED QUERY", intent, sql, exp);
-				details.setIgnoreExceptions(details.isIgnoreExceptions());
+				statementDetails.setIgnoreExceptions(details.isIgnoreExceptions());
 				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
 			} catch (LoopDetectedInRecursiveSQL loop) {
 				throw loop;
@@ -116,7 +116,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
 				// Checking the table will generate exceptions that we don'tneed to investigate
 			} else if (details.isIgnoreExceptions()) {
-				LOG.debug("REPEATED EXCEPTIONS FROM: " + sql, exp);
+//				LOG.debug("REPEATED EXCEPTIONS FROM: " + sql, exp);
 			} else {
 				LOG.info("REPEATED EXCEPTIONS FROM: " + sql, exp);
 				exp.printStackTrace();

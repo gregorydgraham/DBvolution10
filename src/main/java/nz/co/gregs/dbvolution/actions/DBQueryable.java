@@ -66,5 +66,9 @@ public interface DBQueryable {
 	public void setReturnEmptyStringForNullString(boolean produceEmptyStringsForNull);
 
 	public boolean getReturnEmptyStringForNullString();
+	
+	public void setDatabaseIgnoreExceptionsPreference(boolean b);
+	
+	public boolean getDatabaseIgnoreExceptionsPreference();
 
 }

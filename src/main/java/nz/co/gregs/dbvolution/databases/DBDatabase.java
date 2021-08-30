@@ -112,6 +112,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private Throwable exception = null;
 	private ScheduledFuture<?> regularThreadPoolFuture;
 	private boolean hasCreatedRequiredTables = false;
+	private boolean ignoreExceptionsPreference = false;
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -2392,12 +2393,22 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return action.execute(this);
 	}
 
+	public void setIgnoreExceptionsPreference(boolean b) {
+		this.ignoreExceptionsPreference = b;
+	}
+	
+	public boolean getIgnoreExceptionsPreference() {
+		return this.ignoreExceptionsPreference;
+	}
+	
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+		query.setDatabaseIgnoreExceptionsPreference(getIgnoreExceptionsPreference());
 		return query.query(this);
 	}
 
 	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
+		query.setDatabaseIgnoreExceptionsPreference(getIgnoreExceptionsPreference());
 		return query.toSQLString(this);
 	}
 

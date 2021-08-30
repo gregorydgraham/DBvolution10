@@ -92,6 +92,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private SortProvider[] sortOrderColumns;
 	private List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
+	private boolean ignoreExceptions = false;
+	private boolean databaseIgnoreExceptionsPreference = false;
 
 	/**
 	 *
@@ -1207,11 +1209,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 				successfulQuery = true;
 				break;// we've successfully run the sql so carry on
 			} catch (SQLException e) {
-				StackTraceElement[] trace = e.getStackTrace();
-				System.out.println("" + e.getMessage());
-				System.out.println("" + e.getLocalizedMessage());
-				for (int i = 0; i < 11 && i < trace.length; i++) {
-					System.out.println("" + trace[i]);
+				if (isIgnoreExceptions() == false) {
+					StackTraceElement[] trace = e.getStackTrace();
+					System.out.println("" + e.getMessage());
+					System.out.println("" + e.getLocalizedMessage());
+					for (int i = 0; i < 11 && i < trace.length; i++) {
+						System.out.println("" + trace[i]);
+					}
 				}
 				queryDatabase.handleErrorDuringExecutingSQL(queryDatabase, e, sql);
 				if (firstException == null) {
@@ -1264,7 +1268,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 						}
 					}
-					if (DBRow.class.isAssignableFrom(requiredClass)) {
+					if (DBRow.class
+							.isAssignableFrom(requiredClass)) {
 						DBRow fieldInstance;
 						try {
 							fieldInstance = DBRow.getDBRow((Class<? extends DBRow>) requiredClass);
@@ -1364,6 +1369,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 		}
 		final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
+		statementDetails.setIgnoreExceptions(this.isIgnoreExceptions());
 		final ResultSet queryResults = statement.executeQuery(statementDetails);
 
 		if (cancelHandle != null) {
@@ -1395,8 +1401,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 			newInstance.setDefined(); // Actually came from the database so it is a defined row.
 
-//			Map<String, DBRow> existingInstancesOfThisTableRow = details.getExistingInstances().get(tableRow.getClass());
-//			existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
 			final Class<? extends DBRow> newInstanceClass = newInstance.getClass();
 
 			if (newInstance.isEmptyRow()) {
@@ -1597,7 +1601,22 @@ public class QueryDetails implements DBQueryable, Serializable {
 	@Override
 	public boolean getReturnEmptyStringForNullString() {
 		return getOptions().getRequireEmptyStringForNullString();
+	}
 
+	public void setIgnoreExceptions(boolean b) {
+		this.ignoreExceptions = b;
+	}
+
+	public boolean isIgnoreExceptions() {
+		return ignoreExceptions || databaseIgnoreExceptionsPreference;
+	}
+
+	public void setDatabaseIgnoreExceptionsPreference(boolean b) {
+		databaseIgnoreExceptionsPreference = b;
+	}
+
+	public boolean getDatabaseIgnoreExceptionsPreference() {
+		return databaseIgnoreExceptionsPreference;
 	}
 
 	private static class OrderByClause {

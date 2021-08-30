@@ -1067,6 +1067,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		final DBDatabase workingDB = getReadyDatabase();
+		workingDB.setIgnoreExceptionsPreference(this.getIgnoreExceptionsPreference());
 		HandlerAdvice advice = HandlerAdvice.REQUERY;
 		try {
 			// set oracle compatibility 
@@ -1146,6 +1147,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
 		final DBDatabase readyDatabase = this.getReadyDatabase();
 		synchronized (readyDatabase) {
+			readyDatabase.setIgnoreExceptionsPreference(getIgnoreExceptionsPreference());
 			return readyDatabase.getSQLForDBQuery(query);
 		}
 	}
