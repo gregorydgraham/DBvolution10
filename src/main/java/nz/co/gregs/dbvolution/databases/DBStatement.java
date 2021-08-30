@@ -26,6 +26,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +54,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	static final private Log LOG = LogFactory.getLog(DBStatement.class);
 
 	private Statement internalStatement;
-	private boolean batchHasEntries;
 	final DBDatabase database;
 	private DBConnection connection;
 	private boolean isClosed = false;
@@ -73,26 +73,14 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Executes the given SQL statement, which returns a single ResultSet object.
 	 *
-	 * @param sql SQL
-	 * @param intent
+	 * @param details
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
 	 */
-	public ResultSet executeQuery(String sql, QueryIntention intent) throws SQLException {
-		return executeQuery(sql, "UNLABELLED", intent);
-	}
-
-	/**
-	 * Executes the given SQL statement, which returns a single ResultSet object.
-	 *
-	 * @param sql SQL
-	 * @param label an arbitrary label for the query to help with query
-	 * identification
-	 * @param intent the query or DDL intention when the exception occurred
-	 * @return a ResultSet
-	 * @throws SQLException database exceptions
-	 */
-	public ResultSet executeQuery(String sql, String label, QueryIntention intent) throws SQLException {
+	public ResultSet executeQuery(StatementDetails details) throws SQLException {
+		String sql = details.getSql();
+		String label = details.getLabel();
+		QueryIntention intent = details.getIntention();
 		final String logSQL = "EXECUTING QUERY \"" + label + "\": " + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
@@ -100,7 +88,9 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			executeQuery = getInternalStatement().executeQuery(sql);
 		} catch (SQLException exp) {
 			try {
-				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql, intent);
+				var statementDetails = new StatementDetails("UNLABELLED QUERY", intent, sql, exp);
+				details.setIgnoreExceptions(details.isIgnoreExceptions());
+				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
 			} catch (LoopDetectedInRecursiveSQL loop) {
 				throw loop;
 			} catch (SQLException ex) {
@@ -112,16 +102,22 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		return executeQuery;
 	}
 
-	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql, QueryIntention intent) throws Exception, LoopDetectedInRecursiveSQL {
+	private ResultSet addFeatureAndAttemptQueryAgain(StatementDetails details) throws Exception, LoopDetectedInRecursiveSQL {
 		ResultSet executeQuery;
+		final Exception exp = details.getException();
+		final String sql = details.getSql();
+		final QueryIntention intent = details.getIntention();
 		checkForBrokenConnection(exp, sql);
 		try {
 			handleResponseFromFixingException(exp, intent);
 		} catch (LoopDetectedInRecursiveSQL loop) {
 			throw loop;
 		} catch (Exception ex) {
-			// Checking the table will generate exceptions
-			if (!intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
+			if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
+				// Checking the table will generate exceptions that we don'tneed to investigate
+			} else if (details.isIgnoreExceptions()) {
+				LOG.debug("REPEATED EXCEPTIONS FROM: " + sql, exp);
+			} else {
 				LOG.info("REPEATED EXCEPTIONS FROM: " + sql, exp);
 				exp.printStackTrace();
 				ex.printStackTrace();
@@ -139,7 +135,8 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			if (exp.getMessage().equals(exp2.getMessage())) {
 				throw exp;
 			} else {
-				executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql, intent);
+				final StatementDetails statementDetails = new StatementDetails("RETRYING FAILED SQL", intent, sql, exp2);
+				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
 				return executeQuery;
 			}
 		}
@@ -426,14 +423,15 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * to retrieve the result, and getMoreResults to move to any subsequent
 	 * result(s).
 	 *
-	 * @param sql	string
-	 * @param intent
+	 * @param details
 	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
 	 * object; <code>FALSE</code> if it is an update count or there are no results
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public boolean execute(String sql, QueryIntention intent) throws SQLException {
+	public boolean execute(StatementDetails details) throws SQLException {
+		String sql = details.getSql();
+		QueryIntention intent = details.getIntention();
 		final String logSQL = "EXECUTING: " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
@@ -441,12 +439,16 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		try {
 			execute = getInternalStatement().execute(sql);
 		} catch (SQLException exp) {
-			return addFeatureAndAttemptExecuteAgain(exp, sql, intent);
+			StatementDetails statementDetails = new StatementDetails("RETRY EXECUTE", intent, sql, exp);
+			return addFeatureAndAttemptExecuteAgain(statementDetails);
 		}
 		return execute;
 	}
 
-	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String sql, QueryIntention intent) throws SQLException {
+	private boolean addFeatureAndAttemptExecuteAgain(StatementDetails details) throws SQLException {
+		String sql = details.getSql();
+		Exception exp = details.getException();
+		QueryIntention intent = details.getIntention();
 		boolean executeQuery;
 		checkForBrokenConnection(exp, sql);
 		try {
@@ -461,7 +463,8 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			return executeQuery;
 		} catch (SQLException exp2) {
 			if (!exp.getMessage().equals(exp2.getMessage())) {
-				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, sql, intent);
+				var dets = new StatementDetails("RETRY EXECUTE", intent, sql, exp);
+				executeQuery = addFeatureAndAttemptExecuteAgain(dets);
 				return executeQuery;
 			} else {
 				throw new SQLException(exp);
@@ -946,9 +949,9 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		try {
 			return getInternalStatement().execute(string, strings);
 		} catch (SQLException exp) {
-					return addFeatureAndAttemptExecuteAgain(exp, string, strings, intent);
-				}
-			}
+			return addFeatureAndAttemptExecuteAgain(exp, string, strings, intent);
+		}
+	}
 
 	/**
 	 * Retrieves the result set holdability for ResultSet objects generated by
@@ -1062,9 +1065,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		return getInternalStatement().isWrapperFor(iface);
 	}
 
-//	private void setBatchHasEntries(boolean b) {
-//		batchHasEntries = b;
-//	}
 	/**
 	 * Indicates that a batch has been added.
 	 *

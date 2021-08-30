@@ -62,6 +62,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.VendorSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -82,9 +83,6 @@ import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
  * <p>
  * Very few programmers will need to construct an actual DBDatabase as the
  * subclasses provide most of the required details for connecting to databases.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -126,9 +124,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	@Override
 	public String toString() {
-		String jdbcURL = settings.getUrl();
-		String databaseName = settings.getDatabaseName();
-		String username = settings.getUsername();
+		String jdbcURL = getSettings().getUrl();
+		String databaseName = getSettings().getDatabaseName();
+		String username = getSettings().getUsername();
 		if (jdbcURL != null && !jdbcURL.isEmpty()) {
 			return this.getClass().getSimpleName() + "{" + (databaseName == null ? "UNNAMED" : databaseName + "=") + jdbcURL + ":" + username + "}";
 		} else if (getDataSource() != null) {
@@ -140,9 +138,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	/**
 	 * Clones the DBDatabase.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a clone of the DBDatabase.
 	 * @throws CloneNotSupportedException not likely
@@ -269,7 +264,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	protected final void initDatabase(SettingsBuilder<?, ?> suppliedSettings) throws SQLException {
 		this.definition = suppliedSettings.getDefinition();
 		initDriver(suppliedSettings);
-		this.settings.copy(suppliedSettings.toSettings());
+		settings.copy(suppliedSettings.toSettings());
 		if (suppliedSettings instanceof NamedDatabaseCapableSettingsBuilder) {
 			this.setDatabaseName(((NamedDatabaseCapableSettingsBuilder) suppliedSettings).getDatabaseName());
 		}
@@ -313,9 +308,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * However you will not need a DBStatement to use DBvolution. Your path lies
 	 * elsewhere.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the DBStatement to be used: either a new one, or the current
 	 * transaction statement.
 	 * @throws java.sql.SQLException interacts with the database layer.
@@ -358,9 +350,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * <p>
 	 * However you will not need a Connection to use DBvolution. Your path lies
 	 * elsewhere.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the Connection to be used.
 	 * @throws java.sql.SQLException interacts with the database layer
@@ -498,8 +487,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Inserts or updates DBRows into the correct tables automatically
 	 *
 	 * @param row a DBRow
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -516,8 +503,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Inserts or updates DBRows into the correct tables automatically
 	 *
 	 * @param rows a DBRow
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -532,8 +517,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Inserts or updates DBRows into the correct tables automatically
 	 *
 	 * @param rows a DBRow
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -551,8 +534,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Inserts DBRows into the correct tables automatically
 	 *
 	 * @param row a list of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -568,8 +549,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Inserts DBRows into the correct tables automatically
 	 *
 	 * @param listOfRowsToInsert a list of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -588,8 +567,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Inserts DBRows and Lists of DBRows into the correct tables automatically
 	 *
 	 * @param listOfRowsToInsert a List of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -609,8 +586,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Inserts DBRows and Lists of DBRows into the correct tables automatically
 	 *
 	 * @param listOfRowsToInsert a List of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -639,8 +614,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Deletes DBRows from the correct tables automatically
 	 *
 	 * @param rows a list of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -657,8 +630,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Deletes DBRows from the correct tables automatically
 	 *
 	 * @param rows a list of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -675,8 +646,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Deletes Lists of DBRows from the correct tables automatically
 	 *
 	 * @param list a list of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
@@ -698,8 +667,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * been freshly retrieved from the database.
 	 *
 	 * @param rows a list of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of the actions performed on the database
 	 * @throws SQLException database exceptions
 	 */
@@ -720,8 +687,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * been freshly retrieved from the database.
 	 *
 	 * @param listOfRowsToUpdate a List of DBRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of the actions performed on the database
 	 * @throws SQLException database exceptions
 	 */
@@ -765,8 +730,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param <R> the row affected
 	 * @param exampleRow the example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 * @throws AccidentalCartesianJoinException Thrown when a query will create a
@@ -787,8 +750,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param example the first example
 	 * @param examples the examples
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 * @throws AccidentalCartesianJoinException Thrown when a query will create a
@@ -810,8 +771,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param <R> the table affected
 	 * @param exampleRow the example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 */
@@ -831,8 +790,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param expectedNumberOfRows throw an exception and abort if this number is
 	 * not matched
 	 * @param exampleRow the example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 * @throws UnexpectedNumberOfRowsException the exception thrown if the number
@@ -857,8 +814,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param <R> the table affected
 	 * @param expectedNumberOfRows the number of rows required
 	 * @param exampleRow the example
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 * @throws UnexpectedNumberOfRowsException the exception thrown when the
@@ -876,8 +831,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param row the first example
 	 * @param rows the examples of the rows required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBQueryRows relating to the selected rows
 	 * @throws SQLException database exceptions
 	 * @see DBQuery
@@ -894,8 +847,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param row the first table
 	 * @param rows the example rows for the tables required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBQueryRows relating to the selected rows
 	 * @throws SQLException database exceptions
 	 * @see DBQuery
@@ -935,8 +886,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param expectedNumberOfRows the number of rows required
 	 * @param row the first example of the tables required
 	 * @param rows examples of the tables required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBQueryRows relating to the selected rows
 	 * @throws SQLException database exceptions
 	 * @throws UnexpectedNumberOfRowsException thrown when the retrieved row count
@@ -960,8 +909,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param <V> the return type of the transaction, can be anything
 	 * @param dbTransaction the transaction to execute
 	 * @param commit commit=true or rollback=false.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
@@ -996,7 +943,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 						discardConnection(db.transactionConnection);
 					}
 				}
-			} catch (SQLException ex) {
+			} catch (SQLException | ExceptionThrownDuringTransaction ex) {
 				try {
 					db.transactionConnection.rollback();
 				} catch (SQLException excp) {
@@ -1026,8 +973,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param <V> the return type of the transaction
 	 * @param dbTransaction the transaction to execute
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
@@ -1051,8 +996,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param <V> the return type of the transaction
 	 * @param dbTransaction the transaction to execute
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
@@ -1084,8 +1027,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * equivalent to script.test(this);
 	 *
 	 * @param script the script to executed and rollback
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList provided by the script
 	 * @throws java.sql.SQLException database errors
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
@@ -1099,9 +1040,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	/**
 	 * Returns the name of the JDBC driver class used by this DBDatabase instance.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the driverName
 	 */
@@ -1121,9 +1059,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	/**
 	 * Returns the JDBC URL used by this instance, if one has been specified.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the jdbcURL
 	 */
 	public final synchronized String getJdbcURL() {
@@ -1133,9 +1068,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	/**
 	 * Returns the username specified for this DBDatabase instance.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the username
 	 */
 	final public synchronized String getUsername() {
@@ -1143,10 +1075,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	/**
-	 * Returns the password specified
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * Returns the password specified.
 	 *
 	 * @return the password
 	 */
@@ -1181,8 +1110,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * This is the easiest way to create DBQueries, and indeed queries.
 	 *
 	 * @param example the example rows that are required in the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery with the examples as required tables
 	 */
 	public DBQuery getDBQuery(DBRow example) {
@@ -1208,8 +1135,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param example the first example row that is required in the query
 	 * @param examples the example rows that are required in the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery with the examples as required tables
 	 */
 	public DBQuery getDBQuery(DBRow example, DBRow... examples) {
@@ -1224,8 +1149,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * This is the easiest way to create DBQueries, and indeed queries.
 	 *
 	 * @param examples the example rows that are required in the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery with the examples as required tables
 	 */
 	public DBQuery getDBQuery(final Collection<DBRow> examples) {
@@ -1538,14 +1461,14 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
 		try (DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute(sqlString, QueryIntention.CREATE_TABLE);
+			dbStatement.execute(new StatementDetails("CREATE TABLE", QueryIntention.CREATE_TABLE, sqlString));
 
 			//Oracle style trigger based auto-increment keys
 			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
 				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
 					try {
-						dbStatement.execute(sql, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY);
+						dbStatement.execute(new StatementDetails("CREATE IDENTITY TRIGGER FOR NEW TABLE", QueryIntention.CREATE_TRIGGER_BASED_IDENTITY, sql));
 					} catch (Exception sqlex) {
 						sqlex.printStackTrace();
 					}
@@ -1555,7 +1478,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() > 0) {
 				List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
-					dbStatement.execute(sql, QueryIntention.CREATE_TRIGGER);
+					dbStatement.execute(new StatementDetails("CREATE NEW SPACIAL INDEXES", QueryIntention.CREATE_TRIGGER, sql));
 				}
 			}
 		}
@@ -1598,7 +1521,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			if (fkClauses.size() > 0) {
 				try (DBStatement statement = getDBStatement()) {
 					for (String fkClause : fkClauses) {
-						statement.execute(fkClause, QueryIntention.CREATE_FOREIGN_KEY);
+						statement.execute(new StatementDetails("CREATE FOREIGN KEY", QueryIntention.CREATE_FOREIGN_KEY, fkClause));
 					}
 				}
 			}
@@ -1642,7 +1565,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		if (fkClauses.size() > 0) {
 			try (DBStatement statement = getDBStatement()) {
 				for (String fkClause : fkClauses) {
-					statement.execute(fkClause, QueryIntention.DROP_FOREIGN_KEY);
+					statement.execute(new StatementDetails("REMOVE FK CONSTRAINTS", QueryIntention.DROP_FOREIGN_KEY, fkClause));
 				}
 			}
 		}
@@ -1684,7 +1607,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		if (indexClauses.size() > 0) {
 			try (DBStatement statement = getDBStatement()) {
 				for (String indexClause : indexClauses) {
-					statement.execute(indexClause, QueryIntention.CREATE_INDEX);
+					statement.execute(new StatementDetails("CREATE INDEX ON FIELD", QueryIntention.CREATE_INDEX, indexClause));
 				}
 			}
 		}
@@ -1722,7 +1645,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
 		String sqlString = sqlScript.toString();
 		try (DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute(sqlString, QueryIntention.DROP_TABLE);
+			dbStatement.execute(new StatementDetails("DROP TABLE", QueryIntention.DROP_TABLE, sqlString));
 			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 		}
 		preventAccidentalDroppingOfTables = true;
@@ -1834,8 +1757,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 *
 	 * @param row row
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the specified row has no specified criteria, FALSE
 	 * otherwise
 	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
@@ -1901,9 +1822,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	/**
 	 * Returns the database name if one was supplied.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the database name
 	 */
 	final public synchronized String getDatabaseName() {
@@ -1917,7 +1835,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	/* TODO - can this be final?*/
 	public synchronized void setDatabaseName(String databaseName) {
-		settings.setDatabaseName(databaseName);
+		getSettings().setDatabaseName(databaseName);
 	}
 
 	/**
@@ -1929,8 +1847,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param label a purely arbitrary value
 	 */
 	final public void setLabel(String label) {
-		settings.setLabel(label);
-//		this.label = label;
+		getSettings().setLabel(label);
 	}
 
 	/**
@@ -1959,9 +1876,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * <p>
 	 * However sometimes this is inappropriate and this method can help with those
 	 * times.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if this instance will try to batch SQL statements, FALSE
 	 * otherwise
@@ -2051,8 +1965,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param <A> DBReport type
 	 * @param report report
 	 * @param examples examples
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A List of instances of the supplied report from the database 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2077,8 +1989,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param <A> the DBReport to be derived from the database data.
 	 * @param report the report to be produced
 	 * @param examples DBRow subclasses that provide extra criteria
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A list of the DBreports generated
 	 * @throws SQLException database exceptions
 	 */
@@ -2099,8 +2009,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param <A> DBReport type
 	 * @param report report
 	 * @param examples examples
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A List of instances of the supplied report from the database 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2115,9 +2023,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * <p>
 	 * Used by {@link SQLiteDB} in particular.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return The connection configured ready to use. 1 Database exceptions may
 	 * be thrown
@@ -2143,7 +2048,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	final protected synchronized void setJdbcURL(String jdbcURL) {
 		if (FREE_CONNECTIONS.isEmpty()) {
 			settings.setUrl(jdbcURL);
-//			this.jdbcURL = jdbcURL;
 		}
 	}
 
@@ -2152,8 +2056,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	final protected synchronized void setUsername(String username) {
 		if (FREE_CONNECTIONS.isEmpty()) {
-			settings.setUsername(username);
-//			this.username = username;
+			getSettings().setUsername(username);
 		}
 	}
 
@@ -2162,8 +2065,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	final protected synchronized void setPassword(String password) {
 		if (FREE_CONNECTIONS.isEmpty()) {
-			settings.setPassword(password);
-//			this.password = password;
+			getSettings().setPassword(password);
 		}
 	}
 
@@ -2208,9 +2110,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * <p>
 	 * The default implementation returns TRUE, and so will probably every
 	 * implementation.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the DBDatabase supports connection pooling, FALSE
 	 * otherwise.
@@ -2332,7 +2231,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	protected final DataSource getDataSource() {
-		return settings.getDataSource();
+		return getSettings().getDataSource();
 	}
 
 	public void setLastException(Throwable except) {
@@ -2359,7 +2258,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	public boolean supportsDifferenceBetweenNullAndEmptyString() {
-		return getDefinition().canProduceNullStrings(); //getDefinition().supportsDifferenceBetweenNullAndEmptyStringNatively();
+		return getDefinition().canProduceNullStrings();
 	}
 
 	protected boolean requiredToProduceEmptyStringForNull() {
@@ -2482,8 +2381,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * the fields of it's superclass.
 	 * @param mapper a class that can be used to map one or more database tables
 	 * to a single table.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQueryInsert for the mapper class
 	 */
 	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {
@@ -2522,18 +2419,19 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		} else {
 			String testQuery = getDefinition().getTableExistsSQL(table);
 			try (DBStatement dbStatement = getDBStatement()) {
-				ResultSet results = dbStatement.executeQuery(
-						testQuery,
-						"CHECK FOR TABLE " + table.getTableName(),
-						QueryIntention.CHECK_TABLE_EXISTS);
+				var dets = new StatementDetails("CHECK FOR TABLE " + table.getTableName(), QueryIntention.CHECK_TABLE_EXISTS, testQuery);
+				ResultSet results = dbStatement.executeQuery(dets);
 				if (results != null) {
 					results.close();
 				}
 				tableExists = true;
 			} catch (Exception ex) {
-//				ex.printStackTrace();
+				// An exception means we couldn't find the table for whatever reason
+				// so we can safely ignore the exception
+				// but just to be clear, lets ensure we return false
+				tableExists = false;
 				// Theoretically this should only need to catch an SQLException 
-				// but databases throw allsorts of weird exceptions
+				// but databases throw all sorts of weird exceptions
 			}
 		}
 		return tableExists;
@@ -2571,19 +2469,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
 
 		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
-//		final String sqlForQuery = getDBTable(table)
-//				.setQueryTimeout(10000)
-//				.setBlankQueryAllowed(true)
-//				.setRowLimit(1).getSQLForQuery();
-//		String testQuery = sqlForQuery.replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
-//		System.out.println("ORIGINAL QUERY: "+sqlForQuery);
-//		System.out.println("ALTERED QUERY: "+testQuery);
 		String testQuery = definition.getTableStructureQuery(table, getDBTable(table));
 		try (DBStatement dbStatement = getDBStatement()) {
-			try (ResultSet resultSet = dbStatement.executeQuery(
-					testQuery,
-					"CHECK TABLE STRUCTURE FOR " + table.getTableName(),
-					QueryIntention.SIMPLE_SELECT_QUERY)) {
+			var dets = new StatementDetails("CHECK TABLE STRUCTURE FOR " + table.getTableName(), QueryIntention.CHECK_TABLE_STRUCTURE, testQuery);
+			try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
 				ResultSetMetaData metaData = resultSet.getMetaData();
 				var columnPropertyWrappers = table.getColumnPropertyWrappers();
 				for (var columnPropertyWrapper : columnPropertyWrappers) {
@@ -2623,8 +2512,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		try (DBStatement dbStatement = getDBStatement()) {
 			try {
-				boolean execute = dbStatement.execute(sqlString, QueryIntention.ADD_COLUMN_TO_TABLE);
-
+				boolean execute = dbStatement.execute(new StatementDetails("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString));
 			} catch (SQLException ex) {
 				Logger.getLogger(DBDatabase.class
 						.getName()).log(Level.SEVERE, null, ex);
@@ -2675,28 +2563,25 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	protected final Map<String, String> getExtras() {
-		return settings.getExtras();
+		return getSettings().getExtras();
 	}
 
 	protected final String getHost() {
-		return settings.getHost();
+		return getSettings().getHost();
 	}
 
 	protected final String getDatabaseInstance() {
-		return settings.getInstance();
+		return getSettings().getInstance();
 	}
 
 	protected final String getPort() {
-		return settings.getPort();
+		return getSettings().getPort();
 	}
 
 	protected final String getSchema() {
-		return settings.getSchema();
+		return getSettings().getSchema();
 	}
 
-//	public synchronized void setRequiredToProduceEmptyStringsForNull(boolean required) {
-//		getDefinition().setRequiredToProduceEmptyStringsForNull(required);
-//	}
 	/**
 	 * Closes all threads, connections, and resources used by the database.
 	 *

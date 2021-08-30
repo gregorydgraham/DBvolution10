@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Provides support for the abstract concept of updating rows without primary
@@ -57,9 +58,6 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBActionList of updates that have been executed.
 	 * @throws SQLException database exceptions
 	 */
 	public static DBActionList updateAnyway(DBDatabase db, DBRow row) throws SQLException {
@@ -78,8 +76,6 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)}
 	 *
 	 * @param rows the rows to be updated
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of updates.
 	 * @throws SQLException database exceptions
 	 */
@@ -186,7 +182,7 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 		DBActionList actions = new DBActionList(new DBUpdateForcedOnSimpleTypesUsingPrimaryKey(table));
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				statement.execute(sql, QueryIntention.UPDATE_ROW);
+				statement.execute(new StatementDetails("Update row", QueryIntention.UPDATE_ROW, sql));
 			}
 		}
 		return actions;

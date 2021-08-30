@@ -62,6 +62,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private static final long serialVersionUID = 1l;
 
+	private static final String LINE_SEP = System.getProperty("line.separator");
+
 	private Long timeoutInMilliseconds = 0l;//DEFAULT_TIMEOUT_MILLISECONDS;
 
 	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
@@ -90,8 +92,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private SortProvider[] sortOrderColumns;
 	private List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
-//	private DBDatabase workingDatabase;
-	private static final String LINE_SEP = System.getProperty("line.separator");
 
 	/**
 	 *
@@ -372,7 +372,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 			final List<String> sqlForCount = getSQLForCountInternal(this, options);
 			for (String sql : sqlForCount) {
 				printSQLIfRequired(sql);
-				try (ResultSet resultSet = dbStatement.executeQuery(sql, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY)) {
+				var dets = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
+				try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
 					while (resultSet.next()) {
 						result = resultSet.getLong(1);
 					}
@@ -1036,7 +1037,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		clearResults();
 		setResultSQL(null);
 		options.setQueryDatabase(database);
-		
+
 		setReturnEmptyStringForNullString(
 				getReturnEmptyStringForNullString()
 				|| !database.supportsDifferenceBetweenNullAndEmptyString()
@@ -1362,7 +1363,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 			}
 		}
-		final ResultSet queryResults = statement.executeQuery(sql, getLabel(), QueryIntention.SIMPLE_SELECT_QUERY);
+		final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
+		final ResultSet queryResults = statement.executeQuery(statementDetails);
 
 		if (cancelHandle != null) {
 			cancelHandle.cancel(true);
@@ -1597,18 +1599,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return getOptions().getRequireEmptyStringForNullString();
 
 	}
-
-//	@Override
-//	public void setWorkingDatabase(DBDatabase database) {
-////		workingDatabase = database;
-//		options.setQueryDatabase(database);
-//	}
-//
-//	@Override
-//	public DBDatabase getWorkingDatabase() {
-////		return workingDatabase;
-//		return options.getQueryDatabase();
-//	}
 
 	private static class OrderByClause {
 

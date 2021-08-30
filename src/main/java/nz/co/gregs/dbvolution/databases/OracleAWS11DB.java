@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWS11DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Implements support for version 11 and prior of the Oracle database as provide
@@ -176,7 +177,8 @@ public class OracleAWS11DB extends OracleAWSDB {
 			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
 			for (String primaryKeyColumnName : primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
-				dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName), QueryIntention.CREATE_SEQUENCE);
+				final String sql = "DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName);
+				dbStatement.execute(new StatementDetails("Drop sequence", QueryIntention.CREATE_SEQUENCE, sql));
 			}
 		}
 		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);

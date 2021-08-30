@@ -33,14 +33,12 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -90,7 +88,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 //	protected PostgresDB() {
 //		super();
 //	}
-
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
@@ -287,7 +284,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public int loadFromCSVFile(DBRow table, File file, String delimiter, String nullValue, String escapeCharacter, String quoteCharacter) throws SQLException {
 		int returnValue;
-		try ( DBStatement dbStatement = this.getDBStatement()) {
+		try (DBStatement dbStatement = this.getDBStatement()) {
 			returnValue = dbStatement.executeUpdate("COPY " + table.getTableName().replaceAll("\\\"", "") + " FROM '" + file.getAbsolutePath().replaceAll("\\\"", "") + "' WITH (DELIMITER '" + delimiter.replaceAll("\\\"", "") + "', NULL '" + nullValue.replaceAll("\\\"", "") + "', ESCAPE '" + escapeCharacter.replaceAll("\\\"", "") + "', FORMAT csv, QUOTE '" + quoteCharacter.replaceAll("\\\"", "") + "');");
 		}
 		return returnValue;
@@ -307,8 +304,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public void createDatabase(String databaseName) throws SQLException {
 		String sqlString = "CREATE DATABASE " + databaseName.replaceAll("\\\"", "") + ";";
-		try ( DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute(sqlString, QueryIntention.CREATE_DATABASE);
+		try (DBStatement dbStatement = getDBStatement()) {
+			dbStatement.execute(new StatementDetails("Create database", QueryIntention.CREATE_DATABASE, sqlString));
 		}
 	}
 
@@ -327,8 +324,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public void createUser(String username, String password) throws SQLException {
 		String sqlString = "CREATE USER \"" + username.replaceAll("\\\"", "") + "\" WITH PASSWORD '" + password.replaceAll("'", "") + "';";
-		try ( DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute(sqlString, QueryIntention.CREATE_USER);
+		try (DBStatement dbStatement = getDBStatement()) {
+			dbStatement.execute(new StatementDetails("Create user", QueryIntention.CREATE_USER, sqlString));
 		}
 	}
 

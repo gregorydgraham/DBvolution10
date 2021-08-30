@@ -41,6 +41,7 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  *
@@ -49,7 +50,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 public class DBBulkInsert extends DBAction {
 
 	public static final long serialVersionUID = 1l;
-	
+
 	List<DBRow> rows = new ArrayList<>();
 
 	public <R extends DBRow> DBBulkInsert(R row) {
@@ -69,8 +70,8 @@ public class DBBulkInsert extends DBAction {
 		if (database.getDefinition().supportsBulkInserts()) {
 			return database.executeDBAction(this);
 		} else {
-			for (DBRow row : rows) {
-				changes.addAll(database.getDBTable(row).insert(row));
+			for (DBRow rowToInsert : rows) {
+				changes.addAll(database.getDBTable(rowToInsert).insert(rowToInsert));
 			}
 		}
 		return changes;
@@ -186,7 +187,7 @@ public class DBBulkInsert extends DBAction {
 		if (allRowsCanBeBulkInserted) {
 			try (DBStatement statement = db.getDBStatement()) {
 				for (String sql : getSQLStatements(db)) {
-					statement.execute(sql, QueryIntention.BULK_INSERT);
+					statement.execute(new StatementDetails("BULK INSERT", QueryIntention.BULK_INSERT, sql));
 				}
 			}
 			for (DBRow current : rows) {

@@ -40,6 +40,7 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,7 +60,7 @@ import org.apache.commons.logging.LogFactory;
 public class DBUpdateLargeObjects extends DBUpdate {
 
 	private static final long serialVersionUID = 1l;
-	
+
 	private static final Log LOG = LogFactory.getLog(DBUpdateLargeObjects.class);
 
 	/**
@@ -141,7 +142,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			prep.execute();
 		}
 
-		statement.execute(sqlString, QueryIntention.UPDATE_ROW);
+		statement.execute(new StatementDetails("UPDATING LARGE OBJECTS IN ROW", QueryIntention.UPDATE_ROW, sqlString));
 	}
 
 	private void setToNullUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
@@ -155,7 +156,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		LOG.debug(sqlString);
-		statement.execute(sqlString, QueryIntention.UPDATE_ROW);
+		statement.execute(new StatementDetails("Updating large object to null", QueryIntention.UPDATE_ROW, sqlString));
 	}
 
 	private void setUsingBinaryStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {

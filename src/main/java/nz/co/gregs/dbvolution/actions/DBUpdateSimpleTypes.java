@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Provides support for the abstract concept of updating rows with standard
@@ -33,9 +34,6 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * <p>
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -53,7 +51,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(table));
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				statement.execute(sql, QueryIntention.UPDATE_ROW);
+				statement.execute(new StatementDetails("Update row", QueryIntention.UPDATE_ROW, sql));
 			}
 		}
 		return actions;
@@ -104,7 +102,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 									.append(qdt
 											.toSQLString(defn));
 							separator = defn.getSubsequentSetSubClauseSeparator();
-						}else if (qdt.hasDefaultUpdateValue()){
+						} else if (qdt.hasDefaultUpdateValue()) {
 							String columnName = field.columnName();
 							sql.append(separator)
 									.append(defn.formatColumnName(columnName))

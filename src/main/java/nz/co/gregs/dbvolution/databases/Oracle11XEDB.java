@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -70,7 +71,6 @@ public class Oracle11XEDB extends OracleDB {
 //	public Oracle11XEDB() {
 //		super();
 //	}
-
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.
 	 *
@@ -180,7 +180,8 @@ public class Oracle11XEDB extends OracleDB {
 			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
 			for (String primaryKeyColumnName : primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
-				dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName), QueryIntention.DROP_SEQUENCE);
+				final String sql = "DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName);
+				dbStatement.execute(new StatementDetails("Drop sequence", QueryIntention.DROP_SEQUENCE, sql));
 			}
 		}
 		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
@@ -191,15 +192,9 @@ public class Oracle11XEDB extends OracleDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-//	@Override
-//	protected Connection getConnectionFromDriverManager() throws SQLException {
-//		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
-//	}
-
 	@Override
 	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		super.addDatabaseSpecificFeatures(statement);
-//		this.setPrintSQLBeforeExecuting(true);
 		for (GeometryFunctions fn : GeometryFunctions.values()) {
 			fn.add(statement);
 		}

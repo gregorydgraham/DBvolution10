@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.actions;
 import nz.co.gregs.dbvolution.exceptions.FailedToExecuteDBQueryInsertException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBQueryInsert;
 import nz.co.gregs.dbvolution.DBRow;
@@ -27,7 +26,7 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -103,10 +102,10 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				try {
-					statement.execute(sql, QueryIntention.BULK_INSERT);
+					statement.execute(new StatementDetails("BULK INSERT", QueryIntention.BULK_INSERT,sql));
 				} catch (SQLException sqlex) {
 					try {
-						statement.execute(sql,QueryIntention.BULK_INSERT);
+						statement.execute(new StatementDetails("BULK INSERT",QueryIntention.BULK_INSERT,sql));
 					} catch (SQLException ex) {
 						throw new FailedToExecuteDBQueryInsertException(sql, sqlex);
 					}

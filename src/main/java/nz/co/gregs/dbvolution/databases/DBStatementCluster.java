@@ -34,6 +34,7 @@ import java.sql.SQLWarning;
 import java.util.ArrayList;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 public class DBStatementCluster extends DBStatement {
 
@@ -196,11 +197,11 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public boolean execute(String sql, QueryIntention intent) throws SQLException {
+	public boolean execute(StatementDetails details) throws SQLException {
 		boolean executed = true;
 		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
 		for (DBStatement next : dbStatements) {
-			executed &= next.execute(sql, intent);
+			executed &= next.execute(details);
 		}
 		return executed;
 	}

@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Supplies supports for the abstract concept of deleting rows based on an
@@ -72,8 +73,8 @@ public class DBDeleteAll extends DBDelete {
 			deleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
 		}
 		try (DBStatement statement = db.getDBStatement()) {
-			for (String str : getSQLStatements(db)) {
-				statement.execute(str, QueryIntention.BULK_DELETE);
+			for (String sql : getSQLStatements(db)) {
+				statement.execute(new StatementDetails("BULK DELETE", QueryIntention.BULK_DELETE,sql));
 			}
 		}
 		return actions;

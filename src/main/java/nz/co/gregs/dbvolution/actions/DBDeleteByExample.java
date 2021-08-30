@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Supplies supports for the abstract concept of deleting rows based on an
@@ -31,9 +32,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * <p>
  * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -72,8 +70,8 @@ public class DBDeleteByExample extends DBDelete {
 			deleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
 		}
 		try (DBStatement statement = db.getDBStatement()) {
-			for (String str : getSQLStatements(db)) {
-				statement.execute(str, QueryIntention.DELETE_ROW);
+			for (String sql : getSQLStatements(db)) {
+				statement.execute(new StatementDetails("DLEETE ROW", QueryIntention.DELETE_ROW,sql));
 			}
 		}
 		return actions;

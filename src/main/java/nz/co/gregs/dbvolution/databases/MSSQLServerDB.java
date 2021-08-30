@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractMSSQLServerSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
 
 /**
@@ -331,7 +332,8 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		if (message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*")) {
 			String table = message.split("'")[1];
 			DBStatement stmt = getConnection().createDBStatement();
-			stmt.execute("SET IDENTITY_INSERT " + table + " ON;", QueryIntention.ALLOW_IDENTITY_INSERT);
+			final String sql = "SET IDENTITY_INSERT " + table + " ON;";
+			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT,sql));
 			return ResponseToException.REQUERY;
 		} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
 			return ResponseToException.SKIPQUERY;

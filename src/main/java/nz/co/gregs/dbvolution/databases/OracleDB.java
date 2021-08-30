@@ -30,15 +30,13 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuild
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
  *
  * <p>
  * You should probably use {@link Oracle11XEDB} or {@link Oracle12DB} instead.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  * @see Oracle11XEDB
@@ -79,7 +77,6 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 //	protected OracleDB() {
 //
 //	}
-
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
@@ -198,11 +195,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 				triggerBasedIdentitySQL = definition.dropTriggerBasedIdentitySQL(this, definition.formatTableName(tableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 			}
 		}
-//		try (DBStatement dbStatement = getDBStatement()) {
 		for (String sql : triggerBasedIdentitySQL) {
-			dbStatement.execute(sql, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY);
+			dbStatement.execute(new StatementDetails("Remove identity trigger", QueryIntention.CREATE_TRIGGER_BASED_IDENTITY, sql));
 		}
-//		}
 	}
 
 	private final static Pattern SEQUENCE_DOES_NOT_EXIST = Pattern.compile("ORA-02289: sequence does not exist");
@@ -248,7 +243,8 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement statement, TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
-		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'", QueryIntention.DELETE_ROW);
+		final String sql = "DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'";
+		statement.execute(new StatementDetails("Delete user", QueryIntention.DELETE_ROW, sql));
 	}
 
 	@Override

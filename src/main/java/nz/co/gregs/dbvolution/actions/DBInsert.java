@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBSQLException;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -172,7 +173,7 @@ public class DBInsert extends DBAction {
 						final List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
 						if (primaryKeys == null || primaryKeys.isEmpty()) {
 							// There are no primary keys so execute and move on.
-							statement.execute(sql, QueryIntention.INSERT_ROW);
+							statement.execute(new StatementDetails("INSERT_ROW", QueryIntention.INSERT_ROW,sql));
 						} else {
 							boolean allPKsHaveBeenSet = true;
 							for (QueryableDatatype<?> primaryKey : primaryKeys) {
@@ -181,10 +182,10 @@ public class DBInsert extends DBAction {
 							if (allPKsHaveBeenSet) {
 								// The primary key has already been sorted for us so execute and move on.
 								try {
-									statement.execute(sql, QueryIntention.INSERT_ROW);
+									statement.execute(new StatementDetails("INSERT_ROW", QueryIntention.INSERT_ROW,sql));
 								} catch (java.sql.SQLIntegrityConstraintViolationException alreadyExists) {
 									db.delete(table);
-									statement.execute(sql, QueryIntention.INSERT_ROW);
+									statement.execute(new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW,sql));
 								}
 							} else {
 								if (primaryKeys.size() == 1) {
@@ -193,7 +194,7 @@ public class DBInsert extends DBAction {
 									Integer pkIndex = table.getPrimaryKeyIndexes().get(0);
 									if (pkIndex == null || primaryKeyColumnName == null) {
 										// We can't find the PK so just execute and move on.
-										statement.execute(sql, QueryIntention.INSERT_ROW);
+										statement.execute(new StatementDetails("INSERT ROW",QueryIntention.INSERT_ROW,sql));
 									} else {
 										// There is a PK, it's not set, and we can find it, so we need to get it's value...
 										if (primaryKeyColumnName.isEmpty()) {
@@ -227,19 +228,20 @@ public class DBInsert extends DBAction {
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException sqlex) {
 						try {
-							statement.execute(sql, QueryIntention.INSERT_ROW);
+							statement.execute(new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW,sql));
 						} catch (SQLException ex) {
 							throw new DBSQLException(db, sql, sqlex);
 						}
 					}
 				} else {
 					try {
-						statement.execute(sql, QueryIntention.INSERT_ROW);
+						statement.execute(new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW, sql));
 						final var primaryKeyWrappers = table.getPrimaryKeyPropertyWrappers();
 						if (primaryKeyWrappers.size() > 0) {
 							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
-								try (ResultSet rs = statement.executeQuery(retrieveSQL, "RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT)) {
+								var dets = new StatementDetails("RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT, retrieveSQL);
+								try (ResultSet rs = statement.executeQuery(dets)) {
 									for (var primaryKeyWrapper : primaryKeyWrappers) {
 										var definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
@@ -286,7 +288,7 @@ public class DBInsert extends DBAction {
 	private void updateSequenceIfNecessary(final DBDefinition defn, DBDatabase db, String sql, DBRow table, final DBStatement statement) throws SQLException {
 		if (primaryKeyWasGenerated && defn.requiresSequenceUpdateAfterManualInsert()) {
 			final String sequenceUpdateSQL = defn.getSequenceUpdateSQL(table.getTableName(), table.getPrimaryKeyColumnNames().get(0), primaryKeyGenerated);
-			statement.execute(sequenceUpdateSQL, QueryIntention.UPDATE_SEQUENCE);
+			statement.execute(new StatementDetails("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE,sequenceUpdateSQL));
 		}
 	}
 
