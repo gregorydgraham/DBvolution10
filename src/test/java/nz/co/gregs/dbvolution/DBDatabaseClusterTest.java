@@ -225,6 +225,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			DBQuery query = cluster.getDBQuery(new Marque());
 			query.setRawSQL("and blart = norn");
+			query.setIgnoreExceptions(true);
 			try {
 				List<DBQueryRow> allRows = query.getAllRows();
 				// should throw an exception before this
@@ -247,7 +248,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			DBQuery query = cluster.getDBQuery(new Marque());
 			query.setRawSQL("and blart = norn");
+			query.setIgnoreExceptions(true);
 			try {
+				query.setIgnoreExceptions(true);
 				List<DBQueryRow> allRows = query.getAllRows();
 				Assert.fail("Failed to throw exception after unsuccessful query");
 			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
@@ -341,11 +344,14 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				= DBDatabaseCluster.randomManualCluster(database)) {
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
+			cluster.setIgnoreExceptionsPreference(true);
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
 			tab.pkid.permittedValues(1);
 			try {
 				cluster.delete(tab);
 			} catch (SQLException e) {
+			}finally{
+				cluster.setIgnoreExceptionsPreference(false);
 			}
 			Assert.assertThat(cluster.size(), is(1));
 		}
