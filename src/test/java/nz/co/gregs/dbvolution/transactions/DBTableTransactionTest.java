@@ -56,12 +56,12 @@ public class DBTableTransactionTest extends AbstractTest {
 					myTableRow.getNumericCode().setValue(10);
 					marques.insert(myTableRow);
 					marques.setBlankQueryAllowed(true).getAllRows();
-					
+
 					List<Marque> myTableRows = new ArrayList<Marque>();
 					myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
-					
+
 					marques.insert(myTableRows);
-					
+
 					marques.getAllRows();
 					return marques;
 				} catch (SQLException ex) {
@@ -77,6 +77,7 @@ public class DBTableTransactionTest extends AbstractTest {
 	public void testInsertRowsFailure() throws SQLException {
 		List<Marque> original = marquesTable.setBlankQueryAllowed(true).getRowsByExample(new Marque());
 		try {
+			database.setIgnoreExceptionsPreference(true);
 			DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
 				@Override
 				public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws ExceptionThrownDuringTransaction {
@@ -87,12 +88,12 @@ public class DBTableTransactionTest extends AbstractTest {
 						myTableRow.getName().setValue("TOYOTA");
 						myTableRow.getNumericCode().setValue(10);
 						marques.insert(myTableRow);
-						
+
 						List<Marque> myTableRows = new ArrayList<Marque>();
 						myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
-						
+
 						marques.insert(myTableRows);
-						
+
 						marques.getAllRows();
 						return marques;
 					} catch (Exception ex) {
@@ -101,6 +102,8 @@ public class DBTableTransactionTest extends AbstractTest {
 				}
 			}, true);
 		} catch (SQLException | ExceptionThrownDuringTransaction e) {
+		} finally {
+			database.setIgnoreExceptionsPreference(false);
 		}
 		final List<Marque> addedRows = marquesTable.getRowsByExample(new Marque());
 		List<Marque> added = marquesTable.toList();
