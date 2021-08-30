@@ -42,8 +42,6 @@ public class ExceptionDuringDatabaseFeatureSetup extends Exception {
 	
 	public ExceptionDuringDatabaseFeatureSetup(String message, Exception cause) {
 		super(message, cause);
-//		System.out.println("" + message);
-//		this.printStackTrace();
 	}
 
 }
