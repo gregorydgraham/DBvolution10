@@ -209,19 +209,15 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		final String message = exp.getMessage();
-//		System.out.println("ADD FEATURE TO FIX EXCEPTION: " + intent.name() + " -> " + message);
 		if (TABLE_ALREADY_EXISTS.matcher(message).lookingAt()
 				|| TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()
 				|| (SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt() && (intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)))
 				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.CHECK_TABLE_EXISTS))
 				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.DROP_TABLE))) {
-//			System.out.println("HANDLED: NO RESPONSE REQUIRED");
 			return ResponseToException.SKIPQUERY;
 		} else if (LOOP_IN_RECURSIVE_QUERY.matcher(message).lookingAt()) {
 			return ResponseToException.EMULATE_RECURSIVE_QUERY;
 		} else {
-//			System.out.println("!!! NO RESPONSE CONFIGURED !!!");
-			exp.printStackTrace();
 		}
 
 		return super.addFeatureToFixException(exp, intent);
