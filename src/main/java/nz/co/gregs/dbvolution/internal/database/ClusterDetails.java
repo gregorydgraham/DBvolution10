@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBAction;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
@@ -76,6 +77,7 @@ public class ClusterDetails implements Serializable {
 	private boolean autoreconnect = false;
 	private boolean supportsDifferenceBetweenNullAndEmptyString = true;
 	private final ArrayList<String> allAddedDatabases = new ArrayList<String>();
+	private boolean quietExceptions;
 
 	public ClusterDetails(String clusterName) {
 		this();
@@ -163,8 +165,12 @@ public class ClusterDetails implements Serializable {
 				throw new UnableToRemoveLastDatabaseFromClusterException();
 			}
 
-			LOG.warn("QUARANTINING: " + databaseToQuarantine.getSettings().toString());
-			LOG.warn("QUARANTINING: " + except.getLocalizedMessage());
+			if (quietExceptions) {
+			} else {
+				LOG.warn("QUARANTINING: " + databaseToQuarantine.getLabel());
+				LOG.warn("QUARANTINING: " + databaseToQuarantine.getSettings().toString());
+				LOG.warn("QUARANTINING: " + except.getLocalizedMessage());
+			}
 			database.setLastException(except);
 
 			readyDatabases.remove(database);
@@ -500,5 +506,9 @@ public class ClusterDetails implements Serializable {
 		allAddedDatabases.forEach(db -> {
 			System.out.println("DB: " + db);
 		});
+	}
+
+	public void setQuietExceptionsPreference(boolean bln) {
+		this.quietExceptions = bln;
 	}
 }

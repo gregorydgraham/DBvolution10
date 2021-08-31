@@ -141,9 +141,14 @@ public class DBInsertTest extends AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
-
-		database.createTable(row);
-
+		try {
+			// avoid printing an exception as we're expecting one
+			database.setQuietExceptionsPreference(true);
+			database.createTable(row);
+		} finally {
+			// make sure that subsequent exceptions are reported
+			database.setQuietExceptionsPreference(false);
+		}
 		try {
 			row.name.setValue("First Row");
 			database.insert(row);
@@ -359,7 +364,7 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow.pk_uid.getValue(), is(2L));
 		Assert.assertThat(gotRow.name.getValue(), is("blarg"));
 		Assert.assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		final LocalDateTime april2nd2011Instant = LocalDateTime.ofInstant(april2nd2011.toInstant(),ZoneId.systemDefault());
+		final LocalDateTime april2nd2011Instant = LocalDateTime.ofInstant(april2nd2011.toInstant(), ZoneId.systemDefault());
 		Assert.assertThat(gotRow.creationDate.getValue(), is(april2nd2011Instant));
 		Assert.assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
 		Assert.assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));

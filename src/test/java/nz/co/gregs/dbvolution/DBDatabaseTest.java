@@ -304,9 +304,12 @@ public class DBDatabaseTest extends AbstractTest {
 		database.preventDroppingOfTables(false);
 		database.dropTable(new DropTableTestClass());
 		try {
+			database.setQuietExceptionsPreference(true);
 			Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		} catch (SQLException exp) {
 			throw new DBRuntimeException("Failed to assert that the table is empty", exp);
+		}finally{
+			database.setQuietExceptionsPreference(false);
 		}
 	}
 

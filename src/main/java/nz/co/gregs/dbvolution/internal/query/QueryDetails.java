@@ -92,8 +92,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private SortProvider[] sortOrderColumns;
 	private List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
-	private boolean ignoreExceptions = false;
-	private boolean databaseIgnoreExceptionsPreference = false;
+	private boolean quietExceptions = false;
+	private boolean databaseQuietExceptionsPreference = false;
 
 	/**
 	 *
@@ -1209,7 +1209,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				successfulQuery = true;
 				break;// we've successfully run the sql so carry on
 			} catch (SQLException e) {
-				if (isIgnoreExceptions() == false) {
+				if (isQuietExceptions() == false) {
 					StackTraceElement[] trace = e.getStackTrace();
 					System.out.println("" + e.getMessage());
 					System.out.println("" + e.getLocalizedMessage());
@@ -1364,12 +1364,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 		QueryCanceller canceller = null;
 		if (timeoutTime > 0) {
 			if (timeoutTime != null && timeoutTime > 0) {
-				canceller = new QueryCanceller(statement, sql);
-				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
+				canceller = new QueryCanceller(statement, sql, this);
+				cancelHandle = canceller.schedule(timeoutTime);
 			}
 		}
 		final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
-		statementDetails.setIgnoreExceptions(this.isIgnoreExceptions());
+		statementDetails.setIgnoreExceptions(this.isQuietExceptions());
 		final ResultSet queryResults = statement.executeQuery(statementDetails);
 
 		if (cancelHandle != null) {
@@ -1603,20 +1603,20 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return getOptions().getRequireEmptyStringForNullString();
 	}
 
-	public void setIgnoreExceptions(boolean b) {
-		this.ignoreExceptions = b;
+	public void setQuietExceptions(boolean b) {
+		this.quietExceptions = b;
 	}
 
-	public boolean isIgnoreExceptions() {
-		return ignoreExceptions || databaseIgnoreExceptionsPreference;
+	public boolean isQuietExceptions() {
+		return quietExceptions || databaseQuietExceptionsPreference;
 	}
 
-	public void setDatabaseIgnoreExceptionsPreference(boolean b) {
-		databaseIgnoreExceptionsPreference = b;
+	public void setDatabaseQuietExceptionsPreference(boolean b) {
+		databaseQuietExceptionsPreference = b;
 	}
 
-	public boolean getDatabaseIgnoreExceptionsPreference() {
-		return databaseIgnoreExceptionsPreference;
+	public boolean getDatabaseQuietExceptionsPreference() {
+		return databaseQuietExceptionsPreference;
 	}
 
 	private static class OrderByClause {

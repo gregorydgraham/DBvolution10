@@ -321,6 +321,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		details.setClusterLabel(databaseName);
 	}
 
+	@Override
+	public void setQuietExceptionsPreference(boolean bln) {
+		super.setQuietExceptionsPreference(bln);
+		details.setQuietExceptionsPreference(bln);
+	}
+
 	/**
 	 * Adds a new database to this cluster.
 	 *
@@ -807,8 +813,11 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.createTable(newTableRow, includeForeignKeyClauses);
 						finished = true;
 					} catch (Exception e) {
-						System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
-						e.printStackTrace();
+						if (getQuietExceptionsPreference()) {
+						} else {
+							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
+							e.printStackTrace();
+						}
 						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
 							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
 							throw e;
@@ -1067,7 +1076,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		final DBDatabase workingDB = getReadyDatabase();
-		workingDB.setIgnoreExceptionsPreference(this.getIgnoreExceptionsPreference());
+		workingDB.setQuietExceptionsPreference(this.getQuietExceptionsPreference());
 		HandlerAdvice advice = HandlerAdvice.REQUERY;
 		try {
 			// set oracle compatibility 
@@ -1147,7 +1156,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
 		final DBDatabase readyDatabase = this.getReadyDatabase();
 		synchronized (readyDatabase) {
-			readyDatabase.setIgnoreExceptionsPreference(getIgnoreExceptionsPreference());
+			readyDatabase.setQuietExceptionsPreference(getQuietExceptionsPreference());
 			return readyDatabase.getSQLForDBQuery(query);
 		}
 	}

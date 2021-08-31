@@ -77,7 +77,7 @@ public class DBTableTransactionTest extends AbstractTest {
 	public void testInsertRowsFailure() throws SQLException {
 		List<Marque> original = marquesTable.setBlankQueryAllowed(true).getRowsByExample(new Marque());
 		try {
-			database.setIgnoreExceptionsPreference(true);
+			database.setQuietExceptionsPreference(true);
 			DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
 				@Override
 				public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws ExceptionThrownDuringTransaction {
@@ -103,7 +103,7 @@ public class DBTableTransactionTest extends AbstractTest {
 			}, true);
 		} catch (SQLException | ExceptionThrownDuringTransaction e) {
 		} finally {
-			database.setIgnoreExceptionsPreference(false);
+			database.setQuietExceptionsPreference(false);
 		}
 		final List<Marque> addedRows = marquesTable.getRowsByExample(new Marque());
 		List<Marque> added = marquesTable.toList();

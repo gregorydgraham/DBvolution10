@@ -112,7 +112,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private Throwable exception = null;
 	private ScheduledFuture<?> regularThreadPoolFuture;
 	private boolean hasCreatedRequiredTables = false;
-	private boolean ignoreExceptionsPreference = false;
+	private boolean quietExceptionsPreference = false;
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -2393,22 +2393,22 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return action.execute(this);
 	}
 
-	public void setIgnoreExceptionsPreference(boolean b) {
-		this.ignoreExceptionsPreference = b;
+	public void setQuietExceptionsPreference(boolean b) {
+		this.quietExceptionsPreference = b;
 	}
 	
-	public boolean getIgnoreExceptionsPreference() {
-		return this.ignoreExceptionsPreference;
+	public boolean getQuietExceptionsPreference() {
+		return this.quietExceptionsPreference;
 	}
 	
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		query.setDatabaseIgnoreExceptionsPreference(getIgnoreExceptionsPreference());
+		query.setDatabaseQuietExceptionsPreference(getQuietExceptionsPreference());
 		return query.query(this);
 	}
 
 	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
-		query.setDatabaseIgnoreExceptionsPreference(getIgnoreExceptionsPreference());
+		query.setDatabaseQuietExceptionsPreference(getQuietExceptionsPreference());
 		return query.toSQLString(this);
 	}
 

@@ -217,7 +217,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
 			Assert.assertThat(cluster.size(), is(1));
-			
+
 			cluster.addTrackedTable(new Marque());
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
@@ -225,13 +225,17 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			DBQuery query = cluster.getDBQuery(new Marque());
 			query.setRawSQL("and blart = norn");
-			query.setIgnoreExceptions(true);
 			try {
+				// avoid printing lots of exceptions 
+				cluster.setQuietExceptionsPreference(true);
+				query.setQuietExceptions(true);
 				List<DBQueryRow> allRows = query.getAllRows();
 				// should throw an exception before this
 				System.out.println("ALLROWS: " + allRows.size());
 				Assert.fail("Failed to quarantine database after unsuccessful query");
 			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
+			} finally {
+				cluster.setQuietExceptionsPreference(false);
 			}
 			Assert.assertThat(cluster.size(), is(1));
 		}
@@ -248,12 +252,16 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			DBQuery query = cluster.getDBQuery(new Marque());
 			query.setRawSQL("and blart = norn");
-			query.setIgnoreExceptions(true);
+			query.setQuietExceptions(true);
 			try {
-				query.setIgnoreExceptions(true);
+				// avoid printing lots of exceptions
+				cluster.setQuietExceptionsPreference(true);
+
 				List<DBQueryRow> allRows = query.getAllRows();
 				Assert.fail("Failed to throw exception after unsuccessful query");
 			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
+			} finally {
+				cluster.setQuietExceptionsPreference(false);
 			}
 			Assert.assertThat(cluster.size(), is(1));
 			query = cluster.getDBQuery(new Marque());
@@ -344,14 +352,16 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				= DBDatabaseCluster.randomManualCluster(database)) {
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
-			cluster.setIgnoreExceptionsPreference(true);
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
 			tab.pkid.permittedValues(1);
 			try {
+				// avoid printing lots of exceptions
+				cluster.setQuietExceptionsPreference(true);
+				// do the actual action we're trying to test
 				cluster.delete(tab);
 			} catch (SQLException e) {
-			}finally{
-				cluster.setIgnoreExceptionsPreference(false);
+			} finally {
+				cluster.setQuietExceptionsPreference(false);
 			}
 			Assert.assertThat(cluster.size(), is(1));
 		}
@@ -367,10 +377,14 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
 			tab.pkid.setValue(1);
 			try {
+				// avoid printing lots of exceptions
+				cluster.setQuietExceptionsPreference(true);
 				cluster.insert(tab);
 			} catch (SQLException e) {
+			} finally {
+				cluster.setQuietExceptionsPreference(false);
+				Assert.assertThat(cluster.size(), is(1));
 			}
-			Assert.assertThat(cluster.size(), is(1));
 		}
 	}
 
@@ -386,8 +400,12 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			tab.setDefined();//naughty, but needed otherwise the update won't be generated
 			tab.pkid.setValue(2);
 			try {
+				// avoid printing lots of exceptions
+				cluster.setQuietExceptionsPreference(true);
 				cluster.update(tab);
 			} catch (SQLException e) {
+			} finally {
+				cluster.setQuietExceptionsPreference(false);
 			}
 			Assert.assertThat(cluster.size(), is(1));
 		}
@@ -416,7 +434,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				}
 
 			};
+			cluster.setQuietExceptionsPreference(true);
 			cluster.addDatabaseAndWait(soloDB2);
+			cluster.setQuietExceptionsPreference(false);
 			Assert.assertThat(cluster.size(), is(1));
 		}
 	}
@@ -443,7 +463,15 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 	@Test
 	public synchronized void testDatabaseTableDoesNotExists() throws SQLException {
-		Assert.assertFalse(database.tableExists(new TableThatDoesntExistOnTheCluster()));
+		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setAutoRebuild(false);
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+			cluster.addDatabaseAndWait(soloDB2);
+			cluster.setQuietExceptionsPreference(true);
+			final boolean tableExists = cluster.tableExists(new TableThatDoesntExistOnTheCluster());
+			cluster.setQuietExceptionsPreference(false);
+			Assert.assertFalse(tableExists);
+		}
 	}
 
 	@Test

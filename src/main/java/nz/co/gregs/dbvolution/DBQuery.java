@@ -2551,14 +2551,14 @@ public class DBQuery implements Serializable {
 		return this.details.getOptions().getPrintSQLBeforeExecution();
 	}
 
-	void setIgnoreExceptions(boolean b) {
-		this.details.setIgnoreExceptions(b);
+	void setQuietExceptions(boolean b) {
+		this.details.setQuietExceptions(b);
 	}
 
 	/**
 	 * @return the ignoreExceptions
 	 */
-	boolean isIgnoreExceptions() {
-		return details.isIgnoreExceptions();
+	boolean isQuietExceptions() {
+		return details.isQuietExceptions();
 	}
 }

@@ -36,6 +36,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 
 /**
@@ -48,17 +49,19 @@ class QueryCanceller implements Runnable {
 	private final Date timestamp;
 	private final String sql;
 	private boolean queryWasCancelled = false;
+	private final QueryDetails query;
 
-	QueryCanceller(DBStatement statement, String sql) {
+	QueryCanceller(DBStatement statement, String sql, QueryDetails query) {
 		this.statement = statement;
 		this.sql = sql;
 		this.timestamp = new Date();
+		this.query = query;
 	}
 
 	@Override
 	public void run() {
 		try {
-			LOGGER.log(Level.WARNING, "CANCELLER: Cancelling query - {0}", sql);
+			LOGGER.log(Level.WARNING, "CANCELLER: Cancelling query {0} = {1}", new Object[]{query.getLabel(), sql});
 			LOGGER.log(Level.WARNING, "CANCELLER: after ... {0} seconds", (0.0 + ((new Date()).getTime() - timestamp.getTime())) / 1000.0);
 			statement.cancel();
 			setQueryWasCancelled(true);
