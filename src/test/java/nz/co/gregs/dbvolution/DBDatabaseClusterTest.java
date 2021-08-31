@@ -277,7 +277,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public synchronized void testAutoRebuildRecreatesCluster() throws SQLException {
+	public synchronized void testAutoRebuildRecreatesData() throws SQLException {
 		if (!database.isMemoryDatabase()) {
 			final String nameOfCluster = "testAutoRebuildRearrangesCluster";
 			{
@@ -292,6 +292,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					cluster.addDatabase(soloDB2);
 					Assert.assertThat(cluster.size(), is(2));
 
+					cluster.delete(cluster.getDBTable(new DBDatabaseClusterTestTable()).setBlankQueryAllowed(true).getAllRows());
 					cluster.insert(createData(new Date(), new Date()));
 					DBQuery query = cluster.getDBQuery(new DBDatabaseClusterTestTable()).setBlankQueryAllowed(true);
 					Assert.assertThat(query.getAllRows().size(), is(22));
@@ -320,6 +321,58 @@ public class DBDatabaseClusterTest extends AbstractTest {
 							.getDBQuery(new DBDatabaseClusterTestTable())
 							.setBlankQueryAllowed(true);
 					Assert.assertThat(query.getAllRows().size(), is(22));
+				} finally {
+					cluster.dismantle();
+				}
+			}
+		}
+	}
+
+	@Test
+	public synchronized void testWithoutAutoRebuildItDoesntRecreateData() throws SQLException {
+		if (!database.isMemoryDatabase()) {
+			final String nameOfCluster = "testWithoutAutoRebuildItDoesntRecreateData";
+			{
+				DBDatabaseCluster cluster
+						= new DBDatabaseCluster(
+								nameOfCluster,
+								DBDatabaseCluster.Configuration.manual(),
+								database);
+				boolean dismantleCluster = true;
+				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+				try {
+					cluster.addDatabase(soloDB2);
+					Assert.assertThat(cluster.size(), is(2));
+
+					cluster.delete(cluster.getDBTable(new DBDatabaseClusterTestTable()).setBlankQueryAllowed(true).getAllRows());
+					cluster.insert(createData(new Date(), new Date()));
+					DBQuery query = cluster.getDBQuery(new DBDatabaseClusterTestTable()).setBlankQueryAllowed(true);
+					Assert.assertThat(query.getAllRows().size(), is(22));
+					dismantleCluster = false;
+				} finally {
+					if (dismantleCluster) {
+						cluster.dismantle();
+					}
+					soloDB2.stop();
+				}
+			}
+			{
+				DBDatabaseCluster cluster
+						= new DBDatabaseCluster(nameOfCluster, DBDatabaseCluster.Configuration.manual());
+
+				try {
+					H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+					Assert.assertThat(
+							soloDB2.getDBTable(new DBDatabaseClusterTestTable()).setBlankQueryAllowed(true).count(),
+							is(0l));
+
+					cluster.addDatabase(soloDB2);
+					Assert.assertThat(cluster.size(), is(1));
+
+					DBQuery query = cluster
+							.getDBQuery(new DBDatabaseClusterTestTable())
+							.setBlankQueryAllowed(true);
+					Assert.assertThat(query.getAllRows().size(), is(0));
 				} finally {
 					cluster.dismantle();
 				}
