@@ -47,8 +47,6 @@ import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.encryption.Encryption_Internal;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -58,7 +56,7 @@ public class ClusterDetails implements Serializable {
 
 	private final static long serialVersionUID = 1l;
 
-	private static final Log LOG = LogFactory.getLog(ClusterDetails.class);
+	private static final Logger LOG = Logger.getLogger(ClusterDetails.class.getName());
 
 	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> unsynchronizedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
@@ -166,9 +164,9 @@ public class ClusterDetails implements Serializable {
 
 			if (quietExceptions) {
 			} else {
-				LOG.warn("QUARANTINING: " + databaseToQuarantine.getLabel());
-				LOG.warn("QUARANTINING: " + databaseToQuarantine.getSettings().toString());
-				LOG.warn("QUARANTINING: " + except.getLocalizedMessage());
+				LOG.log(Level.WARNING, "QUARANTINING: {0}", databaseToQuarantine.getLabel());
+				LOG.log(Level.WARNING, "QUARANTINING: {0}", databaseToQuarantine.getSettings().toString());
+				LOG.log(Level.WARNING, "QUARANTINING: {0}", except.getLocalizedMessage());
 			}
 			database.setLastException(except);
 
@@ -326,7 +324,7 @@ public class ClusterDetails implements Serializable {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException ex) {
-				Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+				LOG.log(Level.SEVERE, null, ex);
 			}
 			dbs = getReadyDatabases();
 		}
@@ -354,7 +352,7 @@ public class ClusterDetails implements Serializable {
 				try {
 					return getClusteredVersionOfDatabase(authoritativeDCS.createDBDatabase());
 				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+					LOG.log(Level.SEVERE, null, ex);
 					throw new NoAvailableDatabaseException();
 				}
 			} else {
@@ -377,7 +375,7 @@ public class ClusterDetails implements Serializable {
 					try {
 						prefs.put(name, Encryption_Internal.encrypt(encode));
 					} catch (CannotEncryptInputException ex) {
-						Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+						LOG.log(Level.SEVERE, null, ex);
 						prefs.put(name, encode);
 					}
 					return;
@@ -385,7 +383,7 @@ public class ClusterDetails implements Serializable {
 			}
 		}
 	}
-
+	
 	private synchronized void removeAuthoritativeDatabase() {
 		prefs.remove(getClusterLabel());
 	}
@@ -398,7 +396,7 @@ public class ClusterDetails implements Serializable {
 				try {
 					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
 				} catch (UnableToDecryptInput ex) {
-					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+					LOG.log(Level.SEVERE, null, ex);
 					encodedSettings = rawPrefsValue;
 				}
 			}
