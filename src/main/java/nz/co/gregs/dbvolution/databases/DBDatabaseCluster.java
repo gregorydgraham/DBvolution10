@@ -1683,31 +1683,59 @@ public class DBDatabaseCluster extends DBDatabase {
 			this.useAutoReconnect = useAutoReconnect;
 		}
 
+		/**
+		 * Use for a database that does not automatically rebuild the data when
+		 * restarting the cluster nor reconnect quarantined databases after an
+		 * error.
+		 *
+		 * @return a manual configuration
+		 */
 		public static Configuration manual() {
 			return new Configuration(false, false);
 		}
 
+		/**
+		 * A configuration that will try to restore the data from the previous
+		 * instance of this cluster.
+		 *
+		 * @return an auto-rebuild configuration
+		 */
 		public static Configuration autoRebuild() {
 			return new Configuration(true, false);
 		}
 
+		/**
+		 * A configuration that will try to connect quarantined databases will the
+		 * cluster is running.
+		 *
+		 * @return an auto-reconnect configuration
+		 */
 		public static Configuration autoReconnect() {
 			return new Configuration(false, true);
 		}
 
+		/**
+		 * A configuration that will try to restore the data from the previous
+		 * instance of this cluster AND try to connect quarantined databases will
+		 * the cluster is running.
+		 *
+		 * @return an auto-rebuild and reconnect configuration
+		 */
 		public static Configuration autoRebuildAndReconnect() {
 			return new Configuration(true, true);
 		}
 
 		/**
-		 * @return the useAutoRebuild
+		 * @return TRUE if the cluster will try to reload data from the previous
+		 * version of the cluster.
 		 */
 		public boolean isUseAutoRebuild() {
 			return useAutoRebuild;
 		}
 
 		/**
-		 * @return the useAutoReconnect
+		 * @return TRUE if the cluster will try to automatically reconnect and
+		 * synchronize database while running.
 		 */
 		public boolean isUseAutoReconnect() {
 			return useAutoReconnect;
