@@ -36,6 +36,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import org.hamcrest.core.AnyOf;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -298,61 +299,42 @@ public class OuterJoinTest extends AbstractTest {
 		dbquery.addOptional(carCompany);
 		sqlForQuery = dbquery.getSQLForQuery();
 
-		Assert.assertThat(testableSQL(sqlForQuery),
-				anyOf(
-						containsString(testableSQL("(__78874071.name) >= 'ford'")),
-						containsString(testableSQL("(__78874071.name) >= N'ford'")),
-						containsString(testableSQL("\"_78874071\".name) >= 'ford'")),
-						containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) >= n'ford'")),
-						containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) >= 'ford'"))
-				)
+		final AnyOf<String> fordComparisons = anyOf(
+				containsString(testableSQL("(__78874071.name) >= 'ford'")),
+				containsString(testableSQL("(__78874071.name) >= N'ford'")),
+				containsString(testableSQL("\"_78874071\".name) >= 'ford'")),
+				containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) >= n'ford'")),
+				containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) >= 'ford'"))
 		);
-		Assert.assertThat(testableSQL(sqlForQuery),
-				anyOf(
-						containsString(testableSQL("(__78874071.name) <= 'toyota'")),
-						containsString(testableSQL("(__78874071.name) <= N'toyota'")),
-						containsString(testableSQL("(\"__78874071\".name) <= 'toyota'")),
-						containsString(testableSQL("(\"_78874071\".name) <= 'toyota'")),
-						containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) <= n'toyota')))")),
-						containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) <= 'toyota'"))
-				)
+
+		final AnyOf<String> toyotaComparisons = anyOf(
+				containsString(testableSQL("(__78874071.name) <= 'toyota'")),
+				containsString(testableSQL("(__78874071.name) <= N'toyota'")),
+				containsString(testableSQL("(\"__78874071\".name) <= 'toyota'")),
+				containsString(testableSQL("(\"_78874071\".name) <= 'toyota'")),
+				containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) <= n'toyota')))")),
+				containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) <= 'toyota'"))
 		);
-		Assert.assertThat(testableSQL(sqlForQuery),
-				anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
-						containsString(testableSQL("__1997432637.enabled = 1")),
-						containsString(testableSQL("\"__1997432637\".enabled = 1")),
-						containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
-						containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))")),
-						containsString(testableSQL("(( case when \\\"_1997432637\\\".enabled is null then null else \\\"_1997432637\\\".enabled end ) = ( case when 1 is null then null else 1 end ))"))
-				)
+
+		final AnyOf<String> enabledComparisons = anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
+				containsString(testableSQL("__1997432637.enabled = 1")),
+				containsString(testableSQL("\"__1997432637\".enabled = 1")),
+				containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
+				containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))")),
+				containsString(testableSQL("(( case when \"_1997432637\".enabled is null then null else \"_1997432637\".enabled end ) = ( case when 1 is null then null else 1 end ))"))
 		);
+
+		Assert.assertThat(testableSQL(sqlForQuery), fordComparisons);
+		Assert.assertThat(testableSQL(sqlForQuery), toyotaComparisons);
+		Assert.assertThat(testableSQL(sqlForQuery), enabledComparisons);
+
 		Assert.assertThat(testableSQL(sqlForQuery),
-				allOf(
-						anyOf(
-								containsString(testableSQL("(__78874071.name) >= 'ford'")),
-								containsString(testableSQL("(\"__78874071\".name) >= 'ford'")),
-								containsString(testableSQL("(\"_78874071\".name) >= 'ford'")),
-								containsString(testableSQL("(__78874071.name) >= N'ford'")),
-								containsString(testableSQL("((((isnull(isnull(__78874071.name,n''),n'')) >= n'ford'")),
-								containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) >= 'ford'"))),
-						anyOf(
-								containsString(testableSQL("(__78874071.name) <= 'toyota'")),
-								containsString(testableSQL("(\"__78874071.name\") <= 'toyota'")),
-								containsString(testableSQL("(\"_78874071.name\") <= 'toyota'")),
-								containsString(testableSQL("(__78874071.name) <= N'toyota'")),
-								containsString(testableSQL("(isnull(isnull(__78874071.name,n''),n'')) <= n'toyota')))")),
-								containsString(testableSQL("(coalesce(coalesce(__78874071.name,''),'')) <= 'toyota'"))),
-						anyOf(
-								containsString(testableSQL("__1997432637.enabled = TRUE")),
-								containsString(testableSQL("\"__1997432637.enabled\" = TRUE")),
-								containsString(testableSQL("__1997432637.enabled = 1")),
-								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN NULL ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN NULL ELSE  1  END )")),
-								containsString(testableSQL("(( case when __1997432637.enabled is null then NULL else __1997432637.enabled end )) = (( case when 1 is null then NULL else 1 end ))"))
-						)
-				)
+				allOf(fordComparisons, toyotaComparisons, enabledComparisons)
 		);
+
 		final String carCompanyCondition = testableSQL("__78874071.NAME) >= 'ford' and (__78874071.NAME) <= 'TOYOTA'");
 		final String testableQuery = testableSQL(sqlForQuery);
+
 		Assert.assertThat(testableQuery.indexOf(carCompanyCondition), is(testableQuery.lastIndexOf(carCompanyCondition)));
 	}
 
