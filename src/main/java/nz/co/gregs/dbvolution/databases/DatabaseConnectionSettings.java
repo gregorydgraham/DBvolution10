@@ -591,7 +591,9 @@ public class DatabaseConnectionSettings {
 				)
 		);
 		settings.setClusterHosts(decodeClusterHosts(System.getProperty(prefix + ".clusterhosts")));
-		settings.setExtras(decodeExtras(System.getProperty(prefix + ".extras")));
+		final String extrasFound = System.getProperty(prefix + ".extras");
+		final Map<String, String> decodedExtras = decodeExtras(extrasFound);
+		settings.mergeExtras(decodedExtras); // use merge to preserve default extras
 		return settings;
 	}
 
