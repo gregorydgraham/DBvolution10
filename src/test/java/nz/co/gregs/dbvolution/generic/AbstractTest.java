@@ -75,7 +75,7 @@ public abstract class AbstractTest {
 			getDatabasesFromSettings();
 		}
 		databases.forEach(database -> {
-			System.out.println("Processing: Database " + database[0]);
+			System.out.println("Processing: Database " + database[0]+ " = "+((DBDatabase)database[1]).getJdbcURL());
 		});
 		return databases;
 	}
