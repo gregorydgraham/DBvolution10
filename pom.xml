@@ -357,6 +357,7 @@
 						<sqlite.username>${sqlite.username}</sqlite.username>
 						<sqlite.password>${sqlite.password}</sqlite.password>
 						<sqlite.schema />	
+						<sqlite.extras>${sqlite.extras}</sqlite.extras>
                         							
 						<h2.url>${h2.url}</h2.url>
 						<h2.host>${h2.host}</h2.host>
@@ -365,6 +366,7 @@
 						<h2.username>${h2.username}</h2.username>
 						<h2.password>${h2.password}</h2.password>
 						<h2.schema>${h2.schema}</h2.schema>
+						<h2.extras>${h2.extras}</h2.extras>
                         
 						<h2file.url>${h2file.url}</h2file.url>
 						<h2file.host>${h2file.host}</h2file.host>
@@ -375,6 +377,7 @@
 						<h2file.password>${h2file.password}</h2file.password>
 						<h2file.schema>${h2file.schema}</h2file.schema>
 						<h2file.file>${h2file.file}</h2file.file>
+						<h2file.extras>${h2file.extras}</h2file.extras>
 					
 						<h2datasource.url>${h2datasource.url}</h2datasource.url>
 						<h2datasource.host>${h2datasource.host}</h2datasource.host>
@@ -383,6 +386,7 @@
 						<h2datasource.username>${h2datasource.username}</h2datasource.username>
 						<h2datasource.password>${h2datasource.password}</h2datasource.password>
 						<h2datasource.schema>${h2datasource.schema}</h2datasource.schema>
+						<h2datasource.extras>${h2datasource.extras}</h2datasource.extras>
                         
 						<h2memory.url>${h2memory.url}</h2memory.url>
 						<h2memory.host>${h2memory.host}</h2memory.host>
@@ -391,6 +395,7 @@
 						<h2memory.username>${h2memory.username}</h2memory.username>
 						<h2memory.password>${h2memory.password}</h2memory.password>
 						<h2memory.schema>${h2memory.schema}</h2memory.schema>
+						<h2memory.extras>${h2memory.extras}</h2memory.extras>
                         
 						<h2shared.url>${h2shared.url}</h2shared.url>
 						<h2shared.host>${h2shared.host}</h2shared.host>
@@ -400,6 +405,7 @@
 						<h2shared.username>${h2shared.username}</h2shared.username>
 						<h2shared.password>${h2shared.password}</h2shared.password>
 						<h2shared.schema>${h2shared.schema}</h2shared.schema>
+						<h2shared.extras>${h2shared.extras}</h2shared.extras>
                         
 						<mysql.url>${mysql.url}</mysql.url>
 						<mysql.host>${mysql.host}</mysql.host>
@@ -409,6 +415,7 @@
 						<mysql.username>${mysql.username}</mysql.username>
 						<mysql.password>${mysql.password}</mysql.password>
 						<mysql.schema>${mysql.schema}</mysql.schema>
+						<mysql.extras>${mysql.extras}</mysql.extras>
                                                 
 						<mysql56.url>${mysql56.url}</mysql56.url>
 						<mysql56.host>${mysql56.host}</mysql56.host>
@@ -418,6 +425,7 @@
 						<mysql56.username>${mysql56.username}</mysql56.username>
 						<mysql56.password>${mysql56.password}</mysql56.password>
 						<mysql56.schema>${mysql56.schema}</mysql56.schema>
+						<mysql56.extras>${mysql56.extras}</mysql56.extras>
                         
 						<oraclexe.url>${oraclexe.url}</oraclexe.url>
 						<oraclexe.host>${oraclexe.host}</oraclexe.host>
@@ -426,6 +434,7 @@
 						<oraclexe.username>${oraclexe.username}</oraclexe.username>
 						<oraclexe.password>${oraclexe.password}</oraclexe.password>
 						<oraclexe.schema>${oraclexe.schema}</oraclexe.schema>
+						<oraclexe.extras>${oraclexe.extras}</oraclexe.extras>
                         
 						<sqlserver.url>${sqlserver.url}</sqlserver.url>
 						<sqlserver.host>${sqlserver.host}</sqlserver.host>
@@ -434,6 +443,7 @@
 						<sqlserver.username>${sqlserver.username}</sqlserver.username>
 						<sqlserver.password>${sqlserver.password}</sqlserver.password>
 						<sqlserver.schema>${sqlserver.schema}</sqlserver.schema>
+						<sqlserver.extras>${sqlserver.extras}</sqlserver.extras>
                         
 						<sqlservermini.url>${sqlservermini.url}</sqlservermini.url>
 						<sqlservermini.host>${sqlservermini.host}</sqlservermini.host>
@@ -442,6 +452,7 @@
 						<sqlservermini.username>${sqlservermini.username}</sqlservermini.username>
 						<sqlservermini.password>${sqlservermini.password}</sqlservermini.password>
 						<sqlservermini.schema>${sqlservermini.schema}</sqlservermini.schema>
+						<sqlservermini.extras>${sqlservermini.extras}</sqlservermini.extras>
 
 						<postgres.url>${postgres.url}</postgres.url>
 						<postgres.host>${postgres.host}</postgres.host>
@@ -451,6 +462,7 @@
 						<postgres.username>${postgres.username}</postgres.username>
 						<postgres.password>${postgres.password}</postgres.password>
 						<postgres.schema>${postgres.schema}</postgres.schema>
+						<postgres.extras>${postgres.extras}</postgres.extras>
 						
 						<postgresfullcluster.url>${postgresfullcluster.url}</postgresfullcluster.url>
 						<postgresfullcluster.host>${postgresfullcluster.host}</postgresfullcluster.host>
@@ -460,6 +472,7 @@
 						<postgresfullcluster.username>${postgresfullcluster.username}</postgresfullcluster.username>
 						<postgresfullcluster.password>${postgresfullcluster.password}</postgresfullcluster.password>
 						<postgresfullcluster.schema>${postgresfullcluster.schema}</postgresfullcluster.schema>
+						<postgresfullcluster.extras>${postgresfullcluster.extras}</postgresfullcluster.extras>
 
 					</systemPropertyVariables>
 				</configuration>
