@@ -1372,7 +1372,6 @@ public class DBDatabaseCluster extends DBDatabase {
 //	private DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
 //		return details.getTemplateDatabase();
 //	}
-
 	public String getClusterStatus() {
 		final String summary = getStatusOfActiveDatabases();
 		final String unsyn = getStatusOfUnsynchronisedDatabases();
@@ -1703,6 +1702,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		 * A configuration that will try to restore the data from the previous
 		 * instance of this cluster.
 		 *
+		 * <p>
+		 * the TrackedTable list will also be rebuilt.</p>
+		 *
 		 * @return an auto-rebuild configuration
 		 */
 		public static Configuration autoRebuild() {
@@ -1712,6 +1714,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		/**
 		 * A configuration that will try to connect quarantined databases will the
 		 * cluster is running.
+		 *
+		 * <p>
+		 * the TrackedTable list will also be rebuilt.</p>
 		 *
 		 * @return an auto-reconnect configuration
 		 */
