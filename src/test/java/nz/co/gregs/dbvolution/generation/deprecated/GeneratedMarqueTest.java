@@ -41,10 +41,12 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.deprecated.DBTableClassGenerator.Options;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
+
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -84,7 +86,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 							found = true;
 						}
 					}
-					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
 			assertThat(classesTested, is(5));
@@ -119,7 +121,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 							found = true;
 						}
 					}
-					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
 			assertThat(classesTested, is(1));
@@ -154,7 +156,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 							found = true;
 						}
 					}
-					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
 			assertThat(classesTested, is(1));
@@ -193,7 +195,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 							}
 						}
 					}
-					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
 			assertThat(classesTested, is(4));
@@ -312,27 +314,27 @@ public class GeneratedMarqueTest extends AbstractTest {
 		String test = "T_31";
 		String expected = "T_31";
 		String result = DBTableClassGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 
 		test = "T_3_1";
 		expected = "T_3_1";
 		result = DBTableClassGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 
 		test = "car_company";
 		expected = "CarCompany";
 		result = DBTableClassGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 
 		test = "CAR_COMPANY";
 		expected = "CarCompany";
 		result = DBTableClassGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 
 		test = "CARCOMPANY";
 		expected = "Carcompany";
 		result = DBTableClassGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 	}
 
 	@DBTableName("test_auto_increment_detection")

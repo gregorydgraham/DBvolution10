@@ -48,7 +48,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -236,7 +236,7 @@ public class OracleCompatibilityTest extends AbstractTest {
 						.setReturnEmptyStringForNullString(true)
 						.getRowsByExample(likeQuery);
 
-		Assert.assertEquals(1, rowsByExample.size());
+		assertThat(rowsByExample.size(), is(1));
 	}
 
 	public static class CountIfRow extends Marque {

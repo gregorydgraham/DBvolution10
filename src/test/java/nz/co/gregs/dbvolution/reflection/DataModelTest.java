@@ -44,7 +44,9 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 
 /**
@@ -74,14 +76,14 @@ public class DataModelTest extends AbstractTest {
 			if (!constr.contains(knownString)) {
 				System.out.println("KNOWN BUT NOT FOUND: " + knownString);
 			}
-			Assert.assertTrue(constr.contains(knownString));
+			assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
 		}
 		for (String foundString : constr) {
 			if (!knownStrings.contains(foundString)) {
 				System.out.println("FOUND BUT NOT KNOWN: " + foundString);
 			}
-			Assert.assertTrue(knownStrings.contains(foundString));
+			assertTrue(knownStrings.contains(foundString));
 			conMap.remove(foundString);
 		}
 		assertThat(result.size(), is(knownStrings.size()));
@@ -106,7 +108,7 @@ public class DataModelTest extends AbstractTest {
 					System.out.println("EXISTING CONSTRUCTOR: " + t);
 				});
 			}
-			Assert.assertTrue(constr.contains(knownString));
+			assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
 		}
 		for (String constrString : constr) {
@@ -116,7 +118,7 @@ public class DataModelTest extends AbstractTest {
 					System.out.println("EXPECTED CONSTRUCTOR: " + t);
 				});
 			}
-			Assert.assertTrue(constr.contains(constrString));
+			assertTrue(constr.contains(constrString));
 			conMap.remove(constrString);
 		}
 		assertThat(result.size(), is(knownStrings.size()));
@@ -519,7 +521,7 @@ public class DataModelTest extends AbstractTest {
 				System.out.println("EXCEPTION: " + ex.getMessage());
 				System.out.println("EXCEPTION: " + ex.getLocalizedMessage());
 				ex.printStackTrace();
-				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
+				fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
 		assertThat(dbDatabaseCreationMethods.size(), is(2));

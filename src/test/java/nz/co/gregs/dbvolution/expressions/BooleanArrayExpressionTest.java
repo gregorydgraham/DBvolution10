@@ -29,9 +29,10 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
 
 /**
  *
@@ -144,7 +145,7 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 		tab.boolArrayColumn.setValue(new Boolean[]{true, false, true, true});
 		database.insert(tab);
 		tab = new BooleanArrayExpressionTable();
-		tab.boolArrayColumn.setValue((Boolean[])null);
+		tab.boolArrayColumn.setValue((Boolean[]) null);
 		database.insert(tab);
 
 		final BooleanArrayExpressionTable example = new BooleanArrayExpressionTable();

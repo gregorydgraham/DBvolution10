@@ -22,8 +22,8 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *

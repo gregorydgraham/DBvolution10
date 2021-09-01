@@ -2,7 +2,7 @@ package nz.co.gregs.dbvolution.internal.properties;
 
 import java.sql.SQLException;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -10,7 +10,8 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 
 import org.junit.BeforeClass;
 import org.junit.Test;

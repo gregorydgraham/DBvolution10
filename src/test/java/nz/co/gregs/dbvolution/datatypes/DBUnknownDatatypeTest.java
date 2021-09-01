@@ -18,8 +18,9 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
 
 /**
  *

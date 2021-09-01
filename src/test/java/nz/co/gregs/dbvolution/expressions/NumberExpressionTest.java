@@ -30,10 +30,10 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class NumberExpressionTest extends AbstractTest {
 
@@ -94,7 +94,7 @@ public class NumberExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).ifThenElse(2, 1).min().is(2));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(11, rowsByExample.size());
+		assertEquals(11, rowsByExample.size());
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class NumberExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).ifThenElse(2, 1).max().is(2));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(11, rowsByExample.size());
+		assertEquals(11, rowsByExample.size());
 	}
 
 	@Test

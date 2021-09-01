@@ -28,14 +28,11 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregorygraham
  */
 public class MultiPoint2DExpressionTest extends AbstractTest {
@@ -43,8 +40,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 	final GeometryFactory geometryFactory = new GeometryFactory();
 
 	public MultiPoint2DExpressionTest(Object testIterationName, DBDatabase db) throws SQLException {
-		super(testIterationName, db);}
-	
+		super(testIterationName, db);
+	}
+
 	@Override
 	public void setup(DBDatabase db) throws Exception {
 		MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();

@@ -42,6 +42,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Assert;
+
 import org.junit.Test;
 
 public class DBPasswordHashTest extends AbstractTest {

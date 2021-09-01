@@ -36,8 +36,9 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class StringExpressionTest extends AbstractTest {
@@ -108,7 +109,7 @@ public class StringExpressionTest extends AbstractTest {
 		likeQuery.name.excludedPattern(new StringExpression(str).uppercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
-		Assert.assertEquals(14, rowsByExample.size());
+		assertEquals(14, rowsByExample.size());
 	}
 
 	@Test
@@ -118,7 +119,7 @@ public class StringExpressionTest extends AbstractTest {
 		likeQuery.name.excludedPattern(new StringExpression((DBString) null).uppercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
-		Assert.assertEquals(22, rowsByExample.size());
+		assertEquals(22, rowsByExample.size());
 	}
 
 	@Test
@@ -127,7 +128,7 @@ public class StringExpressionTest extends AbstractTest {
 		likeQuery.name.excludedPattern(new StringExpression(5).uppercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
-		Assert.assertEquals(22, rowsByExample.size());
+		assertEquals(22, rowsByExample.size());
 	}
 
 	@Test
@@ -138,7 +139,7 @@ public class StringExpressionTest extends AbstractTest {
 
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
-		Assert.assertEquals(22, rowsByExample.size());
+		assertEquals(22, rowsByExample.size());
 	}
 
 	@Test
@@ -146,7 +147,7 @@ public class StringExpressionTest extends AbstractTest {
 		Marque likeQuery = new Marque();
 		likeQuery.name.excludedPattern(new StringExpression((NumberResult) null).uppercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
-		Assert.assertEquals(22, rowsByExample.size());
+		assertEquals(22, rowsByExample.size());
 	}
 
 	@Test
@@ -158,9 +159,9 @@ public class StringExpressionTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
-			Assert.assertEquals(20, rowsByExample.size());
+			assertEquals(20, rowsByExample.size());
 		} else {
-			Assert.assertEquals(1, rowsByExample.size());
+			assertEquals(1, rowsByExample.size());
 		}
 	}
 
@@ -171,7 +172,7 @@ public class StringExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).is(StringExpression.value("6664478").numberResult()));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(1, rowsByExample.size());
+		assertEquals(1, rowsByExample.size());
 		assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
 	}
 
@@ -182,7 +183,7 @@ public class StringExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).stringResult().is(6664478));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(1, rowsByExample.size());
+		assertEquals(1, rowsByExample.size());
 		assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
 	}
 
@@ -193,7 +194,7 @@ public class StringExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).stringResult().isIgnoreCase(6664478));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(1, rowsByExample.size());
+		assertEquals(1, rowsByExample.size());
 		assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
 	}
 
@@ -204,7 +205,7 @@ public class StringExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).stringResult().isNot(6664478));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(21, rowsByExample.size());
+		assertEquals(21, rowsByExample.size());
 	}
 
 	@Test
@@ -214,7 +215,7 @@ public class StringExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).stringResult().isNot(NumberExpression.value(6664478)));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(21, rowsByExample.size());
+		assertEquals(21, rowsByExample.size());
 	}
 
 	@Test
@@ -224,7 +225,7 @@ public class StringExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.name).min().is("FORD"));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(1, rowsByExample.size());
+		assertEquals(1, rowsByExample.size());
 	}
 
 	@Test
@@ -235,7 +236,7 @@ public class StringExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.name).max().is("FORD"));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
-		Assert.assertEquals(1, rowsByExample.size());
+		assertEquals(1, rowsByExample.size());
 	}
 
 	@Test

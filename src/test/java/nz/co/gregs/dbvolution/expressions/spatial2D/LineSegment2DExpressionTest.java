@@ -29,17 +29,14 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import com.vividsolutions.jts.geom.*;
+import static org.junit.Assert.fail;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregory.graham
  */
@@ -207,7 +204,7 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 		DBRow[] resultArray = result.toArray(new DBRow[]{});
 		DBRow aRow = resultArray[0];
 		if (!(aRow instanceof LineSegmentTestTable)) {
-			Assert.fail("Set should include LineTestTable");
+			fail("Set should include LineTestTable");
 		}
 	}
 

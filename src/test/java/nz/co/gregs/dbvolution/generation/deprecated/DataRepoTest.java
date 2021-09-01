@@ -37,8 +37,8 @@ import nz.co.gregs.dbvolution.databases.H2SharedDB;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
  *

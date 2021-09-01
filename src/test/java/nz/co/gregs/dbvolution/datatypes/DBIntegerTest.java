@@ -1,7 +1,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.SQLException;
 import java.util.List;

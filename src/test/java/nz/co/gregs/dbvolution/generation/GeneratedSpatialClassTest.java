@@ -13,10 +13,10 @@ import java.util.List;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -86,7 +86,7 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 							found = true;
 						}
 					}
-					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
 			assertThat(classesTested, is(1));

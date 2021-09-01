@@ -32,11 +32,11 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.After;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
 
 /**
@@ -53,13 +53,13 @@ public class JavaObjectExpressionTest extends AbstractTest {
 	}
 
 	@After
-	public void after() throws AutoCommitActionDuringTransactionException, SQLException{
+	public void after() throws AutoCommitActionDuringTransactionException, SQLException {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new JavaObjectExpressionTable());
 	}
-	
+
 	@Before
-	public void before() throws AutoCommitActionDuringTransactionException, SQLException{
+	public void before() throws AutoCommitActionDuringTransactionException, SQLException {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new JavaObjectExpressionTable());
 		database.createTable(new JavaObjectExpressionTable());

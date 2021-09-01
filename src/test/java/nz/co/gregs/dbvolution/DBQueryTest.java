@@ -29,11 +29,11 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.example.CompanyText;
+import org.junit.Assert;
 
 /**
  *

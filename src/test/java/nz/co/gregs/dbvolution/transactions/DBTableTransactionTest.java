@@ -24,7 +24,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 /**
@@ -70,7 +71,7 @@ public class DBTableTransactionTest extends AbstractTest {
 			}
 		}, true);
 		List<Marque> added = marquesTable.getRowsByExample(new Marque());
-		Assert.assertTrue("Length of list after insert should be longer than the original", added.size() == original.size() + 2);
+		assertTrue("Length of list after insert should be longer than the original", added.size() == original.size() + 2);
 	}
 
 	@Test
@@ -107,7 +108,7 @@ public class DBTableTransactionTest extends AbstractTest {
 		}
 		final List<Marque> addedRows = marquesTable.getRowsByExample(new Marque());
 		List<Marque> added = marquesTable.toList();
-		Assert.assertTrue("Length of list after insert should be the same as the original", added.size() == original.size());
+		assertTrue("Length of list after insert should be the same as the original", added.size() == original.size());
 
 	}
 }

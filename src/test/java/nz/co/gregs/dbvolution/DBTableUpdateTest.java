@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
+
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,7 +76,7 @@ public class DBTableUpdateTest extends AbstractTest {
 
 		Marque toyota = marquesTable.getFirstRow();
 
-		Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
+		assertThat("TOYOTA", is(toyota.name.toString()));
 
 		toyota.name.setValue("NOTTOYOTA");
 		String sqlForUpdate = marquesTable.update(toyota).get(0).getSQLStatements(database).get(0);
@@ -95,6 +95,6 @@ public class DBTableUpdateTest extends AbstractTest {
 		marquesTable.getRowsByExample(myTableRow);
 
 		toyota = marquesTable.getFirstRow();
-		Assert.assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
+		assertThat("NOTTOYOTA", is(toyota.name.toString()));
 	}
 }

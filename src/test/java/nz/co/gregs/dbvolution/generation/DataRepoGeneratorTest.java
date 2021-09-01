@@ -32,10 +32,12 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import org.junit.Assert;
+
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -244,7 +246,7 @@ public class DataRepoGeneratorTest {
 						found = true;
 					}
 				}
-				Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+				assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 			}
 		}
 		assertThat(classesTested, is(5));
@@ -305,7 +307,7 @@ public class DataRepoGeneratorTest {
 						found = true;
 					}
 				}
-				Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+				assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 			}
 		}
 		assertThat(classesTested, is(1));
@@ -367,7 +369,7 @@ public class DataRepoGeneratorTest {
 						found = true;
 					}
 				}
-				Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+				assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 			}
 		}
 		assertThat(classesTested, is(1));
@@ -539,7 +541,7 @@ public class DataRepoGeneratorTest {
 						}
 					}
 				}
-				Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+				assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 			}
 		}
 		assertThat(classesTested, is(4));
@@ -580,17 +582,17 @@ public class DataRepoGeneratorTest {
 		String test = "T_31";
 		String expected = "T_31";
 		String result = DataRepoGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 
 		test = "T_3_1";
 		expected = "T_3_1";
 		result = DataRepoGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 
 		test = "car_company";
 		expected = "CarCompany";
 		result = DataRepoGenerator.toClassCase(test);
-		Assert.assertEquals(result, expected);
+		assertEquals(result, expected);
 
 		test = "CAR_COMPANY";
 		expected = "CarCompany";

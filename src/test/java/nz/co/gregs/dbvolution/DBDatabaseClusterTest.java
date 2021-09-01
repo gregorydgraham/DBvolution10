@@ -71,6 +71,7 @@ import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Assert;
+
 import org.junit.Test;
 
 /**

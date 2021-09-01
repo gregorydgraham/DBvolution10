@@ -2,9 +2,6 @@ package nz.co.gregs.dbvolution.internal.properties;
 
 import static nz.co.gregs.dbvolution.internal.properties.PropertyMatchers.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.List;
 
 import junit.framework.AssertionFailedError;
 import nz.co.gregs.dbvolution.DBRow;
@@ -14,6 +11,7 @@ import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
 

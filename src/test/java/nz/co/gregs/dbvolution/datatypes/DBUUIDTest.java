@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Assert;
+
 import org.junit.Test;
 
 public class DBUUIDTest extends AbstractTest {
@@ -201,14 +201,14 @@ public class DBUUIDTest extends AbstractTest {
 		UUIDTestTable firstRow = allRows.get(0);
 		UUIDTestTable secondRow = allRows.get(1);
 		
-		Assert.assertNull(firstRow.uuidValue.getValue());
-		Assert.assertNull(secondRow.uuidValue.getValue());
+		assertThat(firstRow.uuidValue.getValue(), nullValue());
+		assertThat(secondRow.uuidValue.getValue(), nullValue());
 		
-		Assert.assertNotNull(firstRow.defaultUUIDValueByName.getValue());
-		Assert.assertNotNull(secondRow.defaultUUIDValueByName.getValue());
+		assertThat(firstRow.defaultUUIDValueByName.getValue(), notNullValue());
+		assertThat(secondRow.defaultUUIDValueByName.getValue(), notNullValue());
 		
-		Assert.assertNotNull(firstRow.defaultUUIDValueRandomly.getValue());
-		Assert.assertNotNull(secondRow.defaultUUIDValueRandomly.getValue());
+		assertThat(firstRow.defaultUUIDValueRandomly.getValue(), notNullValue());
+		assertThat(secondRow.defaultUUIDValueRandomly.getValue(),notNullValue());
 		
 		assertThat(firstRow.defaultUUIDValueByName.getValue(), is(secondRow.defaultUUIDValueByName.getValue()));
 		assertThat(firstRow.defaultUUIDValueRandomly.getValue().toString(), is(not(secondRow.defaultUUIDValueRandomly.getValue())));

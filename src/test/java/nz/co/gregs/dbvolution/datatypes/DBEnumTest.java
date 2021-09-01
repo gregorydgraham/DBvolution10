@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedExc
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
-import org.junit.Assert;
+
 import org.junit.Test;
 
 public class DBEnumTest extends AbstractTest {

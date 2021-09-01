@@ -26,7 +26,8 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public class QueryGraphTest extends AbstractTest {
 		QueryGraph instance = new QueryGraph(new ArrayList<DBRow>(), new ArrayList<BooleanExpression>());
 		Graph<QueryGraphNode, DBExpression> expResult = new SparseMultigraph<QueryGraphNode, DBExpression>();
 		Graph<QueryGraphNode, DBExpression> result = instance.getJungGraph();
-		Assert.assertNotNull(result);
+		assertThat(result, notNullValue());
 		assertThat(result.getClass().getSimpleName(), is(expResult.getClass().getSimpleName()));
 	}
 

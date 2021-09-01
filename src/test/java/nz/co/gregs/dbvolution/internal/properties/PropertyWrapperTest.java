@@ -1,7 +1,7 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -116,7 +116,7 @@ public class PropertyWrapperTest {
 
 	// note: intentionally doesn't use a wrapper factory for tests on equals() methods
 	@SuppressWarnings("unchecked")
-	private <ROW extends DBRow > PropertyWrapper<?, ?, ?> propertyOf(ROW target, String javaPropertyName) {
+	private <ROW extends DBRow> PropertyWrapper<?, ?, ?> propertyOf(ROW target, String javaPropertyName) {
 		var classWrapper = new RowDefinitionClassWrapper<ROW>((Class<ROW>) target.getClass());
 		return classWrapper.instanceWrapperFor(target).getPropertyByName(javaPropertyName);
 	}

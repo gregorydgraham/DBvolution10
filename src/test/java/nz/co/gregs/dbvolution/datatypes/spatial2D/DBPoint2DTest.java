@@ -19,16 +19,13 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregorygraham
  */
 public class DBPoint2DTest extends AbstractTest {
