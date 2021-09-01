@@ -402,13 +402,9 @@ public class ClusterDetails implements Serializable {
 				LOG.log(Level.SEVERE, null, ex);
 			}
 		}
-		if (encodedSettings != null && !encodedSettings.isEmpty()) {
-			var seps = getTrackedTablesSeparatedStringTemplate();
-			List<String> decodedRowClasses = seps.decode(encodedSettings);
-			return decodedRowClasses;
-		} else {
-			return new ArrayList<>();
-		}
+		var seps = getTrackedTablesSeparatedStringTemplate();
+		List<String> decodedRowClasses = seps.decode(encodedSettings);
+		return decodedRowClasses;
 	}
 
 	public void loadTrackedTables() {
