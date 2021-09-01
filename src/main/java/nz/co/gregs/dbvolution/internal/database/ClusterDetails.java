@@ -47,6 +47,8 @@ import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.encryption.Encryption_Internal;
+import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  *
@@ -203,7 +205,7 @@ public class ClusterDetails implements Serializable {
 
 	private synchronized boolean removeDatabaseFromAllLists(DBDatabase databaseToRemove) throws SQLException {
 		DBDatabase database = getClusteredVersionOfDatabase(databaseToRemove);
-		LOG.info("REMOVING: " + database.getLabel());
+		LOG.log(Level.INFO, "REMOVING: {0}", database.getLabel());
 		boolean result = queuedActions.containsKey(database) ? queuedActions.remove(database) != null : true;
 		result = result && quarantinedDatabases.contains(database) ? quarantinedDatabases.remove(database) : true;
 		result = result && unsynchronizedDatabases.contains(database) ? unsynchronizedDatabases.remove(database) : true;
@@ -233,7 +235,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized DBRow[] getTrackedTables() {
+	public synchronized DBRow[] getRequiredAndTrackedTables() {
 		var tables = new ArrayList<DBRow>();
 		tables.addAll(requiredTables);
 		tables.addAll(trackedTables);
@@ -244,30 +246,35 @@ public class ClusterDetails implements Serializable {
 		synchronized (trackedTables) {
 			trackedTables.clear();
 			trackedTables.addAll(rows);
+			saveTrackedTables();
 		}
 	}
 
 	public void addTrackedTable(DBRow row) {
 		synchronized (trackedTables) {
 			trackedTables.add(row);
+			saveTrackedTables();
 		}
 	}
 
 	public void addTrackedTables(Collection<DBRow> rows) {
 		synchronized (trackedTables) {
 			trackedTables.addAll(rows);
+			saveTrackedTables();
 		}
 	}
 
 	public void removeTrackedTable(DBRow row) {
 		synchronized (trackedTables) {
 			trackedTables.remove(row);
+			saveTrackedTables();
 		}
 	}
 
 	public void removeTrackedTables(Collection<DBRow> rows) {
 		synchronized (trackedTables) {
 			trackedTables.removeAll(rows);
+			saveTrackedTables();
 		}
 	}
 
@@ -335,7 +342,6 @@ public class ClusterDetails implements Serializable {
 			return randomElement;
 		}
 		throw new NoAvailableDatabaseException();
-//		return null;
 	}
 
 	public synchronized void addAll(DBDatabase[] databases) throws SQLException {
@@ -345,25 +351,93 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
-//		if (allDatabases.isEmpty()) {
-		if (allDatabases.size() < 2) {
-			final DatabaseConnectionSettings authoritativeDCS = getAuthoritativeDatabaseConnectionSettings();
-			if (authoritativeDCS != null) {
-				try {
-					return getClusteredVersionOfDatabase(authoritativeDCS.createDBDatabase());
-				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-					LOG.log(Level.SEVERE, null, ex);
-					throw new NoAvailableDatabaseException();
-				}
-			} else {
-				return null;
-			}
+		if (allDatabases.size() == 1 && useAutoRebuild) {
+			return getAuthoritativeDatabase();
 		} else {
 			if (readyDatabases.isEmpty() && pausedDatabases.isEmpty()) {
 				throw new NoAvailableDatabaseException();
 			}
 			return getPausedDatabase();
 		}
+	}
+
+	private DBDatabase getAuthoritativeDatabase() throws NoAvailableDatabaseException {
+		final DatabaseConnectionSettings authoritativeDCS = getAuthoritativeDatabaseConnectionSettings();
+		if (authoritativeDCS != null) {
+			try {
+				return getClusteredVersionOfDatabase(authoritativeDCS.createDBDatabase());
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+				LOG.log(Level.SEVERE, null, ex);
+				throw new NoAvailableDatabaseException();
+			}
+		} else {
+			throw new NoAvailableDatabaseException();
+		}
+	}
+
+	private synchronized void saveTrackedTables() {
+		if (useAutoRebuild) {
+			final String name = getTrackedTablesPrefsIdentifier();
+			SeparatedString rowClasses = getTrackedTablesSeparatedStringTemplate();
+			for (DBRow trackedTable : trackedTables) {
+				rowClasses.add(trackedTable.getClass().getName());
+			}
+			String encodedTablenames = rowClasses.encode();
+			try {
+				prefs.put(name, Encryption_Internal.encrypt(encodedTablenames));
+			} catch (CannotEncryptInputException ex) {
+				LOG.log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	public List<String> getSavedTrackedTables() {
+
+		String encodedSettings = "";
+		final String rawPrefsValue = prefs.get(getTrackedTablesPrefsIdentifier(), null);
+		if (rawPrefsValue != null) {
+			try {
+				encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
+			} catch (UnableToDecryptInput ex) {
+				LOG.log(Level.SEVERE, null, ex);
+			}
+		}
+		if (encodedSettings != null && !encodedSettings.isEmpty()) {
+			var seps = getTrackedTablesSeparatedStringTemplate();
+			List<String> decodedRowClasses = seps.decode(encodedSettings);
+			return decodedRowClasses;
+		} else {
+			return new ArrayList<>();
+		}
+	}
+
+	public void loadTrackedTables() {
+		if (useAutoRebuild) {
+			List<String> savedTrackedTables = getSavedTrackedTables();
+			for (String savedTrackedTable : savedTrackedTables) {
+				try {
+					@SuppressWarnings("unchecked")
+					Class<DBRow> trackedTableClass = (Class<DBRow>) Class.forName(savedTrackedTable);
+					DBRow dbRow = DBRow.getDBRow(trackedTableClass);
+					trackedTables.add(dbRow);
+				} catch (ClassNotFoundException ex) {
+					ex.printStackTrace();
+					LOG.log(
+							Level.SEVERE,
+							"Tracked Table {0} requested but not found while trying to rebuild cluster {1}",
+							new Object[]{savedTrackedTable, getClusterLabel()}
+					);
+				}
+			}
+		}
+	}
+
+	private String getTrackedTablesPrefsIdentifier() {
+		return getClusterLabel() + "_trackedtables";
+	}
+
+	private static SeparatedString getTrackedTablesSeparatedStringTemplate() {
+		return SeparatedStringBuilder.commaSeparated();
 	}
 
 	private synchronized void setAuthoritativeDatabase() {
@@ -383,7 +457,7 @@ public class ClusterDetails implements Serializable {
 			}
 		}
 	}
-	
+
 	private synchronized void removeAuthoritativeDatabase() {
 		prefs.remove(getClusterLabel());
 	}

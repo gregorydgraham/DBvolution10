@@ -171,12 +171,17 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config) {
 		super();
+		setLabel(clusterLabel);
 		details = new ClusterDetails();
+		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
+		startupCluster(clusterLabel, config);
+	}
+
+	private void startupCluster(String clusterLabel, Configuration config) {
 		details.setClusterLabel(clusterLabel);
 		details.setAutoRebuild(config.isUseAutoRebuild());
 		details.setAutoReconnect(config.isUseAutoReconnect());
-		setLabel(clusterLabel);
-		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
+		details.loadTrackedTables();
 		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
 		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
 		addRegularProcess(reconnectionProcessor);
@@ -1241,7 +1246,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		try {
 			DBDatabase template = null;
 			try {
-				template = getTemplateDatabase();
+				template = details.getTemplateDatabase();
 			} catch (NoAvailableDatabaseException except) {
 				// must be the first database
 			}
@@ -1364,9 +1369,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
-		return details.getTemplateDatabase();
-	}
+//	private DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
+//		return details.getTemplateDatabase();
+//	}
 
 	public String getClusterStatus() {
 		final String summary = getStatusOfActiveDatabases();
@@ -1641,7 +1646,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public DBRow[] getTrackedTables() {
-		return details.getTrackedTables();
+		return details.getRequiredAndTrackedTables();
 	}
 
 	public void setTrackedTables(Collection<DBRow> rows) {

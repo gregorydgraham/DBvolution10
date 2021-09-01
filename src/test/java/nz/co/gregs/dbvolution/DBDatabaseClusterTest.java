@@ -38,10 +38,12 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -377,6 +379,165 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					cluster.dismantle();
 				}
 			}
+		}
+	}
+
+	@Test
+	public synchronized void testAutoRebuildLoadsTrackedTables() throws SQLException {
+		if (!database.isMemoryDatabase()) {
+			final Marque newTrackedTable = new Marque();
+			final String nameOfCluster = "testAutoRebuildLoadsTrackedTables";
+			{
+				DBDatabaseCluster cluster
+						= new DBDatabaseCluster(
+								nameOfCluster,
+								DBDatabaseCluster.Configuration.autoRebuild(),
+								database);
+				boolean dismantleCluster = true;
+				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+				try {
+					cluster.addDatabase(soloDB2);
+					Assert.assertThat(cluster.size(), is(2));
+
+					cluster.addTrackedTable(newTrackedTable);
+
+					List<String> asList = Arrays.asList(cluster.getTrackedTables())
+							.stream()
+							.map(t -> t.getClass().getCanonicalName())
+							.collect(Collectors.toList());
+					Assert.assertThat(asList, hasItem(newTrackedTable.getClass().getCanonicalName()));
+
+					dismantleCluster = false;
+				} finally {
+					if (dismantleCluster) {
+						cluster.dismantle();
+					}
+					soloDB2.stop();
+				}
+			}
+			{
+				DBDatabaseCluster cluster = new DBDatabaseCluster(
+						nameOfCluster, DBDatabaseCluster.Configuration.autoRebuild()
+				);
+
+				try {
+					List<String> asList = Arrays.asList(cluster.getTrackedTables())
+							.stream()
+							.map(t -> t.getClass().getCanonicalName())
+							.collect(Collectors.toList());
+					Assert.assertThat(asList, hasItem(newTrackedTable.getClass().getCanonicalName()));
+				} finally {
+					cluster.dismantle();
+				}
+			}
+		}
+	}
+
+	@Test
+	public synchronized void testAutoRebuildLoadsStaticInnerTrackedTables() throws SQLException {
+		if (!database.isMemoryDatabase()) {
+			final DBDatabaseClusterTestTrackedTable newTrackedTable = new DBDatabaseClusterTestTrackedTable();
+			final String nameOfCluster = "testAutoRebuildLoadsStaticInnerTrackedTables";
+			{
+				DBDatabaseCluster cluster
+						= new DBDatabaseCluster(
+								nameOfCluster,
+								DBDatabaseCluster.Configuration.autoRebuild(),
+								database);
+				boolean dismantleCluster = true;
+				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+				try {
+					cluster.addDatabase(soloDB2);
+					Assert.assertThat(cluster.size(), is(2));
+
+					cluster.addTrackedTable(newTrackedTable);
+
+					List<String> asList = Arrays.asList(cluster.getTrackedTables())
+							.stream()
+							.map(t -> t.getClass().getCanonicalName())
+							.collect(Collectors.toList());
+					Assert.assertThat(asList, hasItem(newTrackedTable.getClass().getCanonicalName()));
+
+					dismantleCluster = false;
+				} finally {
+					if (dismantleCluster) {
+						cluster.dismantle();
+					}
+					soloDB2.stop();
+				}
+			}
+			{
+				DBDatabaseCluster cluster = new DBDatabaseCluster(
+						nameOfCluster, DBDatabaseCluster.Configuration.autoRebuild()
+				);
+
+				try {
+					List<String> asList = Arrays.asList(cluster.getTrackedTables())
+							.stream()
+							.map(t -> t.getClass().getCanonicalName())
+							.collect(Collectors.toList());
+					Assert.assertThat(asList, hasItem(newTrackedTable.getClass().getCanonicalName()));
+				} finally {
+					cluster.dismantle();
+				}
+			}
+		}
+	}
+
+	@Test
+	public synchronized void testManualDoesntLoadTrackedTables() throws SQLException {
+		if (!database.isMemoryDatabase()) {
+			final String nameOfCluster = "testManualDoesntLoadTrackedTables";
+			final DBDatabaseClusterTestTrackedTable trackedTable = new DBDatabaseClusterTestTrackedTable();
+			{
+				DBDatabaseCluster cluster
+						= new DBDatabaseCluster(
+								nameOfCluster,
+								DBDatabaseCluster.Configuration.manual(),
+								database);
+				boolean dismantleCluster = true;
+				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+				try {
+					cluster.addDatabase(soloDB2);
+					Assert.assertThat(cluster.size(), is(2));
+
+					cluster.addTrackedTable(trackedTable);
+					List<String> asList = Arrays.asList(cluster.getTrackedTables()).stream().map(t -> t.getClass().getCanonicalName()).collect(Collectors.toList());
+					Assert.assertThat(asList, hasItem(DBDatabaseClusterTestTrackedTable.class.getCanonicalName()));
+					dismantleCluster = false;
+				} finally {
+					if (dismantleCluster) {
+						cluster.dismantle();
+					}
+					soloDB2.stop();
+				}
+			}
+			{
+				DBDatabaseCluster cluster
+						= new DBDatabaseCluster(nameOfCluster, DBDatabaseCluster.Configuration.autoRebuild());
+
+				try {
+					List<DBRow> asList = Arrays.asList(cluster.getTrackedTables());
+					Assert.assertThat(asList, not(hasItem(trackedTable)));
+				} finally {
+					cluster.dismantle();
+				}
+			}
+		}
+	}
+
+	public static class DBDatabaseClusterTestTrackedTable extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+		@DBColumn(value = "NUMERIC_CODE")
+		public DBNumber numericCode = new DBNumber();
+		@DBColumn(value = "UID_MARQUE")
+		@DBPrimaryKey
+		public DBInteger uidMarque = new DBInteger();
+		@DBColumn(value = "ISUSEDFORTAFROS")
+		public DBString isUsedForTAFROs = new DBString();
+
+		public DBDatabaseClusterTestTrackedTable() {
 		}
 	}
 

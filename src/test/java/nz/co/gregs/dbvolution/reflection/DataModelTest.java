@@ -478,6 +478,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.Companylogo");
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.CarCompany");
 		knownKeys.add("class nz.co.gregs.dbvolution.OracleCompatibilityTest$CountIfRow");
+		knownKeys.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$DBDatabaseClusterTestTrackedTable");
 
 		boolean allClassesKnown = true;
 		for (String knownString : knownKeys) {
@@ -500,7 +501,7 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		Assert.assertThat(result.size(), is(130));
+		Assert.assertThat(result.size(), is(131));
 	}
 
 	@Test
