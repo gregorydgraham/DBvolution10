@@ -21,13 +21,10 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -63,7 +60,7 @@ public class ExistsExpressionTest extends AbstractTest {
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 
-		Assert.assertThat(rowList.size(), is(0));
+		assertThat(rowList.size(), is(0));
 
 		CompanyLogo companyLogo = new CompanyLogo();
 		companyLogo.carCompany.setValue(3);
@@ -72,13 +69,13 @@ public class ExistsExpressionTest extends AbstractTest {
 
 		rowList = marquesQuery.getAllInstancesOf(marque);
 
-		Assert.assertThat(rowList.size(), is(3));
+		assertThat(rowList.size(), is(3));
 
 		marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
 
 		rowList = marquesQuery.getAllInstancesOf(marque);
 
-		Assert.assertThat(rowList.size(), is(19));
+		assertThat(rowList.size(), is(19));
 	}
 }

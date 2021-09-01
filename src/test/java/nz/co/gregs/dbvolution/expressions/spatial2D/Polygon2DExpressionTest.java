@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -90,7 +90,7 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).is(Polygon2DExpression.unitSquare()));
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 	}
 
@@ -107,8 +107,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 							new Coordinate(0, 0)}
 				)));
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).poly_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).poly_id.intValue(), is(1));
 
 		dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).is(
@@ -121,8 +121,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 									new Coordinate(0, 0)}
 						))));
 		allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).poly_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).poly_id.intValue(), is(1));
 
 		dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).is(
@@ -135,8 +135,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 									new Coordinate(0, 0)}
 						))));
 		allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).poly_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).poly_id.intValue(), is(1));
 
 	}
 
@@ -146,7 +146,7 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).isNull());
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		PolygonTestTable row = new PolygonTestTable();
 		row.poly.setValueToNull();
@@ -155,12 +155,12 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).isNull());
 		allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).isNotNull());
 		allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 
 	}
 
@@ -170,7 +170,7 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).measurableDimensions().is(2));
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -179,12 +179,12 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).hasMagnitude().isNot(Boolean.TRUE));
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 
 		dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).hasMagnitude().is(Boolean.FALSE));
 		allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -204,9 +204,9 @@ public class Polygon2DExpressionTest extends AbstractTest {
 										)));
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
-			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+			assertThat(row.poly_id.intValue(), isOneOf(1, 3));
 		}
 	}
 
@@ -222,9 +222,9 @@ public class Polygon2DExpressionTest extends AbstractTest {
 						));
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
-			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+			assertThat(row.poly_id.intValue(), isOneOf(1, 3));
 		}
 	}
 
@@ -246,9 +246,9 @@ public class Polygon2DExpressionTest extends AbstractTest {
 										)));
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
-			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+			assertThat(row.poly_id.intValue(), isOneOf(1, 3));
 		}
 		dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(
@@ -259,9 +259,9 @@ public class Polygon2DExpressionTest extends AbstractTest {
 						));
 		allRows = dbQuery.getAllInstancesOf(testTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
-			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+			assertThat(row.poly_id.intValue(), isOneOf(1, 3));
 		}
 	}
 
@@ -280,9 +280,9 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		);
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 		for (PolygonTestTable row : allRows) {
-			Assert.assertThat(row.poly_id.intValue(), isOneOf(1));
+			assertThat(row.poly_id.intValue(), isOneOf(1));
 		}
 	}
 
@@ -301,10 +301,10 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		);
 
 		List<PolygonIntersectionTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		for (PolygonTestTable row : allRows) {
-			Assert.assertThat(row.poly_id.intValue(), isOneOf(1));
+			assertThat(row.poly_id.intValue(), isOneOf(1));
 		}
 	}
 

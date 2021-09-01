@@ -22,9 +22,9 @@ import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
@@ -54,14 +54,14 @@ public class DBBooleanTest extends AbstractTest {
 		boolTest.boolColumn.setValue(true);
 		database.insert(boolTest);
 		List<BooleanTest> allRows = database.getDBTable(new BooleanTest()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).boolColumn.getValue(), is(true));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).boolColumn.getValue(), is(true));
 
 		boolTest = new BooleanTest();
 		boolTest.boolColumn.setValue(false);
 		database.insert(boolTest);
 		allRows = database.getDBTable(new BooleanTest()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(boolTest);
@@ -83,14 +83,14 @@ public class DBBooleanTest extends AbstractTest {
 		boolTest = new BooleanTest();
 		boolTest.boolColumn.excludedValues(true);
 		List<BooleanTest> allRows = database.getDBTable(boolTest).getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).boolColumn.booleanValue(), is(false));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).boolColumn.booleanValue(), is(false));
 
 		boolTest = new BooleanTest();
 		boolTest.boolColumn.permittedValues(true);
 		allRows = database.getDBTable(boolTest).getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).boolColumn.booleanValue(), is(true));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).boolColumn.booleanValue(), is(true));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(boolTest);

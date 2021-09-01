@@ -21,14 +21,11 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Point;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregory.graham
  */
@@ -46,8 +43,8 @@ public class DBLineSegment2DTest extends AbstractTest {
 		DBLineSegment2D instance = new DBLineSegment2D();
 		instance.setValue(line);
 		LineSegment value = instance.getValue();
-		Assert.assertThat(value.getCoordinate(0).x, is(2.0));
-		Assert.assertThat(value.getCoordinate(0).y, is(3.0));
+		assertThat(value.getCoordinate(0).x, is(2.0));
+		assertThat(value.getCoordinate(0).y, is(3.0));
 	}
 
 	@Test
@@ -57,8 +54,8 @@ public class DBLineSegment2DTest extends AbstractTest {
 		DBLineSegment2D instance = new DBLineSegment2D();
 		instance.setValue(coordinate1, coordinate2);
 		LineSegment value = instance.getValue();
-		Assert.assertThat(value.getCoordinate(0).x, is(2.0));
-		Assert.assertThat(value.getCoordinate(0).y, is(3.0));
+		assertThat(value.getCoordinate(0).x, is(2.0));
+		assertThat(value.getCoordinate(0).y, is(3.0));
 	}
 
 	@Test
@@ -71,8 +68,8 @@ public class DBLineSegment2DTest extends AbstractTest {
 		DBLineSegment2D instance = new DBLineSegment2D();
 		instance.setValue(point1, point2);
 		LineSegment value = instance.getValue();
-		Assert.assertThat(value.getCoordinate(0).x, is(2.0));
-		Assert.assertThat(value.getCoordinate(0).y, is(3.0));
+		assertThat(value.getCoordinate(0).x, is(2.0));
+		assertThat(value.getCoordinate(0).y, is(3.0));
 	}
 
 	@Test

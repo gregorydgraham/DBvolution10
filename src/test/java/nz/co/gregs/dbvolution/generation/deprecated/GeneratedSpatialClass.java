@@ -15,6 +15,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
@@ -76,7 +77,7 @@ public class GeneratedSpatialClass extends AbstractTest {
 					for (String str : testClasses) {
 						final String testcaseLowercase = str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
 						final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
-						Assert.assertThat(sourceLowercase, is(testcaseLowercase));
+						assertThat(sourceLowercase, is(testcaseLowercase));
 						if (testcaseLowercase.equals(sourceLowercase)) {
 							found = true;
 						}
@@ -84,7 +85,7 @@ public class GeneratedSpatialClass extends AbstractTest {
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
-			Assert.assertThat(classesTested, is(1));
+			assertThat(classesTested, is(1));
 
 			database.preventDroppingOfTables(false);
 			database.dropTable(new Spatialgen());

@@ -12,8 +12,8 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -107,8 +107,8 @@ public class DBQueryInsertTest extends AbstractTest {
 		List<MigrateVillainToProfessional> rows = queryInsert.getAllRows();
 
 		for (Professional prof : rows) {
-			Assert.assertThat(prof.title.stringValue(), is("Dr"));
-			Assert.assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
+			assertThat(prof.title.stringValue(), is("Dr"));
+			assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
 		}
 
 		database.preventDroppingOfTables(false);
@@ -120,10 +120,10 @@ public class DBQueryInsertTest extends AbstractTest {
 
 		DBTable<Professional> table = database.getDBTable(professional);
 		List<Professional> allRows = table.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 		for (Professional prof : allRows) {
-			Assert.assertThat(prof.title.stringValue(), is("Dr"));
-			Assert.assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
+			assertThat(prof.title.stringValue(), is("Dr"));
+			assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
 		}
 	}
 
@@ -161,13 +161,13 @@ public class DBQueryInsertTest extends AbstractTest {
 		queryInsert.setCartesianJoinAllowed(Boolean.TRUE);
 		List<MigrateHeroAndVillianToFight> fights = queryInsert.getAllRows();
 
-		Assert.assertThat(fights.size(), is(9));
-		Assert.assertThat(fights.get(0).villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
-		Assert.assertThat(fights.get(0).hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
+		assertThat(fights.size(), is(9));
+		assertThat(fights.get(0).villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
+		assertThat(fights.get(0).hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
 
 		for (Fight fight : fights) {
-			Assert.assertThat(fight.villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
-			Assert.assertThat(fight.hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
+			assertThat(fight.villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
+			assertThat(fight.hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
 		}
 
 		database.preventDroppingOfTables(false);
@@ -179,10 +179,10 @@ public class DBQueryInsertTest extends AbstractTest {
 
 		DBTable<Fight> query = database.getDBTable(fight);
 		List<Fight> allRows = query.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(9));
+		assertThat(allRows.size(), is(9));
 		for (Fight newFight : allRows) {
-			Assert.assertThat(newFight.villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
-			Assert.assertThat(newFight.hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
+			assertThat(newFight.villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
+			assertThat(newFight.hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
 		}
 
 	}

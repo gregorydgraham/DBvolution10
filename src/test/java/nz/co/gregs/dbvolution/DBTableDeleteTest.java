@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -52,7 +52,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marquesTable.delete(deleteList);
 		final List<Marque> allRows = marquesTable.getAllRows();
 
-		Assert.assertThat(originalSize - deleteList.size(), is(allRows.size()));
+		assertThat(originalSize - deleteList.size(), is(allRows.size()));
 
 	}
 
@@ -71,7 +71,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marquesTable.delete(deleteArray);
 		final List<Marque> allRows = marquesTable.getAllRows();
 
-		Assert.assertThat(originalSize - deleteList.size(), is(allRows.size()));
+		assertThat(originalSize - deleteList.size(), is(allRows.size()));
 
 	}
 
@@ -83,7 +83,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marquesTable.delete(marq);
 		List<Marque> afterList = marquesTable.getAllRows();
 
-		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+		assertThat(beforeList.size(), is(afterList.size() + 2));
 
 	}
 
@@ -99,7 +99,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marquesTable.delete(marq);
 		List<Marque> afterList = marquesTable.getAllRows();
 
-		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+		assertThat(beforeList.size(), is(afterList.size() + 2));
 
 	}
 
@@ -115,7 +115,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marquesTable.delete(marq);
 		List<Marque> afterList = marquesTable.getAllRows();
 
-		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+		assertThat(beforeList.size(), is(afterList.size() + 2));
 
 	}
 }

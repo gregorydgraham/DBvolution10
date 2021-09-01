@@ -38,13 +38,11 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -59,13 +57,13 @@ public class BooleanExpressionTest extends AbstractTest {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
 		final BooleanExpression like = marque.column(marque.name).isLike("TOY%");
-		Assert.assertThat(like.isAggregator(), is(false));
+		assertThat(like.isAggregator(), is(false));
 
 		dbQuery.addCondition(like);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -80,7 +78,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(10));
+		assertThat(allRows.size(), is(10));
 	}
 
 	@Test
@@ -92,7 +90,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -104,7 +102,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		dbQuery = database.getDBQuery(marque);
 
@@ -112,7 +110,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -124,9 +122,9 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		for (DBQueryRow row : allRows) {
-			Assert.assertThat(row.get(marque).toyotaMarque.getValue(), is("TOYOTA"));
+			assertThat(row.get(marque).toyotaMarque.getValue(), is("TOYOTA"));
 		}
 
 		dbQuery = database.getDBQuery(marque);
@@ -135,9 +133,9 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(20));
+		assertThat(allRows.size(), is(20));
 		for (DBQueryRow row : allRows) {
-			Assert.assertThat(row.get(marque).toyotaMarque.getValue(), is("NON-TOYOTA"));
+			assertThat(row.get(marque).toyotaMarque.getValue(), is("NON-TOYOTA"));
 		}
 
 		dbQuery = database.getDBQuery(marque);
@@ -146,9 +144,9 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		for (DBQueryRow row : allRows) {
-			Assert.assertThat(row.get(marque).numberMarque.intValue(), is(1));
+			assertThat(row.get(marque).numberMarque.intValue(), is(1));
 		}
 
 		dbQuery = database.getDBQuery(marque);
@@ -157,10 +155,10 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMDD");
 		for (DBQueryRow row : allRows) {
-			Assert.assertThat(format.format(row.get(marque).dateMarque.getValue()), is(format.format(MarqueWithIfThenElse.THEN_DATE)));
+			assertThat(format.format(row.get(marque).dateMarque.getValue()), is(format.format(MarqueWithIfThenElse.THEN_DATE)));
 		}
 
 		dbQuery = database.getDBQuery(marque);
@@ -169,9 +167,9 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(4)); // NULL is included in the ELSE collection
+		assertThat(allRows.size(), is(4)); // NULL is included in the ELSE collection
 		for (DBQueryRow row : allRows) {
-			Assert.assertThat(format.format(row.get(marque).dateMarque.getValue()), is(format.format(MarqueWithIfThenElse.ELSE_DATE)));
+			assertThat(format.format(row.get(marque).dateMarque.getValue()), is(format.format(MarqueWithIfThenElse.ELSE_DATE)));
 		}
 	}
 
@@ -200,7 +198,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -211,7 +209,7 @@ public class BooleanExpressionTest extends AbstractTest {
 //		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
 //		System.out.println(""+dbQuery.getSQLForQuery());
 //		dbQuery.printAllRows();
-		Assert.assertThat(dbQuery.getAllRows().size(), is(22));
+		assertThat(dbQuery.getAllRows().size(), is(22));
 		
 		dbQuery.addCondition(marque.column(marque.name).isIgnoreCase("TOYOTA"));
 
@@ -220,14 +218,14 @@ public class BooleanExpressionTest extends AbstractTest {
 //		System.out.println("nz.co.gregs.dbvolution.expressions.BooleanExpressionTest.testStringIsIgnoreCase()");
 //		System.out.println(""+dbQuery.getSQLForQuery());
 //		dbQuery.printAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.addCondition(marque.column(marque.name).isIgnoreCase("Toyota"));
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -239,14 +237,14 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		dbQuery.clearConditions();
 		dbQuery.addCondition(carco.column(carco.name).isIgnoreCase("FORD"));
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -258,7 +256,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(4));
+		assertThat(allRows.size(), is(4));
 	}
 
 	@Test
@@ -270,7 +268,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(5));
+		assertThat(allRows.size(), is(5));
 	}
 
 	@Test
@@ -282,7 +280,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(5));
+		assertThat(allRows.size(), is(5));
 	}
 
 	@Test
@@ -294,7 +292,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(17));
+		assertThat(allRows.size(), is(17));
 	}
 
 	@Test
@@ -306,7 +304,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -318,7 +316,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -330,7 +328,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -345,7 +343,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -361,7 +359,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		CarCompany newCarCo = new CarCompany(null, 17);
 		database.insert(newCarCo);
@@ -371,7 +369,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -383,7 +381,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -396,7 +394,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -410,7 +408,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -423,7 +421,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		dbQuery = database.getDBQuery(marque);
 
@@ -432,7 +430,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -444,7 +442,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -456,7 +454,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -468,7 +466,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -480,7 +478,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(20));
+		assertThat(allRows.size(), is(20));
 	}
 
 	@Test
@@ -492,7 +490,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 	}
 
 	@Test
@@ -504,7 +502,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 	}
 
 	@Test
@@ -516,7 +514,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -531,7 +529,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -547,7 +545,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -563,7 +561,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(20));
+		assertThat(allRows.size(), is(20));
 	}
 
 	@Test
@@ -579,7 +577,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 	}
 
 	@Test
@@ -595,7 +593,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(17));
+		assertThat(allRows.size(), is(17));
 	}
 
 	@Test
@@ -609,7 +607,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		CarCompany newCarCo = new CarCompany(null, 17);
 		database.insert(newCarCo);
@@ -623,7 +621,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		));
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -637,7 +635,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		CarCompany newCarCo = new CarCompany(null, 17);
 		database.insert(newCarCo);
@@ -651,7 +649,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -665,7 +663,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		CarCompany newCarCo = new CarCompany(null, 17);
 		database.insert(newCarCo);
@@ -680,7 +678,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -694,7 +692,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		CarCompany newCarCo = new CarCompany(null, 17);
 		database.insert(newCarCo);
@@ -708,7 +706,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -722,7 +720,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(9));
+		assertThat(allRows.size(), is(9));
 
 		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", DATETIME_FORMAT.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
@@ -736,7 +734,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(10));
+		assertThat(allRows.size(), is(10));
 	}
 
 	@Test
@@ -750,7 +748,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", DATETIME_FORMAT.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
@@ -764,7 +762,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -778,7 +776,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		dbQuery = database.getDBQuery(marque);
 
@@ -788,7 +786,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", DATETIME_FORMAT.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
@@ -801,7 +799,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -814,7 +812,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		CarCompany newCarCo = new CarCompany(null, 17);
 		database.insert(newCarCo);
@@ -827,7 +825,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	public static class MarqueReportWithBooleanExpressionCount extends DBReport {
@@ -852,11 +850,11 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<MarqueReportWithBooleanExpressionCount> allRows = database.getAllRows(marque);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).greaterThan3.booleanValue(), is(false));
-		Assert.assertThat(allRows.get(1).greaterThan3.booleanValue(), is(true));
-		Assert.assertThat(allRows.get(0).counted.intValue(), is(6));
-		Assert.assertThat(allRows.get(1).counted.intValue(), is(16));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).greaterThan3.booleanValue(), is(false));
+		assertThat(allRows.get(1).greaterThan3.booleanValue(), is(true));
+		assertThat(allRows.get(0).counted.intValue(), is(6));
+		assertThat(allRows.get(1).counted.intValue(), is(16));
 	}
 
 	public static class MarqueWithBooleanExpressionCount extends Marque {
@@ -882,11 +880,11 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<MarqueWithBooleanExpressionCount> allRows = dbQuery.getAllInstancesOf(marque);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).greaterThan3.booleanValue(), is(false));
-		Assert.assertThat(allRows.get(0).counted.intValue(), is(6));
-		Assert.assertThat(allRows.get(1).greaterThan3.booleanValue(), is(true));
-		Assert.assertThat(allRows.get(1).counted.intValue(), is(16));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).greaterThan3.booleanValue(), is(false));
+		assertThat(allRows.get(0).counted.intValue(), is(6));
+		assertThat(allRows.get(1).greaterThan3.booleanValue(), is(true));
+		assertThat(allRows.get(1).counted.intValue(), is(16));
 	}
 
 	@Test
@@ -900,7 +898,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(4));
+		assertThat(allRows.size(), is(4));
 
 		dbQuery = database.getDBQuery(carCo);
 
@@ -910,7 +908,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(4));
+		assertThat(allRows.size(), is(4));
 
 		CarCompany newCarCo = new CarCompany("LADA", 17);
 		database.insert(newCarCo);
@@ -926,7 +924,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(5));
+		assertThat(allRows.size(), is(5));
 	}
 
 	@Test
@@ -943,7 +941,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		dbQuery = database.getDBQuery(marq);
 
@@ -956,7 +954,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -973,7 +971,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 	}
 
 	@Test
@@ -988,7 +986,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(17));
+		assertThat(allRows.size(), is(17));
 	}
 
 	@Test
@@ -1003,7 +1001,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(5));
+		assertThat(allRows.size(), is(5));
 	}
 
 	@Test
@@ -1017,7 +1015,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(7));
+		assertThat(allRows.size(), is(7));
 
 		dbQuery = database.getDBQuery(marq);
 
@@ -1027,7 +1025,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(6));
+		assertThat(allRows.size(), is(6));
 	}
 
 	@Test
@@ -1043,7 +1041,7 @@ public class BooleanExpressionTest extends AbstractTest {
 					);
 
 			List<DBQueryRow> allRows = query.getAllRows();
-			Assert.assertThat(allRows.size(), is(22));
+			assertThat(allRows.size(), is(22));
 
 			MarqueWithWindowingFunctions got;// = allRows.get(0).get(marq);
 			ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -1075,10 +1073,10 @@ public class BooleanExpressionTest extends AbstractTest {
 				got = allRows.get(i).get(marq);
 //				System.out.println("" + got.toString());
 				Object[] expect = expectedValues.get(i);
-				Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
-				Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
-				Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
-				Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
+				assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
+				assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
+				assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
+				assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
 			}
 		} catch (Exception e) {
 			System.out.println("" + e.getLocalizedMessage());
@@ -1122,7 +1120,7 @@ public class BooleanExpressionTest extends AbstractTest {
 					);
 			List<DBQueryRow> allRows = query.getAllRows();
 			
-			Assert.assertThat(allRows.size(), is(22));
+			assertThat(allRows.size(), is(22));
 
 			MarqueWithLeadAndLagFunctions got;
 			ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -1154,9 +1152,9 @@ public class BooleanExpressionTest extends AbstractTest {
 				got = allRows.get(i).get(marq);
 //				System.out.println("" + got.toString());
 				Object[] expect = expectedValues.get(i);
-				Assert.assertThat(got.lag.getValue(), is((Boolean) expect[4]));
-				Assert.assertThat(got.lead.getValue(), is((Boolean) expect[5]));
-				Assert.assertThat(got.case1.getValue(), is((Boolean) expect[6]));
+				assertThat(got.lag.getValue(), is((Boolean) expect[4]));
+				assertThat(got.lead.getValue(), is((Boolean) expect[5]));
+				assertThat(got.case1.getValue(), is((Boolean) expect[6]));
 			}
 		} catch (Exception e) {
 			System.out.println("" + e.getLocalizedMessage());
@@ -1214,7 +1212,7 @@ public class BooleanExpressionTest extends AbstractTest {
 							marq.column(marq.uidMarque).ascending()
 					);
 			List<DBQueryRow> allRows = query.getAllRows();
-			Assert.assertThat(allRows.size(), is(22));
+			assertThat(allRows.size(), is(22));
 
 			MarqueWithEquivalentCaseStatements got;
 			ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -1246,8 +1244,8 @@ public class BooleanExpressionTest extends AbstractTest {
 				got = allRows.get(i).get(marq);
 //				System.out.println("" + got.toString());
 				Object[] expect = expectedValues.get(i);
-				Assert.assertThat(got.changeBooleanToNullOrItself.getValue(), is((Boolean) expect[4]));
-				Assert.assertThat(got.changeBooleanToItsValueOrNull.getValue(), is((Boolean) expect[4]));
+				assertThat(got.changeBooleanToNullOrItself.getValue(), is((Boolean) expect[4]));
+				assertThat(got.changeBooleanToItsValueOrNull.getValue(), is((Boolean) expect[4]));
 			}
 		} catch (Exception e) {
 			System.out.println("" + e.getLocalizedMessage());

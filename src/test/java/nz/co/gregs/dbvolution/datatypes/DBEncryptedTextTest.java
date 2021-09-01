@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.utility.encryption.Encrypted;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 public class DBEncryptedTextTest extends AbstractTest {
@@ -61,8 +61,8 @@ public class DBEncryptedTextTest extends AbstractTest {
 
 		insertRow.encryptedString.setValue(Encrypted.encrypt(passphrase, correctSecret));
 		final Encrypted encryptedValue = insertRow.encryptedString.getEncryptedValue();
-		Assert.assertThat(insertRow.encryptedString.getEncryptedValue().toString(), startsWith("BASE64_AES/GCM/NoPadding|"));
-		Assert.assertThat(insertRow.encryptedString.decryptWith(passphrase), is(correctSecret));
+		assertThat(insertRow.encryptedString.getEncryptedValue().toString(), startsWith("BASE64_AES/GCM/NoPadding|"));
+		assertThat(insertRow.encryptedString.decryptWith(passphrase), is(correctSecret));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(insertRow);
@@ -73,9 +73,9 @@ public class DBEncryptedTextTest extends AbstractTest {
 
 		List<EncryptedTextTestTable> allRows = table.getAllRows();
 		for (EncryptedTextTestTable row : allRows) {
-			Assert.assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));
-			Assert.assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));
-			Assert.assertThat(row.encryptedString.decryptWith(passphrase), is(correctSecret));
+			assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));
+			assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));
+			assertThat(row.encryptedString.decryptWith(passphrase), is(correctSecret));
 		}
 	}
 
@@ -86,8 +86,8 @@ public class DBEncryptedTextTest extends AbstractTest {
 		String passphrase = "very secret phraseAAA!!!{}|!@#$%^&*()_+-=';:/?.,<>\"";
 		String correctSecret = "correct secretAAA!!!{}|!@#$%^&*()_+-=';:/?.,<>\"insertRow.encryptedString.setValue(passphrase, correctSecret);\n"
 				+ "		final EncryptedString encryptedValue = insertRow.encryptedString.getEncryptedValue();\n"
-				+ "		Assert.assertThat(insertRow.encryptedString.getValue().toString(), startsWith(\"BASE64_AES_CBC_PKCS5Padding|\"));\n"
-				+ "		Assert.assertThat(insertRow.encryptedString.getValue().decrypt(passphrase), is(correctSecret));\n"
+				+ "		assertThat(insertRow.encryptedString.getValue().toString(), startsWith(\"BASE64_AES_CBC_PKCS5Padding|\"));\n"
+				+ "		assertThat(insertRow.encryptedString.getValue().decrypt(passphrase), is(correctSecret));\n"
 				+ "\n"
 				+ "		database.preventDroppingOfTables(false);\n"
 				+ "		database.dropTableNoExceptions(insertRow);\n"
@@ -98,11 +98,11 @@ public class DBEncryptedTextTest extends AbstractTest {
 				+ "\n"
 				+ "		List<EncryptedTestTable> allRows = table.getAllRows();\n"
 				+ "		for (EncryptedTestTable row : allRows) {\n"
-				+ "			Assert.assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));\n"
-				+ "			Assert.assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));\n"
-				+ "			Assert.assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));"				+ "		final EncryptedString encryptedValue = insertRow.encryptedString.getEncryptedValue();\n"
-				+ "		Assert.assertThat(insertRow.encryptedString.getValue().toString(), startsWith(\"BASE64_AES_CBC_PKCS5Padding|\"));\n"
-				+ "		Assert.assertThat(insertRow.encryptedString.getValue().decrypt(passphrase), is(correctSecret));\n"
+				+ "			assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));\n"
+				+ "			assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));\n"
+				+ "			assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));"				+ "		final EncryptedString encryptedValue = insertRow.encryptedString.getEncryptedValue();\n"
+				+ "		assertThat(insertRow.encryptedString.getValue().toString(), startsWith(\"BASE64_AES_CBC_PKCS5Padding|\"));\n"
+				+ "		assertThat(insertRow.encryptedString.getValue().decrypt(passphrase), is(correctSecret));\n"
 				+ "\n"
 				+ "		database.preventDroppingOfTables(false);\n"
 				+ "		database.dropTableNoExceptions(insertRow);\n"
@@ -113,11 +113,11 @@ public class DBEncryptedTextTest extends AbstractTest {
 				+ "\n"
 				+ "		List<EncryptedTestTable> allRows = table.getAllRows();\n"
 				+ "		for (EncryptedTestTable row : allRows) {\n"
-				+ "			Assert.assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));\n"
-				+ "			Assert.assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));\n"
-				+ "			Assert.assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));"				+ "		final EncryptedString encryptedValue = insertRow.encryptedString.getEncryptedValue();\n"
-				+ "		Assert.assertThat(insertRow.encryptedString.getValue().toString(), startsWith(\"BASE64_AES_CBC_PKCS5Padding|\"));\n"
-				+ "		Assert.assertThat(insertRow.encryptedString.getValue().decrypt(passphrase), is(correctSecret));\n"
+				+ "			assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));\n"
+				+ "			assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));\n"
+				+ "			assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));"				+ "		final EncryptedString encryptedValue = insertRow.encryptedString.getEncryptedValue();\n"
+				+ "		assertThat(insertRow.encryptedString.getValue().toString(), startsWith(\"BASE64_AES_CBC_PKCS5Padding|\"));\n"
+				+ "		assertThat(insertRow.encryptedString.getValue().decrypt(passphrase), is(correctSecret));\n"
 				+ "\n"
 				+ "		database.preventDroppingOfTables(false);\n"
 				+ "		database.dropTableNoExceptions(insertRow);\n"
@@ -128,15 +128,15 @@ public class DBEncryptedTextTest extends AbstractTest {
 				+ "\n"
 				+ "		List<EncryptedTestTable> allRows = table.getAllRows();\n"
 				+ "		for (EncryptedTestTable row : allRows) {\n"
-				+ "			Assert.assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));\n"
-				+ "			Assert.assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));\n"
-				+ "			Assert.assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));"
+				+ "			assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));\n"
+				+ "			assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));\n"
+				+ "			assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));"
 				+ "		}";
 
 		insertRow.encryptedString.setValue(passphrase, correctSecret);
 		final Encrypted encryptedValue = insertRow.encryptedString.getEncryptedValue();
-		Assert.assertThat(insertRow.encryptedString.getEncryptedValue().toString(), startsWith("BASE64_AES/GCM/NoPadding|"));
-		Assert.assertThat(insertRow.encryptedString.getDecryptedValue(passphrase), is(correctSecret));
+		assertThat(insertRow.encryptedString.getEncryptedValue().toString(), startsWith("BASE64_AES/GCM/NoPadding|"));
+		assertThat(insertRow.encryptedString.getDecryptedValue(passphrase), is(correctSecret));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(insertRow);
@@ -147,9 +147,9 @@ public class DBEncryptedTextTest extends AbstractTest {
 
 		List<EncryptedTextTestTable> allRows = table.getAllRows();
 		for (EncryptedTextTestTable row : allRows) {
-			Assert.assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));
-			Assert.assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));
-			Assert.assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));
+			assertThat(row.encryptedString.getEncryptedValue(), is(encryptedValue));
+			assertThat(row.encryptedString.getEncryptedValue(), not(correctSecret));
+			assertThat(row.encryptedString.getDecryptedValue(passphrase), is(correctSecret));
 		}
 	}
 

@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.*;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class DoubleJoinTest extends AbstractTest {
 
@@ -54,11 +55,11 @@ public class DoubleJoinTest extends AbstractTest {
 		query.setBlankQueryAllowed(true);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-		Assert.assertThat(allRows.size(),
+		assertThat(allRows.size(),
 				is(1));
-		Assert.assertThat(allRows.get(0).get(marketer).uidCarCompany.getValue().intValue(),
+		assertThat(allRows.get(0).get(marketer).uidCarCompany.getValue().intValue(),
 				is(doubleLinked.marketer.getValue().intValue()));
-		Assert.assertThat(allRows.get(0).get(manufacturer).uidCarCompany.getValue().intValue(),
+		assertThat(allRows.get(0).get(manufacturer).uidCarCompany.getValue().intValue(),
 				is(doubleLinked.manufacturer.getValue().intValue())
 		);
 
@@ -83,7 +84,7 @@ public class DoubleJoinTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(
+		assertThat(
 				allRows.size(),
 				is(0));
 
@@ -108,7 +109,7 @@ public class DoubleJoinTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(
+		assertThat(
 				allRows.size(),
 				is(1));
 

@@ -19,11 +19,11 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RawSQLTransactionTest extends AbstractTest {
 
@@ -35,22 +35,22 @@ public class RawSQLTransactionTest extends AbstractTest {
 	public void testRawSQLTransactionRollback() throws Exception {
 		DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
 		Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.FALSE);
-		Assert.assertThat(doneTrans, is(true));
+		assertThat(doneTrans, is(true));
 		Marque mrq = new Marque();
 		mrq.name.permittedValues("PEUGEOT");
 		Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-		Assert.assertThat(peugeot, is(not(nullValue())));
+		assertThat(peugeot, is(not(nullValue())));
 	}
 
 	@Test
 	public void testRawSQLTransactionCommit() throws Exception {
 		DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
 		Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
-		Assert.assertThat(doneTrans, is(true));
+		assertThat(doneTrans, is(true));
 		Marque mrq = new Marque();
 		mrq.name.permittedValues("Peugeot");
 		Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-		Assert.assertThat(peugeot, is(not(nullValue())));
+		assertThat(peugeot, is(not(nullValue())));
 	}
 
 	@Test
@@ -61,11 +61,11 @@ public class RawSQLTransactionTest extends AbstractTest {
 		sqlTrans = new DBRawSQLTransaction(
 				"update marque set name = 'Toyota' where name = 'TOYOTA'");
 		doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
-		Assert.assertThat(doneTrans, is(true));
+		assertThat(doneTrans, is(true));
 		Marque mrq = new Marque();
 		mrq.name.permittedValues("Peugeot", "Toyota");
 		DBTable<Marque> rows = database.getDBTable(mrq);
-		Assert.assertThat(rows.toList(), is(not(Matchers.empty())));
-		Assert.assertThat(rows.toList().size(), is(2));
+		assertThat(rows.toList(), is(not(Matchers.empty())));
+		assertThat(rows.toList().size(), is(2));
 	}
 }

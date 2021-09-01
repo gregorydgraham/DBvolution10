@@ -97,8 +97,8 @@ public class LargeTextExpressionTest extends AbstractTest {
 		LargeTextExpression instance = new LargeTextExpression(textTable.column(textTable.essayText));
 		Set<DBRow> result = instance.getTablesInvolved();
 		DBRow[] resultArray = result.toArray(new DBRow[]{});
-		Assert.assertThat(result.size(), is(1));
-		Assert.assertThat(resultArray[0].getClass().getSimpleName(), is(textTable.getClass().getSimpleName()));
+		assertThat(result.size(), is(1));
+		assertThat(resultArray[0].getClass().getSimpleName(), is(textTable.getClass().getSimpleName()));
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class LargeTextExpressionTest extends AbstractTest {
 		LargeTextColumn imageBytesColumn = textTable.column(textTable.essayText);
 		dbQuery.addCondition(imageBytesColumn.isNotNull());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		textTable = new ExampleTableForLargeText();
 		textTable.logoID.setValue(1);
@@ -125,8 +125,8 @@ public class LargeTextExpressionTest extends AbstractTest {
 		dbQuery.addCondition(imageBytesColumn.isNotNull());
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).get(textTable).logoID.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).get(textTable).logoID.intValue(), is(1));
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class LargeTextExpressionTest extends AbstractTest {
 		LargeTextColumn imageBytesColumn = textTable.column(textTable.essayText);
 		dbQuery.addCondition(imageBytesColumn.isNotNull());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		textTable = new ExampleTableForLargeText();
 		textTable.logoID.setValue(1);
@@ -153,8 +153,8 @@ public class LargeTextExpressionTest extends AbstractTest {
 		dbQuery.addCondition(imageBytesColumn.isNull());
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).get(textTable).logoID.intValue(), is(2));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).get(textTable).logoID.intValue(), is(2));
 	}
 
 	@Test

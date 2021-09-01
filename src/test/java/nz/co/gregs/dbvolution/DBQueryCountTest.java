@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -51,7 +51,7 @@ public class DBQueryCountTest extends AbstractTest {
 //		String expectedResultUsingWHEREClause   = "select count(*) from marque as __1997432637 inner join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (( __78874071.name) = 'toyota') ;";
 //		String expectedResultUsingWHEREClause2 = "select count(*) from car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (( __78874071.name) = 'toyota') ;";
 //		String expectedResultUsingWHEREClauseFromOracle = "select count(*) from car_company __78874071 inner join marque __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (( __78874071.name) = 'toyota')";
-//		Assert.assertThat(testableSQLWithoutColumnAliases(generateSQLString),
+//		assertThat(testableSQLWithoutColumnAliases(generateSQLString),
 //				anyOf(is(testableSQLWithoutColumnAliases(expectedResultUsingONClause)),
 //						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause)),
 //						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause2)),
@@ -59,7 +59,7 @@ public class DBQueryCountTest extends AbstractTest {
 //				));
 		// make sure it works
 		Long count = dbQuery.count();
-		Assert.assertThat(count, is(2L));
+		assertThat(count, is(2L));
 
 	}
 
@@ -72,21 +72,21 @@ public class DBQueryCountTest extends AbstractTest {
 		dbQuery.add(carCompany);
 		// make sure it works
 		Long count = dbQuery.count();
-		Assert.assertThat(count, is(16L));
+		assertThat(count, is(16L));
 
 		carCompany.name.permittedValues("Ford");
 		dbQuery.add(new Marque());
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
-		Assert.assertThat(count, is(1L));
+		assertThat(count, is(1L));
 
 		carCompany.name.permittedValues("GENERAL MOTORS");
 		dbQuery.add(new Marque());
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
-		Assert.assertThat(count, is(3L));
+		assertThat(count, is(3L));
 
 	}
 
@@ -98,20 +98,20 @@ public class DBQueryCountTest extends AbstractTest {
 		dbQuery.add(carCompany);
 		// make sure it works
 		Long count = dbQuery.count();
-		Assert.assertThat(count, is(1L));
+		assertThat(count, is(1L));
 
 		carCompany.name.permittedPattern("%O%");
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
 
-		Assert.assertThat(count, is(3L));
+		assertThat(count, is(3L));
 
 		carCompany.name.permittedRange("F", "O");
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
-		Assert.assertThat(count, is(2L));
+		assertThat(count, is(2L));
 
 	}
 
@@ -124,11 +124,11 @@ public class DBQueryCountTest extends AbstractTest {
 		dbQuery.add(new Marque());
 		// make sure it works
 		Long count = dbQuery.count();
-		Assert.assertThat(count, is(22L));
+		assertThat(count, is(22L));
 
 		dbQuery.addOptional(new CompanyLogo());
 		count = dbQuery.count();
-		Assert.assertThat(count, is(22L));
+		assertThat(count, is(22L));
 	}
 
 }

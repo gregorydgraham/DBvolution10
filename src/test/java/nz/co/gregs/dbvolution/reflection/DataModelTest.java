@@ -43,6 +43,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -83,7 +84,7 @@ public class DataModelTest extends AbstractTest {
 			Assert.assertTrue(knownStrings.contains(foundString));
 			conMap.remove(foundString);
 		}
-		Assert.assertThat(result.size(), is(knownStrings.size()));
+		assertThat(result.size(), is(knownStrings.size()));
 	}
 
 	@Test
@@ -118,7 +119,7 @@ public class DataModelTest extends AbstractTest {
 			Assert.assertTrue(constr.contains(constrString));
 			conMap.remove(constrString);
 		}
-		Assert.assertThat(result.size(), is(knownStrings.size()));
+		assertThat(result.size(), is(knownStrings.size()));
 	}
 
 	public static class DatamodelTestDBClass extends H2MemoryDB {
@@ -145,13 +146,13 @@ public class DataModelTest extends AbstractTest {
 			try {
 				constr.setAccessible(true);
 				DBDatabase newInstance = constr.newInstance();
-				Assert.assertThat(newInstance, instanceOf(DBDatabase.class));
+				assertThat(newInstance, instanceOf(DBDatabase.class));
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
 				throw ex;
 			}
 		}
-		Assert.assertThat(result.size(), is(1));
+		assertThat(result.size(), is(1));
 	}
 
 	@Test
@@ -494,14 +495,14 @@ public class DataModelTest extends AbstractTest {
 				System.out.println("UNKNOWN DBRow: " + foundString + "");
 			}
 		}
-		Assert.assertThat(allClassesKnown, is(true));
-		Assert.assertThat(result.size(), is(knownKeys.size()));
+		assertThat(allClassesKnown, is(true));
+		assertThat(result.size(), is(knownKeys.size()));
 	}
 
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		Assert.assertThat(result.size(), is(131));
+		assertThat(result.size(), is(131));
 	}
 
 	@Test
@@ -521,7 +522,7 @@ public class DataModelTest extends AbstractTest {
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
-		Assert.assertThat(dbDatabaseCreationMethods.size(), is(2));
+		assertThat(dbDatabaseCreationMethods.size(), is(2));
 	}
 
 	@Test
@@ -532,10 +533,10 @@ public class DataModelTest extends AbstractTest {
 				new ExampleEncodingInterpreter()
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat(allRows.get(0).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
-		Assert.assertThat(allRows.get(1).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
+		assertThat(allRows.get(0).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
+		assertThat(allRows.get(1).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
 
 	}
 
@@ -554,7 +555,7 @@ public class DataModelTest extends AbstractTest {
 		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 	}
 
@@ -567,7 +568,7 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 	}
 
@@ -580,7 +581,7 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 	}
 
@@ -593,7 +594,7 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 	}
 
@@ -606,7 +607,7 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 	}
 
@@ -620,8 +621,8 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
-		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
+		assertThat(allRows.size(), is(18));
+		assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
 	}
 
 	@Test
@@ -634,8 +635,8 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
-		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
+		assertThat(allRows.size(), is(18));
+		assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
 	}
 
 	@Test
@@ -647,8 +648,8 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
-		Assert.assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), is(1246974));
+		assertThat(allRows.size(), is(21));
+		assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), is(1246974));
 	}
 
 	@Test
@@ -660,8 +661,8 @@ public class DataModelTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
-		Assert.assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), isOneOf(1246974, 1246972));
+		assertThat(allRows.size(), is(22));
+		assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), isOneOf(1246974, 1246972));
 	}
 
 	@Test
@@ -675,34 +676,34 @@ public class DataModelTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA"));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
+		assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA"));
 
 		final ExampleEncodingInterpreter encoder = new ExampleEncodingInterpreter();
 
 		String encode = encoder.encode(allRows);
 		String safeEncoded = encode.replaceAll("\\.00000", "").replaceAll(":56[.0]* [^ ]* 2013", ":56 2013");
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-uidMarque=1"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-uidMarque=1"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"));
 		if (!(database instanceof OracleDB)) {
 			// Oracle null/empty strings breaks this assertion
-			Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"));
-			Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-auto_created=&"));
-			Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"));
+			assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"));
+			assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-auto_created=&"));
+			assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"));
 		}
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-updateCount=0&"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"));
-		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-carCompany=1"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-updateCount=0&"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"));
+		assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-carCompany=1"));
 
 		final String encodedQuery = encoder.encode(allRows.get(0).get(new CarCompany()), marque);
 
-		Assert.assertThat(encodedQuery, is("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
+		assertThat(encodedQuery, is("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
 				+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
 				+ "nz.co.gregs.dbvolution.example.Marque"));
 
@@ -712,10 +713,10 @@ public class DataModelTest extends AbstractTest {
 				);
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
-		Assert.assertThat(allRows.get(1).get(marque).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
+		assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
+		assertThat(allRows.get(1).get(marque).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
 
 	}
 }

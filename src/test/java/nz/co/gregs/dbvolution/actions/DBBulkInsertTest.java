@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.*;
@@ -23,13 +22,11 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
-import org.junit.Assert;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -50,7 +47,7 @@ public class DBBulkInsertTest extends AbstractTest {
 		example.uidCarCompany.permittedValues(124, 125);
 		final List<CarCompany> allRows = database.getDBTable(example).getAllRows();
 //		database.print(allRows);
-		Assert.assertThat(result.size(), is(2));
+		assertThat(result.size(), is(2));
 	}
 	
 	@Test
@@ -62,12 +59,12 @@ public class DBBulkInsertTest extends AbstractTest {
 		final BulkInsertTestTable row2 = new BulkInsertTestTable("Saab");
 
 		DBActionList result = database.insert(row, row2);
-		Assert.assertThat(result.size(), is(2));
+		assertThat(result.size(), is(2));
 
-		Assert.assertThat(row.pk.isDefined(), is(true));
-		Assert.assertThat(row.pk.getValue(), is(1l));
-		Assert.assertThat(row2.pk.isDefined(), is(true));
-		Assert.assertThat(row2.pk.getValue(), is(2l));
+		assertThat(row.pk.isDefined(), is(true));
+		assertThat(row.pk.getValue(), is(1l));
+		assertThat(row2.pk.isDefined(), is(true));
+		assertThat(row2.pk.getValue(), is(2l));
 	}
 	
 	public static class BulkInsertTestTable extends DBRow {

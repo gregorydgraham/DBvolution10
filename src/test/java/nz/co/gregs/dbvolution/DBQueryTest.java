@@ -20,6 +20,7 @@ import java.util.List;
 
 import java.util.SortedSet;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
@@ -56,7 +57,7 @@ public class DBQueryTest extends AbstractTest {
 		dbQuery.add(carCompany);
 		// make sure it works
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -188,7 +189,7 @@ public class DBQueryTest extends AbstractTest {
 		if (toyota != null) {
 			List<Marque> relatedInstances = toyota.getRelatedInstancesFromQuery(dbQuery.getQueryDetails(), new Marque());
 
-			Assert.assertThat(relatedInstances.size(), is(2));
+			assertThat(relatedInstances.size(), is(2));
 		} else {
 			throw new RuntimeException("Unable To Find Toyota From The Query Results");
 		}
@@ -244,7 +245,7 @@ public class DBQueryTest extends AbstractTest {
 		marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
-		Assert.assertThat(rows.size(), is(0));
+		assertThat(rows.size(), is(0));
 	}
 
 	@Test
@@ -263,7 +264,7 @@ public class DBQueryTest extends AbstractTest {
 		marqueQuery.ignoreForeignKeys(marqueQuery.column(marqueQuery.carCompany), marqueQuery.column(marqueQuery.carCompany));
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
-		Assert.assertThat(rows.size(), is(0));
+		assertThat(rows.size(), is(0));
 	}
 
 	@Test
@@ -288,7 +289,7 @@ public class DBQueryTest extends AbstractTest {
 		CarCompany carco = new CarCompany();
 		SortedSet<DBRow> relatedTables = database.getDBQuery(carco).getRelatedTables();
 
-		Assert.assertThat(relatedTables.size(), is(6));
+		assertThat(relatedTables.size(), is(6));
 		final DBRow[] rowArray = relatedTables.toArray(new DBRow[]{});
 		Assert.assertEquals(CompanyLogo.class, rowArray[0].getClass());
 		Assert.assertEquals(CompanyText.class, rowArray[1].getClass());
@@ -303,11 +304,11 @@ public class DBQueryTest extends AbstractTest {
 		CarCompany carco = new CarCompany();
 		SortedSet<DBRow> relatedTables = database.getDBQuery(carco).getReferencedTables();
 
-		Assert.assertThat(relatedTables.size(), is(0));
+		assertThat(relatedTables.size(), is(0));
 
 		relatedTables = database.getDBQuery(new Marque(), new LinkCarCompanyAndLogo()).getReferencedTables();
 
-		Assert.assertThat(relatedTables.size(), is(2));
+		assertThat(relatedTables.size(), is(2));
 
 		final DBRow[] rowArray = relatedTables.toArray(new DBRow[]{});
 		Assert.assertEquals(CarCompany.class, rowArray[0].getClass());

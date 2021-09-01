@@ -16,13 +16,9 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregorygraham
  */
 public class DBNumberStatisticsTest extends AbstractTest {
@@ -39,7 +35,6 @@ public class DBNumberStatisticsTest extends AbstractTest {
 				.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-//		assertThat(allRows.size(), is(1));
 		final DBNumberStatisticsTestDBRowClass row = allRows.get(0).get(new DBNumberStatisticsTestDBRowClass());
 		assertThat(row.stats.count().intValue(), is(22));
 		assertThat(row.stats.sum().intValue(), is(128625259));

@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.*;
 
 /**
@@ -73,11 +74,11 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 
 		List<DBRow> result = graph.toList();
 
-		Assert.assertThat(result.get(0).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(1).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(3).getClass(), isOneOf(TableD.class, TableE.class));
-		Assert.assertThat(result.get(4).getClass(), isOneOf(TableD.class, TableE.class));
+		assertThat(result.get(0).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+		assertThat(result.get(1).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+		assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+		assertThat(result.get(3).getClass(), isOneOf(TableD.class, TableE.class));
+		assertThat(result.get(4).getClass(), isOneOf(TableD.class, TableE.class));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -98,8 +99,8 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 
 		List<DBRow> result = graph.toList();
 
-		Assert.assertThat(result.size(), is(5));
-		Assert.assertThat(result.get(0).getClass(), isOneOf(TableA.class, TableB.class, TableC.class, TableD.class, TableE.class));
+		assertThat(result.size(), is(5));
+		assertThat(result.get(0).getClass(), isOneOf(TableA.class, TableB.class, TableC.class, TableD.class, TableE.class));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -120,11 +121,11 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 
 		List<? extends DBRow> result = graph.toList();
 
-		Assert.assertThat(result.get(0).getClass(), isOneOf(TableD.class, TableE.class));
-		Assert.assertThat(result.get(1).getClass(), isOneOf(TableD.class, TableE.class));
-		Assert.assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+		assertThat(result.get(0).getClass(), isOneOf(TableD.class, TableE.class));
+		assertThat(result.get(1).getClass(), isOneOf(TableD.class, TableE.class));
+		assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+		assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+		assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -142,7 +143,7 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		tableD.uidD.permittedValues(4);
 		tableE.uidE.permittedValues(5);
 
-		Assert.assertThat(tableE.hasConditionsSet(), is(true));
+		assertThat(tableE.hasConditionsSet(), is(true));
 
 		optionalTables.add(tableA);
 		optionalTables.add(tableB);
@@ -155,11 +156,11 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 
 		List<DBRow> result = graph.toList();
 
-		Assert.assertThat(result.get(0).getClass(), isOneOf(TableD.class, TableE.class));
-		Assert.assertThat(result.get(1).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
-		Assert.assertThat(result.get(2).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
-		Assert.assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class));
-		Assert.assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class));
+		assertThat(result.get(0).getClass(), isOneOf(TableD.class, TableE.class));
+		assertThat(result.get(1).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		assertThat(result.get(2).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class));
+		assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -188,11 +189,11 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 
 		List<DBRow> result = graph.toList();
 
-		Assert.assertThat(result.get(0).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
-		Assert.assertThat(result.get(1).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
-		Assert.assertThat(result.get(2).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
-		Assert.assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class));
-		Assert.assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class));
+		assertThat(result.get(0).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		assertThat(result.get(1).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		assertThat(result.get(2).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class));
+		assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class));
 	}
 
 	public static class TableA extends DBRow {

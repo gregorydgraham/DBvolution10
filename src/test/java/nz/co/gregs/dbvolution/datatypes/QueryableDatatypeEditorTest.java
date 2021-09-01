@@ -16,15 +16,12 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -57,11 +54,11 @@ public class QueryableDatatypeEditorTest {
 		String fivePointOne = "5.1";
 		QueryableDatatypeEditor instance = new QueryableDatatypeEditor();
 		instance.setAsText(fivePointOne);
-		Assert.assertThat(((QueryableDatatype) instance.getValue()).stringValue(), is("5.1"));
+		assertThat(((QueryableDatatype) instance.getValue()).stringValue(), is("5.1"));
 
 		instance = new QueryableDatatypeEditor();
 		instance.setValue(new DBInteger());
 		instance.setAsText(fivePointOne);
-		Assert.assertThat(((QueryableDatatype) instance.getValue()).stringValue(), is("5"));
+		assertThat(((QueryableDatatype) instance.getValue()).stringValue(), is("5"));
 	}
 }

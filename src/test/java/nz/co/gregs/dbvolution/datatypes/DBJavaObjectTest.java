@@ -26,15 +26,12 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -70,15 +67,15 @@ public class DBJavaObjectTest extends AbstractTest {
 		final DBTable<DBJavaObjectTable> tableQuery = database.getDBTable(new DBJavaObjectTable()).setBlankQueryAllowed(true);
 
 		List<DBJavaObjectTable> allRows = tableQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 		final DBJavaObjectTable foundRow = allRows.get(0);
-		Assert.assertThat(foundRow.javaInteger.getSize(), is(81));
-		Assert.assertThat(foundRow.javaInteger.getValue(), is(3));
-		Assert.assertThat(foundRow.javaInteger.stringValue(), is("3"));
-		Assert.assertThat(foundRow.javaString.getSize(), is(15));
-		Assert.assertThat(foundRow.javaString.getValue(), is("Thisland"));
-		Assert.assertThat(foundRow.someRandomClass.getValue().str, is("Thisland"));
-		Assert.assertThat(foundRow.someRandomClass.getValue().integer, is(3));
+		assertThat(foundRow.javaInteger.getSize(), is(81));
+		assertThat(foundRow.javaInteger.getValue(), is(3));
+		assertThat(foundRow.javaInteger.stringValue(), is("3"));
+		assertThat(foundRow.javaString.getSize(), is(15));
+		assertThat(foundRow.javaString.getValue(), is("Thisland"));
+		assertThat(foundRow.someRandomClass.getValue().str, is("Thisland"));
+		assertThat(foundRow.someRandomClass.getValue().integer, is(3));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(foundRow);

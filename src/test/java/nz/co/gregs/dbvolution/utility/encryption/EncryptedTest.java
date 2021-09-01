@@ -33,7 +33,7 @@ package nz.co.gregs.dbvolution.utility.encryption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -50,11 +50,11 @@ public class EncryptedTest {
 		String original = "really long and awkward sentence to test that the encryption and decryption works";
 		try {
 			String encrypt = Encryption_Internal.encrypt(original);
-			Assert.assertThat(encrypt, not(original));
-			Assert.assertThat(encrypt, is("BASE64_AES:7OGfgSiNNz4Jd2B3oJBXEkF3odydPiW3fKAkUdx5Xq/6fXFAs7Tip6SMaObseLzQAQFn63yp+XKqjMOXujxc3f/SISVbMfDYn0Ak1KTxyTJJmH4HYnc7Xiemj9h8bA3O"));
+			assertThat(encrypt, not(original));
+			assertThat(encrypt, is("BASE64_AES:7OGfgSiNNz4Jd2B3oJBXEkF3odydPiW3fKAkUdx5Xq/6fXFAs7Tip6SMaObseLzQAQFn63yp+XKqjMOXujxc3f/SISVbMfDYn0Ak1KTxyTJJmH4HYnc7Xiemj9h8bA3O"));
 
 			String decrypt = Encryption_Internal.decrypt(encrypt);
-			Assert.assertThat(decrypt, is(original));
+			assertThat(decrypt, is(original));
 
 		} catch (Exception ex) {
 			Logger.getLogger(EncryptedTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,11 +67,11 @@ public class EncryptedTest {
 		String password = "The really good password no one can guess";
 		try {
 			String encrypt = Encryption_Internal.encrypt(original);
-			Assert.assertThat(encrypt, not(original));
-			Assert.assertThat(encrypt, is("BASE64_AES:7OGfgSiNNz4Jd2B3oJBXEkF3odydPiW3fKAkUdx5Xq/6fXFAs7Tip6SMaObseLzQAQFn63yp+XKqjMOXujxc3f/SISVbMfDYn0Ak1KTxyTJJmH4HYnc7Xiemj9h8bA3O"));
+			assertThat(encrypt, not(original));
+			assertThat(encrypt, is("BASE64_AES:7OGfgSiNNz4Jd2B3oJBXEkF3odydPiW3fKAkUdx5Xq/6fXFAs7Tip6SMaObseLzQAQFn63yp+XKqjMOXujxc3f/SISVbMfDYn0Ak1KTxyTJJmH4HYnc7Xiemj9h8bA3O"));
 
 			String decrypt = Encrypted.fromCipherText(encrypt).decrypt(password);
-			Assert.assertThat(decrypt, is(original));
+			assertThat(decrypt, is(original));
 
 		} catch (Exception ex) {
 			Logger.getLogger(EncryptedTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -84,10 +84,10 @@ public class EncryptedTest {
 		String password = "The really good password no one can guess";
 		try {
 			String encrypt = Encryption_BASE64_AES_CBC_PKCS5Padding.encrypt(password, original);
-			Assert.assertThat(encrypt, not(original));
+			assertThat(encrypt, not(original));
 
 			String decrypt = Encrypted.fromCipherText(encrypt).decrypt(password);
-			Assert.assertThat(decrypt, is(original));
+			assertThat(decrypt, is(original));
 
 		} catch (Exception ex) {
 			Logger.getLogger(EncryptedTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,10 +101,10 @@ public class EncryptedTest {
 		String password = "The really good password no one can guess";
 		try {
 			String encrypt = Encryption_BASE64_AES_GCM_NoPadding.encrypt(password, original);
-			Assert.assertThat(encrypt, not(original));
+			assertThat(encrypt, not(original));
 
 			String decrypt = Encrypted.fromCipherText(encrypt).decrypt(password);
-			Assert.assertThat(decrypt, is(original));
+			assertThat(decrypt, is(original));
 
 		} catch (Exception ex) {
 			Logger.getLogger(EncryptedTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -118,10 +118,10 @@ public class EncryptedTest {
 		String password = "The really good password no one can guess";
 		try {
 			Encrypted encrypt = Encrypted.encrypt(password, original);
-			Assert.assertThat(encrypt.getCypherText(), not(original));
+			assertThat(encrypt.getCypherText(), not(original));
 
 			String decrypt = encrypt.decrypt(password);
-			Assert.assertThat(decrypt, is(original));
+			assertThat(decrypt, is(original));
 
 		} catch (Exception ex) {
 			Logger.getLogger(EncryptedTest.class.getName()).log(Level.SEVERE, null, ex);

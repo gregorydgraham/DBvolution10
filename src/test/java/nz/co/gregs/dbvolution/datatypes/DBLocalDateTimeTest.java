@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -63,7 +63,7 @@ public class DBLocalDateTimeTest extends AbstractTest {
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DBLocalDateTimeTable> allRows = database.getDBTable(new DBLocalDateTimeTable()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		// Protect against SQLite's low precision problems
 		Matcher<LocalDateTime> matchExactValue = is(then);
@@ -81,21 +81,21 @@ public class DBLocalDateTimeTest extends AbstractTest {
 			);
 		}
 
-		Assert.assertThat(then.plusMonths(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
-		Assert.assertThat(then.plusDays(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
-		Assert.assertThat(then.plusHours(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
-		Assert.assertThat(then.plusMinutes(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
-		Assert.assertThat(then.plusSeconds(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
+		assertThat(then.plusMonths(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
+		assertThat(then.plusDays(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
+		assertThat(then.plusHours(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
+		assertThat(then.plusMinutes(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
+		assertThat(then.plusSeconds(1).isAfter(allRows.get(0).dateOnly.getValue()), is(true));
 
-		Assert.assertThat(then.minusMonths(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
-		Assert.assertThat(then.minusDays(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
-		Assert.assertThat(then.minusHours(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
-		Assert.assertThat(then.minusMinutes(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
-		Assert.assertThat(then.minusSeconds(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
-		Assert.assertThat(allRows.get(0).dateOnly.getValue(), matchExactValue);
-		Assert.assertThat(allRows.get(0).dateOnly.localDateTimeValue(), matchExactValue);
-		Assert.assertThat(allRows.get(0).dateOnly.localDateValue(), is(then.toLocalDate()));
-		Assert.assertThat(allRows.get(0).dateOnly.localTimeValue(), matchExactTime);
+		assertThat(then.minusMonths(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
+		assertThat(then.minusDays(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
+		assertThat(then.minusHours(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
+		assertThat(then.minusMinutes(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
+		assertThat(then.minusSeconds(1).isBefore((allRows.get(0).dateOnly.getValue())), is(true));
+		assertThat(allRows.get(0).dateOnly.getValue(), matchExactValue);
+		assertThat(allRows.get(0).dateOnly.localDateTimeValue(), matchExactValue);
+		assertThat(allRows.get(0).dateOnly.localDateValue(), is(then.toLocalDate()));
+		assertThat(allRows.get(0).dateOnly.localTimeValue(), matchExactTime);
 	}
 
 	public static class DBLocalDateTimeTable extends DBRow {
@@ -118,7 +118,7 @@ public class DBLocalDateTimeTest extends AbstractTest {
 		final LocalDateTime applicationLocalDateTime = LocalDateTime.now();
 		final LocalDateTime buffered = applicationLocalDateTime.minusMinutes(10);
 
-		Assert.assertThat(databaseLocalDateTime, is(greaterThan(buffered)));
+		assertThat(databaseLocalDateTime, is(greaterThan(buffered)));
 
 	}
 

@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 public class ExpressionColumnTests extends AbstractTest {
@@ -48,11 +48,11 @@ public class ExpressionColumnTests extends AbstractTest {
 
 		if (!(database instanceof DBDatabaseCluster)) {
 			final String sqlForQuery = query.getSQLForQuery();
-			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
+			assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
 		}
 		if (!(database instanceof DBDatabaseCluster)) {
 			final String sqlForQuery = query.getSQLForQuery();
-			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
+			assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
 		}
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(dateKey);
@@ -64,8 +64,8 @@ public class ExpressionColumnTests extends AbstractTest {
 				cal.add(GregorianCalendar.HOUR,-24);
 				Date yesterday = cal.getTime();
 				DBDate currentDate = (DBDate) expressionColumnValue;
-				Assert.assertThat(currentDate.getValue(), lessThan(later));
-				Assert.assertThat(currentDate.getValue(), greaterThan(yesterday));
+				assertThat(currentDate.getValue(), lessThan(later));
+				assertThat(currentDate.getValue(), greaterThan(yesterday));
 			} else {
 				throw new RuntimeException("CurrentDate Expression Failed To Create DBDate Instance");
 			}
@@ -83,13 +83,13 @@ public class ExpressionColumnTests extends AbstractTest {
 		query.addExpressionColumn(shortMarqueName, marque.column(marque.name).substring(0, 3).asExpressionColumn());
 
 		final String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString("SUBSTR"));
+		assertThat(sqlForQuery, containsString("SUBSTR"));
 
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
 			if (expressionColumnValue instanceof DBString) {
 				DBString shortName = (DBString) expressionColumnValue;
-				Assert.assertThat(shortName.toString(), is("TOYOTA".substring(0, 3)));
+				assertThat(shortName.toString(), is("TOYOTA".substring(0, 3)));
 			} else {
 				throw new RuntimeException("String Expression Failed To Create DBString Instance");
 			}
@@ -111,7 +111,7 @@ public class ExpressionColumnTests extends AbstractTest {
 			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
 			if (expressionColumnValue instanceof DBNumber) {
 				DBNumber eqValue = (DBNumber) expressionColumnValue;
-				Assert.assertThat(eqValue.longValue(), is(uid * 5 / 3 + 2));
+				assertThat(eqValue.longValue(), is(uid * 5 / 3 + 2));
 			} else {
 				throw new RuntimeException("String Expression Failed To Create DBNumber Instance");
 			}

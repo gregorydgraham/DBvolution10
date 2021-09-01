@@ -49,7 +49,7 @@ public class DBRowClassWrapperTest {
 		}
 
 		var rowDefinitionClassWrapper = new RowDefinitionClassWrapper<>(TestClass.class);
-		Assert.assertThat(rowDefinitionClassWrapper, notNullValue());
+		assertThat(rowDefinitionClassWrapper, notNullValue());
 	}
 
 //	@Test

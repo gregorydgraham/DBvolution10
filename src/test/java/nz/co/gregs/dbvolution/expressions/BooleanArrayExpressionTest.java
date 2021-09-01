@@ -90,7 +90,7 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 	public void testAsExpressionColumn() {
 		BooleanArrayExpression instance = new BooleanArrayExpression();
 		DBBooleanArray result = instance.asExpressionColumn();
-		Assert.assertThat(result, isA(DBBooleanArray.class));
+		assertThat(result, isA(DBBooleanArray.class));
 	}
 
 	@Test
@@ -106,12 +106,12 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new Boolean[]{true, false, true, true}));
 		List<BooleanArrayExpressionTable> allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new Boolean[]{false, false, true, true}));
 		allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -127,12 +127,12 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).isNot(new Boolean[]{true, false, true, true}));
 		List<BooleanArrayExpressionTable> allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).isNot(new Boolean[]{false, false, true, true}));
 		allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -151,14 +151,14 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).is((DBBooleanArray) null));
 		List<BooleanArrayExpressionTable> allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).pk.intValue(), is(2));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).pk.intValue(), is(2));
 
 		dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).is((DBBooleanArray) null).not());
 		allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).pk.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).pk.intValue(), is(1));
 	}
 
 	@Test
@@ -174,12 +174,12 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new DBBooleanArray(new Boolean[]{true, false, true, true})));
 		List<BooleanArrayExpressionTable> allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		dbQuery = database.getDBQuery(example);
 		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new DBBooleanArray(new Boolean[]{false, false, true, true})));
 		allRows = dbQuery.getAllInstancesOf(example);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	public static class BooleanArrayExpressionTable extends DBRow {

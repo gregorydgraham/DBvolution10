@@ -12,8 +12,8 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -120,27 +120,27 @@ public class DBValidationTest extends AbstractTest {
 				final Villain villain = valid.getRow(new Villain());
 
 				if (valid.getWillBeProcessed()) {
-					Assert.assertThat(hero.name.stringValue(), is("James Security"));
+					assertThat(hero.name.stringValue(), is("James Security"));
 				} else {
-					Assert.assertThat(hero.name.stringValue(), not("James Security"));
+					assertThat(hero.name.stringValue(), not("James Security"));
 				}
 				Map<String, String> map = valid.getMap();
-				Assert.assertThat(map.size(), greaterThan(0));
+				assertThat(map.size(), greaterThan(0));
 				for (Map.Entry<String, String> entry : map.entrySet()) {
 					String key = entry.getKey();
 					String value = entry.getValue();
 
-					Assert.assertThat(value, isOneOf("success", "NO DATA"));
+					assertThat(value, isOneOf("success", "NO DATA"));
 					if (key.equals("villian")) {
 						if (value.equals("success")) {
-							Assert.assertThat(valid.getRow(new DBQueryInsertTest.Villain()).name.stringValue(), not("Dr Nonono"));
+							assertThat(valid.getRow(new DBQueryInsertTest.Villain()).name.stringValue(), not("Dr Nonono"));
 						} else {
-							Assert.assertThat(valid.getRow(new DBQueryInsertTest.Villain()).name.stringValue(), is("Dr Nonono"));
+							assertThat(valid.getRow(new DBQueryInsertTest.Villain()).name.stringValue(), is("Dr Nonono"));
 						}
 					}
 				}
 			}
-			Assert.assertThat(validateAllRows.size(), is(9));
+			assertThat(validateAllRows.size(), is(9));
 		}
 	}
 

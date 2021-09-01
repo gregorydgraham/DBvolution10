@@ -20,7 +20,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 
@@ -37,7 +37,7 @@ public class SelectTopTest extends AbstractTest {
 		carCoTable.setRowLimit(2);
 		List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class SelectTopTest extends AbstractTest {
 		carCoTable.setRowLimit(3);
 		List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -58,11 +58,11 @@ public class SelectTopTest extends AbstractTest {
 
 		List<CarCompany> allRows = carCoTable.setRowLimit(2).getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 
 		allRows = carCoTable.clearRowLimit().getAllRows();
 
-		Assert.assertThat(allRows.size(), is(4));
+		assertThat(allRows.size(), is(4));
 	}
 
 	@Test
@@ -73,15 +73,15 @@ public class SelectTopTest extends AbstractTest {
 		query.setRowLimit(2);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		query.setRowLimit(3);
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 		query.clearRowLimit();
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 	}
 
 	@Test
@@ -97,23 +97,23 @@ public class SelectTopTest extends AbstractTest {
 		List<DBQueryRow> secondPage = query.getAllRowsForPage(1);
 		List<DBQueryRow> thirdPage = query.getAllRowsForPage(2);
 
-		Assert.assertThat(firstPage.size(), is(5));
-		Assert.assertThat(secondPage.size(), is(5));
-		Assert.assertThat(thirdPage.size(), is(5));
+		assertThat(firstPage.size(), is(5));
+		assertThat(secondPage.size(), is(5));
+		assertThat(thirdPage.size(), is(5));
 
-		Assert.assertThat(firstPage.get(0).get(carCompany).name.stringValue(), is("Ford"));
-		Assert.assertThat(firstPage.get(1).get(carCompany).name.stringValue(), is("GENERAL MOTORS"));
+		assertThat(firstPage.get(0).get(carCompany).name.stringValue(), is("Ford"));
+		assertThat(firstPage.get(1).get(carCompany).name.stringValue(), is("GENERAL MOTORS"));
 
-		Assert.assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
-		Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
-		Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("CHRYSLER"));
-		Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("DAEWOO"));
-		Assert.assertThat(secondPage.get(0).get(marque).uidMarque.intValue(), is(9971178));
-		Assert.assertThat(secondPage.get(4).get(marque).uidMarque.intValue(), is(8376505));
+		assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
+		assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
+		assertThat(secondPage.get(0).get(marque).name.stringValue(), is("CHRYSLER"));
+		assertThat(secondPage.get(1).get(marque).name.stringValue(), is("DAEWOO"));
+		assertThat(secondPage.get(0).get(marque).uidMarque.intValue(), is(9971178));
+		assertThat(secondPage.get(4).get(marque).uidMarque.intValue(), is(8376505));
 
-		Assert.assertThat(thirdPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
-		Assert.assertThat(thirdPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
-		Assert.assertThat(thirdPage.get(0).get(marque).name.stringValue(), is("LANDROVER"));
-		Assert.assertThat(thirdPage.get(1).get(marque).name.stringValue(), is("MAZDA"));
+		assertThat(thirdPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
+		assertThat(thirdPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
+		assertThat(thirdPage.get(0).get(marque).name.stringValue(), is("LANDROVER"));
+		assertThat(thirdPage.get(1).get(marque).name.stringValue(), is("MAZDA"));
 	}
 }

@@ -19,14 +19,12 @@ import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -48,8 +46,8 @@ public class DBStringTest extends AbstractTest {
 		marque = new Marque();
 		marque.isUsedForTAFROs.permittedValuesIgnoreCase("Marahāo, Taupō, Años, Grégory");
 		got = database.get(marque);
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat(got.get(0).isUsedForTAFROs.stringValue(), is("Marahāo, Taupō, Años, Grégory"));
+		assertThat(got.size(), is(1));
+		assertThat(got.get(0).isUsedForTAFROs.stringValue(), is("Marahāo, Taupō, Años, Grégory"));
 
 	}
 
@@ -64,7 +62,7 @@ public class DBStringTest extends AbstractTest {
 		marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("Toyota");
 		got = database.get(marque);
-		Assert.assertThat(got.get(0).isUsedForTAFROs.stringValue(), is("数据库应该很容易"));
+		assertThat(got.get(0).isUsedForTAFROs.stringValue(), is("数据库应该很容易"));
 
 	}
 

@@ -49,7 +49,7 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,7 +97,7 @@ public class InstantExpressionTest extends AbstractTest {
 		final Instant now = Instant.now();
 		final Instant buffered = now.minus(10, ChronoUnit.MINUTES);
 
-		Assert.assertThat(systemInstant, is(greaterThan(buffered)));
+		assertThat(systemInstant, is(greaterThan(buffered)));
 
 	}
 
@@ -115,7 +115,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -171,7 +171,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -225,7 +225,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 	}
 
 	@Test
@@ -251,7 +251,7 @@ public class InstantExpressionTest extends AbstractTest {
 				InstantExpression.value(march23rd2013Instant).addDays(-2))
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -265,7 +265,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -274,11 +274,11 @@ public class InstantExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 		MarqueWithDateAggregators got = allRows.get(0).get(marq);
-		Assert.assertThat(got.countOfDates.intValue(), is(21));
-		Assert.assertThat(got.maxOfDates.instantValue(), is(march23rd2013Instant));
-		Assert.assertThat(got.minOfDates.getValue(), is(april2nd2011Instant));
+		assertThat(got.countOfDates.intValue(), is(21));
+		assertThat(got.maxOfDates.instantValue(), is(march23rd2013Instant));
+		assertThat(got.minOfDates.getValue(), is(april2nd2011Instant));
 
 	}
 
@@ -308,7 +308,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -337,10 +337,10 @@ public class InstantExpressionTest extends AbstractTest {
 		for (int i = 0; i < allRows.size(); i++) {
 			got = allRows.get(i).get(marq);
 			Object[] expect = expectedValues.get(i);
-			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
-			Assert.assertThat(got.maxOfAll.getValue(), is((Instant) expect[1]));
-			Assert.assertThat(got.maxOfDates.getValue(), is((Instant) expect[1]));
-			Assert.assertThat(got.minOfDates.getValue(), is((Instant) expect[2]));
+			assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
+			assertThat(got.maxOfAll.getValue(), is((Instant) expect[1]));
+			assertThat(got.maxOfDates.getValue(), is((Instant) expect[1]));
+			assertThat(got.minOfDates.getValue(), is((Instant) expect[2]));
 		}
 	}
 
@@ -389,7 +389,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithAggregatorAndDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -418,9 +418,9 @@ public class InstantExpressionTest extends AbstractTest {
 		for (int i = 0; i < allRows.size(); i++) {
 			got = allRows.get(i).get(marq);
 			Object[] expect = expectedValues.get(i);
-			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
-			Assert.assertThat(got.maxOfDates.getValue(), is((Instant) expect[1]));
-			Assert.assertThat(got.minOfDates.getValue(), is((Instant) expect[2]));
+			assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
+			assertThat(got.maxOfDates.getValue(), is((Instant) expect[1]));
+			assertThat(got.minOfDates.getValue(), is((Instant) expect[2]));
 		}
 	}
 
@@ -470,7 +470,7 @@ public class InstantExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 //		database.print(allRows);
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithComplexWindowingFunction got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -525,7 +525,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> got = query.getAllRows();
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 		final Instant then = Instant.now();
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", then, 3, null));
@@ -536,7 +536,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
 
-		Assert.assertThat(reportRows.size(), is(1));
+		assertThat(reportRows.size(), is(1));
 
 		query = database.getDBQuery(marq);
 		query.addConditions(
@@ -555,7 +555,7 @@ public class InstantExpressionTest extends AbstractTest {
 			System.out.println("FOUND ROWS: " + got.size());
 			database.getDBTable(marq).setBlankQueryAllowed(true).print();
 		}
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -565,7 +565,7 @@ public class InstantExpressionTest extends AbstractTest {
 		marq.creationInstant.permittedRangeInclusive(Instant.now(), null);
 		List<MarqueWithInstant> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
 
@@ -574,23 +574,23 @@ public class InstantExpressionTest extends AbstractTest {
 		CurrentDateReport currentDateReport = new CurrentDateReport();
 		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
 
-		Assert.assertThat(reportRows.size(), is(1));
+		assertThat(reportRows.size(), is(1));
 
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addSeconds(-10), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		marq.creationInstant.permittedRangeInclusive(null, InstantExpression.currentDate().addSeconds(-10));
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(21));
+		assertThat(got.size(), is(21));
 
 		marq.creationInstant.permittedRangeInclusive(
 				InstantExpression.currentDate().addMinutes(-5), null);
 		got = database.getDBTable(marq).getAllRows();
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -599,23 +599,23 @@ public class InstantExpressionTest extends AbstractTest {
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate(), null);
 		List<MarqueWithInstant> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addDays(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		marq.creationInstant.permittedRangeInclusive(null, InstantExpression.currentDate().addDays(-1));
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(21));
+		assertThat(got.size(), is(21));
 
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addDays(-1), InstantExpression.currentDate().addDays(+1));
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -624,13 +624,13 @@ public class InstantExpressionTest extends AbstractTest {
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate(), null);
 		List<MarqueWithInstant> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addHours(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -639,13 +639,13 @@ public class InstantExpressionTest extends AbstractTest {
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate(), null);
 		List<MarqueWithInstant> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addWeeks(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -654,13 +654,13 @@ public class InstantExpressionTest extends AbstractTest {
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate(), null);
 		List<MarqueWithInstant> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addMinutes(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -669,13 +669,13 @@ public class InstantExpressionTest extends AbstractTest {
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate(), null);
 		List<MarqueWithInstant> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addMonths(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -684,13 +684,13 @@ public class InstantExpressionTest extends AbstractTest {
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate(), null);
 		List<MarqueWithInstant> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithInstant(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", Instant.now(), 3, null));
 		marq.creationInstant.permittedRangeInclusive(InstantExpression.currentDate().addYears(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -701,14 +701,14 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).year().is(2014));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).year().is(2013));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -719,28 +719,28 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).yearIs(2014));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).yearIs(2013));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).yearIs(NumberExpression.value(2014).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).yearIs(NumberExpression.value(2013)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -751,28 +751,28 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).monthIs(3));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).monthIs(4));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).monthIs(NumberExpression.value(3).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).monthIs(NumberExpression.value(4)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -783,21 +783,21 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).endOfMonth().day().is(31));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).endOfMonth().day().is(30));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).endOfMonth().day().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -812,32 +812,32 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(march1st2013, march2nd2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(april1st2011, april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(InstantExpression.value(april1st2011), april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetween(april1st2011, InstantExpression.value(april2nd2011Instant)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -848,7 +848,7 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).firstOfMonth().isNotNull());
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(21));
+		assertThat(got.size(), is(21));
 	}
 
 	@Test
@@ -864,32 +864,32 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetweenInclusive(april1st2011, april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetweenInclusive(InstantExpression.value(april1st2011), april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().isBetweenInclusive(april1st2011, InstantExpression.value(april2nd2011Instant)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -901,7 +901,7 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().isGreaterThan(march1st2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -913,7 +913,7 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().isGreaterThanOrEqual(march1st2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -925,7 +925,7 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().isGreaterThan(march1st2013, marq.column(marq.name).isGreaterThan("T")));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -937,7 +937,7 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().isLessThan(march1st2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -949,7 +949,7 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().isLessThan(march1st2013, marq.column(marq.name).isGreaterThan("T")));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -964,32 +964,32 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(march1st2013, march2nd2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(april1st2011, april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(InstantExpression.value(april1st2011), april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationInstant).toInstant().firstOfMonth().atStartOfDay().isBetweenExclusive(april1st2011, InstantExpression.value(april2nd2011Instant)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 	}
 
@@ -1001,21 +1001,21 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).addMonths(1).dayOfWeek().is(InstantExpression.TUESDAY));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq).setQueryLabel("FIND DAY OF WEEK NEXT MONTH IS MONDAY");
 		query.addCondition(
 				marq.column(marq.creationInstant).addMonths(1).dayOfWeek().is(InstantExpression.MONDAY));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq).setQueryLabel("FIND DAY OF WEEK NEXT MONTH IS NULL");
 		query.addCondition(
 				marq.column(marq.creationInstant).addMonths(1).dayOfWeek().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -1026,14 +1026,14 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).day().is(23));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).day().is(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1044,28 +1044,28 @@ public class InstantExpressionTest extends AbstractTest {
 		query.addCondition(
 				marq.column(marq.creationInstant).dayIs(23));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).dayIs(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).dayIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).dayIs(NumberExpression.value(2).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1076,14 +1076,14 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).hour().is(12));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).hour().is(1));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1094,28 +1094,28 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).hourIs(12));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).hourIs(1));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).hourIs(NumberExpression.value(1).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).hourIs(NumberExpression.value(1)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1126,14 +1126,14 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).minute().is(34));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).minute().is(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1144,28 +1144,28 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).minuteIs(34));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).minuteIs(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).minuteIs(NumberExpression.value(2).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).minuteIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1176,14 +1176,14 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).second().is(56));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).second().is(3));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1194,21 +1194,21 @@ public class InstantExpressionTest extends AbstractTest {
 				marq.column(marq.creationInstant).secondIs(56));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).secondIs(3));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationInstant).secondIs(NumberExpression.value(3)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1227,7 +1227,7 @@ public class InstantExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 		MarqueWithInstant newMarque = new MarqueWithInstant(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1236,7 +1236,7 @@ public class InstantExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationInstant).toInstant()
@@ -1251,7 +1251,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(20));
+		assertThat(allRows.size(), is(20));
 	}
 
 	@Test
@@ -1268,7 +1268,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 		MarqueWithInstant newMarque = new MarqueWithInstant(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1277,14 +1277,14 @@ public class InstantExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(marque.column(marque.creationInstant).toInstant().isIn(april2nd2011Instant, march23rd2013Instant)
 		);
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 	}
 
 	@Test
@@ -1302,7 +1302,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 		MarqueWithInstant newMarque = new MarqueWithInstant(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1311,7 +1311,7 @@ public class InstantExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		List<InstantExpression> dates = new ArrayList<InstantExpression>();
 		dates.add(InstantExpression.value(march23rd2013Instant));
@@ -1323,7 +1323,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 	}
 
 	@Test
@@ -1337,7 +1337,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		MarqueWithInstant newMarque = new MarqueWithInstant(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1346,7 +1346,7 @@ public class InstantExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationInstant).toInstant().is((Instant) null)
@@ -1354,7 +1354,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -1368,8 +1368,8 @@ public class InstantExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).get(new MarqueWithInstant()).creationInstant.getValue(), Matchers.nullValue());
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).get(new MarqueWithInstant()).creationInstant.getValue(), Matchers.nullValue());
 
 		MarqueWithInstant newMarque = new MarqueWithInstant(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1378,7 +1378,7 @@ public class InstantExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationInstant).toInstant().isNull()
@@ -1386,7 +1386,7 @@ public class InstantExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	public static class DiffTestReport extends DBReport {
@@ -1424,7 +1424,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		marq = new MarqueWithInstant();
 		query = database.getDBQuery(marq);
@@ -1438,7 +1438,7 @@ public class InstantExpressionTest extends AbstractTest {
 		nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.permitOnlyNotNull();
 		numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Instant secondInstant = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3).toInstant(ZoneOffset.UTC);
 		marq = new MarqueWithInstant();
@@ -1453,7 +1453,7 @@ public class InstantExpressionTest extends AbstractTest {
 		Instant secondDate = april2nd2011Instant;//AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr).toInstant();
 		secondDateMarques.creationInstant.permittedValues(secondDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1471,7 +1471,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Instant secondInstant = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3).toInstant(ZoneOffset.UTC);
 		marq = new MarqueWithInstant();
@@ -1485,7 +1485,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant secondDateMarques = new MarqueWithInstant();
 		secondDateMarques.creationInstant.permittedValues(secondInstant);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1503,7 +1503,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Instant secondInstant = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3).toInstant(ZoneOffset.UTC);
 		marq = new MarqueWithInstant();
@@ -1517,7 +1517,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant secondDateMarques = new MarqueWithInstant();
 		secondDateMarques.creationInstant.permittedValues(secondInstant);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1536,7 +1536,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Instant secondInstant = april2nd2011Instant;//LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3).toInstant(ZoneOffset.UTC);
 		Instant secondDate = april2nd2011Instant;//AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr).toInstant();
@@ -1556,7 +1556,7 @@ public class InstantExpressionTest extends AbstractTest {
 						.setBlankQueryAllowed(true)
 						.count()
 						.intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1574,7 +1574,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Instant secondInstant = april2nd2011Instant;//LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3).toInstant(ZoneOffset.UTC);
 		Instant secondDate = april2nd2011Instant;//AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr).toInstant();
@@ -1589,7 +1589,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant secondDateMarques = new MarqueWithInstant();
 		secondDateMarques.creationInstant.permittedValues(secondDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1607,7 +1607,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Instant secondInstant = april2nd2011Instant;//LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3).toInstant(ZoneOffset.UTC);
 		Instant secondDate = april2nd2011Instant;//AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr).toInstant();
@@ -1622,7 +1622,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant secondDateMarques = new MarqueWithInstant();
 		secondDateMarques.creationInstant.permittedValues(secondDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1639,7 +1639,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant nonNullMarque = new MarqueWithInstant();
 		nonNullMarque.creationInstant.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Instant secondInstant = april2nd2011Instant;//LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3).toInstant(ZoneOffset.UTC);
 		Instant secondDate = april2nd2011Instant;//AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr).toInstant();
@@ -1655,7 +1655,7 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant secondDateMarques = new MarqueWithInstant();
 		secondDateMarques.creationInstant.permittedValues(secondDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	public static class MarqueWithSecondsFromDate extends MarqueWithInstant {
@@ -1671,7 +1671,7 @@ public class InstantExpressionTest extends AbstractTest {
 	public void testSecondsFromReturnsDecimal() throws SQLException {
 		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
 		allRows.forEach((row)
-				-> Assert.assertThat(row.subseconds.doubleValue(), is(0.01))
+				-> assertThat(row.subseconds.doubleValue(), is(0.01))
 		);
 	}
 
@@ -1684,7 +1684,7 @@ public class InstantExpressionTest extends AbstractTest {
 				.setQueryLabel("testEndOfMonthCalculation");
 		List<MarqueWithEndOfMonthForInstantColumn> allRows = table.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		final Instant march31st2013 = LocalDateTime.of(2013, Month.MARCH, 31, 12, 34, 56).toInstant(ZoneOffset.UTC);
 		final Instant april30th2011 = LocalDateTime.of(2011, Month.APRIL, 30, 1, 2, 3).toInstant(ZoneOffset.UTC);
@@ -1693,13 +1693,13 @@ public class InstantExpressionTest extends AbstractTest {
 		final LocalDateTime nullDate = null;
 		for (MarqueWithEndOfMonthForInstantColumn allRow : allRows) {
 //			System.out.println(allRow);
-			Assert.assertThat(allRow.endOfMonth.getValue(),
+			assertThat(allRow.endOfMonth.getValue(),
 					anyOf(
 							is(nullDate),
 							is(march31st2013),
 							is(april30th2011)
 					));
-			Assert.assertThat(allRow.firstOfMonth.getValue(),
+			assertThat(allRow.firstOfMonth.getValue(),
 					anyOf(
 							is(nullDate),
 							is(march1st2013),
@@ -1711,10 +1711,10 @@ public class InstantExpressionTest extends AbstractTest {
 		dbQuery.addCondition(marq.column(marq.endOfMonth).dayIs(31));
 		List<DBQueryRow> allRows1 = dbQuery.getAllRows();
 		for (DBQueryRow row : allRows1) {
-			Assert.assertThat(
+			assertThat(
 					row.get(marq).endOfMonth.getValue(),
 					is(march31st2013));
-			Assert.assertThat(
+			assertThat(
 					row.get(marq).firstOfMonth.getValue(),
 					is(march1st2013)
 			);
@@ -1865,7 +1865,7 @@ public class InstantExpressionTest extends AbstractTest {
 				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -1897,12 +1897,12 @@ public class InstantExpressionTest extends AbstractTest {
 			got = allRows.get(i).get(marq);
 //			System.out.println("" + got.toString());
 			Object[] expect = expectedValues.get(i);
-			Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
-			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
-			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
-			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
-			Assert.assertThat(got.lag.getValue(), is((Instant) expect[4]));
-			Assert.assertThat(got.lead.getValue(), is((Instant) expect[5]));
+			assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
+			assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
+			assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
+			assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
+			assertThat(got.lag.getValue(), is((Instant) expect[4]));
+			assertThat(got.lead.getValue(), is((Instant) expect[5]));
 		}
 	}
 

@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -80,7 +81,7 @@ public class DBDatabaseTest extends AbstractTest {
 
 		final CreateTableTestClass createTableTestClass = new CreateTableTestClass();
 		database.createTable(createTableTestClass);
-		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		try {
 			database.preventDroppingOfTables(false);
@@ -92,25 +93,25 @@ public class DBDatabaseTest extends AbstractTest {
 	@Test
 	public void testTableExists() throws SQLException {
 		final CreateTableTestClass createTableTestClass = new CreateTableTestClass();
-		Assert.assertThat(database.tableExists(createTableTestClass), is(false));
+		assertThat(database.tableExists(createTableTestClass), is(false));
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(createTableTestClass);
 		} catch (AutoCommitActionDuringTransactionException ex) {
 //			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
 		}
-		Assert.assertThat(database.tableExists(createTableTestClass), is(false));
+		assertThat(database.tableExists(createTableTestClass), is(false));
 
 		database.createTable(createTableTestClass);
-		Assert.assertThat(database.tableExists(createTableTestClass), is(true));
-		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		assertThat(database.tableExists(createTableTestClass), is(true));
+		assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
 		}
-		Assert.assertThat(database.tableExists(createTableTestClass), is(false));
+		assertThat(database.tableExists(createTableTestClass), is(false));
 
 	}
 
@@ -124,24 +125,24 @@ public class DBDatabaseTest extends AbstractTest {
 		} catch (AutoCommitActionDuringTransactionException ex) {
 //			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
 		}
-		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+		assertThat(database.tableExists(originalColumnTable), is(false));
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(originalColumnTable);
 		} catch (AutoCommitActionDuringTransactionException ex) {
 //			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
 		}
-		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+		assertThat(database.tableExists(originalColumnTable), is(false));
 
 		database.createTable(originalColumnTable);
-		Assert.assertThat(database.tableExists(newColumntable), is(true));
+		assertThat(database.tableExists(newColumntable), is(true));
 
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(newColumntable);
 		} catch (AutoCommitActionDuringTransactionException ex) {
 		}
-		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+		assertThat(database.tableExists(originalColumnTable), is(false));
 
 	}
 
@@ -155,25 +156,25 @@ public class DBDatabaseTest extends AbstractTest {
 		} catch (AutoCommitActionDuringTransactionException ex) {
 //			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
 		}
-		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+		assertThat(database.tableExists(originalColumnTable), is(false));
 
 		database.createTable(originalColumnTable);
 
-		Assert.assertThat(database.tableExists(originalColumnTable), is(true));
+		assertThat(database.tableExists(originalColumnTable), is(true));
 		originalColumnTable.id.setValue(5);
 		originalColumnTable.name.setValue("FIVE");
 		database.insert(originalColumnTable);
 		
 		database.updateTableToMatchDBRow(newColumntable);
 
-		Assert.assertThat(database.tableExists(originalColumnTable), is(true));
-		Assert.assertThat(database.tableExists(newColumntable), is(true));
+		assertThat(database.tableExists(originalColumnTable), is(true));
+		assertThat(database.tableExists(newColumntable), is(true));
 		
 		List<CreateTableTestClassWithNewColumns> rows = database.getDBTable(newColumntable).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(rows.size(), is(1));
+		assertThat(rows.size(), is(1));
 		CreateTableTestClassWithNewColumns row = rows.get(0);
-		Assert.assertThat(row.id.getValue(), is(5L));
-		Assert.assertThat(row.name.getValue(), is("FIVE"));
+		assertThat(row.id.getValue(), is(5L));
+		assertThat(row.name.getValue(), is("FIVE"));
 		
 		newColumntable.id.setValue(6);
 		newColumntable.name.setValue("SIX");
@@ -185,10 +186,10 @@ public class DBDatabaseTest extends AbstractTest {
 						.setBlankQueryAllowed(true)
 						.setSortOrder(newColumntable.column(newColumntable.id))
 						.getAllRows();
-		Assert.assertThat(newRows.size(), is(2));
+		assertThat(newRows.size(), is(2));
 		CreateTableTestClassWithNewColumns newRow = newRows.get(1);
-		Assert.assertThat(newRow.id.getValue(), is(6L));
-		Assert.assertThat(newRow.newColumn.getValue(), is("SIX+1"));
+		assertThat(newRow.id.getValue(), is(6L));
+		assertThat(newRow.newColumn.getValue(), is("SIX+1"));
 	}
 
 	@Test
@@ -209,12 +210,12 @@ public class DBDatabaseTest extends AbstractTest {
 		final CreateTableTestClass createTableClass = new CreateTableTestClass();
 		database.createTableWithForeignKeys(createTableClass);
 		// This will throw an error if the table doesn't exist
-		Assert.assertThat(database.getDBTable(createTableClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		assertThat(database.getDBTable(createTableClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		final CreateTableWithForeignKeyTestClass createTableTestClass = new CreateTableWithForeignKeyTestClass();
 		database.createTableWithForeignKeys(createTableTestClass);
 		// This will throw an error if the table doesn't exist
-		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		database.createIndexesOnAllFields(createTableTestClass);
 
 		try {
@@ -241,11 +242,11 @@ public class DBDatabaseTest extends AbstractTest {
 
 		final CreateTableTestClass2 createTableClass = new CreateTableTestClass2();
 		database.createTable(createTableClass);
-		Assert.assertThat(database.getDBTable(createTableClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		assertThat(database.getDBTable(createTableClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		final CreateTableWithForeignKeyTestClass2 createTableTestClass = new CreateTableWithForeignKeyTestClass2();
 		database.createTable(createTableTestClass);
-		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		database.createForeignKeyConstraints(createTableTestClass);
 
@@ -300,12 +301,12 @@ public class DBDatabaseTest extends AbstractTest {
 		}
 		//SETUP: DropTableTestClass table not created, probably already exists
 		//Prove that the table exists
-		Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		database.preventDroppingOfTables(false);
 		database.dropTable(new DropTableTestClass());
 		try {
 			database.setQuietExceptionsPreference(true);
-			Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+			assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		} catch (SQLException exp) {
 			throw new DBRuntimeException("Failed to assert that the table is empty", exp);
 		}finally{

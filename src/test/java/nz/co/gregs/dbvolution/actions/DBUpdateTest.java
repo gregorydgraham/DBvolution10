@@ -22,13 +22,11 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -57,24 +55,24 @@ public class DBUpdateTest extends AbstractTest {
 		example.fkCompanyLogo.setValue(1);
 		database.getDBTable(example).insert(example);
 		List<LinkCarCompanyAndLogo> foundLinks = database.get(example);
-		Assert.assertThat(foundLinks.size(), is(1));
+		assertThat(foundLinks.size(), is(1));
 
 		final LinkCarCompanyAndLogo got = foundLinks.get(0);
 		got.fkCarCompany.setValue(2);
 		DBActionList updateActions = database.update(got);
-		Assert.assertThat(updateActions.size(), is(1));
-		Assert.assertThat(updateActions.get(0), instanceOf(DBUpdateSimpleTypesUsingAllColumns.class));
+		assertThat(updateActions.size(), is(1));
+		assertThat(updateActions.get(0), instanceOf(DBUpdateSimpleTypesUsingAllColumns.class));
 
 		foundLinks = database.get(example);
-		Assert.assertThat(foundLinks.size(), is(0));
+		assertThat(foundLinks.size(), is(0));
 
 		DBActionList revertActionList = updateActions.getRevertActionList();
-		Assert.assertThat(revertActionList.size(), is(1));
-		Assert.assertThat(revertActionList.get(0), instanceOf(DBUpdateToPreviousValues.class));
+		assertThat(revertActionList.size(), is(1));
+		assertThat(revertActionList.get(0), instanceOf(DBUpdateToPreviousValues.class));
 
 		revertActionList.execute(database);
 		foundLinks = database.get(example);
-		Assert.assertThat(foundLinks.size(), is(1));
+		assertThat(foundLinks.size(), is(1));
 		database.delete(example);
 	}
 }

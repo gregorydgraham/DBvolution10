@@ -70,14 +70,14 @@ public class QueryGraphEdgeStrokeTransformerTest extends AbstractTest {
 		QueryGraphEdgeStrokeTransformer instance = new QueryGraphEdgeStrokeTransformer(dbQuery);
 		Stroke expResult = QueryGraphEdgeStrokeTransformer.STROKE_FOR_REQUIRED_EXPRESSION;
 		Stroke result = instance.transform(input);
-		Assert.assertThat(result, is(expResult));
+		assertThat(result, is(expResult));
 
 		final CarCompany carCompany = new CarCompany();
 		dbQuery.addOptional(carCompany);
 		input = carCompany.column(carCompany.name).is("TOYOTA");
 		expResult = QueryGraphEdgeStrokeTransformer.STROKE_FOR_OPTIONAL_EXPRESSION;
 		result = instance.transform(input);
-		Assert.assertThat(result, is(expResult));
+		assertThat(result, is(expResult));
 	}
 
 }

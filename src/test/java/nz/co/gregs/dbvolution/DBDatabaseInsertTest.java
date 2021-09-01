@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 
@@ -62,9 +62,9 @@ public class DBDatabaseInsertTest extends AbstractTest {
 		marquesTable.getAllRows();
 
 		final int updatedNumberOfCarCompanies = allCarCompanies.getAllRows().size();
-		Assert.assertThat(changes.size(), is(3));
-		Assert.assertThat(marquesTable.getAllRows().size(), is(originalNumberOfMarques + 2));
-		Assert.assertThat(
+		assertThat(changes.size(), is(3));
+		assertThat(marquesTable.getAllRows().size(), is(originalNumberOfMarques + 2));
+		assertThat(
 				updatedNumberOfCarCompanies,
 				is(originalNumberOfCarCos + 1));
 	}

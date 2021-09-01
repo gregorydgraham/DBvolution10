@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -51,7 +51,7 @@ public class ExpressionAsForeignKeysTest extends AbstractTest {
 		dbQuery.addCondition(marque.column(marque.carCompany).is(carCompany.column(carCompany.uidCarCompany)));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 }

@@ -15,22 +15,17 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
-import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.Assert;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -53,18 +48,18 @@ public class DBDeleteTest extends AbstractTest {
 		row.pk_uid.setValue(1);
 		row.name.setValue("First Row");
 		database.insert(row);
-		Assert.assertThat(row.pk_uid.getValue(), is(1L));
+		assertThat(row.pk_uid.getValue(), is(1L));
 
 		row2.pk_uid.setValue(2);
 		row2.name.setValue("Second Row");
 		database.insert(row2);
-		Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+		assertThat(row2.pk_uid.getValue(), is(2L));
 
 		final Long pkValue = row2.pk_uid.getValue();
 		TestDeleteThrowsExceptionOnBlankRow gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+		assertThat(gotRow2.pk_uid.getValue(), is(2L));
 
-		Assert.assertThat(database.getCount(new TestDeleteThrowsExceptionOnBlankRow()), is(2l));
+		assertThat(database.getCount(new TestDeleteThrowsExceptionOnBlankRow()), is(2l));
 		try {
 			database.delete(new TestDeleteThrowsExceptionOnBlankRow());
 			Assert.fail("Should have thrown an AccidentalBlankQueryException");
@@ -92,16 +87,16 @@ public class DBDeleteTest extends AbstractTest {
 		row.name.setValue("First Row");
 		row2.name.setValue("Second Row");
 		database.insert(row);
-		Assert.assertThat(row.pk_uid.getValue(), is(1L));
+		assertThat(row.pk_uid.getValue(), is(1L));
 		database.insert(row2);
-		Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+		assertThat(row2.pk_uid.getValue(), is(2L));
 		final Long pkValue = row2.pk_uid.getValue();
 		TestDeleteAll gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+		assertThat(gotRow2.pk_uid.getValue(), is(2L));
 
-		Assert.assertThat(database.getCount(new TestDeleteAll()), is(2l));
+		assertThat(database.getCount(new TestDeleteAll()), is(2l));
 		database.deleteAll(new TestDeleteAll());
-		Assert.assertThat(database.getCount(new TestDeleteAll()), is(0l));
+		assertThat(database.getCount(new TestDeleteAll()), is(0l));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);

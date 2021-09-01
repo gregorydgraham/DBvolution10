@@ -24,13 +24,10 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregory.graham
  */
@@ -55,7 +52,7 @@ public class DBDateOnlyTest extends AbstractTest {
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DateOnlyTest> allRows = database.getDBTable(new DateOnlyTest()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);
 	}

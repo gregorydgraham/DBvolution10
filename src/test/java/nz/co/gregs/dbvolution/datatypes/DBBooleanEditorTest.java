@@ -16,15 +16,12 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -61,13 +58,13 @@ public class DBBooleanEditorTest {
 		DBBooleanEditor instance = new DBBooleanEditor();
 		instance.setAsText(text);
 		// TODO review the generated test code and remove the default call to fail.
-		Assert.assertThat((Boolean) ((QueryableDatatype) instance.getValue()).getLiteralValue(), is(true));
+		assertThat((Boolean) ((QueryableDatatype) instance.getValue()).getLiteralValue(), is(true));
 
 		text = "";
 		instance = new DBBooleanEditor();
 		instance.setAsText(text);
 		// TODO review the generated test code and remove the default call to fail.
-		Assert.assertThat((Boolean) ((QueryableDatatype) instance.getValue()).getLiteralValue(), nullValue());
+		assertThat((Boolean) ((QueryableDatatype) instance.getValue()).getLiteralValue(), nullValue());
 	}
 
 }

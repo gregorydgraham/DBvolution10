@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.DBStringTrimmed;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 
 import org.junit.Test;
@@ -87,10 +87,10 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 
 //		System.out.println("getColleaguesToList: \n" + dbQuery.getSQLForQuery());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		Colleagues colleagueRow1 = allRows.get(0).get(new Colleagues());
 		Colleagues colleagueRow2 = allRows.get(1).get(new Colleagues());
-		Assert.assertThat(colleagueRow1.invited.getValue(), not(is(colleagueRow2.invited.getValue())));
+		assertThat(colleagueRow1.invited.getValue(), not(is(colleagueRow2.invited.getValue())));
 
 	}
 

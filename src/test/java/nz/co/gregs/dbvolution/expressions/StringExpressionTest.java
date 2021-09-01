@@ -36,6 +36,7 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -52,14 +53,14 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 	}
 
 	@Test
 	public void testQDTOfExpression() throws SQLException {
 		final StringExpression currentUser = StringExpression.currentUser();
 		DBString qdt = currentUser.getQueryableDatatypeForExpressionValue();
-		Assert.assertThat(qdt, isA(DBString.class));
+		assertThat(qdt, isA(DBString.class));
 	}
 
 	@Test
@@ -72,13 +73,13 @@ public class StringExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(4));
+		assertThat(allRows.size(), is(4));
 
 		CarCompany newCarCo = new CarCompany(null, 18);
 		database.insert(newCarCo);
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(4));
+		assertThat(allRows.size(), is(4));
 	}
 
 	@Test
@@ -91,13 +92,13 @@ public class StringExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		CarCompany newCarCo = new CarCompany(null, 18);
 		database.insert(newCarCo);
 
 		allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -171,7 +172,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
+		assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
 	}
 
 	@Test
@@ -182,7 +183,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
+		assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
 	}
 
 	@Test
@@ -193,7 +194,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
+		assertThat(rowsByExample.get(0).name.getValue(), is("BMW"));
 	}
 
 	@Test
@@ -244,13 +245,13 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.permittedValuesIgnoreCase("HUMMER");
 		DBQuery dbQuery = database.getDBQuery(marq);
 		List<Marque> got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		marq = new Marque();
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).trim().is("HUMMER"));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(2));
+		assertThat(got.size(), is(2));
 	}
 
 	public static class trimmedMarque extends Marque {
@@ -270,7 +271,7 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.permittedValuesIgnoreCase("HUMMER");
 		DBQuery dbQuery = database.getDBQuery(marq);
 		List<trimmedMarque> got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		marq.name.clear();
 
@@ -279,17 +280,17 @@ public class StringExpressionTest extends AbstractTest {
 				marq.column(marq.name).leftTrim().is("HUMMER")
 		);
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).rightTrim().is("HUMMER"));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).rightTrim().leftTrim().is("HUMMER"));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(2));
+		assertThat(got.size(), is(2));
 	}
 
 	@Test
@@ -299,7 +300,7 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.permittedValues("HUMMER");
 		DBQuery dbQuery = database.getDBQuery(marq);
 		List<Marque> got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		marq = new Marque();
 
@@ -309,22 +310,22 @@ public class StringExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).lowercase().is(hummerUpperCase));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).lowercase().is(hummerLowerCase));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).uppercase().is(hummerLowerCase));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).lowercase().uppercase().is(hummerUpperCase));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -333,7 +334,7 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.permittedValues("HUMMER".substring(0, 3));
 		DBQuery dbQuery = database.getDBQuery(marq);
 		List<Marque> got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		marq.name.clear();
 
@@ -343,31 +344,31 @@ public class StringExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(0, 3).is(first3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("HUMMER"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("HUMMER"));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(NumberExpression.value(3), 6).is(first3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(3, NumberExpression.value(6)).is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(3, 6).lowercase().is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(3, 6).lowercase().uppercase().is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
 
@@ -375,7 +376,7 @@ public class StringExpressionTest extends AbstractTest {
 		dbQuery.addCondition(marq.column(marq.name).trim().uppercase().substring(3, 6).is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
+		assertThat(got.size(), is(2));
 	}
 
 	@Test
@@ -389,9 +390,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("BMW"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VW"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("BMW"));
+		assertThat((got.get(1)).name.stringValue(), is("VW"));
 	}
 
 	@Test
@@ -405,8 +406,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -420,8 +421,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -434,8 +435,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -448,8 +449,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -465,8 +466,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -482,8 +483,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -497,8 +498,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -514,8 +515,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -531,8 +532,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -546,9 +547,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
 
 	@Test
@@ -567,9 +568,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
 
 	@Test
@@ -588,9 +589,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
 
 	@Test
@@ -606,9 +607,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
 
 	@Test
@@ -628,9 +629,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
 
 	@Test
@@ -650,9 +651,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
 
 	@Test
@@ -668,9 +669,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
 
 	@Test
@@ -687,8 +688,8 @@ public class StringExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> got = query.getAllRows();
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat(
+		assertThat(got.size(), is(1));
+		assertThat(
 				got.get(0).getExpressionColumnValue(this).stringValue(),
 				isOneOf("TOYOTA, VOLVO", "VOLVO, TOYOTA"));
 	}
@@ -711,8 +712,8 @@ public class StringExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> got = query.getAllRows();
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("VOLVO, TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("VOLVO, TOYOTA"));
 	}
 
 	@Test
@@ -733,8 +734,8 @@ public class StringExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> got = query.getAllRows();
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("TOYOTA, VOLVO"));
+		assertThat(got.size(), is(1));
+		assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("TOYOTA, VOLVO"));
 	}
 
 	@Test
@@ -748,33 +749,33 @@ public class StringExpressionTest extends AbstractTest {
 		query.addCondition(nameValue.is("TOY"));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(nameValue.replace("OTA", "").is("TOY"));
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(nameValue.replace(StringExpression.value("BM"), "V").is("VW"));
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("BMW"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VW"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("BMW"));
+		assertThat((got.get(1)).name.stringValue(), is("VW"));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(nameValue.replace("BM", StringExpression.value("V")).is("VW"));
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("BMW"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VW"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("BMW"));
+		assertThat((got.get(1)).name.stringValue(), is("VW"));
 
 		// A rather complicated way to find out how many marques start with V
 		query = database.getDBQuery(marq);
@@ -782,9 +783,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("VW"));
+		assertThat(got.size(), is(2));
+		assertThat((got.get(0)).name.stringValue(), is("VOLVO"));
+		assertThat((got.get(1)).name.stringValue(), is("VW"));
 	}
 
 	@Test
@@ -802,8 +803,8 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("BMW"));
+		assertThat(got.size(), is(1));
+		assertThat((got.get(0)).name.stringValue(), is("BMW"));
 
 		query = database.getDBQuery(marq);
 		// Find VW and BMW by appending V and W around the replaced brands
@@ -811,9 +812,9 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(2));
-		Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
-		Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
+		assertThat(got.size(), is(2));
+		assertThat(got.get(0).name.stringValue(), is("BMW"));
+		assertThat(got.get(1).name.stringValue(), is("VW"));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(nameValue.length().is(6));
@@ -822,8 +823,8 @@ public class StringExpressionTest extends AbstractTest {
 
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
-		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+		assertThat(got.size(), is(1));
+		assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
 	}
 
 	@Test
@@ -839,10 +840,10 @@ public class StringExpressionTest extends AbstractTest {
 		query.setSortOrder(marque.column(marque.carCompany));
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
-		Assert.assertThat(allRows.get(0).get(marque).carCompany.getValue(), is(1l));
-		Assert.assertThat(allRows.get(1).get(marque).carCompany.getValue(), is(3l));
-		Assert.assertThat(allRows.get(2).get(marque).carCompany.getValue(), is(4l));
+		assertThat(allRows.size(), is(3));
+		assertThat(allRows.get(0).get(marque).carCompany.getValue(), is(1l));
+		assertThat(allRows.get(1).get(marque).carCompany.getValue(), is(3l));
+		assertThat(allRows.get(2).get(marque).carCompany.getValue(), is(4l));
 
 	}
 
@@ -879,10 +880,10 @@ public class StringExpressionTest extends AbstractTest {
 			database.print(allRows);
 		}
 
-		Assert.assertThat(allRows.size(), is(14));
+		assertThat(allRows.size(), is(14));
 		for (FindFirstNumberTable fab : allRows) {
-			Assert.assertThat(fab.actualString.getValue(), is(fab.expectString.getValue()));
-			Assert.assertThat(fab.actualNumber.doubleValue(), is(fab.expectNumber.doubleValue()));
+			assertThat(fab.actualString.getValue(), is(fab.expectString.getValue()));
+			assertThat(fab.actualNumber.doubleValue(), is(fab.expectNumber.doubleValue()));
 		}
 	}
 
@@ -924,10 +925,10 @@ public class StringExpressionTest extends AbstractTest {
 					.getAllRows());
 		}
 
-		Assert.assertThat(allRows.size(), is(14));
+		assertThat(allRows.size(), is(14));
 		for (FindFirstIntegerTable fab : allRows) {
-			Assert.assertThat(fab.actualIntegerString.getValue(), is(fab.expectString.getValue()));
-			Assert.assertThat(fab.actualInteger.longValue(), is(fab.expectNumber.longValue()));
+			assertThat(fab.actualIntegerString.getValue(), is(fab.expectString.getValue()));
+			assertThat(fab.actualInteger.longValue(), is(fab.expectNumber.longValue()));
 		}
 	}
 
@@ -1025,7 +1026,7 @@ public class StringExpressionTest extends AbstractTest {
 				);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithLagAndLeadFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -1057,14 +1058,14 @@ public class StringExpressionTest extends AbstractTest {
 			got = allRows.get(i).get(marq);
 //			System.out.println("" + got.toString());
 			Object[] expect = expectedValues.get(i);
-			Assert.assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
-			Assert.assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
-			Assert.assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
-			Assert.assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
+			assertThat(got.countOfAllRows.intValue(), is((Integer) expect[0]));
+			assertThat(got.rowNumber.intValue(), is((Integer) expect[1]));
+			assertThat(got.countOfEnabled.intValue(), is((Integer) expect[2]));
+			assertThat(got.rowWithinCarCo.intValue(), is((Integer) expect[3]));
 			final String lagTest = oracleSafeStrings((String) expect[4]);
-			Assert.assertThat(got.lag.getValue(), is(lagTest));
+			assertThat(got.lag.getValue(), is(lagTest));
 			final String leadTest = oracleSafeStrings((String) expect[5]);
-			Assert.assertThat(got.lead.getValue(), is(leadTest));
+			assertThat(got.lead.getValue(), is(leadTest));
 		}
 	}
 

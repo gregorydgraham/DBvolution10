@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.*;
 
 /**
@@ -73,10 +74,10 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 
 		final String sqlForQuery = query.getSQLForQuery();
 		if (!(database instanceof DBDatabaseCluster)) {
-			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
+			assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		}
-		Assert.assertThat(sqlForQuery, containsString(ExpressionRow.STRING_VALUE));
-		Assert.assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database.getDefinition())));
+		assertThat(sqlForQuery, containsString(ExpressionRow.STRING_VALUE));
+		assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database.getDefinition())));
 
 		final List<DBQueryRow> allRows = query.getAllRows();
 		for (DBQueryRow row : allRows) {
@@ -88,13 +89,13 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 			cal.add(GregorianCalendar.MINUTE, -1);
 			cal.add(GregorianCalendar.HOUR, -24);
 			Date yesterday = cal.getTime();
-			Assert.assertThat(currentDate.getValue(), lessThan(later));
-			Assert.assertThat(currentDate.getValue(), greaterThan(yesterday));
-			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
-			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
-			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
-			Assert.assertThat(expressionRow.shortName.stringValue(), is("TOY"));
-			Assert.assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
+			assertThat(currentDate.getValue(), lessThan(later));
+			assertThat(currentDate.getValue(), greaterThan(yesterday));
+			assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
+			assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
+			assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
+			assertThat(expressionRow.shortName.stringValue(), is("TOY"));
+			assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
 		}
 	}
 
@@ -108,15 +109,15 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 
 		if (!(database instanceof DBDatabaseCluster)) {
 			String sqlForQuery = query.getSQLForQuery();
-			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
+			assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		}
 		for (DBQueryRow row : query.getAllRows()) {
 			ExpressionRow expressionRow = row.get(exprExample);
-			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
-			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
-			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
-			Assert.assertThat(expressionRow.shortName.stringValue(), is("TOY"));
-			Assert.assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
+			assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
+			assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
+			assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
+			assertThat(expressionRow.shortName.stringValue(), is("TOY"));
+			assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
 		}
 
 		final ExpressionRow exprExample2 = new ExpressionRow();
@@ -127,11 +128,11 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 
 		if (!(database instanceof DBDatabaseCluster)) {
 			String sqlForQuery = query.getSQLForQuery();
-			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
+			assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		}
 		final List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -143,7 +144,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		final String sqlForQuery = table.getSQLForQuery();
 
 		if (!(database instanceof DBDatabaseCluster)) {
-			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
+			assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		}
 
 		for (ExpressionRow expressionRow : table.getAllRows()) {
@@ -154,13 +155,13 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 			cal.add(GregorianCalendar.MINUTE, -1);
 			cal.add(GregorianCalendar.HOUR, -24);
 			Date yesterday = cal.getTime();
-			Assert.assertThat(currentDate.getValue(), lessThan(later));
-			Assert.assertThat(currentDate.getValue(), greaterThan(yesterday));
-			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
-			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
-			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
-			Assert.assertThat(expressionRow.shortName.stringValue(), is("TOY"));
-			Assert.assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
+			assertThat(currentDate.getValue(), lessThan(later));
+			assertThat(currentDate.getValue(), greaterThan(yesterday));
+			assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
+			assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
+			assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
+			assertThat(expressionRow.shortName.stringValue(), is("TOY"));
+			assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
 		}
 	}
 
@@ -173,49 +174,49 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
 
 		for (ExpressionRow row : allMarques) {
-			Assert.assertThat(row.uidAndName.stringValue(),
+			assertThat(row.uidAndName.stringValue(),
 					is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
 			final Date dateValue = row.creationDate.dateValue();
 
 			if (dateValue != null) {
 				String year = new SimpleDateFormat("yyyy").format(dateValue);
-				Assert.assertThat(row.uidNameAndYear.stringValue(), is(
+				assertThat(row.uidNameAndYear.stringValue(), is(
 						row.uidMarque.stringValue() + "-"
 						+ row.name.stringValue() + "-"
 						+ year));
-				Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+				assertThat(row.uidNameAndNVLYear.stringValue(), is(
 						row.uidMarque.stringValue() + "-"
 						+ row.name.stringValue() + "-"
 						+ year));
 			} else {
 				if (database.supportsDifferenceBetweenNullAndEmptyString()) {
-					Assert.assertThat(
+					assertThat(
 							row.uidNameAndYear.stringValue(),
 							isEmptyOrNullString()
 					);
 					String year = new SimpleDateFormat("yyyy").format(new Date());
-					Assert.assertThat(
+					assertThat(
 							row.uidNameAndNVLYear.stringValue(),
 							is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 					);
 				} else {
 					if (row.creationDate.isNull()) {
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
 						);
 						String year = new SimpleDateFormat("yyyy").format(new Date());
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndNVLYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 						);
 					} else {
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
 						);
 						String year = new SimpleDateFormat("yyyy").format(new Date());
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndNVLYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 						);
@@ -243,49 +244,49 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 			final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
 
 			for (ExpressionRow row : allMarques) {
-				Assert.assertThat(row.uidAndName.stringValue(),
+				assertThat(row.uidAndName.stringValue(),
 						is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
 				final Date dateValue = row.creationDate.dateValue();
 
 				if (dateValue != null) {
 					String year = new SimpleDateFormat("yyyy").format(dateValue);
-					Assert.assertThat(row.uidNameAndYear.stringValue(), is(
+					assertThat(row.uidNameAndYear.stringValue(), is(
 							row.uidMarque.stringValue() + "-"
 							+ row.name.stringValue() + "-"
 							+ year));
-					Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+					assertThat(row.uidNameAndNVLYear.stringValue(), is(
 							row.uidMarque.stringValue() + "-"
 							+ row.name.stringValue() + "-"
 							+ year));
 				} else {
 					if (supportsDifferenceBetweenNullAndEmptyString) {
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndYear.stringValue(),
 								isEmptyOrNullString()
 						);
 						String year = new SimpleDateFormat("yyyy").format(new Date());
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndNVLYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 						);
 					} else {
 						if (row.creationDate.isNull()) {
-							Assert.assertThat(
+							assertThat(
 									row.uidNameAndYear.stringValue(),
 									is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
 							);
 							String year = new SimpleDateFormat("yyyy").format(new Date());
-							Assert.assertThat(
+							assertThat(
 									row.uidNameAndNVLYear.stringValue(),
 									is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 							);
 						} else {
-							Assert.assertThat(
+							assertThat(
 									row.uidNameAndYear.stringValue(),
 									is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
 							);
 							String year = new SimpleDateFormat("yyyy").format(new Date());
-							Assert.assertThat(
+							assertThat(
 									row.uidNameAndNVLYear.stringValue(),
 									is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 							);
@@ -315,38 +316,38 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 			final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
 			
 			for (ExpressionRow row : allMarques) {
-				Assert.assertThat(row.uidAndName.stringValue(),
+				assertThat(row.uidAndName.stringValue(),
 						is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
 				final Date dateValue = row.creationDate.dateValue();
 
 				if (dateValue != null) {
 					String year = new SimpleDateFormat("yyyy").format(dateValue);
-					Assert.assertThat(row.uidNameAndYear.stringValue(), is(
+					assertThat(row.uidNameAndYear.stringValue(), is(
 							row.uidMarque.stringValue() + "-"
 							+ row.name.stringValue() + "-"
 							+ year));
-					Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+					assertThat(row.uidNameAndNVLYear.stringValue(), is(
 							row.uidMarque.stringValue() + "-"
 							+ row.name.stringValue() + "-"
 							+ year));
 				} else {
 					if (row.creationDate.isNull()) {
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
 						);
 						String year = new SimpleDateFormat("yyyy").format(new Date());
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndNVLYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 						);
 					} else {
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-")
 						);
 						String year = new SimpleDateFormat("yyyy").format(new Date());
-						Assert.assertThat(
+						assertThat(
 								row.uidNameAndNVLYear.stringValue(),
 								is(row.uidMarque.stringValue() + "-" + row.name.stringValue() + "-" + year)
 						);

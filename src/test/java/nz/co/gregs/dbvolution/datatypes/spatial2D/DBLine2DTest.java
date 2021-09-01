@@ -48,8 +48,8 @@ public class DBLine2DTest extends AbstractTest {
 		DBLine2D instance = new DBLine2D();
 		instance.setValue(line);
 		LineString value = instance.getValue();
-		Assert.assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
-		Assert.assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
+		assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
+		assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
 	}
 
 	@Test
@@ -60,8 +60,8 @@ public class DBLine2DTest extends AbstractTest {
 		DBLine2D instance = new DBLine2D();
 		instance.setValue(coordinate1, coordinate2, coordinate3);
 		LineString value = instance.getValue();
-		Assert.assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
-		Assert.assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
+		assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
+		assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public class DBLine2DTest extends AbstractTest {
 		DBLine2D instance = new DBLine2D();
 		instance.setValue(point1, point2, point3);
 		LineString value = instance.getValue();
-		Assert.assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
-		Assert.assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
+		assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
+		assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
 	}
 
 	@Test

@@ -17,15 +17,12 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.Date;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -64,7 +61,7 @@ public class DBDateEditorTest {
 		instance.setAsText(text);
 		Date dateValue = new Date();
 		dateValue.setTime(Date.parse(text));
-		Assert.assertThat((Date) ((QueryableDatatype) instance.getValue()).getLiteralValue(), is(dateValue));
+		assertThat((Date) ((QueryableDatatype) instance.getValue()).getLiteralValue(), is(dateValue));
 	}
 
 }

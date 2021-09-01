@@ -45,8 +45,8 @@ public class DBPoint2DTest extends AbstractTest {
 		DBPoint2D instance = new DBPoint2D();
 		instance.setValue(point);
 		Point value = instance.getValue();
-		Assert.assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
-		Assert.assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
+		assertThat(value.getCoordinates()[0].x, Matchers.is(2.0));
+		assertThat(value.getCoordinates()[0].y, Matchers.is(3.0));
 	}
 
 	@Test

@@ -42,6 +42,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -59,7 +60,7 @@ public class DBUUIDTest extends AbstractTest {
 
 		UUIDTestTable insertRow = new UUIDTestTable();
 		insertRow.uuidValue.setValue(correctUUID);
-		Assert.assertThat(insertRow.uuidValue.getValue().toString(), is(correctString));
+		assertThat(insertRow.uuidValue.getValue().toString(), is(correctString));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(insertRow);
@@ -70,9 +71,9 @@ public class DBUUIDTest extends AbstractTest {
 
 		List<UUIDTestTable> allRows = table.getAllRows();
 		for (UUIDTestTable row : allRows) {
-			Assert.assertThat(row.uuidValue.stringValue(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue().toString(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue(), is(correctUUID));
+			assertThat(row.uuidValue.stringValue(), is(correctString));
+			assertThat(row.uuidValue.getValue().toString(), is(correctString));
+			assertThat(row.uuidValue.getValue(), is(correctUUID));
 		}
 	}
 
@@ -94,9 +95,9 @@ public class DBUUIDTest extends AbstractTest {
 
 		List<UUIDTestTable> allRows = table.getAllRows();
 		for (UUIDTestTable row : allRows) {
-			Assert.assertThat(row.uuidValue.stringValue(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue().toString(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue(), is(correctUUID));
+			assertThat(row.uuidValue.stringValue(), is(correctString));
+			assertThat(row.uuidValue.getValue().toString(), is(correctString));
+			assertThat(row.uuidValue.getValue(), is(correctUUID));
 		}
 	}
 
@@ -119,9 +120,9 @@ public class DBUUIDTest extends AbstractTest {
 
 		List<UUIDTestTable> allRows = table.getAllRows();
 		for (UUIDTestTable row : allRows) {
-			Assert.assertThat(row.uuidValue.stringValue(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue().toString(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue(), is(correctUUID));
+			assertThat(row.uuidValue.stringValue(), is(correctString));
+			assertThat(row.uuidValue.getValue().toString(), is(correctString));
+			assertThat(row.uuidValue.getValue(), is(correctUUID));
 		}
 	}
 
@@ -136,7 +137,7 @@ public class DBUUIDTest extends AbstractTest {
 
 		UUIDTestTable insertRow = new UUIDTestTable();
 		insertRow.uuidValue.setValue(correctUUID);
-		Assert.assertThat(insertRow.uuidValue.getValue().toString(), is(correctString));
+		assertThat(insertRow.uuidValue.getValue().toString(), is(correctString));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(insertRow);
@@ -147,9 +148,9 @@ public class DBUUIDTest extends AbstractTest {
 
 		List<UUIDTestTable> allRows = table.getAllRows();
 		for (UUIDTestTable row : allRows) {
-			Assert.assertThat(row.uuidValue.stringValue(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue().toString(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue(), is(correctUUID));
+			assertThat(row.uuidValue.stringValue(), is(correctString));
+			assertThat(row.uuidValue.getValue().toString(), is(correctString));
+			assertThat(row.uuidValue.getValue(), is(correctUUID));
 		}
 	}
 
@@ -164,7 +165,7 @@ public class DBUUIDTest extends AbstractTest {
 
 		UUIDTestTable insertRow = new UUIDTestTable();
 		insertRow.uuidValue.setValueToNamedUUIDFromBytes(bytes);
-		Assert.assertThat(insertRow.uuidValue.getValue().toString(), is(correctString));
+		assertThat(insertRow.uuidValue.getValue().toString(), is(correctString));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(insertRow);
@@ -175,9 +176,9 @@ public class DBUUIDTest extends AbstractTest {
 
 		List<UUIDTestTable> allRows = table.getAllRows();
 		for (UUIDTestTable row : allRows) {
-			Assert.assertThat(row.uuidValue.stringValue(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue().toString(), is(correctString));
-			Assert.assertThat(row.uuidValue.getValue(), is(correctUUID));
+			assertThat(row.uuidValue.stringValue(), is(correctString));
+			assertThat(row.uuidValue.getValue().toString(), is(correctString));
+			assertThat(row.uuidValue.getValue(), is(correctUUID));
 		}
 	}
 
@@ -195,7 +196,7 @@ public class DBUUIDTest extends AbstractTest {
 		table.setBlankQueryAllowed(true);
 		List<UUIDTestTable> allRows = table.getAllRows();
 		
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		
 		UUIDTestTable firstRow = allRows.get(0);
 		UUIDTestTable secondRow = allRows.get(1);
@@ -209,8 +210,8 @@ public class DBUUIDTest extends AbstractTest {
 		Assert.assertNotNull(firstRow.defaultUUIDValueRandomly.getValue());
 		Assert.assertNotNull(secondRow.defaultUUIDValueRandomly.getValue());
 		
-		Assert.assertThat(firstRow.defaultUUIDValueByName.getValue(), is(secondRow.defaultUUIDValueByName.getValue()));
-		Assert.assertThat(firstRow.defaultUUIDValueRandomly.getValue().toString(), is(not(secondRow.defaultUUIDValueRandomly.getValue())));
+		assertThat(firstRow.defaultUUIDValueByName.getValue(), is(secondRow.defaultUUIDValueByName.getValue()));
+		assertThat(firstRow.defaultUUIDValueRandomly.getValue().toString(), is(not(secondRow.defaultUUIDValueRandomly.getValue())));
 	}
 
 	public static class UUIDTestTable extends DBRow {

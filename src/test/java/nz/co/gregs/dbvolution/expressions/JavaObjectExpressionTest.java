@@ -97,8 +97,8 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		var instance = new JavaObjectExpression<SomeClass>(companyLogo.column(companyLogo.someRandomClass));
 		Set<DBRow> result = instance.getTablesInvolved();
 		DBRow[] resultArray = result.toArray(new DBRow[]{});
-		Assert.assertThat(result.size(), is(1));
-		Assert.assertThat(resultArray[0].getClass().getSimpleName(), is(companyLogo.getClass().getSimpleName()));
+		assertThat(result.size(), is(1));
+		assertThat(resultArray[0].getClass().getSimpleName(), is(companyLogo.getClass().getSimpleName()));
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		JavaObjectColumn<SomeClass> someRandomClassColumn = row.column(row.someRandomClass);
 		dbQuery.addCondition(someRandomClassColumn.isNotNull());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		row = new JavaObjectExpressionTable();
 		row.colInt.setValue(1);
@@ -126,8 +126,8 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		dbQuery.addCondition(someRandomClassColumn.isNotNull());
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).get(row).colInt.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).get(row).colInt.intValue(), is(1));
 	}
 
 	@Test
@@ -138,7 +138,7 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		JavaObjectColumn<SomeClass> randomClassColumn = joTable.column(joTable.someRandomClass);
 		dbQuery.addCondition(randomClassColumn.isNotNull());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 
 		joTable = new JavaObjectExpressionTable();
 		joTable.colInt.setValue(1);
@@ -155,8 +155,8 @@ public class JavaObjectExpressionTest extends AbstractTest {
 		dbQuery.addCondition(randomClassColumn.isNull());
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).get(joTable).colInt.intValue(), is(2));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).get(joTable).colInt.intValue(), is(2));
 	}
 
 	@Test

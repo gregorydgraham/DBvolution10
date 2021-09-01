@@ -37,14 +37,11 @@ import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.utility.ImageCompare;
 import org.apache.commons.codec.binary.Hex;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -79,17 +76,17 @@ public class DBLargeBinaryTest extends AbstractTest {
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
 		List<CompanyLogo> foundLogos = database.get(logoExample);
 
-		Assert.assertThat(foundLogos.size(), is(1));
+		assertThat(foundLogos.size(), is(1));
 		CompanyLogo foundLogo = foundLogos.get(0);
-		Assert.assertThat(foundLogo.logoID.intValue(), is(2));
-		Assert.assertThat(foundLogo.imageFilename.stringValue(), is("ford_logo.jpg"));
-		Assert.assertThat(foundLogo.imageBytes.isNull(), is(false));
+		assertThat(foundLogo.logoID.intValue(), is(2));
+		assertThat(foundLogo.imageFilename.stringValue(), is("ford_logo.jpg"));
+		assertThat(foundLogo.imageBytes.isNull(), is(false));
 		File tempFile = new File("tempfileForCreateRowWithBinaryObject.jpg");
 		foundLogo.imageBytes.writeToFileSystem(tempFile.getAbsoluteFile());
-		Assert.assertThat(tempFile.length(), is(fordLogoFile.length()));
+		assertThat(tempFile.length(), is(fordLogoFile.length()));
 		ImageCompare imgcomp = new ImageCompare(tempFile, fordLogoFile);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 		tempFile.delete();
 	}
 
@@ -114,13 +111,13 @@ public class DBLargeBinaryTest extends AbstractTest {
 
 		final CompanyLogo foundLogo = foundLogos.get(0);
 
-		Assert.assertThat(foundLogos.size(), is(1));
+		assertThat(foundLogos.size(), is(1));
 		String hexValueFromDatabase = "0x" + Hex.encodeHexString(foundLogo.imageBytes.getBytes());
 		DBLargeBinary dbBinary = new DBLargeBinary();
 		dbBinary.setFromFileSystem("ford_logo.jpg");
 		byte[] fil = dbBinary.getBytes();
 		String hexValueFromFileSystem = "0x" + Hex.encodeHexString(fil);
-		Assert.assertThat(hexValueFromFileSystem, is(hexValueFromDatabase));
+		assertThat(hexValueFromFileSystem, is(hexValueFromDatabase));
 	}
 
 	@Test
@@ -151,10 +148,10 @@ public class DBLargeBinaryTest extends AbstractTest {
 		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 
 		firstRow.imageBytes.writeToFileSystem(newFile);
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 		ImageCompare imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 	}
 
 	@Test
@@ -185,10 +182,10 @@ public class DBLargeBinaryTest extends AbstractTest {
 		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 
 		firstRow.imageBytes.writeToFileSystem(newFile);
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 		ImageCompare imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 	}
 
 	@Test
@@ -225,10 +222,10 @@ public class DBLargeBinaryTest extends AbstractTest {
 		in.close();
 		out.close();
 
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 		ImageCompare imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 
 		newFile.delete();
 		newFile.createNewFile();
@@ -238,10 +235,10 @@ public class DBLargeBinaryTest extends AbstractTest {
 		in.close();
 		out.close();
 
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 		imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 	}
 
 	@Test
@@ -272,16 +269,16 @@ public class DBLargeBinaryTest extends AbstractTest {
 		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 
 		firstRow.imageBytes.writeToFileSystem(newFile);
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 		ImageCompare imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 
 		firstRow.imageBytes.writeToFileSystem(newFile);
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 		imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 	}
 
 	@Test
@@ -312,24 +309,24 @@ public class DBLargeBinaryTest extends AbstractTest {
 		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 
 		firstRow.imageBytes.writeToFileSystem(newFile);
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 		ImageCompare imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 
 		blobTable = new CompanyLogoForRetreivingBinaryObject();
 		firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 		firstRow.imageBytes.writeToFileSystem(newFile);
 		imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 
 		blobTable = new CompanyLogoForRetreivingBinaryObject();
 		firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 		firstRow.imageBytes.writeToFileSystem(newFile);
 		imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
-		Assert.assertThat(imgcomp.match(), is(true));
+		assertThat(imgcomp.match(), is(true));
 	}
 
 	@Test
@@ -350,7 +347,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 
 		CompanyLogoForRetreivingString firstRow = database.getDBTable(new CompanyLogoForRetreivingString()).getRowsByPrimaryKey(primaryKey).get(0);
 		String stringValue = firstRow.imageBytes.stringValue();
-		Assert.assertThat(stringValue, is(SOURCE_DATA_AS_STRING));
+		assertThat(stringValue, is(SOURCE_DATA_AS_STRING));
 	}
 
 	@Test
@@ -368,7 +365,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 
 		BinaryObjectWithAutoIncrement firstRow = database.getDBTable(new BinaryObjectWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
 		String stringValue = firstRow.imageBytes.stringValue();
-		Assert.assertThat(stringValue, is(SOURCE_DATA_AS_STRING));
+		assertThat(stringValue, is(SOURCE_DATA_AS_STRING));
 	}
 
 	@DBTableName("bytearraywithautoincrement")

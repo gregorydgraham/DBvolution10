@@ -22,14 +22,11 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -49,9 +46,9 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 			final CarCompany relatedCarCo = query.getQueryDetails().getRelatedInstancesFromQuery(instance, new CarCompany()).get(0);
 			final CarCompany actualCarCo = instance.actualCarCo;
 			if (actualCarCo == null) {
-				Assert.assertThat(relatedCarCo, nullValue());
+				assertThat(relatedCarCo, nullValue());
 			} else {
-				Assert.assertThat(relatedCarCo.name.stringValue(), is(actualCarCo.name.stringValue()));
+				assertThat(relatedCarCo.name.stringValue(), is(actualCarCo.name.stringValue()));
 			}
 		}
 	}
@@ -66,9 +63,9 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 			final CarCompany relatedCarCo = query.getQueryDetails().getRelatedInstancesFromQuery(instance, new CarCompany()).get(0);
 			final CarCompany actualCarCo = instance.actualCarCo;
 			if (actualCarCo == null) {
-				Assert.assertThat(relatedCarCo, nullValue());
+				assertThat(relatedCarCo, nullValue());
 			} else {
-				Assert.assertThat(relatedCarCo.name.stringValue(), is(actualCarCo.name.stringValue()));
+				assertThat(relatedCarCo.name.stringValue(), is(actualCarCo.name.stringValue()));
 			}
 		}
 	}
@@ -83,7 +80,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 			if (instance.marques != null) {
 				final List<Marque> relateds = query.getQueryDetails().getRelatedInstancesFromQuery(instance, new Marque());
 				final Marque[] actuals = instance.marques;
-				Assert.assertThat(relateds, contains(actuals));
+				assertThat(relateds, contains(actuals));
 			} else {
 				throw new Exception("Marque should have been found for " + instance.name);
 			}
@@ -108,7 +105,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 				for (Marque actual : actuals) {
 					actualNames.add(actual.name.stringValue());
 				}
-				Assert.assertThat(relatedNames, contains(actualNames.toArray(new String[]{})));
+				assertThat(relatedNames, contains(actualNames.toArray(new String[]{})));
 			} else {
 				throw new Exception("Marque should have been found for " + instance.name);
 			}

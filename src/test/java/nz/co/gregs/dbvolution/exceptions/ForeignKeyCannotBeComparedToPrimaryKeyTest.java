@@ -25,13 +25,10 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregory.graham
  */
@@ -55,10 +52,10 @@ public class ForeignKeyCannotBeComparedToPrimaryKeyTest {
 		TableB tableB = new TableB();
 
 		List<DBExpression> foreignKeyExpressionsTo = tableB.getForeignKeyExpressionsTo(tableA);
-		Assert.assertThat(foreignKeyExpressionsTo.size(), is(1));
+		assertThat(foreignKeyExpressionsTo.size(), is(1));
 
 		foreignKeyExpressionsTo = tableB.getForeignKeyExpressionsTo(tableAString);
-		Assert.assertThat(foreignKeyExpressionsTo.size(), is(1));
+		assertThat(foreignKeyExpressionsTo.size(), is(1));
 	}
 
 	@Test(expected = ForeignKeyCannotBeComparedToPrimaryKey.class)

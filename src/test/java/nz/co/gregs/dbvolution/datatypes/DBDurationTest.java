@@ -26,13 +26,10 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
-import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -57,9 +54,9 @@ public class DBDurationTest extends AbstractTest {
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+		assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
 	}
 
 	@Test
@@ -74,9 +71,9 @@ public class DBDurationTest extends AbstractTest {
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+		assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
 	}
 
 	@Test
@@ -91,9 +88,9 @@ public class DBDurationTest extends AbstractTest {
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+		assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
 	}
 
 	@Test
@@ -108,9 +105,9 @@ public class DBDurationTest extends AbstractTest {
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+		assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
 	}
 
 	@Test
@@ -125,9 +122,9 @@ public class DBDurationTest extends AbstractTest {
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
 		
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+		assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
 	}
 
 	@Test
@@ -143,9 +140,9 @@ public class DBDurationTest extends AbstractTest {
 		DBTable<DurationTable> tab = database.getDBTable(new DurationTable()).setBlankQueryAllowed(true);
 		List<DurationTable> allRows = tab.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
+		assertThat(allRows.get(0).durationCol.durationValue().toString(), is(testPeriod.toString()));
 	}
 
 	public static class DurationTable extends DBRow {

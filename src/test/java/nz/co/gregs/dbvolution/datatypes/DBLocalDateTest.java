@@ -24,13 +24,10 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregory.graham
  */
@@ -55,10 +52,10 @@ public class DBLocalDateTest extends AbstractTest {
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DBLocalDateTable> allRows = database.getDBTable(new DBLocalDateTable()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).dateOnly.getValue(), is(then));
-		Assert.assertThat(allRows.get(0).dateOnly.localDateValue(), is(then));
-		Assert.assertThat(allRows.get(0).dateOnly.getValue().compareTo(LocalDate.now()), isOneOf(-1, 0));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).dateOnly.getValue(), is(then));
+		assertThat(allRows.get(0).dateOnly.localDateValue(), is(then));
+		assertThat(allRows.get(0).dateOnly.getValue().compareTo(LocalDate.now()), isOneOf(-1, 0));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);
 	}

@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
@@ -64,7 +64,7 @@ public class DBScriptTest extends AbstractTest {
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = script.implement(database);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(
+		assertThat(
 				allMarques2.size(),
 				is(allMarques.size() + 2));
 	}
@@ -80,7 +80,7 @@ public class DBScriptTest extends AbstractTest {
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = database.implement(script);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(
+		assertThat(
 				allMarques2.size(),
 				is(allMarques.size() + 2));
 	}
@@ -96,7 +96,7 @@ public class DBScriptTest extends AbstractTest {
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = script.test(database);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(
+		assertThat(
 				allMarques2.size(),
 				is(allMarques.size()));
 	}
@@ -112,7 +112,7 @@ public class DBScriptTest extends AbstractTest {
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = database.test(script);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(
+		assertThat(
 				allMarques2.size(),
 				is(allMarques.size()));
 	}
@@ -125,7 +125,7 @@ public class DBScriptTest extends AbstractTest {
 		DBScript script = new ScriptThatThrowsAnException();
 		DBActionList result = script.test(database);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(
+		assertThat(
 				allMarques2.size(),
 				is(allMarques.size()));
 	}
@@ -156,7 +156,7 @@ public class DBScriptTest extends AbstractTest {
 		threadpool.invokeAll(taskGroup);
 
 		List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(origRows.size()));
+		assertThat(allRows.size(), is(origRows.size()));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(scriptTestTable);
 	}
@@ -182,7 +182,7 @@ public class DBScriptTest extends AbstractTest {
 		threadpool.invokeAll(taskGroup);
 
 		List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(origRows.size()));
+		assertThat(allRows.size(), is(origRows.size()));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(scriptTestTable);
 	}
@@ -243,7 +243,7 @@ public class DBScriptTest extends AbstractTest {
 
 			List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
 
-			Assert.assertThat(allRows.size(), is(origRows.size() + 1));
+			assertThat(allRows.size(), is(origRows.size() + 1));
 			final ScriptTestTable newRow = new ScriptTestTable("False");
 			myTableRows.add(newRow);
 
@@ -251,14 +251,14 @@ public class DBScriptTest extends AbstractTest {
 
 			allRows = table.setBlankQueryAllowed(true).getAllRows();
 
-			Assert.assertThat(allRows.size(), is(origRows.size() + 2));
+			assertThat(allRows.size(), is(origRows.size() + 2));
 
 			table.getAllRows();
 
 			table.delete(myTableRows);
 			allRows = table.setBlankQueryAllowed(true).getAllRows();
 
-			Assert.assertThat(allRows.size(), is(origRows.size()));
+			assertThat(allRows.size(), is(origRows.size()));
 
 			return actions;
 		}

@@ -44,6 +44,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
@@ -86,7 +87,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
-			Assert.assertThat(classesTested, is(5));
+			assertThat(classesTested, is(5));
 
 			database.preventDroppingOfTables(false);
 			database.dropTable(new TestAutoIncrementDetection());
@@ -121,7 +122,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
-			Assert.assertThat(classesTested, is(1));
+			assertThat(classesTested, is(1));
 
 			database.preventDroppingOfTables(false);
 			database.dropTable(new CreateTableForeignKey());
@@ -156,7 +157,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
-			Assert.assertThat(classesTested, is(1));
+			assertThat(classesTested, is(1));
 
 			database.preventDroppingOfTables(false);
 			database.dropTable(new CreateTableForeignKeyy());
@@ -195,7 +196,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
 			}
-			Assert.assertThat(classesTested, is(4));
+			assertThat(classesTested, is(4));
 		}
 	}
 
@@ -222,16 +223,16 @@ public class GeneratedMarqueTest extends AbstractTest {
 
 					switch (row.getTableName()) {
 						case "CAR_COMPANY":
-							Assert.assertThat(rows.size(), is(4));
+							assertThat(rows.size(), is(4));
 							break;
 						case "MARQUE":
-							Assert.assertThat(rows.size(), is(22));
+							assertThat(rows.size(), is(22));
 							break;
 						case "LT_CARCO_LOGO":
-							Assert.assertThat(rows.size(), is(0));
+							assertThat(rows.size(), is(0));
 							break;
 						case "COMPANYLOGO":
-							Assert.assertThat(rows.size(), is(0));
+							assertThat(rows.size(), is(0));
 							break;
 						default:
 							break;
@@ -272,7 +273,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 					System.err.println("DIAGNOSTIC: " + diagnostic);
 				}
 			}
-			Assert.assertThat(succeeded, is(true));
+			assertThat(succeeded, is(true));
 		}
 	}
 

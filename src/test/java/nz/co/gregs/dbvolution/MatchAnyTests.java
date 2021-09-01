@@ -22,9 +22,9 @@ import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogoWithPreviousLink;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
@@ -46,11 +46,11 @@ public class MatchAnyTests extends AbstractTest {
 		marq.uidMarque.permittedValues(2);
 		DBTable<Marque> dbTable = database.getDBTable(marq);
 		List<Marque> marquesFound = dbTable.getAllRows();
-		Assert.assertThat(marquesFound.size(), is(0));
+		assertThat(marquesFound.size(), is(0));
 
 		dbTable.setToMatchAnyCondition();
 		marquesFound = dbTable.getRowsByExample(marq);
-		Assert.assertThat(marquesFound.size(), is(2));
+		assertThat(marquesFound.size(), is(2));
 	}
 
 	@Test
@@ -60,11 +60,11 @@ public class MatchAnyTests extends AbstractTest {
 		marq.uidMarque.permittedValues(2);
 		DBQuery dbQuery = database.getDBQuery(marq);
 		List<Marque> marquesFound = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(marquesFound.size(), is(0));
+		assertThat(marquesFound.size(), is(0));
 
 		dbQuery.setToMatchAnyCondition();
 		marquesFound = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(marquesFound.size(), is(2));
+		assertThat(marquesFound.size(), is(2));
 	}
 
 	@Test
@@ -75,11 +75,11 @@ public class MatchAnyTests extends AbstractTest {
 		marq.uidMarque.permittedValues(2);
 		DBQuery dbQuery = database.getDBQuery(marq, carCo);
 		List<Marque> marquesFound = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(marquesFound.size(), is(0));
+		assertThat(marquesFound.size(), is(0));
 
 		dbQuery.setToMatchAnyCondition();
 		marquesFound = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(marquesFound.size(), is(2));
+		assertThat(marquesFound.size(), is(2));
 	}
 
 	@Test
@@ -90,11 +90,11 @@ public class MatchAnyTests extends AbstractTest {
 		marq.uidMarque.permittedValues(2);
 		DBQuery dbQuery = database.getDBQuery(marq, carCo);
 		List<Marque> marquesFound = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(marquesFound.size(), is(0));
+		assertThat(marquesFound.size(), is(0));
 
 		dbQuery.setToMatchAnyRelationship();
 		marquesFound = dbQuery.getAllInstancesOf(marq);
-		Assert.assertThat(marquesFound.size(), is(0));
+		assertThat(marquesFound.size(), is(0));
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class MatchAnyTests extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(link, logo);
 
 		dbQuery.setToMatchAnyRelationship();
-		Assert.assertThat(
+		assertThat(
 				testableSQL(dbQuery.getSQLForQuery()),
 				anyOf(
 						containsString(testableSQL("ON( __2076078474.FK_COMPANY_LOGO = _1159239592.LOGO_ID OR __2076078474.FK_PREV_COMPANY_LOGO = _1159239592.LOGO_ID )")),

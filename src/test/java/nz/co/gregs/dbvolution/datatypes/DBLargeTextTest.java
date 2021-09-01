@@ -30,14 +30,11 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyText;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -72,14 +69,14 @@ public class DBLargeTextTest extends AbstractTest {
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
 		List<CompanyText> foundLogos = database.get(logoExample);
 
-		Assert.assertThat(foundLogos.size(), is(1));
+		assertThat(foundLogos.size(), is(1));
 		final CompanyText foundLogo = foundLogos.get(0);
-		Assert.assertThat(foundLogo.textID.intValue(), is(2));
-		Assert.assertThat(foundLogo.textFilename.stringValue(), is("carols.txt"));
-		Assert.assertThat(foundLogo.text.isNull(), is(false));
+		assertThat(foundLogo.textID.intValue(), is(2));
+		assertThat(foundLogo.textFilename.stringValue(), is("carols.txt"));
+		assertThat(foundLogo.text.isNull(), is(false));
 		File tempFile = new File("tempfileForCreateRowWithLargeText.txt");
 		foundLogo.text.writeToFileSystem(tempFile.getAbsoluteFile());
-		Assert.assertThat(tempFile.length(), is(carolsTextFile.length()));
+		assertThat(tempFile.length(), is(carolsTextFile.length()));
 		tempFile.delete();
 	}
 
@@ -110,7 +107,7 @@ public class DBLargeTextTest extends AbstractTest {
 		blobTable = new CompanyTextForRetreivingBinaryObject();
 		CompanyTextForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 		firstRow.fileText.writeToFileSystem(newFile);
-		Assert.assertThat(newFile.length(), is(image.length()));
+		assertThat(newFile.length(), is(image.length()));
 	}
 
 	@Test
@@ -134,7 +131,7 @@ public class DBLargeTextTest extends AbstractTest {
 
 		CompanyTextForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 		final String valueOf = firstRow.fileText.stringValue();//new String(firstRow.fileText.getBytes());
-		Assert.assertThat(valueOf, containsString("Maranhāo"));
+		assertThat(valueOf, containsString("Maranhāo"));
 	}
 
 	@Test
@@ -156,7 +153,7 @@ public class DBLargeTextTest extends AbstractTest {
 		CompanyTextForRetreivingString firstRow = database.getDBTable(new CompanyTextForRetreivingString()).getRowsByPrimaryKey(primaryKey).get(0);
 
 		String stringValue = firstRow.filetext.stringValue();
-		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
+		assertThat(stringValue, is(SOURCEDATAASSTRING));
 	}
 
 	@Test
@@ -176,7 +173,7 @@ public class DBLargeTextTest extends AbstractTest {
 		TextObjectWithAutoIncrement firstRow = database.getDBTable(new TextObjectWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
 
 		String stringValue = firstRow.imageBytes.stringValue();
-		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
+		assertThat(stringValue, is(SOURCEDATAASSTRING));
 
 //		database.preventDroppingOfTables(false);
 //		database.dropTableNoExceptions(testRow);

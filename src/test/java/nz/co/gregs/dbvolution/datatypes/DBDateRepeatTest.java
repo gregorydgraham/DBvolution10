@@ -33,8 +33,8 @@ import static nz.co.gregs.dbvolution.generic.AbstractTest.april2nd2011;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.march23rd2013;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import org.junit.Test;
-import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.joda.time.Period;
 
 /**
@@ -60,9 +60,9 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBTable<DateRepeatTable> tab = database.getDBTable(dateRepeatTable).setBlankQueryAllowed(true);
 		List<DateRepeatTable> allRows = tab.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).dateRepeatCol.periodValue().normalizedStandard(), is(testPeriod.normalizedStandard()));
+		assertThat(allRows.get(0).dateRepeatCol.periodValue().normalizedStandard(), is(testPeriod.normalizedStandard()));
 	}
 
 	public static class MarqueWithDateRepeatExprCol extends Marque {
@@ -93,14 +93,14 @@ public class DBDateRepeatTest extends AbstractTest {
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isGreaterThan(oneYear));
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).minus(oneYear).isLessThan(april2nd2011));
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThan(oneYear));
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -110,13 +110,13 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		final Period oneYear = new Period().withYears(1);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isGreaterThanOrEqual(oneYear));
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThanOrEqual(oneYear));
@@ -127,7 +127,7 @@ public class DBDateRepeatTest extends AbstractTest {
 			allRows.stream().forEachOrdered(r -> System.out.println("2011-04-02 within 1Y: " + marq.creationDate.getValue()));
 		}
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -146,13 +146,13 @@ public class DBDateRepeatTest extends AbstractTest {
 			allRows.stream().forEachOrdered(r -> System.out.println("2011-04-02: " + marq.creationDate.getValue()));
 		}
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNot(zero));
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNull());
@@ -163,7 +163,7 @@ public class DBDateRepeatTest extends AbstractTest {
 			allRows.stream().forEachOrdered(r -> System.out.println("CREATION DATE SHOULD BE NULL: " + "'" + r.get(marq).creationDate.getValue()));
 		}
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -177,7 +177,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isGreaterThan(oneYear, marq.column(marq.name).isGreaterThan("T")));
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThan(oneYear, marq.column(marq.name).isGreaterThan("T")));
@@ -187,7 +187,7 @@ public class DBDateRepeatTest extends AbstractTest {
 			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
 		}
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -223,7 +223,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	public static class DateRepeatSeconds extends Marque {
@@ -300,7 +300,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -313,7 +313,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -325,7 +325,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -338,7 +338,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -351,7 +351,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -365,7 +365,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -378,13 +378,13 @@ public class DBDateRepeatTest extends AbstractTest {
 		DateRepeatTable example = new DateRepeatTable();
 		example.pkid.setValue(marq.pkid);
 		List<DateRepeatTable> got = database.get(example);
-		Assert.assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
+		assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
 
 		myPeriod = myPeriod.withSeconds(6).withMinutes(5).withHours(4).withDays(3).withMonths(2).withYears(1);
 		got.get(0).dateRepeatCol.setValue(myPeriod);
 		database.update(got.get(0));
 		got = database.get(example);
-		Assert.assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
+		assertThat(got.get(0).dateRepeatCol.getValue(), is(myPeriod));
 
 	}
 
@@ -393,10 +393,10 @@ public class DBDateRepeatTest extends AbstractTest {
 		String twoYearPlusDateRepeat = "P2Y-1M0D11h32n53s";
 		String zeroDateRepeat = "P0Y0M0D0h0n0s";
 		String plus2Days = "P0Y0M2D0h0n0.0s";
-		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings(twoYearPlusDateRepeat, "P1Y0M0D0h0n0s"), is(1));
-		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings(zeroDateRepeat, "P1Y0M0D0h0n0s"), is(-1));
-		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings(plus2Days, "P1Y0M0D0h0n0s"), is(-1));
-		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings("P1Y0M0D0h0n0s", "P1Y0M0D0h0n0s"), is(0));
+		assertThat(DateRepeatImpl.compareDateRepeatStrings(twoYearPlusDateRepeat, "P1Y0M0D0h0n0s"), is(1));
+		assertThat(DateRepeatImpl.compareDateRepeatStrings(zeroDateRepeat, "P1Y0M0D0h0n0s"), is(-1));
+		assertThat(DateRepeatImpl.compareDateRepeatStrings(plus2Days, "P1Y0M0D0h0n0s"), is(-1));
+		assertThat(DateRepeatImpl.compareDateRepeatStrings("P1Y0M0D0h0n0s", "P1Y0M0D0h0n0s"), is(0));
 	}
 
 	@Test
@@ -404,14 +404,14 @@ public class DBDateRepeatTest extends AbstractTest {
 	public void testSubtracting() {
 		String oneYear = "P1Y0M0D0h0n0s";
 		Date resultDate = DateRepeatImpl.subtractDateAndDateRepeatString(april2nd2011, DateRepeatImpl.getZeroDateRepeatString());
-		Assert.assertThat(resultDate.getYear() + 1900, is(2011));
-		Assert.assertThat(resultDate.getMonth() + 1, is(4));
-		Assert.assertThat(resultDate.getDate(), is(2));
+		assertThat(resultDate.getYear() + 1900, is(2011));
+		assertThat(resultDate.getMonth() + 1, is(4));
+		assertThat(resultDate.getDate(), is(2));
 
 		resultDate = DateRepeatImpl.subtractDateAndDateRepeatString(april2nd2011, oneYear);
-		Assert.assertThat(resultDate.getYear() + 1900, is(2010));
-		Assert.assertThat(resultDate.getMonth() + 1, is(4));
-		Assert.assertThat(resultDate.getDate(), is(2));
+		assertThat(resultDate.getYear() + 1900, is(2010));
+		assertThat(resultDate.getMonth() + 1, is(4));
+		assertThat(resultDate.getDate(), is(2));
 	}
 
 	public static class DateRepeatTable extends DBRow {

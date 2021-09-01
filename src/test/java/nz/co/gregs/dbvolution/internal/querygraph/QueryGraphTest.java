@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -70,7 +71,7 @@ public class QueryGraphTest extends AbstractTest {
 		Graph<QueryGraphNode, DBExpression> expResult = new SparseMultigraph<QueryGraphNode, DBExpression>();
 		Graph<QueryGraphNode, DBExpression> result = instance.getJungGraph();
 		Assert.assertNotNull(result);
-		Assert.assertThat(result.getClass().getSimpleName(), is(expResult.getClass().getSimpleName()));
+		assertThat(result.getClass().getSimpleName(), is(expResult.getClass().getSimpleName()));
 	}
 
 }

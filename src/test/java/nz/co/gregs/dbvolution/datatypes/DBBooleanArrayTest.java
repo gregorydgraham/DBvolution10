@@ -98,7 +98,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		Boolean[] newLiteralValue = new Boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray();
 		instance.setValue(newLiteralValue);
-		Assert.assertThat(instance.booleanArrayValue(), is(newLiteralValue));
+		assertThat(instance.booleanArrayValue(), is(newLiteralValue));
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		Boolean[] expResult = new Boolean[]{false, true, true};
 		instance.setValue(expResult);
 		String result = instance.formatValueForSQLStatement(database.getDefinition());
-		Assert.assertThat(
+		assertThat(
 				result,
 				anyOf(
 						is("'011'"), //MS SQLServer
@@ -131,7 +131,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		Boolean[] tftArray = new Boolean[]{true, false, true};
 		instance.setValue(tftArray);
 		Boolean[] result = instance.booleanArrayValue();
-		Assert.assertThat(result, is(tftArray));
+		assertThat(result, is(tftArray));
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		Boolean[] tftArray = new Boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray(tftArray);
 		DBBooleanArray result = instance.copy();
-		Assert.assertThat(result.booleanArrayValue(), is(instance.booleanArrayValue()));
+		assertThat(result.booleanArrayValue(), is(instance.booleanArrayValue()));
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		DBBooleanArray instance = new DBBooleanArray(tftArray);
 		Boolean[] expResult = tftArray;
 		Boolean[] result = instance.getValue();
-		Assert.assertThat(result, is(expResult));
+		assertThat(result, is(expResult));
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		boolArrayTable.boolArrayColumn.setValue(theValue);
 		database.insert(boolArrayTable);
 		BooleanArrayTable bitsRow = database.getDBQuery(boolArrayTable).getOnlyInstanceOf(boolArrayTable);
-		Assert.assertThat(bitsRow.boolArrayColumn.booleanArrayValue(), is(theValue));
+		assertThat(bitsRow.boolArrayColumn.booleanArrayValue(), is(theValue));
 	}
 
 	public static class BooleanArrayTable extends DBRow {

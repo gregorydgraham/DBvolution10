@@ -25,8 +25,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
@@ -70,17 +69,17 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
 		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), is("2"));
+		assertThat(mode.stringValue(), is("2"));
 
 		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
-		Assert.assertThat(counted.stringValue(), is("9"));
+		assertThat(counted.stringValue(), is("9"));
 	}
 
 	@Test
@@ -104,17 +103,17 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
 		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), is("0"));
+		assertThat(mode.stringValue(), is("0"));
 
 		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
-		Assert.assertThat(counted.stringValue(), is("4"));
+		assertThat(counted.stringValue(), is("4"));
 	}
 
 	@Test
@@ -134,13 +133,13 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
 		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), is("2"));
+		assertThat(mode.stringValue(), is("2"));
 	}
 
 	@Test
@@ -152,13 +151,13 @@ public class DBStatisticsTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		final StatsOfUpdateCountTest onlyRow = allRows.get(0).get(stat);
 
 		// Check that the uniqueRanking is 2
 		Integer mode = onlyRow.mode.intValue();
-		Assert.assertThat(mode, is(2));
+		assertThat(mode, is(2));
 	}
 
 	@Test
@@ -171,13 +170,13 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		final StatsIntegerTest onlyRow = allRows.get(0).get(stat);
 
 		// Check that the uniqueRanking is 2
 		Integer mode = onlyRow.carCoStats.modeSimple().intValue();
-		Assert.assertThat(mode, is(4));
+		assertThat(mode, is(4));
 	}
 
 	@Test
@@ -190,13 +189,13 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		final StatsStringTest onlyRow = allRows.get(0).get(stat);
 
 		// Check that the uniqueRanking is 2
 		String mode = onlyRow.carNameStats.modeSimple();
-		Assert.assertThat(mode, is("O"));
+		assertThat(mode, is("O"));
 	}
 
 	@Test
@@ -209,13 +208,13 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		final StatsIntegerTest onlyRow = allRows.get(0).get(stat);
 
 		// Check that the uniqueRanking is 4 for car company
 		Long mode = onlyRow.carCoStats.modeStrict();
-		Assert.assertThat(mode, is(4l));
+		assertThat(mode, is(4l));
 	}
 
 	@Test
@@ -227,13 +226,13 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		final StatsStringTest onlyRow = allRows.get(0).get(stat);
 
 		// Check that the uniqueRanking is 4 for car company
 		String mode = onlyRow.carNameStats.modeStrict();
-		Assert.assertThat(mode, is("O"));
+		assertThat(mode, is("O"));
 	}
 
 	@Test
@@ -273,28 +272,28 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows2 = query2.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows1.size(), is(1));
-		Assert.assertThat(allRows2.size(), is(1));
+		assertThat(allRows1.size(), is(1));
+		assertThat(allRows2.size(), is(1));
 
 		DBQueryRow onlyRow = allRows1.get(0);
 
 		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), is("2"));
+		assertThat(mode.stringValue(), is("2"));
 
 		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
-		Assert.assertThat(counted.stringValue(), is("9"));
+		assertThat(counted.stringValue(), is("9"));
 
 		onlyRow = allRows2.get(0);
 
 		// Check that the second uniqueRanking is 0
 		mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), is("0"));
+		assertThat(mode.stringValue(), is("0"));
 
 		// Check that the uniqueRanking was found 9 times
 		counted = onlyRow.getExpressionColumnValue("mode count");
-		Assert.assertThat(counted.stringValue(), is("4"));
+		assertThat(counted.stringValue(), is("4"));
 	}
 
 	@Test
@@ -336,28 +335,28 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows2 = query2.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows1.size(), is(1));
-		Assert.assertThat(allRows2.size(), is(1));
+		assertThat(allRows1.size(), is(1));
+		assertThat(allRows2.size(), is(1));
 
 		DBQueryRow onlyRow = allRows1.get(0);
 
 		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), isOneOf("1", "3"));
+		assertThat(mode.stringValue(), isOneOf("1", "3"));
 
 		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
-		Assert.assertThat(counted.stringValue(), is("3"));
+		assertThat(counted.stringValue(), is("3"));
 
 		onlyRow = allRows2.get(0);
 
 		// Check that the second uniqueRanking is 0
 		mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), isOneOf("1", "3"));
+		assertThat(mode.stringValue(), isOneOf("1", "3"));
 
 		// Check that the uniqueRanking was found 9 times
 		counted = onlyRow.getExpressionColumnValue("mode count");
-		Assert.assertThat(counted.stringValue(), is("3"));
+		assertThat(counted.stringValue(), is("3"));
 	}
 
 	@Test
@@ -377,13 +376,13 @@ public class DBStatisticsTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		// Check there is only 1 row
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
 		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), is("2"));
+		assertThat(mode.stringValue(), is("2"));
 	}
 
 	@Test

@@ -19,9 +19,9 @@ import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UpdateTest extends AbstractTest {
 
@@ -42,7 +42,7 @@ public class UpdateTest extends AbstractTest {
 		final String testableSQLServerQueryString2 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4);");
 		final String testableOracleQueryString = testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4)");
 		
-		Assert.assertThat(testableSQL(sqlForUpdate),
+		assertThat(testableSQL(sqlForUpdate),
 				isOneOf(
 						testableQueryString,
 						testableSQLServerQueryString1,
@@ -51,7 +51,7 @@ public class UpdateTest extends AbstractTest {
 				));
 //        marquesTable.update(insertedRow);
 		insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
-		Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
+		assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class UpdateTest extends AbstractTest {
 		Marque marque = new Marque();
 		marque.name.permittedValues("PEUGEOT");
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(marque);
-		Assert.assertThat(rowsByExample.size(), is(1));
+		assertThat(rowsByExample.size(), is(1));
 		Marque peugeot = rowsByExample.get(0);
 
 		peugeot.individualAllocationsAllowed.setValue("Y");
@@ -68,7 +68,7 @@ public class UpdateTest extends AbstractTest {
 		final String updateQueryStr2 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4893059);");
 		final String updateQueryStr3 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4893059);");
 		final String updateQueryStrOracle = testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4893059)");
-		Assert.assertThat(testableSQL(sqlForUpdate),
+		assertThat(testableSQL(sqlForUpdate),
 				isOneOf(
 						updateQueryStr1,
 						updateQueryStr2,
@@ -77,6 +77,6 @@ public class UpdateTest extends AbstractTest {
 				));
 		marquesTable.update(peugeot);
 		Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
-		Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));
+		assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));
 	}
 }

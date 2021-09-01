@@ -28,7 +28,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -75,22 +75,22 @@ public class DBInstantTest extends AbstractTest {
 				.setBlankQueryAllowed(true)
 				.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 		final OffsetDateTime gotValue = allRows.get(0).instantField.getValue().atOffset(ZoneOffset.UTC);
 
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusMonths(1).isAfter(gotValue), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusDays(1).isAfter(gotValue), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusHours(1).isAfter(gotValue), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusMinutes(1).isAfter(gotValue), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).plusSeconds(1).isAfter(gotValue), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).plusMonths(1).isAfter(gotValue), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).plusDays(1).isAfter(gotValue), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).plusHours(1).isAfter(gotValue), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).plusMinutes(1).isAfter(gotValue), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).plusSeconds(1).isAfter(gotValue), is(true));
 
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMonths(1).isBefore((gotValue)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusDays(1).isBefore((gotValue)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusHours(1).isBefore((gotValue)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusMinutes(1).isBefore((gotValue)), is(true));
-		Assert.assertThat(then.atOffset(ZoneOffset.UTC).minusSeconds(1).isBefore((gotValue)), is(true));
-		Assert.assertThat(allRows.get(0).instantField.instantValue(), matchExactValue);
-		Assert.assertThat(allRows.get(0).instantField.getValue(), matchExactValue);
+		assertThat(then.atOffset(ZoneOffset.UTC).minusMonths(1).isBefore((gotValue)), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).minusDays(1).isBefore((gotValue)), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).minusHours(1).isBefore((gotValue)), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).minusMinutes(1).isBefore((gotValue)), is(true));
+		assertThat(then.atOffset(ZoneOffset.UTC).minusSeconds(1).isBefore((gotValue)), is(true));
+		assertThat(allRows.get(0).instantField.instantValue(), matchExactValue);
+		assertThat(allRows.get(0).instantField.getValue(), matchExactValue);
 	}
 
 	public static class DBInstantTable extends DBRow {

@@ -90,9 +90,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(MultiPoint2DExpression.value(mpoint).is(pointTestTable.column(pointTestTable.multipoint)));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(mpoint));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(mpoint));
 	}
 
 	@Test
@@ -109,9 +109,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(MultiPoint2DExpression.value(pointList.toArray(new Point[]{}))
 				.is(pointTestTable.column(pointTestTable.multipoint)));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(mpoint));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(mpoint));
 	}
 
 	@Test
@@ -128,9 +128,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(MultiPoint2DExpression.value(MultiPoint2DExpression.value(pointList.toArray(new Point[]{})))
 				.is(pointTestTable.column(pointTestTable.multipoint)));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(mpoint));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(mpoint));
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
 		Line2DExpression instance = new Line2DExpression(pointTestTable.column(pointTestTable.multipoint).line2DResult());
 		Set<DBRow> result = instance.getTablesInvolved();
-		Assert.assertThat(result.size(), is(1));
+		assertThat(result.size(), is(1));
 		DBRow[] resultArray = result.toArray(new DBRow[]{});
 		DBRow aRow = resultArray[0];
 		if (!(aRow instanceof MultiPoint2DTestTable)) {
@@ -165,21 +165,21 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 	public void testIsPurelyFunctional() {
 		MultiPoint2DExpression instance = new MultiPoint2DExpression();
 		boolean result = instance.isPurelyFunctional();
-		Assert.assertThat(result, is(true));
+		assertThat(result, is(true));
 
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
 		instance = new MultiPoint2DExpression(pointTestTable.column(pointTestTable.multipoint));
-		Assert.assertThat(instance.isPurelyFunctional(), is(false));
+		assertThat(instance.isPurelyFunctional(), is(false));
 	}
 
 	@Test
 	public void testGetIncludesNull() {
 		MultiPoint2DExpression instance = new MultiPoint2DExpression((MultiPoint) null);
-		Assert.assertThat(instance.getIncludesNull(), is(true));
+		assertThat(instance.getIncludesNull(), is(true));
 
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
 		instance = new MultiPoint2DExpression(pointTestTable.column(pointTestTable.multipoint));
-		Assert.assertThat(instance.getIncludesNull(), is(false));
+		assertThat(instance.getIncludesNull(), is(false));
 	}
 
 	@Test
@@ -189,8 +189,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(MultiPoint2DExpression.value(line).stringResult().is(pointTestTable.column(pointTestTable.multipoint).stringResult()));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -202,8 +202,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(Line2DExpression.value(line).stringResult().is(pointTestTable.column(pointTestTable.multipoint).line2DResult().stringResult()));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -213,8 +213,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.multipoint).is(mpoint));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -225,8 +225,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(MultiPoint2DExpression.value(mpoint).is(multiPointRow.column(multiPointRow.multipoint)));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -237,8 +237,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(MultiPoint2DExpression.value(mpoint).isNot(multiPointRow.column(multiPointRow.multipoint)));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), isOneOf(2, 3));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), isOneOf(2, 3));
 	}
 
 	@Test
@@ -249,8 +249,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).isNot(mpoint));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), isOneOf(2, 3));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), isOneOf(2, 3));
 	}
 
 	@Test
@@ -260,8 +260,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).numberOfPoints().is(3));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(2));
 	}
 
 	@Test
@@ -273,9 +273,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.setSortOrder(multiPointRow.column(multiPointRow.line_id));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(1).line_id.intValue(), is(2));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(1).line_id.intValue(), is(2));
 	}
 
 	@Test
@@ -285,8 +285,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).getPointAtIndexZeroBased(0L).getX().is(2));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2));
 	}
 
 	@Test
@@ -296,8 +296,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).hasMagnitude().not());
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(3));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2, 3));
+		assertThat(allRows.size(), is(3));
+		assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2, 3));
 	}
 
 	@Test
@@ -307,8 +307,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).magnitude().isNull());
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(3));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2, 3));
+		assertThat(allRows.size(), is(3));
+		assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2, 3));
 	}
 
 	@Test
@@ -318,8 +318,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).spatialDimensions().is(2));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 
-		Assert.assertThat(allRows.size(), is(3));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2, 3));
+		assertThat(allRows.size(), is(3));
+		assertThat(allRows.get(0).line_id.intValue(), isOneOf(1, 2, 3));
 	}
 
 	@Test
@@ -330,9 +330,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).maxX().is(4));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
-		Assert.assertThat(allRows.get(1).line_id.intValue(), is(3));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), is(2));
+		assertThat(allRows.get(1).line_id.intValue(), is(3));
 	}
 
 	@Test
@@ -342,8 +342,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).minX().is(3));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(3));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(3));
 	}
 
 	@Test
@@ -353,8 +353,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).maxY().is(4));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -364,9 +364,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).minY().is(3));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(1).line_id.intValue(), is(2));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(1).line_id.intValue(), is(2));
 	}
 
 	@Test
@@ -375,11 +375,11 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).measurableDimensions().is(1));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).measurableDimensions().is(0));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	public static class BoundingBoxTest extends MultiPoint2DTestTable {
@@ -400,10 +400,10 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.multipoint).maxY().is(4));
 		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 		final String boundingText = allRows.get(0).boundingBox.jtsPolygonValue().toText();
-		Assert.assertThat(boundingText, is("POLYGON ((2 3, 3 3, 3 4, 2 4, 2 3))"));
+		assertThat(boundingText, is("POLYGON ((2 3, 3 3, 3 4, 2 4, 2 3))"));
 	}
 
 }

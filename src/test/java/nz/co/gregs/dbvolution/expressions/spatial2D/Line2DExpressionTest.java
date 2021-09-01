@@ -90,9 +90,9 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Line2DExpression.value(point).is(pointTestTable.column(pointTestTable.line)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(0).line.jtsLineStringValue(), is(point));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(0).line.jtsLineStringValue(), is(point));
 	}
 
 	@Test
@@ -102,9 +102,9 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Line2DExpression.value(pointTestTable.column(pointTestTable.line)).is(point));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(0).line.jtsLineStringValue(), is(point));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(0).line.jtsLineStringValue(), is(point));
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		final LineTestTable pointTestTable = new LineTestTable();
 		Line2DExpression instance = new Line2DExpression(pointTestTable.column(pointTestTable.line));
 		Set<DBRow> result = instance.getTablesInvolved();
-		Assert.assertThat(result.size(), is(1));
+		assertThat(result.size(), is(1));
 		DBRow[] resultArray = result.toArray(new DBRow[]{});
 		DBRow aRow = resultArray[0];
 		if (!(aRow instanceof LineTestTable)) {
@@ -147,21 +147,21 @@ public class Line2DExpressionTest extends AbstractTest {
 	public void testIsPurelyFunctional() {
 		Line2DExpression instance = new Line2DExpression();
 		boolean result = instance.isPurelyFunctional();
-		Assert.assertThat(result, is(true));
+		assertThat(result, is(true));
 
 		final LineTestTable pointTestTable = new LineTestTable();
 		instance = new Line2DExpression(pointTestTable.column(pointTestTable.line));
-		Assert.assertThat(instance.isPurelyFunctional(), is(false));
+		assertThat(instance.isPurelyFunctional(), is(false));
 	}
 
 	@Test
 	public void testGetIncludesNull() {
 		Line2DExpression instance = new Line2DExpression((LineString) null);
-		Assert.assertThat(instance.getIncludesNull(), is(true));
+		assertThat(instance.getIncludesNull(), is(true));
 
 		final LineTestTable pointTestTable = new LineTestTable();
 		instance = new Line2DExpression(pointTestTable.column(pointTestTable.line));
-		Assert.assertThat(instance.getIncludesNull(), is(false));
+		assertThat(instance.getIncludesNull(), is(false));
 	}
 
 	@Test
@@ -171,8 +171,8 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Line2DExpression.value(line).stringResult().is(pointTestTable.column(pointTestTable.line).stringResult()));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -182,8 +182,8 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).is(line));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -194,8 +194,8 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(Line2DExpression.value(line).is(lineTestTable.column(lineTestTable.line)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -206,9 +206,9 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).maxX().is(4));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
-		Assert.assertThat(allRows.get(1).line_id.intValue(), is(3));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), is(2));
+		assertThat(allRows.get(1).line_id.intValue(), is(3));
 	}
 
 	@Test
@@ -218,8 +218,8 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minX().is(3));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(3));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(3));
 	}
 
 	@Test
@@ -229,8 +229,8 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).maxY().is(4));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -240,9 +240,9 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minY().is(3));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(1).line_id.intValue(), is(2));
+		assertThat(allRows.size(), is(2));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.get(1).line_id.intValue(), is(2));
 	}
 
 	@Test
@@ -251,11 +251,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).measurableDimensions().is(0));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).measurableDimensions().is(1));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -265,7 +265,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).hasMagnitude().not());
 		
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -274,7 +274,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).magnitude().isNull());
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -283,7 +283,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).spatialDimensions().is(2));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -300,11 +300,11 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable).setQueryLabel("testIntersects2");
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -321,11 +321,11 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -342,11 +342,11 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -363,11 +363,11 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -388,11 +388,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -413,11 +413,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -439,11 +439,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -471,11 +471,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -496,11 +496,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	@Test
@@ -521,11 +521,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(crossingLine).is(MultiPoint2DExpression.value(new Coordinate(2.5D, 3.5D))));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(nonCrossingLine).is((MultiPoint) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		Assert.assertThat(allRows.size(), is(0));
+		assertThat(allRows.size(), is(0));
 	}
 
 	public static class BoundingBoxTest extends LineTestTable {
@@ -547,10 +547,10 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).maxY().is(4));
 		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		assertThat(allRows.size(), is(1));
+		assertThat(allRows.get(0).line_id.intValue(), is(1));
 		final String boundingText = allRows.get(0).boundingBox.jtsPolygonValue().toText();
-		Assert.assertThat(boundingText, is("POLYGON ((2 3, 3 3, 3 4, 2 4, 2 3))"));
+		assertThat(boundingText, is("POLYGON ((2 3, 3 3, 3 4, 2 4, 2 3))"));
 	}
 
 }

@@ -25,13 +25,11 @@ import nz.co.gregs.dbvolution.actions.DBInsert;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -50,7 +48,7 @@ public class DBTableInsertTest extends AbstractTest {
 		myTableRow.getNumericCode().setValue(10);
 		marquesTable.insert(myTableRow);
 		List<Marque> allRows = marquesTable.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		Date creationDate = new Date();
 		List<Marque> myTableRows = new ArrayList<Marque>();
@@ -58,7 +56,7 @@ public class DBTableInsertTest extends AbstractTest {
 
 		marquesTable.insert(myTableRows);
 		allRows = marquesTable.getAllRows();
-		Assert.assertThat(allRows.size(), is(24));
+		assertThat(allRows.size(), is(24));
 	}
 
 	@Test
@@ -69,13 +67,13 @@ public class DBTableInsertTest extends AbstractTest {
 		marque.getNumericCode().setValue(10);
 		DBActionList insertActions = DBInsert.getInserts(marque);
 		DBAction possibleInsert = insertActions.get(0);
-		Assert.assertThat(possibleInsert.getClass().getSimpleName(), is(DBInsert.class.getSimpleName()));
+		assertThat(possibleInsert.getClass().getSimpleName(), is(DBInsert.class.getSimpleName()));
 		if (possibleInsert instanceof DBInsert) {
 			DBInsert insert = (DBInsert) possibleInsert;
 			String sql = insert.getSQLStatements(database).get(0);
-			Assert.assertThat(sql.toUpperCase(), containsString("NAME"));
-			Assert.assertThat(sql.toUpperCase(), not(containsString("CREATION_DATE")));
-			Assert.assertThat(sql.toUpperCase(), not(containsString("FK_CARCOMPANY")));
+			assertThat(sql.toUpperCase(), containsString("NAME"));
+			assertThat(sql.toUpperCase(), not(containsString("CREATION_DATE")));
+			assertThat(sql.toUpperCase(), not(containsString("FK_CARCOMPANY")));
 		}
 	}
 }

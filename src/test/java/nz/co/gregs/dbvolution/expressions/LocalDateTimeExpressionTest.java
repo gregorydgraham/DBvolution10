@@ -44,7 +44,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -98,7 +98,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		query.addCondition(marq.column(marq.creationLocalDateTime).isNotNull());
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 
 		final LocalDateTimeExpression creationLocalDateTime = marq.column(marq.creationLocalDateTime);
 		final LocalDateTimeExpression fiveDaysPriorToCreation = creationLocalDateTime.addDays(-5);
@@ -159,7 +159,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(3));
+		assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		query.addCondition(
 				LocalDateTimeExpression.leastOf(
@@ -179,7 +179,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		query.setConditions(
 				LocalDateTimeExpression.leastOf(
@@ -189,7 +189,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 	}
 
 	@Test
@@ -208,7 +208,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -229,7 +229,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -244,7 +244,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 	}
 
 	@Test
@@ -258,7 +258,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				LocalDateTimeExpression.value(march23rd2013LocalDateTime).addDays(-2))
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -273,7 +273,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(18));
+		assertThat(allRows.size(), is(18));
 	}
 
 	@Test
@@ -282,11 +282,11 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 		MarqueWithDateAggregators got = allRows.get(0).get(marq);
-		Assert.assertThat(got.countOfDates.intValue(), is(21));
-		Assert.assertThat(got.maxOfDates.localDateTimeValue(), is(march23rd2013LocalDateTime));
-		Assert.assertThat(got.minOfDates.getValue(), is(april2nd2011LocalDateTime));
+		assertThat(got.countOfDates.intValue(), is(21));
+		assertThat(got.maxOfDates.localDateTimeValue(), is(march23rd2013LocalDateTime));
+		assertThat(got.minOfDates.getValue(), is(april2nd2011LocalDateTime));
 
 	}
 
@@ -319,7 +319,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -349,12 +349,12 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 			got = allRows.get(i).get(marq);
 //			System.out.println("" + got.toString());
 			Object[] expect = expectedValues.get(i);
-			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
-			Assert.assertThat(got.maxOfAll.getValue(), is((LocalDateTime) expect[1]));
-			Assert.assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
-			Assert.assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
-			Assert.assertThat(got.lag1.getValue(), is((LocalDateTime) expect[3]));
-			Assert.assertThat(got.lead1.getValue(), is((LocalDateTime) expect[4]));
+			assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
+			assertThat(got.maxOfAll.getValue(), is((LocalDateTime) expect[1]));
+			assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
+			assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
+			assertThat(got.lag1.getValue(), is((LocalDateTime) expect[3]));
+			assertThat(got.lead1.getValue(), is((LocalDateTime) expect[4]));
 		}
 	}
 
@@ -457,7 +457,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 
 //		query.printAllRows();
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithAggregatorAndDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -487,9 +487,9 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 			got = allRows.get(i).get(marq);
 			Object[] expect = expectedValues.get(i);
 //			System.out.println("testAggregatorWithWindowingFunctions: " + got.toString());
-			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
-			Assert.assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
-			Assert.assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
+			assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
+			assertThat(got.maxOfDates.getValue(), is((LocalDateTime) expect[1]));
+			assertThat(got.minOfDates.getValue(), is((LocalDateTime) expect[2]));
 		}
 	}
 
@@ -537,7 +537,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 
 		MarqueWithComplexWindowingFunction got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
@@ -585,7 +585,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		final LocalDateTime applicationLocalDateTime = LocalDateTime.now();
 		final LocalDateTime buffered = applicationLocalDateTime.minusMinutes(10);
 
-		Assert.assertThat(databaseLocalDateTime, is(greaterThan(buffered)));
+		assertThat(databaseLocalDateTime, is(greaterThan(buffered)));
 
 	}
 
@@ -598,7 +598,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> got = query.getAllRows();
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 
@@ -608,7 +608,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
 
-		Assert.assertThat(reportRows.size(), is(1));
+		assertThat(reportRows.size(), is(1));
 
 		query = database.getDBQuery(marq);
 		query.addConditions(
@@ -621,7 +621,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		got = query.getAllRows();
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 	}
 
@@ -632,7 +632,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTime.now(), null);
 		List<MarqueWithLocalDateTime> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 
@@ -641,23 +641,23 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		CurrentDateReport currentDateReport = new CurrentDateReport();
 		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
 
-		Assert.assertThat(reportRows.size(), is(1));
+		assertThat(reportRows.size(), is(1));
 
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addSeconds(-10), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		marq.creationLocalDateTime.permittedRangeInclusive(null, LocalDateTimeExpression.currentLocalDateTime().addSeconds(-10));
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(21));
+		assertThat(got.size(), is(21));
 
 		marq.creationLocalDateTime.permittedRangeInclusive(
 				LocalDateTimeExpression.currentLocalDateTime().addMinutes(-5), null);
 		got = database.getDBTable(marq).getAllRows();
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -666,23 +666,23 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime(), null);
 		List<MarqueWithLocalDateTime> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addDays(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 		marq.creationLocalDateTime.permittedRangeInclusive(null, LocalDateTimeExpression.currentLocalDateTime().addDays(-1));
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(21));
+		assertThat(got.size(), is(21));
 
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addDays(-1), LocalDateTimeExpression.currentLocalDateTime().addDays(+1));
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -691,13 +691,13 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime(), null);
 		List<MarqueWithLocalDateTime> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addHours(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -706,13 +706,13 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime(), null);
 		List<MarqueWithLocalDateTime> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addWeeks(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -721,13 +721,13 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime(), null);
 		List<MarqueWithLocalDateTime> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addMinutes(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -736,13 +736,13 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime(), null);
 		List<MarqueWithLocalDateTime> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addMonths(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -751,13 +751,13 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime(), null);
 		List<MarqueWithLocalDateTime> got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		database.insert(new MarqueWithLocalDateTime(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", LocalDateTime.now(), 3, null));
 		marq.creationLocalDateTime.permittedRangeInclusive(LocalDateTimeExpression.currentLocalDateTime().addYears(-1), null);
 		got = database.get(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -768,14 +768,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).year().is(2014));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).year().is(2013));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -786,28 +786,28 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).yearIs(2014));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).yearIs(2013));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).yearIs(NumberExpression.value(2014).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(0));
+		assertThat(got.size(), is(0));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).yearIs(NumberExpression.value(2013)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -818,28 +818,28 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).monthIs(3));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).monthIs(4));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).monthIs(NumberExpression.value(3).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).monthIs(NumberExpression.value(4)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -850,21 +850,21 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).endOfMonth().day().is(31));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).endOfMonth().day().is(30));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).endOfMonth().day().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -879,35 +879,35 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetween(march1st2013, march2nd2013));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetween(april1st2011, april2nd2011LocalDateTime));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetween(LocalDateTimeExpression.value(april1st2011), april2nd2011LocalDateTime));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetween(april1st2011, LocalDateTimeExpression.value(april2nd2011LocalDateTime)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -918,7 +918,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isNotNull());
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(21));
+		assertThat(got.size(), is(21));
 	}
 
 	@Test
@@ -933,35 +933,35 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenInclusive(march1st2013, march2nd2013));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenInclusive(april1st2011, april2nd2011LocalDateTime));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenInclusive(LocalDateTimeExpression.value(april1st2011), april2nd2011LocalDateTime));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenInclusive(april1st2011, LocalDateTimeExpression.value(april2nd2011LocalDateTime)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 	}
 
 	@Test
@@ -973,7 +973,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isGreaterThan(march1st2013));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -985,7 +985,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isGreaterThanOrEqual(march1st2013));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -997,7 +997,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isGreaterThan(march1st2013, marq.column(marq.name).isGreaterThan("T")));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 	}
 
 	@Test
@@ -1009,7 +1009,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isLessThan(march1st2013));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1021,7 +1021,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isLessThan(march1st2013, marq.column(marq.name).isGreaterThan("T")));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1036,35 +1036,35 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenExclusive(march1st2013, march2nd2013));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenExclusive(april1st2011, april2nd2011LocalDateTime));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenExclusive(LocalDateTimeExpression.value(april1st2011), april2nd2011LocalDateTime));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isBetweenExclusive(april1st2011, LocalDateTimeExpression.value(april2nd2011LocalDateTime)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).firstOfMonth().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 	}
 
@@ -1077,21 +1077,21 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).addMonths(1).dayOfWeek().is(LocalDateTimeExpression.TUESDAY));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).addMonths(1).dayOfWeek().is(LocalDateTimeExpression.MONDAY));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).addMonths(1).dayOfWeek().isNull());
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(1));
+		assertThat(got.size(), is(1));
 
 	}
 
@@ -1103,14 +1103,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).day().is(23));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).day().is(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1120,28 +1120,28 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).dayIs(23));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).dayIs(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).dayIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).dayIs(NumberExpression.value(2).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1152,14 +1152,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).hour().is(12));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).hour().is(1));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1170,28 +1170,28 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).hourIs(12));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).hourIs(1));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).hourIs(NumberExpression.value(1).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).hourIs(NumberExpression.value(1)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1202,14 +1202,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).minute().is(34));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).minute().is(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1220,28 +1220,28 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).minuteIs(34));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).minuteIs(2));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).minuteIs(NumberExpression.value(2).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).minuteIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1252,14 +1252,14 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).second().is(56));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).second().is(3));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1270,21 +1270,21 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 				marq.column(marq.creationLocalDateTime).secondIs(56));
 		List<MarqueWithLocalDateTime> got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(18));
+		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).secondIs(3));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationLocalDateTime).secondIs(NumberExpression.value(3)));
 		got = query.getAllInstancesOf(marq);
 
-		Assert.assertThat(got.size(), is(3));
+		assertThat(got.size(), is(3));
 	}
 
 	@Test
@@ -1303,7 +1303,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 		MarqueWithLocalDateTime newMarque = new MarqueWithLocalDateTime(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1312,7 +1312,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationLocalDateTime)
@@ -1327,7 +1327,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(20));
+		assertThat(allRows.size(), is(20));
 	}
 
 	@Test
@@ -1341,7 +1341,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 		MarqueWithLocalDateTime newMarque = new MarqueWithLocalDateTime(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1350,7 +1350,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationLocalDateTime).isIn(april2nd2011LocalDateTime, march23rd2013LocalDateTime)
@@ -1358,7 +1358,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 	}
 
 	@Test
@@ -1375,7 +1375,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(19));
+		assertThat(allRows.size(), is(19));
 
 		MarqueWithLocalDateTime newMarque = new MarqueWithLocalDateTime(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1384,7 +1384,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		List<LocalDateTimeExpression> dates = new ArrayList<LocalDateTimeExpression>();
 		dates.add(LocalDateTimeExpression.value(march23rd2013LocalDateTime));
@@ -1396,7 +1396,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		assertThat(allRows.size(), is(21));
 	}
 
 	@Test
@@ -1410,7 +1410,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		MarqueWithLocalDateTime newMarque = new MarqueWithLocalDateTime(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1419,7 +1419,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationLocalDateTime).is((LocalDateTime) null)
@@ -1427,7 +1427,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	@Test
@@ -1441,7 +1441,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(1));
+		assertThat(allRows.size(), is(1));
 
 		MarqueWithLocalDateTime newMarque = new MarqueWithLocalDateTime(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
 		database.insert(newMarque);
@@ -1450,7 +1450,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(23));
+		assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationLocalDateTime).isNull()
@@ -1458,7 +1458,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(2));
+		assertThat(allRows.size(), is(2));
 	}
 
 	public static class DiffTestReport extends DBReport {
@@ -1496,7 +1496,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq);
@@ -1510,7 +1510,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.permitOnlyNotNull();
 		numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
@@ -1526,7 +1526,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 //		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		secondDateMarques.creationLocalDateTime.permittedValues(secondLocalDateTime);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1544,7 +1544,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
@@ -1560,7 +1560,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime secondDateMarques = new MarqueWithLocalDateTime();
 		secondDateMarques.creationLocalDateTime.permittedValues(secondLocalDateTime);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1578,7 +1578,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
@@ -1594,7 +1594,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime secondDateMarques = new MarqueWithLocalDateTime();
 		secondDateMarques.creationLocalDateTime.permittedValues(secondLocalDateTime);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1612,7 +1612,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
@@ -1633,7 +1633,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 						.setBlankQueryAllowed(true)
 						.count()
 						.intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1651,7 +1651,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
@@ -1667,7 +1667,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime secondDateMarques = new MarqueWithLocalDateTime();
 		secondDateMarques.creationLocalDateTime.permittedValues(secondLocalDateTime);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1685,7 +1685,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
@@ -1701,7 +1701,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime secondDateMarques = new MarqueWithLocalDateTime();
 		secondDateMarques.creationLocalDateTime.permittedValues(secondLocalDateTime);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
@@ -1718,7 +1718,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		MarqueWithLocalDateTime nonNullMarque = new MarqueWithLocalDateTime();
 		nonNullMarque.creationLocalDateTime.excludeNull();
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
 //		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
@@ -1738,26 +1738,26 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques)
 				.setQueryLabel("CHECK SECOND DATE CAN BE COUNTED")
 				.setBlankQueryAllowed(true).count().intValue();
-		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
 	public void testUpdateRefreshesExistingObject() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime(359, "testUpdateRefreshesExistingObject", april2nd2011LocalDateTime);
 		database.insert(marq);
-		Assert.assertThat(marq.updateTime.getValue(), is(nullValue()));
+		assertThat(marq.updateTime.getValue(), is(nullValue()));
 		marq.name.setValue("Actual Car Company");
 		database.update(marq);
-		Assert.assertThat(marq.updateTime.getValue(), is(notNullValue()));
+		assertThat(marq.updateTime.getValue(), is(notNullValue()));
 		database.delete(marq);
 	}
 
 	@Test
 	public void testInsertRefreshesExistingObject() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime(360, "testInsertRefreshesExistingObject", april2nd2011LocalDateTime);
-		Assert.assertThat(marq.insertTime.getValue(), is(nullValue()));
+		assertThat(marq.insertTime.getValue(), is(nullValue()));
 		database.insert(marq);
-		Assert.assertThat(marq.insertTime.getValue(), is(notNullValue()));
+		assertThat(marq.insertTime.getValue(), is(notNullValue()));
 		database.delete(marq);
 
 	}
@@ -1776,7 +1776,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
 
 		for (MarqueWithSecondsFromDate row : allRows) {
-			Assert.assertThat(row.subseconds.doubleValue(), is(0.01));
+			assertThat(row.subseconds.doubleValue(), is(0.01));
 		}
 	}
 
@@ -1786,7 +1786,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		DBTable<MarqueWithEndOfMonthOfLocalDateTimeColumn> table = database.getDBTable(marq);
 		List<MarqueWithEndOfMonthOfLocalDateTimeColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		assertThat(allRows.size(), is(22));
 		final LocalDateTime march31st2013 = LocalDateTime.of(2013, Month.MARCH, 31, 12, 34, 56);
 		final LocalDateTime april30th2011 = LocalDateTime.of(2011, Month.APRIL, 30, 1, 2, 3);
 		final LocalDateTime march1st2013 = LocalDateTime.of(2013, Month.MARCH, 1, 12, 34, 56);
@@ -1794,13 +1794,13 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		final LocalDateTime nullDate = null;
 		for (MarqueWithEndOfMonthOfLocalDateTimeColumn allRow : allRows) {
 //			System.out.println(allRow);
-			Assert.assertThat(allRow.endOfMonth.getValue(),
+			assertThat(allRow.endOfMonth.getValue(),
 					anyOf(
 							is(nullDate),
 							is(march31st2013),
 							is(april30th2011)
 					));
-			Assert.assertThat(allRow.firstOfMonth.getValue(),
+			assertThat(allRow.firstOfMonth.getValue(),
 					anyOf(
 							is(nullDate),
 							is(march1st2013),
@@ -1812,10 +1812,10 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		dbQuery.addCondition(marq.column(marq.endOfMonth).dayIs(31));
 		List<DBQueryRow> allRows1 = dbQuery.getAllRows();
 		for (DBQueryRow row : allRows1) {
-			Assert.assertThat(
+			assertThat(
 					row.get(marq).endOfMonth.getValue(),
 					is(march31st2013));
-			Assert.assertThat(
+			assertThat(
 					row.get(marq).firstOfMonth.getValue(),
 					is(march1st2013)
 			);

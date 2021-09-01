@@ -33,7 +33,7 @@ package nz.co.gregs.dbvolution.utility.encryption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.*;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 
 /**
@@ -51,11 +51,11 @@ public class Encryption_BASE64_AES_CBC_PKCS5PaddingTest {
 		try {
 			final String passphrase = "secret key of safety";
 			String encrypt = Encryption_BASE64_AES_CBC_PKCS5Padding.encrypt(passphrase, original);
-			Assert.assertThat(encrypt, not(original));
-			Assert.assertThat(encrypt, startsWith("BASE64_AES_CBC_PKCS5Padding|"));
+			assertThat(encrypt, not(original));
+			assertThat(encrypt, startsWith("BASE64_AES_CBC_PKCS5Padding|"));
 
 			String decrypt = Encryption_BASE64_AES_CBC_PKCS5Padding.decrypt(passphrase, encrypt);
-			Assert.assertThat(decrypt, is(original));
+			assertThat(decrypt, is(original));
 
 		} catch (Exception ex) {
 			Logger.getLogger(Encryption_BASE64_AES_CBC_PKCS5PaddingTest.class.getName()).log(Level.SEVERE, null, ex);

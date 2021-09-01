@@ -40,6 +40,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.exceptions.IncorrectPasswordException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -58,7 +59,7 @@ public class DBPasswordHashTest extends AbstractTest {
 		insertRow.password.setValue(correctPassword);
 		insertRow.passwordHash.setValue(correctPassword);
 		insertRow.wrongpassword.setValue(wrongPassword);
-		Assert.assertThat(insertRow.password.getValue(), not(insertRow.passwordHash.getValue()));
+		assertThat(insertRow.password.getValue(), not(insertRow.passwordHash.getValue()));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(insertRow);
@@ -69,12 +70,12 @@ public class DBPasswordHashTest extends AbstractTest {
 
 		List<PasswordTestTable> allRows = table.getAllRows();
 		for (PasswordTestTable row : allRows) {
-			Assert.assertThat(row.password.getValue(), not(row.passwordHash.getValue()));
-			Assert.assertThat(row.passwordHash.checkPassword(correctPassword), is(true));
-			Assert.assertThat(row.passwordHash.checkPassword(wrongPassword), is(false));
-			Assert.assertThat(row.passwordHash.checkPasswordWithException(correctPassword), is(true));
+			assertThat(row.password.getValue(), not(row.passwordHash.getValue()));
+			assertThat(row.passwordHash.checkPassword(correctPassword), is(true));
+			assertThat(row.passwordHash.checkPassword(wrongPassword), is(false));
+			assertThat(row.passwordHash.checkPasswordWithException(correctPassword), is(true));
 			try {
-				Assert.assertThat(row.passwordHash.checkPasswordWithException(wrongPassword), is(false));
+				assertThat(row.passwordHash.checkPasswordWithException(wrongPassword), is(false));
 				Assert.fail("row.passwordHash.checkPasswordWithException(wrongPassword) should have thrown an exception");
 			} catch (IncorrectPasswordException exp) {
 				// all good, we were hoping for an exception :)
@@ -84,10 +85,10 @@ public class DBPasswordHashTest extends AbstractTest {
 			boolean loggedin = row.passwordHash.checkPasswordAndUpdateHash(correctPassword);
 			Assert.assertTrue(loggedin);
 //			System.out.println(hash1 + " not equals " + row.passwordHash.getValue());
-			Assert.assertThat(hash1, not(row.passwordHash.getValue()));
+			assertThat(hash1, not(row.passwordHash.getValue()));
 			
-			Assert.assertThat(row.passwordHash.checkPassword(correctPassword), is(true));
-			Assert.assertThat(row.passwordHash.checkPassword(wrongPassword), is(false));
+			assertThat(row.passwordHash.checkPassword(correctPassword), is(true));
+			assertThat(row.passwordHash.checkPassword(wrongPassword), is(false));
 		}
 	}
 
