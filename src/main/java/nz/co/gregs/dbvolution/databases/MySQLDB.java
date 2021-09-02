@@ -34,9 +34,6 @@ import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 /**
  * A DBDatabase tweaked for MySQL databases
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
@@ -44,8 +41,6 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 	private static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 3306;
-//	private String derivedURL;
-//	protected final MySQLSettingsBuilder urlProcessor = new MySQLSettingsBuilder();
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -57,8 +52,6 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 		super(
 				new MySQLSettingsBuilder().setDataSource(ds)
 		);
-
-//		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, ds);
 	}
 
 	/**
@@ -121,14 +114,12 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public MySQLDB(String server, int port, String databaseName, String username, String password) throws SQLException {
 		this(new MySQLSettingsBuilder()
-				//				.setLabel(databaseName)
 				.setHost(server)
 				.setPort(port)
 				.setDatabaseName(databaseName)
 				.setUsername(username)
 				.setPassword(password)
 		);
-//		this.setDatabaseName(databaseName);
 	}
 
 	@Override
@@ -138,7 +129,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone();
 	}
 
 	@Override

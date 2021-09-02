@@ -284,9 +284,11 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private void initDriver(final String driverName1) {
 		driverName = driverName1;
 		try {
-			Class.forName(driverName);
+			if (driverName != null && !driverName.isEmpty()) {
+				Class.forName(driverName);
+			}
 		} catch (ClassNotFoundException ex) {
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			LOG.error("Database driver class not found: " + driverName1, exception);
 		}
 	}
 
@@ -2396,11 +2398,11 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	public void setQuietExceptionsPreference(boolean b) {
 		this.quietExceptionsPreference = b;
 	}
-	
+
 	public boolean getQuietExceptionsPreference() {
 		return this.quietExceptionsPreference;
 	}
-	
+
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		query.setDatabaseQuietExceptionsPreference(getQuietExceptionsPreference());
