@@ -393,7 +393,6 @@ class DataRepoGenerator {
 			case Types.TINYINT:
 			case Types.INTEGER:
 			case Types.BIGINT:
-			case Types.BINARY:
 			case Types.BOOLEAN:
 			case Types.ROWID:
 			case Types.SMALLINT:
@@ -445,6 +444,7 @@ class DataRepoGenerator {
 			case Types.NCLOB:
 				value = DBLargeText.class;
 				break;
+			case Types.BINARY:
 			case Types.VARBINARY:
 			case Types.LONGVARBINARY:
 			case Types.BLOB:
