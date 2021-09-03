@@ -41,5 +41,9 @@ public class CannotEncryptInputException extends Exception {
 	public CannotEncryptInputException(Throwable ex) {
 		super(ex);
 	}
+
+	public CannotEncryptInputException() {
+		super("Unknown Reason");
+	}
 	
 }
