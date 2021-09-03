@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility.encryption;
 
+import nz.co.gregs.dbvolution.utility.Toggle;
 import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -57,7 +58,7 @@ import org.apache.commons.crypto.utils.Utils;
  */
 public class Encryption_Internal {
 
-	private static final int DEFAULTBUFFERSIZE = 1024;
+	private static final int DEFAULT_BUFFER_SIZE = 1024;
 	private static final String TRANSFORM = "AES/CBC/PKCS5Padding";
 	private static final IvParameterSpec IV = new IvParameterSpec(getUTF8Bytes("DBVOLUTION IV SE"));
 	private static final SecretKeySpec KEY = new SecretKeySpec(getUTF8Bytes("DBVOLUTION KEY S"), "AES");
@@ -66,73 +67,98 @@ public class Encryption_Internal {
 	public static String encrypt(String inputString) throws CannotEncryptInputException {
 		Properties properties = new Properties();
 		//Creates a CryptoCipher instance with the transformation and properties.
-		final ByteBuffer outBuffer;
-		final int updateBytes;
-		final int finalBytes;
+		int finalBytes;
 		try (CryptoCipher encipher = Utils.getCipherInstance(TRANSFORM, properties)) {
 
 			final byte[] utF8Bytes = getUTF8Bytes(inputString);
 			ByteBuffer inBuffer;
 
-			int bufferSize = DEFAULTBUFFERSIZE;
+			int bufferSize = DEFAULT_BUFFER_SIZE;
 			if (utF8Bytes.length > bufferSize) {
 				bufferSize = utF8Bytes.length;
 			}
-				inBuffer = ByteBuffer.allocateDirect(bufferSize);
-				outBuffer = ByteBuffer.allocateDirect(bufferSize);
+			inBuffer = ByteBuffer.allocateDirect(bufferSize);
+
 			inBuffer.put(utF8Bytes);
 
 			inBuffer.flip(); // ready for the cipher to read it
 
 			// Initializes the cipher with ENCRYPT_MODE,key and iv.
 			encipher.init(Cipher.ENCRYPT_MODE, KEY, IV);
-			// Continues a multiple-part encryption/decryption operation for byte buffer.
-			updateBytes = encipher.update(inBuffer, outBuffer);
 
-			// We should call do final at the end of encryption/decryption.
-			finalBytes = encipher.doFinal(inBuffer, outBuffer);
+			ByteBuffer outBuffer;
+			int outBufferSize = bufferSize;
+			int updateBytes;
+			boolean updateCompleted = false;
+			while (!updateCompleted) {
+				try {
+					outBuffer = ByteBuffer.allocateDirect(outBufferSize);
+					// Continues a multiple-part encryption/decryption operation for byte buffer.
+					updateBytes = encipher.update(inBuffer, outBuffer);
+					updateCompleted = true;
+					// We should call do final at the end of encryption/decryption.
+					finalBytes = encipher.doFinal(inBuffer, outBuffer);
 
-			outBuffer.flip(); // ready for use as decrypt
-			byte[] encoded = new byte[updateBytes + finalBytes];
-			outBuffer.duplicate().get(encoded);
+					outBuffer.flip(); // ready for use as decrypt
+					byte[] encoded = new byte[updateBytes + finalBytes];
+					outBuffer.duplicate().get(encoded);
 
-			final String base64Encoded = new String(Base64.encodeBase64(encoded));
+					final String base64Encoded = new String(Base64.encodeBase64(encoded));
 
-			return ENCYPTED_PREAMPLE + base64Encoded;
-		} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException | ShortBufferException | IllegalBlockSizeException | BadPaddingException | BufferOverflowException ex) {
+					return ENCYPTED_PREAMPLE + base64Encoded;
+				} catch (javax.crypto.ShortBufferException exp) {
+					outBufferSize *= 2;
+				} catch (IllegalBlockSizeException | BadPaddingException | BufferOverflowException ex) {
+					Logger.getLogger(Encryption_Internal.class.getName()).log(Level.SEVERE, null, ex);
+					throw new CannotEncryptInputException(ex);
+				}
+			}
+		} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException ex) {
 			Logger.getLogger(Encryption_Internal.class.getName()).log(Level.SEVERE, null, ex);
 			throw new CannotEncryptInputException(ex);
 		}
+		throw new CannotEncryptInputException();
 	}
 
-	public static String decrypt(String encryptedString) throws UnableToDecryptInput {
-		if (encryptedString != null && !encryptedString.isEmpty() && encryptedString.startsWith(ENCYPTED_PREAMPLE)) {
-			String removedPreample = encryptedString.replaceFirst(ENCYPTED_PREAMPLE, "");
+	public static String decrypt(String encodedCipherText) throws UnableToDecryptInput {
+		if (encodedCipherText != null && !encodedCipherText.isEmpty() && encodedCipherText.startsWith(ENCYPTED_PREAMPLE)) {
+			String encryptedString = encodedCipherText.replaceFirst(ENCYPTED_PREAMPLE, "");
 			Properties properties = new Properties();
 			// decode the base64 encoded input string
-			byte[] decodedBytes = Base64.decodeBase64(removedPreample);
-			int bufferSize = DEFAULTBUFFERSIZE;
-			if (decodedBytes.length > bufferSize) {
-				bufferSize = decodedBytes.length;
+			byte[] encryptedBytes = Base64.decodeBase64(encryptedString);
+			int bufferSize = DEFAULT_BUFFER_SIZE;
+			if (encryptedBytes.length > bufferSize) {
+				bufferSize = encryptedBytes.length;
 			}
 			//Creates a CryptoCipher instance with the transformation and properties.
-			ByteBuffer outBuffer;
-			outBuffer = ByteBuffer.allocateDirect(bufferSize);
+			ByteBuffer inBuffer;
+			inBuffer = ByteBuffer.allocateDirect(bufferSize);
 
 			// push the decoded input into the buffer
-			outBuffer.put(decodedBytes);
+			inBuffer.put(encryptedBytes);
 			// reverse the buffer to output mode for processing
-			outBuffer.flip();
+			inBuffer.flip();
 
 			try (CryptoCipher decipher = Utils.getCipherInstance(TRANSFORM, properties)) {
 				decipher.init(Cipher.DECRYPT_MODE, KEY, IV);
-				ByteBuffer decoded = ByteBuffer.allocateDirect(bufferSize);
-				decipher.update(outBuffer, decoded);
-				decipher.doFinal(outBuffer, decoded);
-				decoded.flip(); // ready for use
-				final String decrypted = asString(decoded);
-				return decrypted;
-			} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException | ShortBufferException | IllegalBlockSizeException | BadPaddingException | BufferOverflowException ex) {
+				int outBufferSize = bufferSize;
+				Toggle update = new Toggle();
+				Toggle doFinal = new Toggle();
+				while (update.isNeeded() || doFinal.isNeeded()) {
+					ByteBuffer outBuffer = ByteBuffer.allocateDirect(outBufferSize);
+					try {
+						decipher.update(inBuffer, outBuffer);
+						update.done();
+						decipher.doFinal(inBuffer, outBuffer);
+						doFinal.done();
+						outBuffer.flip(); // ready for use
+						final String decrypted = asString(outBuffer);
+						return decrypted;
+					} catch (ShortBufferException ex) {
+						outBufferSize *= 2;
+					}
+				}
+			} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | BufferOverflowException ex) {
 				Logger.getLogger(Encryption_Internal.class
 						.getName()).log(Level.SEVERE, null, ex);
 				throw new UnableToDecryptInput(ex);
@@ -140,6 +166,7 @@ public class Encryption_Internal {
 		} else {
 			throw new UnableToDecryptInput();
 		}
+		throw new UnableToDecryptInput();
 	}
 
 	private static byte[] getUTF8Bytes(String input) {

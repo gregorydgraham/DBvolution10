@@ -64,16 +64,12 @@ import org.apache.commons.crypto.utils.Utils;
  */
 public class Encryption_BASE64_AES_CBC_PKCS5Padding {
 
-//	private static final int BUFFERSIZE = 1024;
 	private static final String TRANSFORM = "AES/CBC/PKCS5Padding";
-//	private static final IvParameterSpec IV = new IvParameterSpec(getUTF8Bytes("DBVOLUTION IV SE"));
-//	private static final SecretKeySpec KEY = new SecretKeySpec(getUTF8Bytes("DBVOLUTION KEY S"), "AES");
 	private static final String ENCRYPTED_PREAMPLE = "BASE64_AES_CBC_PKCS5Padding";
 
 	public static String encrypt(String passphrase, String inputString) throws CannotEncryptInputException {
 		Properties properties = new Properties();
 		//Creates a CryptoCipher instance with the transformation and properties.
-//		final ByteBuffer outBuffer;
 		final int updateBytes;
 		final int finalBytes;
 		try (CryptoCipher encipher = Utils.getCipherInstance(TRANSFORM, properties)) {
@@ -188,14 +184,12 @@ public class Encryption_BASE64_AES_CBC_PKCS5Padding {
 	private static class InterpretedString {
 
 		private final boolean isGood;
-		private final String preamble;
 		private final byte[] salt;
 		private final byte[] iv;
 		private final String encryptedPart;
 
 		public InterpretedString(Boolean bool) {
 			this.isGood = false;
-			preamble = null;
 			iv = null;
 			encryptedPart = null;
 			salt = null;
@@ -203,7 +197,6 @@ public class Encryption_BASE64_AES_CBC_PKCS5Padding {
 
 		public InterpretedString(String preamble, byte[] salt, byte[] iv, String encryptedPart) {
 			this.isGood = true;
-			this.preamble = preamble;
 			this.salt = salt;
 			this.iv = iv;
 			this.encryptedPart = encryptedPart;

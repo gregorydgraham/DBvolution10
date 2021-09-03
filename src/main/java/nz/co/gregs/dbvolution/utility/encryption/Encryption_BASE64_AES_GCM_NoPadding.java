@@ -80,8 +80,6 @@ public class Encryption_BASE64_AES_GCM_NoPadding {
 			byte[] nonce = Random.bytes(ALGORITHM_NONCE_SIZE);
 
 			// Create the cipher instance and initialize.
-//		Cipher cipher = Cipher.getInstance(ALGORITHM_NAME);
-//		cipher.init(Cipher.ENCRYPT_MODE, getSecretKeySpec(key), getParameterSpec(nonce));
 			Cipher cipher = getEncryptCipher(key, nonce);
 
 			// Encrypt and prepend nonce.
