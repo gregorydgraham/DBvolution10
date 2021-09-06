@@ -159,6 +159,15 @@ public class DatabaseConnectionSettings {
 				+ encodeClusterHosts(getClusterHosts()) + TOSTRING_SEPARATOR;
 	}
 
+	/**
+	 * Change the settings into and encoded string for use with {@link #decode(java.lang.String)
+	 * }.
+	 *
+	 * <p>
+	 * Includes username and password.</p>
+	 *
+	 * @return encoded settings suitable for decoding.
+	 */
 	public String encode() {
 		return "DATABASECONNECTIONSETTINGS: "
 				+ getDbdatabaseClass() + FIELD_SEPARATOR
