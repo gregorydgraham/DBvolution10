@@ -45,6 +45,14 @@ public class Toggle {
 	public boolean isNotNeeded() {
 		return !toggle;
 	}
+	
+	public boolean hasHappened(){
+		return isNotNeeded();
+	}
+	
+	public boolean hasNotHappened(){
+		return isNeeded();
+	}
 
 	public void done() {
 		toggle = false;
