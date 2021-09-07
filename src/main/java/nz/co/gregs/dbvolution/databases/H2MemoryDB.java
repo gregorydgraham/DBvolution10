@@ -141,11 +141,11 @@ public class H2MemoryDB extends H2DB {
 	 * <p>
 	 * Database exceptions may be thrown
 	 *
-	 * @param dataSource dataSource
+	 * @param dcs a collection of settings the fully specify the database
 	 * @throws java.sql.SQLException database errors
 	 */
-	public H2MemoryDB(DatabaseConnectionSettings dataSource) throws SQLException {
-		super(dataSource);
+	public H2MemoryDB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new H2MemorySettingsBuilder().fromSettings(dcs));
 	}
 	
 	@Override
