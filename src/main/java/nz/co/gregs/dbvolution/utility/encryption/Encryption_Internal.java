@@ -89,13 +89,13 @@ public class Encryption_Internal {
 			ByteBuffer outBuffer;
 			int outBufferSize = bufferSize;
 			int updateBytes;
-			boolean updateCompleted = false;
-			while (!updateCompleted) {
+			Toggle successfullyCallUpdate = new Toggle();
+			while (successfullyCallUpdate.hasNotHappened()) {
 				try {
 					outBuffer = ByteBuffer.allocateDirect(outBufferSize);
 					// Continues a multiple-part encryption/decryption operation for byte buffer.
 					updateBytes = encipher.update(inBuffer, outBuffer);
-					updateCompleted = true;
+					successfullyCallUpdate.done();
 					// We should call do final at the end of encryption/decryption.
 					finalBytes = encipher.doFinal(inBuffer, outBuffer);
 
