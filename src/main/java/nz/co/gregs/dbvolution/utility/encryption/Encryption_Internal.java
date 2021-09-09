@@ -30,7 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility.encryption;
 
-import nz.co.gregs.dbvolution.utility.Toggle;
+import nz.co.gregs.dbvolution.utility.LoopVariable;
 import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -89,7 +89,7 @@ public class Encryption_Internal {
 			ByteBuffer outBuffer;
 			int outBufferSize = bufferSize;
 			int updateBytes;
-			Toggle successfullyCallUpdate = new Toggle();
+			LoopVariable successfullyCallUpdate = new LoopVariable();
 			while (successfullyCallUpdate.hasNotHappened()) {
 				try {
 					outBuffer = ByteBuffer.allocateDirect(outBufferSize);
@@ -142,8 +142,8 @@ public class Encryption_Internal {
 			try (CryptoCipher decipher = Utils.getCipherInstance(TRANSFORM, properties)) {
 				decipher.init(Cipher.DECRYPT_MODE, KEY, IV);
 				int outBufferSize = bufferSize;
-				Toggle update = new Toggle();
-				Toggle doFinal = new Toggle();
+				LoopVariable update = new LoopVariable();
+				LoopVariable doFinal = new LoopVariable();
 				while (update.isNeeded() || doFinal.isNeeded()) {
 					ByteBuffer outBuffer = ByteBuffer.allocateDirect(outBufferSize);
 					try {
