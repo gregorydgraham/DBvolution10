@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
-import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -66,6 +65,8 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
+import nz.co.gregs.dbvolution.utility.LoopVariable;
+import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -74,8 +75,8 @@ import org.apache.commons.logging.LogFactory;
  *
  * <p>
  * Clustering provides several benefits: automatic replication, reduced server
- * load on individual servers, improved server failure tolerance, and, with a
- * little programming, dynamic server replacement.</p>
+ * load on individual servers, improved server failure tolerance, and dynamic
+ * server replacement.</p>
  *
  * <p>
  * Please note that this class is not required to use database clusters provided
@@ -90,14 +91,19 @@ import org.apache.commons.logging.LogFactory;
  * the DBvolutionDemo application uses H2 and SQLite.</p>
  *
  * <p>
- * Upon creation, known tables and data are synchronized, the first database in
- * the cluster being used as the template. Added databases are synchronized
+ * Upon creation, known and required tables are synchronized, the first database
+ * in the cluster being used as the template. Added databases are synchronized
  * before being used</p>
  *
  * <p>
  * Automatically generated keys are still supported with a slight change: the
  * key will be generated in the first database and used as a literal value in
- * all other databases.
+ * all other databases.</p>
+ *
+ * <p>
+ * Adding an Oracle database to the cluster will change the cluster to
+ * Oracle-compatible mode: null strings and empty strings will be equivalent.
+ * This may change the results of your queries.</p>
  *
  * @author gregorygraham
  */
@@ -110,9 +116,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private boolean requeryPermitted = true;
+	private LoopVariable startup = new LoopVariable();
 
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
-		this(builder.getDatabaseName(), new Configuration(builder.getAutoRebuild(), builder.getAutoReconnect()));
+		this(builder.getDatabaseName(), builder.getConfiguration());
 	}
 
 	/**
@@ -135,15 +142,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public void waitUntilSynchronised() {
-		if (details.getAutoReconnect()) {
-			while (details.getQuarantinedDatabases().length > 0) {
-				try {
-					wait(1000);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		}
+		details.waitUntilSynchronised();
 	}
 
 	public synchronized boolean requeryPermitted() {
@@ -155,37 +154,71 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public static enum Status {
-
 		READY,
 		UNSYNCHRONISED,
 		PAUSED,
 		DEAD,
 		QUARANTINED,
 		UNKNOWN,
-		PROCESSING
+		PROCESSING, 
+		SYNCHRONIZING
 	}
 
 	public DBDatabaseCluster() {
-		this("", Configuration.autoRebuildAndReconnect());
+		this("", Configuration.autoRebuildReconnectAndStart());
 	}
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config) {
 		super();
 		setLabel(clusterLabel);
-		details = new ClusterDetails();
+		details = new ClusterDetails(clusterLabel);
+		details.setConfiguration(config);
+
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
-		startupCluster(clusterLabel, config);
+
+		if (config.useAutoRebuild) {
+			details.loadTrackedTables();
+		}
+		if (config.useAutoStart) {
+			startupCluster();
+		}
+		if (config.useAutoConnect) {
+			connectSavedDatabases();
+		}
 	}
 
-	private void startupCluster(String clusterLabel, Configuration config) {
-		details.setClusterLabel(clusterLabel);
-		details.setAutoRebuild(config.isUseAutoRebuild());
-		details.setAutoReconnect(config.isUseAutoReconnect());
-		details.loadTrackedTables();
+	private void startupCluster() {
+		if (startup.isNeeded()) {
+			addReconnectionProcessor();
+			addCleaner();
+			startup.done();
+		}
+	}
+
+	private void connectSavedDatabases() {
+		List<DBDatabase> loadTheseDatabases = details.getAddedDatabasesFromPrefs();
+		for (var newDB : loadTheseDatabases) {
+			try {
+				addDatabase(newDB);
+			} catch (SQLException ex) {
+				Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	private void addReconnectionProcessor() {
 		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
 		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
 		addRegularProcess(reconnectionProcessor);
-		addCleaner();
+	}
+
+	public DBDatabase start() {
+		startupCluster();
+		return this;
+	}
+
+	public boolean isStarted() {
+		return startup.hasHappened();
 	}
 
 	public DBDatabaseCluster(String clusterLabel) {
@@ -225,7 +258,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			details.add(databaseToAdd);
 		}
 		setDefinition(new ClusterDatabaseDefinition());
-		synchronizeSecondaryDatabases();
+		details.synchronizeSecondaryDatabases();
 	}
 
 	/**
@@ -258,7 +291,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public static DBDatabaseCluster randomManualCluster(DBDatabase databases) throws SQLException {
 		final String dbName = getRandomClusterName();
-		return new DBDatabaseCluster(dbName, Configuration.manual(), databases);
+		return new DBDatabaseCluster(dbName, Configuration.fullyManual(), databases);
 	}
 
 	/**
@@ -1022,17 +1055,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		return super.clone();
 	}
 
-	private void synchronizeSecondaryDatabases() throws SQLException {
-		DBDatabase[] addedDBs;
-		addedDBs = details.getUnsynchronizedDatabases();
-		for (DBDatabase db : addedDBs) {
-			details.synchronizingDatabase(db);
-
-			//Do The Synchronising...
-			synchronizeSecondaryDatabase(db);
-		}
-	}
-
 	@Override
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
@@ -1095,7 +1117,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			if (advice.equals(HandlerAdvice.REQUERY) && requeryPermitted()) {
 				return executeDBQuery(query);
 			} else {
-				quarantineDatabaseAutomatically(workingDB, e);
+				details.quarantineDatabaseAutomatically(workingDB, e);
 				throw e;
 			}
 		}
@@ -1103,15 +1125,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void handleErrorDuringExecutingSQL(DBDatabase suspectDatabase, Throwable sqlException, String sqlString) {
-		quarantineDatabaseAutomatically(suspectDatabase, sqlException);
-	}
-
-	private void quarantineDatabaseAutomatically(DBDatabase suspectDatabase, Throwable sqlException) {
-		try {
-			this.quarantineDatabase(suspectDatabase, sqlException);
-		} catch (UnableToRemoveLastDatabaseFromClusterException doesntNeedToBeHandledAsItsAutomaticAndNotManual) {
-			;
-		}
+		details.quarantineDatabaseAutomatically(suspectDatabase, sqlException);
 	}
 
 	private static ArrayList<Class<? extends Exception>> ABORTING_EXCEPTIONS
@@ -1142,7 +1156,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			if (size() < 2) {
 				return HandlerAdvice.ABORT;
 			} else {
-				quarantineDatabaseAutomatically(readyDatabase, e);
+				details.quarantineDatabaseAutomatically(readyDatabase, e);
 				return HandlerAdvice.REQUERY;
 			}
 		}
@@ -1152,7 +1166,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		if (size() < 2) {
 			return HandlerAdvice.ABORT;
 		} else {
-			quarantineDatabaseAutomatically(readyDatabase, e);
+			details.quarantineDatabaseAutomatically(readyDatabase, e);
 			return HandlerAdvice.REQUERY;
 		}
 	}
@@ -1239,78 +1253,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		final String clusterLabel = this.getLabel();
-		final String secondaryLabel = secondary.getLabel();
-		LOG.debug(clusterLabel + " SYNCHRONISING: " + secondaryLabel);
-		try {
-			DBDatabase template = null;
-			try {
-				template = details.getTemplateDatabase();
-			} catch (NoAvailableDatabaseException except) {
-				// must be the first database
-			}
-			if (template != null) {
-				// we need to unpause the template no matter wht happens so use a finally clause
-				try {
-					// Check that we're not synchronising the reference database
-					if (!template.getSettings().equals(secondary.getSettings())) {
-						LOG.debug(clusterLabel + " CAN SYNCHRONISE: " + secondaryLabel);
-						final DBRow[] trackedTables = getTrackedTables();
-						for (DBRow table : trackedTables) {
-							LOG.debug(clusterLabel + " CHECKING TABLE: " + table.getTableName());
-							// make sure the table exists in the cluster already
-							if (template.tableExists(table)) {
-								LOG.debug(clusterLabel + " INCLUDES TABLE: " + table.getTableName());
-								// Make sure it exists in the new database
-								if (secondary.tableExists(table) == true) {
-									LOG.debug(clusterLabel + " REMOVING FROM " + secondaryLabel + ": " + table.getTableName());
-									secondary.preventDroppingOfTables(false);
-									secondary.dropTableNoExceptions(table);
-								}
-								LOG.debug(clusterLabel + " CREATING ON " + secondaryLabel + ": " + table.getTableName());
-								secondary.createTable(table);
-								LOG.debug(clusterLabel + " CREATED ON " + secondaryLabel + ": " + table.getTableName());
-								// Check that the table has data
-								final DBTable<DBRow> primaryTable = template.getDBTable(table);
-								final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
-								final Long primaryTableCount = primaryTable.count();
-								if (primaryTableCount > 0) {
-									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
-									// Check that the new database has data
-									LOG.debug(clusterLabel + " CLUSTER FILLING TABLE ON " + secondaryLabel + ":" + table.getTableName());
-									List<DBRow> allRows = primaryData.getAllRows();
-									secondaryTable.insert(allRows);
-									LOG.debug(clusterLabel + " FILLED TABLE ON " + secondaryLabel + ":" + table.getTableName());
-								}
-							}
-							LOG.debug(clusterLabel + " FINSHED WITH TABLE: " + table.getTableName());
-						}
-					}
-				} catch (Throwable e) {
-					throw e;
-				} finally {
-					releaseTemplateDatabase(template);
-				}
-			}
-			LOG.debug(clusterLabel + " START SYNCHRONISING ACTIONS ON: " + secondaryLabel);
-			synchronizeActions(secondary);
-		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
-			quarantineDatabaseAutomatically(secondary, ex);
-		}
-	}
-
-	private synchronized void synchronizeActions(DBDatabase db) throws SQLException, NoAvailableDatabaseException, NoAvailableDatabaseException {
-		if (db != null) {
-			Queue<DBAction> queue = details.getActionQueue(db);
-			while (queue != null && !queue.isEmpty()) {
-				DBAction action = queue.remove();
-				db.executeDBAction(action);
-			}
-			details.readyDatabase(db);
-		}
-	}
-
 	private synchronized void synchronizeAddedDatabases(boolean blocking) throws SQLException {
 		boolean block = blocking || (details.getReadyDatabases().length < 2);
 		final DBDatabase[] dbs = details.getUnsynchronizedDatabases();
@@ -1359,19 +1301,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getReadyDatabases().length;
 	}
 
-	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws SQLException, NoAvailableDatabaseException {
-		if (primary != null) {
-			if (details.clusterContainsDatabase(primary)) {
-				synchronizeActions(primary);
-			} else {
-				primary.stop();
-			}
-		}
-	}
-
-//	private DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
-//		return details.getTemplateDatabase();
-//	}
 	public String getClusterStatus() {
 		final String summary = getStatusOfActiveDatabases();
 		final String unsyn = getStatusOfUnsynchronisedDatabases();
@@ -1406,20 +1335,6 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public final boolean getAutoRebuild() {
 		return details.getAutoRebuild();
-	}
-
-	public final void setAutoRebuild(boolean b) {
-		details.setAutoRebuild(b);
-	}
-
-	/**
-	 * Returns set whether or not the cluster should automatically reconnect with
-	 * quarantined databases
-	 *
-	 * @param b the autoreconnect setting
-	 */
-	public final void setAutoReconnect(boolean b) {
-		details.setAutoReconnect(b);
 	}
 
 	/**
@@ -1473,30 +1388,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * } but does not stop or dismantle the individual databases.
 	 */
 	private static final Cleaner cleaner = Cleaner.create();
-
-	private static class ClusterCleanupActions implements Runnable {
-
-		private final ClusterDetails details;
-		private final Log log;
-		private final ExecutorService actionThreadPool;
-
-		private ClusterCleanupActions(ClusterDetails details, Log log, ExecutorService actionThreadPool) {
-			this.details = details;
-			this.log = log;
-			this.actionThreadPool = actionThreadPool;
-		}
-
-		@Override
-		public void run() {
-			log.debug("CLEANING UP CLUSTER...");
-			actionThreadPool.shutdown();
-			try {
-				details.removeAllDatabases();
-			} catch (SQLException ex) {
-				Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-	}
 
 	private ClusterCleanupActions clusterCleanupActions;
 	private Cleaner.Cleanable cleanable;
@@ -1613,7 +1504,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 
 		final public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException {
-			cluster.synchronizeSecondaryDatabase(database);
+			cluster.details.synchronizeSecondaryDatabase(database);
 			return null;
 		}
 	}
@@ -1679,12 +1570,51 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public static class Configuration {
 
-		private boolean useAutoRebuild;
-		private boolean useAutoReconnect;
+		/**
+		 * Auto-rebuild will automatically reload the tracked table, connect to the
+		 * authoritative database of the previous instance of this cluster, and
+		 * reload the data for the tracked and required tables.
+		 *
+		 * This provides continuity of schema and data between instances of the
+		 * cluster and removes the need to fully specify the schema within a
+		 * DataRepo or configuration file.
+		 */
+		private final boolean useAutoRebuild;
+		/**
+		 * Auto-reconnect instructs the cluster to reconnect to any cluster members
+		 * disconnected during processing. This includes databases that could not be
+		 * connected to, and those that were quarantined due to errors.
+		 *
+		 * Reconnected databases will be synchronized before use.
+		 */
+		private final boolean useAutoReconnect;
+		/**
+		 * Auto-start instructs the cluster to immediately perform tasks required to
+		 * make the cluster usable as a database.
+		 *
+		 * These tasks may include reloading the tracked tables and data of the
+		 * previous instance, connecting to former members, synchronizing cluster
+		 * members, starting the reconnection process, and more.
+		 */
+		private final boolean useAutoStart;
+		/**
+		 * Auto-connect loads the list of cluster members from the previous
+		 * instance.
+		 *
+		 * This provides continuity of membership and removes the need fully specify
+		 * the members in a code or configurations files.
+		 */
+		private final boolean useAutoConnect;
 
-		private Configuration(boolean useAutoRebuild, boolean useAutoReconnect) {
+		public Configuration() {
+			this(false, false, false, false);
+		}
+
+		public Configuration(boolean useAutoRebuild, boolean useAutoReconnect, boolean useAutoStart, boolean useAutoConnect) {
 			this.useAutoRebuild = useAutoRebuild;
 			this.useAutoReconnect = useAutoReconnect;
+			this.useAutoStart = useAutoStart;
+			this.useAutoConnect = useAutoConnect;
 		}
 
 		/**
@@ -1693,9 +1623,27 @@ public class DBDatabaseCluster extends DBDatabase {
 		 * error.
 		 *
 		 * @return a manual configuration
+		 * @deprecated This version of manual will automatically start the cluster,
+		 * use {@link #manualStarted() } instead
 		 */
+		@Deprecated()
 		public static Configuration manual() {
-			return new Configuration(false, false);
+			return new Configuration(false, false, true, false);
+		}
+
+		/**
+		 * Use for a database that does not automatically rebuild the data when
+		 * restarting the cluster nor reconnect quarantined databases after an
+		 * error.
+		 *
+		 * <p>
+		 * The database will not be started nor will databases in the previous
+		 * cluster instance be re-added.</p>
+		 *
+		 * @return a manual configuration
+		 */
+		public static Configuration fullyManual() {
+			return new Configuration(false, false, false, false);
 		}
 
 		/**
@@ -1705,10 +1653,21 @@ public class DBDatabaseCluster extends DBDatabase {
 		 * <p>
 		 * the TrackedTable list will also be rebuilt.</p>
 		 *
+		 * <p>
+		 * Auto-rebuild will automatically reload the tracked table, connect to the
+		 * authoritative database of the previous instance of this cluster, and
+		 * reload the data for the tracked and required tables.
+		 *
+		 * This provides continuity of schema and data between instances of the
+		 * cluster and removes the need to fully specify the schema within a
+		 * DataRepo or configuration file.</p>
+		 *
+		 * Equivalent to new Configuration(true, false, true, false)
+		 *
 		 * @return an auto-rebuild configuration
 		 */
 		public static Configuration autoRebuild() {
-			return new Configuration(true, false);
+			return new Configuration(true, false, true, false);
 		}
 
 		/**
@@ -1718,10 +1677,20 @@ public class DBDatabaseCluster extends DBDatabase {
 		 * <p>
 		 * the TrackedTable list will also be rebuilt.</p>
 		 *
+		 * <p>
+		 * Auto-reconnect instructs the cluster to reconnect to any cluster members
+		 * disconnected during processing. This includes databases that could not be
+		 * connected to, and those that were quarantined due to errors.</p>
+		 *
+		 * <p>
+		 * Reconnected databases will be synchronized before use.</p>
+		 *
+		 * Equivalent to new Configuration(false, true, true, false)
+		 *
 		 * @return an auto-reconnect configuration
 		 */
 		public static Configuration autoReconnect() {
-			return new Configuration(false, true);
+			return new Configuration(false, true, true, false);
 		}
 
 		/**
@@ -1729,13 +1698,39 @@ public class DBDatabaseCluster extends DBDatabase {
 		 * instance of this cluster AND try to connect quarantined databases will
 		 * the cluster is running.
 		 *
+		 * Equivalent to new Configuration(true, true, true, false)
+		 *
 		 * @return an auto-rebuild and reconnect configuration
+		 * @deprecated despite the method name, this will also start the cluster.
+		 * Use {@link #autoRebuildReconnectAndStart() } instead
 		 */
+		@Deprecated
 		public static Configuration autoRebuildAndReconnect() {
-			return new Configuration(true, true);
+			return new Configuration(true, true, true, false);
 		}
 
 		/**
+		 * A configuration that will try to restore the data from the previous
+		 * instance of this cluster AND try to connect quarantined databases will
+		 * the cluster is running.
+		 *
+		 * Equivalent to new Configuration(true, true, true, false)
+		 *
+		 * @return an auto-rebuild and reconnect configuration
+		 */
+		public static Configuration autoRebuildReconnectAndStart() {
+			return new Configuration(true, true, true, false);
+		}
+
+		/**
+		 * Auto-rebuild will automatically reload the tracked table, connect to the
+		 * authoritative database of the previous instance of this cluster, and
+		 * reload the data for the tracked and required tables.
+		 *
+		 * This provides continuity of schema and data between instances of the
+		 * cluster and removes the need to fully specify the schema within a
+		 * DataRepo or configuration file.
+		 *
 		 * @return TRUE if the cluster will try to reload data from the previous
 		 * version of the cluster.
 		 */
@@ -1744,6 +1739,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 
 		/**
+		 * Auto-reconnect instructs the cluster to reconnect to any cluster members
+		 * disconnected during processing. This includes databases that could not be
+		 * connected to, and those that were quarantined due to errors.
+		 *
+		 * Reconnected databases will be synchronized before use.
+		 *
 		 * @return TRUE if the cluster will try to automatically reconnect and
 		 * synchronize database while running.
 		 */
@@ -1752,18 +1753,46 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 
 		/**
-		 * @param useAutoRebuild the useAutoRebuild to set
+		 * Auto-start instructs the cluster to immediately perform tasks required to
+		 * make the cluster usable as a database.
+		 *
+		 * These tasks may include reloading the tracked tables and data of the
+		 * previous instance, connecting to former members, synchronizing cluster
+		 * members, starting the reconnection process, and more.
+		 *
+		 * @return the useAutoStart
 		 */
-		public void setUseAutoRebuild(boolean useAutoRebuild) {
-			this.useAutoRebuild = useAutoRebuild;
+		public boolean isUseAutoStart() {
+			return useAutoStart;
 		}
 
 		/**
-		 * @param useAutoReconnect the useAutoReconnect to set
+		 * Auto-connect loads the list of cluster members from the previous
+		 * instance.
+		 *
+		 * This provides continuity of membership and removes the need fully specify
+		 * the members in a code or configurations files.
+		 *
+		 * @return the useAutoConnect
 		 */
-		public void setUseAutoReconnect(boolean useAutoReconnect) {
-			this.useAutoReconnect = useAutoReconnect;
+		public boolean isUseAutoConnect() {
+			return useAutoConnect;
 		}
 
+		public Configuration withAutoRebuild() {
+			return new Configuration(true, this.useAutoReconnect, this.useAutoStart, this.useAutoConnect);
+		}
+
+		public Configuration withAutoReconnect() {
+			return new Configuration(this.useAutoRebuild, true, this.useAutoStart, this.useAutoConnect);
+		}
+
+		public Configuration withAutoStart() {
+			return new Configuration(this.useAutoRebuild, this.useAutoReconnect, true, this.useAutoConnect);
+		}
+
+		public Configuration withAutoConnect() {
+			return new Configuration(this.useAutoRebuild, this.useAutoReconnect, this.useAutoStart, true);
+		}
 	}
 }

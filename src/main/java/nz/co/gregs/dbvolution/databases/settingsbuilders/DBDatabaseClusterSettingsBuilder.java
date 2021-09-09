@@ -47,6 +47,8 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 	private boolean useAutoRebuild = false;
 	private boolean useAutoReconnect = false;
+	private boolean useAutoStart = false;
+	private boolean useAutoConnect = false;
 	private DBDefinition defn;
 
 	@Override
@@ -119,12 +121,26 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 		return this;
 	}
 
+	public DBDatabaseClusterSettingsBuilder setAutoStart(boolean useAutoStart) {
+		this.useAutoStart = useAutoStart;
+		return this;
+	}
+
+	public DBDatabaseClusterSettingsBuilder setAutoConnect(boolean useAutoConnect) {
+		this.useAutoConnect = useAutoConnect;
+		return this;
+	}
+
 	public boolean getAutoRebuild() {
 		return this.useAutoRebuild;
 	}
 
 	public boolean getAutoReconnect() {
 		return this.useAutoReconnect;
+	}
+
+	public DBDatabaseCluster.Configuration getConfiguration() {
+		return new DBDatabaseCluster.Configuration(this.useAutoRebuild, useAutoReconnect, useAutoStart, useAutoConnect);
 	}
 
 	@Override

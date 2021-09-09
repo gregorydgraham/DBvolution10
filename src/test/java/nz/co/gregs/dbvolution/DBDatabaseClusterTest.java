@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -909,6 +910,118 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 		assertThat(soloDB1.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 		assertThat(soloDB2.supportsDifferenceBetweenNullAndEmptyString(), is(true));
+	}
+
+	@Test
+	public synchronized void testAutoConnectClusterLoadsAndConnectsToDatabases() throws SQLException {
+		final String nameOfCluster = "testAutoConnectClusterLoadsAndConnectsToDatabases";
+		String soloDB2Settings;
+		final Function<DBDatabase, String> turnDatabasesToSettings = d -> d.getSettings().toString();
+		{
+			DBDatabaseCluster cluster
+					= new DBDatabaseCluster(
+							nameOfCluster,
+							DBDatabaseCluster.Configuration.fullyManual().withAutoConnect(),
+							database);
+			cluster.dismantle();
+		}
+		{
+			DBDatabaseCluster cluster
+					= new DBDatabaseCluster(
+							nameOfCluster,
+							DBDatabaseCluster.Configuration.fullyManual().withAutoConnect(),
+							database);
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+			soloDB2Settings = soloDB2.getSettings().toString();
+			cluster.addDatabase(soloDB2);
+			assertThat(cluster.size(), is(2));
+			cluster.stop();
+		}
+//		{
+//			DBDatabaseCluster cluster = new DBDatabaseCluster(
+//					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart()
+//			);
+//			assertThat(cluster.size(), is(2));
+//			final DBDatabase[] dbsInCluster = cluster.getDatabases();
+//			List<String> databases = new ArrayList<>();
+//			for (DBDatabase db : dbsInCluster) {
+//				final DatabaseConnectionSettings settings = db.getSettings();
+//				final String str = settings.toString();
+//				databases.add(str);
+//			}
+//			assertThat(databases, hasItem(soloDB2Settings));
+//			assertThat(databases, hasItem(database.getSettings().toString()));
+//
+//			cluster.addDatabase(H2MemoryDB.createANewRandomDatabase());
+//			cluster.stop();
+//		}
+//		{
+//			DBDatabaseCluster cluster = new DBDatabaseCluster(
+//					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect()
+//			);
+//			cluster.waitUntilSynchronised();
+//
+//			assertThat(cluster.size(), is(3));
+//			var databases = Arrays.asList(cluster.getDatabases()).stream().map(turnDatabasesToSettings).collect(Collectors.toList());
+//			assertThat(databases, hasItem(soloDB2Settings));
+//			assertThat(databases, hasItem(database.getSettings().toString()));
+//
+//			cluster.removeDatabase(database);
+//		}
+//		{
+//			DBDatabaseCluster cluster = new DBDatabaseCluster(
+//					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect()
+//			);
+//			cluster.waitUntilSynchronised();
+//
+//			try {
+//				assertThat(cluster.size(), is(2));
+//				var databases = Arrays.asList(cluster.getDatabases()).stream().map(turnDatabasesToSettings).collect(Collectors.toList());
+//				assertThat(databases, hasItem(soloDB2Settings));
+//				assertThat(databases, not(hasItem(database.getSettings().toString())));
+//			} finally {
+//				cluster.dismantle();
+//			}
+//		}
+	}
+
+	@Test
+	public synchronized void testWithoutAutoConnectClusterDoesNotLoadDatabases() throws SQLException {
+		final String nameOfCluster = "testWithoutAutoConnectClusterDoesNotLoadDatabases";
+		{
+			// make sure there isn't anything left around from a previous version
+			DBDatabaseCluster cluster
+					= new DBDatabaseCluster(
+							nameOfCluster,
+							DBDatabaseCluster.Configuration.fullyManual().withAutoStart().withAutoConnect(),
+							database);
+			cluster.dismantle();
+		}
+		{
+			// construct a new cluster with 2 databases
+			DBDatabaseCluster cluster
+					= new DBDatabaseCluster(
+							nameOfCluster,
+							DBDatabaseCluster.Configuration.fullyManual().withAutoStart(),
+							database);
+
+			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+			cluster.addDatabase(soloDB2);
+			assertThat(cluster.size(), is(2));
+		}
+		{
+			// construct a new empty instance
+			DBDatabaseCluster cluster = new DBDatabaseCluster(
+					nameOfCluster,
+					DBDatabaseCluster.Configuration.fullyManual().withAutoStart()
+			);
+
+			// make sure it's empty
+			assertThat(cluster.size(), is(0));
+
+			// and clean up after ourselves
+			cluster.dismantle();
+		}
 	}
 
 	private List<DBDatabaseClusterTestTable> createData(Date firstDate, Date secondDate) {
