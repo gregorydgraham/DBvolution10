@@ -58,6 +58,10 @@ public class DefaultString {
 		return initialValue == null ? nullValue : (initialValue.isEmpty()?emptyValue:initialValue);
 	}
 
+	public static boolean isNotEmptyOrNull(String value) {
+		return value != null && !value.isEmpty();
+	}
+
 	private DefaultString() {
 	}
 }
