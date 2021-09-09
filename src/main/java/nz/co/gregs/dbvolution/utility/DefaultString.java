@@ -50,6 +50,14 @@ public class DefaultString {
 		return check(initialValue, "");
 	}
 
+	public static String checkNotNull(String initialValue, String nullValue) {
+		return initialValue == null ? nullValue : initialValue;
+	}
+
+	public static String checkNotNullOrEmpty(String initialValue, String nullValue, String emptyValue) {
+		return initialValue == null ? nullValue : (initialValue.isEmpty()?emptyValue:initialValue);
+	}
+
 	private DefaultString() {
 	}
 }
