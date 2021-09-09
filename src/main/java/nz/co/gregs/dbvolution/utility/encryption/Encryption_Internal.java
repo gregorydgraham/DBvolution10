@@ -48,6 +48,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException;
 import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
+import nz.co.gregs.dbvolution.utility.DefaultString;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.crypto.cipher.CryptoCipher;
 import org.apache.commons.crypto.utils.Utils;
@@ -164,9 +165,9 @@ public class Encryption_Internal {
 				throw new UnableToDecryptInput(ex);
 			}
 		} else {
-			throw new UnableToDecryptInput();
+			throw new UnableToDecryptInput("failed to decrypt: "+DefaultString.checkNotNull("\""+encodedCipherText+"\"","NULL"));
 		}
-		throw new UnableToDecryptInput();
+		throw new UnableToDecryptInput("failed to decrypt: "+DefaultString.checkNotNull("\""+encodedCipherText+"\"","NULL"));
 	}
 
 	private static byte[] getUTF8Bytes(String input) {
