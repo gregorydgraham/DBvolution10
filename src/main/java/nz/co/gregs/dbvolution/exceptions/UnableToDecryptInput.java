@@ -45,5 +45,9 @@ public class UnableToDecryptInput extends Exception {
 	public UnableToDecryptInput(Throwable ex) {
 		super(ex);
 	}
+
+	public UnableToDecryptInput(String message) {
+		super(message);
+	}
 	
 }
