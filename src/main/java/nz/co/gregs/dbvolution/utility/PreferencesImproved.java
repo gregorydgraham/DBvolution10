@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.NodeChangeListener;
@@ -82,7 +84,7 @@ public class PreferencesImproved {
 	}
 
 	public String get(String key, String defaultValue) {
-		String defaultString = defaultValue==null?"":defaultValue;
+		String defaultString = defaultValue == null ? "" : defaultValue;
 		String simpleGot = prefs.get(key, defaultString);
 		if (!defaultString.equals(simpleGot)) {
 			return simpleGot;
@@ -112,7 +114,24 @@ public class PreferencesImproved {
 	}
 
 	public void remove(String key) {
-		prefs.remove(key);
+		try {
+			prefs.remove(key);
+		} catch (Exception tooLong) {
+			LoopVariable loop = new LoopVariable();
+			while (loop.isNeeded()) {
+				final String node = key + "[" + loop.attempts() + "]";
+				try {
+					if (prefs.nodeExists(node)) {
+						prefs.remove(node);
+						loop.attempt();
+					} else {
+						loop.done();
+					}
+				} catch (Exception ex) {
+					loop.done();
+				}
+			}
+		}
 	}
 
 	public void clear() throws BackingStoreException {
