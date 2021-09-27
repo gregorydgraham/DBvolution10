@@ -43,7 +43,7 @@ public class H2FileDB extends H2DB {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2FileDB() throws SQLException {
-		this(new DatabaseConnectionSettings());
+		this(new H2FileSettingsBuilder());
 	}
 
 	/**
