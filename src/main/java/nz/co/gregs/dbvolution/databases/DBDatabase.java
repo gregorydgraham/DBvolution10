@@ -269,7 +269,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		if (suppliedSettings instanceof NamedDatabaseCapableSettingsBuilder) {
 			this.setDatabaseName(((NamedDatabaseCapableSettingsBuilder) suppliedSettings).getDatabaseName());
 		}
-		setDBDatabaseClassInSettings(suppliedSettings);
 		createRequiredTables();
 		checkForTimezoneIssues();
 	}
@@ -2555,15 +2554,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	protected void setSettings(DatabaseConnectionSettings newSettings) {
 		settings.copy(newSettings);
-		setDBDatabaseClassInSettings();
-	}
-
-	private void setDBDatabaseClassInSettings() {
-		settings.setDbdatabaseClass(getBaseDBDatabaseClass().getCanonicalName());
-	}
-
-	private void setDBDatabaseClassInSettings(SettingsBuilder<?, ?> suppliedSettings) {
-		settings.setDbdatabaseClass(suppliedSettings.generatesURLForDatabase().getCanonicalName());
 	}
 
 	protected void startServerIfRequired() {
