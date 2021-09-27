@@ -55,11 +55,15 @@ public class DefaultString {
 	}
 
 	public static String checkNotNullOrEmpty(String initialValue, String nullValue, String emptyValue) {
-		return initialValue == null ? nullValue : (initialValue.isEmpty()?emptyValue:initialValue);
+		return initialValue == null ? nullValue : (initialValue.isEmpty() ? emptyValue : initialValue);
 	}
 
 	public static boolean isNotEmptyOrNull(String value) {
 		return value != null && !value.isEmpty();
+	}
+
+	public static boolean isEmptyOrNull(String value) {
+		return value == null || value.isEmpty();
 	}
 
 	private DefaultString() {
