@@ -20,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 
@@ -123,8 +122,8 @@ public class H2FileDB extends H2DB {
 	}
 
 	@Override
-	public H2MemorySettingsBuilder getURLInterpreter() {
-		return new H2MemorySettingsBuilder();
+	public H2FileSettingsBuilder getURLInterpreter() {
+		return new H2FileSettingsBuilder();
 	}
 
 	@Override
