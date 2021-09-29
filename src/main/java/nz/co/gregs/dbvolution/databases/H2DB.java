@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuilder;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
 import org.h2.jdbc.JdbcException;
@@ -90,7 +91,7 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2DB(File file, String username, String password) throws IOException, SQLException {
-		this(new H2SettingsBuilder()
+		this(new H2FileSettingsBuilder()
 				.setDatabaseName(file.getCanonicalFile().toString())
 				.setUsername(username)
 				.setPassword(password)
@@ -176,7 +177,7 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2DB(String databaseFilename, String username, String password, boolean dummy) throws SQLException {
-		this(new H2SettingsBuilder()
+		this(new H2FileSettingsBuilder()
 				.setFilename(databaseFilename)
 				.setUsername(username)
 				.setPassword(password)
