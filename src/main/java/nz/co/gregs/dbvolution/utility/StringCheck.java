@@ -35,7 +35,7 @@ package nz.co.gregs.dbvolution.utility;
  *
  * @author gregorygraham
  */
-public class DefaultString {
+public class StringCheck {
 
 	/**
 	 * Returns the supplied value or the default if the supplied value is null or
@@ -161,6 +161,6 @@ public class DefaultString {
 		return value == null || value.isEmpty();
 	}
 
-	private DefaultString() {
+	private StringCheck() {
 	}
 }

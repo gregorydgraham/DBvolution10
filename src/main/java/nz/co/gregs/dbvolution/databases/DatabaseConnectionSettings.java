@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.utility.DefaultString;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
@@ -592,8 +592,7 @@ public class DatabaseConnectionSettings {
 		settings.setInstance(System.getProperty(prefix + ".instance"));
 		settings.setDatabaseName(System.getProperty(prefix + ".database"));
 		settings.setSchema(System.getProperty(prefix + ".schema"));
-		settings.setFilename(
-				DefaultString.check(
+		settings.setFilename(StringCheck.check(
 						System.getProperty(prefix + ".filename"),
 						System.getProperty(prefix + ".file"),
 						System.getProperty(prefix + ".filepath")

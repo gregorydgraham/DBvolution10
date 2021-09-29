@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
-import nz.co.gregs.dbvolution.utility.DefaultString;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 
 /**
  *
@@ -122,7 +122,7 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 	@Override
 	public String encodeHost(DatabaseConnectionSettings settings) {
 		final String filename = settings.getFilename();
-		String encoded = DefaultString.check(filename, settings.getInstance(), settings.getDatabaseName());
+		String encoded = StringCheck.check(filename, settings.getInstance(), settings.getDatabaseName());
 		encoded += encodeExtras(settings, ";", "=", ";", "");
 		return encoded;
 	}

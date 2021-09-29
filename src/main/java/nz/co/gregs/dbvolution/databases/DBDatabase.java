@@ -63,7 +63,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
-import nz.co.gregs.dbvolution.utility.DefaultString;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -2560,13 +2560,13 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private void setDBDatabaseClassInSettings() {
-		if (DefaultString.isEmptyOrNull(settings.getDbdatabaseClass())) {
+		if (StringCheck.isEmptyOrNull(settings.getDbdatabaseClass())) {
 			settings.setDbdatabaseClass(getBaseDBDatabaseClass().getCanonicalName());
 		}
 	}
 
 	private void setDBDatabaseClassInSettings(SettingsBuilder<?, ?> suppliedSettings) {
-		if (DefaultString.isEmptyOrNull(settings.getDbdatabaseClass())) {
+		if (StringCheck.isEmptyOrNull(settings.getDbdatabaseClass())) {
 			settings.setDbdatabaseClass(suppliedSettings.generatesURLForDatabase().getCanonicalName());
 		}
 	}

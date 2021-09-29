@@ -33,7 +33,7 @@ package nz.co.gregs.dbvolution.databases.settingsbuilders;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2SharedDB;
-import nz.co.gregs.dbvolution.utility.DefaultString;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 
 public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>
 		implements RemoteCapableSettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>,
@@ -42,9 +42,9 @@ public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedS
 
 	@Override
 	public String encodeHost(DatabaseConnectionSettings settings) {
-		String hostname = DefaultString.check(settings.getHost(), "localhost");
-		String port = DefaultString.check(settings.getPort(), "" + getDefaultPort());
-		final String databaseName = DefaultString.check(settings.getDatabaseName(), settings.getFilename(), settings.getInstance());
+		String hostname = StringCheck.check(settings.getHost(), "localhost");
+		String port = StringCheck.check(settings.getPort(), "" + getDefaultPort());
+		final String databaseName = StringCheck.check(settings.getDatabaseName(), settings.getFilename(), settings.getInstance());
 		return hostname + ":" + port + "/" + databaseName;
 	}
 

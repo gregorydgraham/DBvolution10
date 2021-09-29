@@ -47,7 +47,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.reflection.DataModel;
-import nz.co.gregs.dbvolution.utility.DefaultString;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.dbvolution.utility.PreferencesImproved;
 import nz.co.gregs.dbvolution.utility.encryption.Encryption_Internal;
 import nz.co.gregs.separatedstring.SeparatedString;
@@ -431,7 +431,7 @@ public class ClusterDetails implements Serializable {
 
 		String encodedSettings = "";
 		final String rawPrefsValue = prefs.get(getTrackedTablesPrefsIdentifier(), null);
-		if (DefaultString.isNotEmptyNorNull(rawPrefsValue)) {
+		if (StringCheck.isNotEmptyNorNull(rawPrefsValue)) {
 			try {
 				encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
 			} catch (UnableToDecryptInput ex) {
@@ -480,7 +480,7 @@ public class ClusterDetails implements Serializable {
 		if (configuration.isUseAutoRebuild()) {
 			for (DBDatabase db : readyDatabases.toArray()) {
 				final String name = getClusterLabel();
-				if (!db.isMemoryDatabase() && DefaultString.isNotEmptyNorNull(name)) {
+				if (!db.isMemoryDatabase() && StringCheck.isNotEmptyNorNull(name)) {
 					final String encode = db.getSettings().encode();
 					try {
 						prefs.put(name, Encryption_Internal.encrypt(encode));
@@ -498,7 +498,7 @@ public class ClusterDetails implements Serializable {
 		if (configuration.isUseAutoRebuild()) {
 			String encodedSettings = "";
 			final String rawPrefsValue = prefs.get(getClusterLabel(), null);
-			if (DefaultString.isNotEmptyNorNull(rawPrefsValue)) {
+			if (StringCheck.isNotEmptyNorNull(rawPrefsValue)) {
 				try {
 					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
 				} catch (UnableToDecryptInput ex) {
@@ -506,7 +506,7 @@ public class ClusterDetails implements Serializable {
 					encodedSettings = rawPrefsValue;
 				}
 			}
-			if (DefaultString.isNotEmptyNorNull(encodedSettings)) {
+			if (StringCheck.isNotEmptyNorNull(encodedSettings)) {
 				DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
 				return settings;
 			} else {
@@ -654,7 +654,7 @@ public class ClusterDetails implements Serializable {
 		if (configuration.isUseAutoConnect()) {
 			String encodedSettings = "";
 			final String rawPrefsValue = prefs.get(getAddedDatabasesPrefsIdentifier(), null);
-			if (DefaultString.isNotEmptyNorNull(rawPrefsValue)) {
+			if (StringCheck.isNotEmptyNorNull(rawPrefsValue)) {
 				try {
 					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
 				} catch (UnableToDecryptInput ex) {
@@ -662,7 +662,7 @@ public class ClusterDetails implements Serializable {
 					encodedSettings = rawPrefsValue;
 				}
 			}
-			if (DefaultString.isNotEmptyNorNull(encodedSettings)) {
+			if (StringCheck.isNotEmptyNorNull(encodedSettings)) {
 				List<String> decodedSettings = getAddedDatabasesSeparatedStringTemplate().decode(encodedSettings);
 				for (String setting : decodedSettings) {
 					try {
