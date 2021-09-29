@@ -1607,14 +1607,17 @@ public class QueryDetails implements DBQueryable, Serializable {
 		this.quietExceptions = b;
 	}
 
+	@Override
 	public boolean isQuietExceptions() {
 		return quietExceptions || databaseQuietExceptionsPreference;
 	}
 
+	@Override
 	public void setDatabaseQuietExceptionsPreference(boolean b) {
 		databaseQuietExceptionsPreference = b;
 	}
 
+	@Override
 	public boolean getDatabaseQuietExceptionsPreference() {
 		return databaseQuietExceptionsPreference;
 	}
