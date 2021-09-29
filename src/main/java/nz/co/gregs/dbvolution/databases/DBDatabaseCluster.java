@@ -160,7 +160,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DEAD,
 		QUARANTINED,
 		UNKNOWN,
-		PROCESSING, 
+		PROCESSING,
 		SYNCHRONIZING
 	}
 
@@ -1349,17 +1349,43 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void stop() {
+		stopCluster();
+	}
+
+	/**
+	 * Stops this cluster and it's contained databases.
+	 *
+	 * See {@link #stopCluster() } and {@link DBDatabaseInterface#stop() }.
+	 */
+	public void stopClusterAndDatabases() {
+		stopClusterInternal(true);
+	}
+
+	/**
+	 * Stops the cluster without effecting the contained databases.
+	 *
+	 * <p>
+	 * To stop all databases in the cluster as well as the cluster use
+	 * {@link #stop}</p>
+	 */
+	public void stopCluster() {
+		stopClusterInternal(false);
+	}
+
+	private synchronized void stopClusterInternal(boolean andDatabases) {
 		try {
 			shutdownClusterProcesses();
-			LOG.debug("STOPPING: contained databases");
-			for (DBDatabase db : details.getAllDatabases()) {
-				db.stop();
+			if (andDatabases) {
+				LOG.debug("STOPPING: contained databases");
+				for (DBDatabase db : details.getAllDatabases()) {
+					db.stop();
+				}
+				LOG.debug("STOPPING: removing all databases");
 			}
-			LOG.debug("STOPPING: removing all databases");
 			details.removeAllDatabases();
 			super.stop();
 		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
+			LOG.error(this, ex);
 		}
 	}
 
