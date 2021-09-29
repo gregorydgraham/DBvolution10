@@ -34,7 +34,8 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.H2FileDB;
 
 public class H2FileSettingsBuilder extends AbstractH2SettingsBuilder<H2FileSettingsBuilder, H2FileDB>
-		implements FileBasedSettingsBuilder<H2FileSettingsBuilder, H2FileDB> {
+		implements FileBasedSettingsBuilder<H2FileSettingsBuilder, H2FileDB>,
+		NamedDatabaseCapableSettingsBuilder<H2FileSettingsBuilder, H2FileDB> {
 
 	@Override
 	public Class<H2FileDB> generatesURLForDatabase() {
