@@ -63,6 +63,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
+import nz.co.gregs.dbvolution.utility.DefaultString;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -269,6 +270,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		if (suppliedSettings instanceof NamedDatabaseCapableSettingsBuilder) {
 			this.setDatabaseName(((NamedDatabaseCapableSettingsBuilder) suppliedSettings).getDatabaseName());
 		}
+		setDBDatabaseClassInSettings(suppliedSettings);
 		createRequiredTables();
 		checkForTimezoneIssues();
 	}
@@ -2554,6 +2556,19 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	protected void setSettings(DatabaseConnectionSettings newSettings) {
 		settings.copy(newSettings);
+		setDBDatabaseClassInSettings();
+	}
+
+	private void setDBDatabaseClassInSettings() {
+		if (DefaultString.isEmptyOrNull(settings.getDbdatabaseClass())) {
+			settings.setDbdatabaseClass(getBaseDBDatabaseClass().getCanonicalName());
+		}
+	}
+
+	private void setDBDatabaseClassInSettings(SettingsBuilder<?, ?> suppliedSettings) {
+		if (DefaultString.isEmptyOrNull(settings.getDbdatabaseClass())) {
+			settings.setDbdatabaseClass(suppliedSettings.generatesURLForDatabase().getCanonicalName());
+		}
 	}
 
 	protected void startServerIfRequired() {
