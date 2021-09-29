@@ -63,12 +63,12 @@ public class ClusterDetails implements Serializable {
 
 	private static final Logger LOG = Logger.getLogger(ClusterDetails.class.getName());
 
-	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> unsynchronizedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> synchronizingDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> pausedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> quarantinedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final DatabaseList allDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final DatabaseList unsynchronizedDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final DatabaseList synchronizingDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final DatabaseList readyDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final DatabaseList pausedDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final DatabaseList quarantinedDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
 	private final Set<DBRow> trackedTables = Collections.synchronizedSet(new HashSet<DBRow>());
@@ -186,6 +186,7 @@ public class ClusterDetails implements Serializable {
 			readyDatabases.remove(database);
 			pausedDatabases.remove(database);
 			removeDatabaseFromUnsynchronized(database);
+			removeDatabaseFromSynchronizing(database);
 
 			queuedActions.remove(database);
 
@@ -230,6 +231,7 @@ public class ClusterDetails implements Serializable {
 		boolean result = queuedActions.containsKey(database) ? queuedActions.remove(database) != null : true;
 		result = result && quarantinedDatabases.contains(database) ? quarantinedDatabases.remove(database) : true;
 		result = result && unsynchronizedDatabases.contains(database) ? removeDatabaseFromUnsynchronized(database) : true;
+		result = result && synchronizingDatabases.contains(database) ? removeDatabaseFromUnsynchronized(database) : true;
 		result = result && pausedDatabases.contains(database) ? pausedDatabases.remove(database) : true;
 		result = result && readyDatabases.contains(database) ? readyDatabases.remove(database) : true;
 		result = result && allDatabases.contains(database) ? allDatabases.remove(database) : true;
@@ -404,6 +406,10 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
+	private synchronized void removedTrackedTablesFromPrefs() {
+		prefs.remove(getTrackedTablesPrefsIdentifier());
+	}
+
 	private synchronized void saveTrackedTables() {
 		if (configuration.isUseAutoRebuild()) {
 			final String name = getTrackedTablesPrefsIdentifier();
@@ -425,7 +431,7 @@ public class ClusterDetails implements Serializable {
 
 		String encodedSettings = "";
 		final String rawPrefsValue = prefs.get(getTrackedTablesPrefsIdentifier(), null);
-		if (DefaultString.isNotEmptyOrNull(rawPrefsValue)) {
+		if (DefaultString.isNotEmptyNorNull(rawPrefsValue)) {
 			try {
 				encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
 			} catch (UnableToDecryptInput ex) {
@@ -466,11 +472,15 @@ public class ClusterDetails implements Serializable {
 		return SeparatedStringBuilder.commaSeparated();
 	}
 
+	private synchronized void removeAuthoritativeDatabaseFromPrefs() {
+		prefs.remove(getClusterLabel());
+	}
+
 	private synchronized void setAuthoritativeDatabase() {
 		if (configuration.isUseAutoRebuild()) {
-			for (DBDatabase db : readyDatabases) {
+			for (DBDatabase db : readyDatabases.toArray()) {
 				final String name = getClusterLabel();
-				if (!db.isMemoryDatabase() && DefaultString.isNotEmptyOrNull(name)) {
+				if (!db.isMemoryDatabase() && DefaultString.isNotEmptyNorNull(name)) {
 					final String encode = db.getSettings().encode();
 					try {
 						prefs.put(name, Encryption_Internal.encrypt(encode));
@@ -484,15 +494,11 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	private synchronized void removeAuthoritativeDatabase() {
-		prefs.remove(getClusterLabel());
-	}
-
 	public synchronized DatabaseConnectionSettings getAuthoritativeDatabaseConnectionSettings() {
 		if (configuration.isUseAutoRebuild()) {
 			String encodedSettings = "";
 			final String rawPrefsValue = prefs.get(getClusterLabel(), null);
-			if (DefaultString.isNotEmptyOrNull(rawPrefsValue)) {
+			if (DefaultString.isNotEmptyNorNull(rawPrefsValue)) {
 				try {
 					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
 				} catch (UnableToDecryptInput ex) {
@@ -500,7 +506,7 @@ public class ClusterDetails implements Serializable {
 					encodedSettings = rawPrefsValue;
 				}
 			}
-			if (DefaultString.isNotEmptyOrNull(encodedSettings)) {
+			if (DefaultString.isNotEmptyNorNull(encodedSettings)) {
 				DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
 				return settings;
 			} else {
@@ -514,7 +520,7 @@ public class ClusterDetails implements Serializable {
 	public boolean clusterContainsDatabase(DBDatabase database) {
 		if (database != null) {
 			final DatabaseConnectionSettings newEncode = database.getSettings();
-			for (DBDatabase db : allDatabases) {
+			for (DBDatabase db : allDatabases.toArray()) {
 				if (db.getSettings().equals(newEncode)) {
 					return true;
 				}
@@ -539,10 +545,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public DBDatabase[] getQuarantinedDatabases() {
-		return quarantinedDatabases
-				.stream()
-				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll)
-				.toArray(new DBDatabase[]{});
+		return quarantinedDatabases.toArray();
 	}
 
 	public synchronized void removeAllDatabases() throws SQLException {
@@ -553,9 +556,26 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized void dismantle() throws SQLException {
-		removeAuthoritativeDatabase();
-		removeAllDatabases();
-		saveAddedDatabasesToPrefs();
+		try {
+			removeAllDatabases();
+		} catch (Exception ex) {
+			LOG.warning(ex.getLocalizedMessage());
+		}
+		try {
+			removeAuthoritativeDatabaseFromPrefs();
+		} catch (Exception ex) {
+			LOG.warning(ex.getLocalizedMessage());
+		}
+		try {
+			removeAddedDatabasesFromPrefs();
+		} catch (Exception ex) {
+			LOG.warning(ex.getLocalizedMessage());
+		}
+		try {
+			removedTrackedTablesFromPrefs();
+		} catch (Exception ex) {
+			LOG.warning(ex.getLocalizedMessage());
+		}
 	}
 
 	public boolean getAutoReconnect() {
@@ -601,11 +621,15 @@ public class ClusterDetails implements Serializable {
 		this.configuration = config;
 	}
 
+	private synchronized void removeAddedDatabasesFromPrefs() {
+		prefs.remove(getAddedDatabasesPrefsIdentifier());
+	}
+
 	private synchronized void saveAddedDatabasesToPrefs() {
 		if (configuration.isUseAutoConnect()) {
 			final String name = getAddedDatabasesPrefsIdentifier();
 			SeparatedString databaseConnections = getAddedDatabasesSeparatedStringTemplate();
-			for (DBDatabase db : allDatabases) {
+			for (DBDatabase db : allDatabases.toArray()) {
 				databaseConnections.add(db.getSettings().encode());
 			}
 			String encodedDBs = databaseConnections.encode();
@@ -630,7 +654,7 @@ public class ClusterDetails implements Serializable {
 		if (configuration.isUseAutoConnect()) {
 			String encodedSettings = "";
 			final String rawPrefsValue = prefs.get(getAddedDatabasesPrefsIdentifier(), null);
-			if (DefaultString.isNotEmptyOrNull(rawPrefsValue)) {
+			if (DefaultString.isNotEmptyNorNull(rawPrefsValue)) {
 				try {
 					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
 				} catch (UnableToDecryptInput ex) {
@@ -638,7 +662,7 @@ public class ClusterDetails implements Serializable {
 					encodedSettings = rawPrefsValue;
 				}
 			}
-			if (DefaultString.isNotEmptyOrNull(encodedSettings)) {
+			if (DefaultString.isNotEmptyNorNull(encodedSettings)) {
 				List<String> decodedSettings = getAddedDatabasesSeparatedStringTemplate().decode(encodedSettings);
 				for (String setting : decodedSettings) {
 					try {

@@ -128,7 +128,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				@Override
 				public boolean tableExists(DBRow table) throws SQLException {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(1000);
 					} catch (InterruptedException ex) {
 						Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 					}
@@ -921,7 +921,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			DBDatabaseCluster cluster
 					= new DBDatabaseCluster(
 							nameOfCluster,
-							DBDatabaseCluster.Configuration.fullyManual().withAutoConnect(),
+							DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart(),
 							database);
 			cluster.dismantle();
 		}
@@ -929,7 +929,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			DBDatabaseCluster cluster
 					= new DBDatabaseCluster(
 							nameOfCluster,
-							DBDatabaseCluster.Configuration.fullyManual().withAutoConnect(),
+							DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart(),
 							database);
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			soloDB2Settings = soloDB2.getSettings().toString();
@@ -937,52 +937,53 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			assertThat(cluster.size(), is(2));
 			cluster.stop();
 		}
-//		{
-//			DBDatabaseCluster cluster = new DBDatabaseCluster(
-//					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart()
-//			);
-//			assertThat(cluster.size(), is(2));
-//			final DBDatabase[] dbsInCluster = cluster.getDatabases();
-//			List<String> databases = new ArrayList<>();
-//			for (DBDatabase db : dbsInCluster) {
-//				final DatabaseConnectionSettings settings = db.getSettings();
-//				final String str = settings.toString();
-//				databases.add(str);
-//			}
-//			assertThat(databases, hasItem(soloDB2Settings));
-//			assertThat(databases, hasItem(database.getSettings().toString()));
-//
-//			cluster.addDatabase(H2MemoryDB.createANewRandomDatabase());
-//			cluster.stop();
-//		}
-//		{
-//			DBDatabaseCluster cluster = new DBDatabaseCluster(
-//					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect()
-//			);
-//			cluster.waitUntilSynchronised();
-//
-//			assertThat(cluster.size(), is(3));
-//			var databases = Arrays.asList(cluster.getDatabases()).stream().map(turnDatabasesToSettings).collect(Collectors.toList());
-//			assertThat(databases, hasItem(soloDB2Settings));
-//			assertThat(databases, hasItem(database.getSettings().toString()));
-//
-//			cluster.removeDatabase(database);
-//		}
-//		{
-//			DBDatabaseCluster cluster = new DBDatabaseCluster(
-//					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect()
-//			);
-//			cluster.waitUntilSynchronised();
-//
-//			try {
-//				assertThat(cluster.size(), is(2));
-//				var databases = Arrays.asList(cluster.getDatabases()).stream().map(turnDatabasesToSettings).collect(Collectors.toList());
-//				assertThat(databases, hasItem(soloDB2Settings));
-//				assertThat(databases, not(hasItem(database.getSettings().toString())));
-//			} finally {
-//				cluster.dismantle();
-//			}
-//		}
+		{
+			DBDatabaseCluster cluster = new DBDatabaseCluster(
+					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart()
+			);
+			assertThat(cluster.size(), is(2));
+			final DBDatabase[] dbsInCluster = cluster.getDatabases();
+			List<String> databases = new ArrayList<>();
+			for (DBDatabase db : dbsInCluster) {
+				final DatabaseConnectionSettings settings = db.getSettings();
+				final String str = settings.toString();
+				databases.add(str);
+			}
+			assertThat(databases, hasItem(soloDB2Settings));
+			assertThat(databases, hasItem(is(database.getSettings().toString())));
+
+			cluster.addDatabase(H2MemoryDB.createANewRandomDatabase());
+			cluster.stop();
+		}
+		{
+			DBDatabaseCluster cluster = new DBDatabaseCluster(
+					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart()
+			);
+			cluster.waitUntilSynchronised();
+
+			assertThat(cluster.size(), is(3));
+			var databases = Arrays.asList(cluster.getDatabases()).stream().map(turnDatabasesToSettings).collect(Collectors.toList());
+			assertThat(databases, hasItem(soloDB2Settings));
+			assertThat(databases, hasItem(database.getSettings().toString()));
+
+			cluster.removeDatabase(database);
+			assertThat(cluster.size(), is(2));
+		}
+		{
+			DBDatabaseCluster cluster = new DBDatabaseCluster(
+					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart()
+			);
+			cluster.waitUntilSynchronised();
+
+			try {
+				assertThat(cluster.size(), is(2));
+				var databases = Arrays.asList(cluster.getDatabases()).stream().map(turnDatabasesToSettings).collect(Collectors.toList());
+				assertThat(databases, hasItem(soloDB2Settings));
+				assertThat(databases, not(hasItem(database.getSettings().toString())));
+			} finally {
+				cluster.dismantle();
+			}
+		}
 	}
 
 	@Test
