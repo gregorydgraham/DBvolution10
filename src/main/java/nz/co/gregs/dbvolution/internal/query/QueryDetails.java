@@ -1370,10 +1370,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 		final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
 		statementDetails.setIgnoreExceptions(this.isQuietExceptions());
-		final ResultSet queryResults = statement.executeQuery(statementDetails);
-
-		if (cancelHandle != null) {
-			cancelHandle.cancel(true);
+		ResultSet queryResults;
+		try {
+			queryResults =  statement.executeQuery(statementDetails);
+		} finally {
+			if (cancelHandle != null) {
+				cancelHandle.cancel(true);
+			}
 		}
 		if (canceller != null && canceller.queryWasCancelled()) {
 			throw new SQLTimeoutException("Query Timed Out");
