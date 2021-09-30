@@ -30,6 +30,8 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.util.function.Supplier;
+
 /**
  *
  * @author gregorygraham
@@ -38,13 +40,23 @@ public class LoopVariable {
 
 	private boolean toggle = true;
 	private int tries = 0;
+	private int maxAttemptsAllowed = 1000;
+	private boolean limitMaxAttempts = true;
 
 	public boolean isNeeded() {
-		return toggle;
+		if (limitMaxAttempts) {
+			return toggle && attempts() < maxAttemptsAllowed;
+		} else {
+			return toggle;
+		}
 	}
 
 	public boolean isNotNeeded() {
-		return !toggle;
+		if (limitMaxAttempts) {
+			return !toggle || attempts() >= maxAttemptsAllowed;
+		} else {
+			return !toggle;
+		}
 	}
 
 	public boolean hasHappened() {
@@ -67,4 +79,129 @@ public class LoopVariable {
 		return tries;
 	}
 
+	public void setMaxAttemptsAllowed(int maxAttemptsAllowed) {
+		if (maxAttemptsAllowed > 0) {
+			limitMaxAttempts = true;
+			this.maxAttemptsAllowed = maxAttemptsAllowed;
+		}
+	}
+
+	public void setInfiniteLoopPermitted() {
+		limitMaxAttempts = false;
+	}
+
+	/**
+	 * Performs action until {@link #done() } has been called.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <p>
+	 * recommended use:</p>
+	 * <pre>
+	 *		// Create the variable for check for the end of the loop
+	 *		final int intendedAttempts = 10;
+	 *		// Create the LoopVariable
+	 *		LoopVariable looper = new LoopVariable();
+	 *		// Create the method to loop over
+	 *		final Supplier&lt;Void&gt; action = () -> {
+	 *			// do your processing
+	 *			// here
+	 *
+	 *			// check for terminating condition
+	 *			if (looper.attempts() >= intendedAttempts) {
+	 *				// call done() on the LoopVariable to stop the loop
+	 *				looper.done();
+	 *			}
+	 *			// return null as required by the Java spec
+	 *			return null;
+	 *		};
+	 *		// loop over the action
+	 *		looper.loop(action);
+	 * </pre>
+	 *
+	 * @param action
+	 */
+	public void loop(Supplier<Void> action) {
+		while (isNeeded()) {
+			attempt();
+			action.get();
+		}
+	}
+
+	/**
+	 * Performs action until {@link #done() } has been called, or {@link #attempt()
+	 * } has been called maxAttempts times.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <pre>
+	 *		// Create the LoopVariable
+	 *		LoopVariable looper = new LoopVariable();
+	 *
+	 *		// Call loop() with maximum number of attempts to try
+	 *		looper.loop(100, () -> {
+	 *
+	 *			// Perform your actions here
+	 *
+	 *			// check for the termination conditions
+	 *			if (looper.attempts() >= 10) {
+	 *				// call done() to terminate the loop
+	 *				looper.done();
+	 *			}
+	 *
+	 *			// return NULL because Java requires us to
+	 *			return null;
+	 *		});
+	 * </pre>
+	 *
+	 * @param maxAttempts
+	 * @param action
+	 */
+	public void loop(int maxAttempts, Supplier<Void> action) {
+		while (isNeeded() && attempts() < maxAttempts) {
+			attempt();
+			action.get();
+		}
+	}
+
+	/**
+	 * Performs action until test returns true.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <pre>
+	 *		LoopVariable looper = new LoopVariable();
+	 *		final int intendedAttempts = 10;
+	 *		looper.loop(
+	 *				() -> {
+	 *					// do your processing here
+	 *
+	 *					// return null as required by Java
+	 *					return null;
+	 *				},
+	 *				() -> {
+	 *					// Check for termination conditions here
+	 *					return looper.attempts() >= intendedAttempts;
+	 *				}
+	 *		);
+	 * </pre>
+	 *
+	 * @param action
+	 * @param test
+	 */
+	public void loop(Supplier<Void> action, Supplier<Boolean> test) {
+		while (isNeeded()) {
+			attempt();
+			action.get();
+			if (test.get()) {
+				done();
+			}
+		}
+	}
 }
