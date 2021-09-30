@@ -37,7 +37,6 @@ import java.util.GregorianCalendar;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jdt.core.dom.SimpleName;
 
 /**
  * Regular Processes provide a standard means of performing regular database
