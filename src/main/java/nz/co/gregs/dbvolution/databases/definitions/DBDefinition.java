@@ -71,7 +71,6 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
-import nz.co.gregs.regexi.RegexBuilder;
 import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
@@ -7030,7 +7029,7 @@ public abstract class DBDefinition implements Serializable {
 	private static final String INTERVAL_MULTIUNIT_MINUTES = "minutes";
 	private static final String INTERVAL_MULTIUNIT_SECONDS = "seconds";
 	private static final String INTERVAL_MULTIUNIT_NANOS = "nanos";
-	private static final Regex INTERVAL_MULTIUNIT_REGEX = RegexBuilder.startingAnywhere()
+	private static final Regex INTERVAL_MULTIUNIT_REGEX = Regex.startingAnywhere()
 			.beginCaseInsensitiveSection().literal("INTERVAL ").endCaseInsensitiveSection().onceOrNotAtAll()
 			.literal("'").onceOrNotAtAll()
 			.beginNamedCapture(INTERVAL_MULTIUNIT_DAYS).numberLike().onceOrNotAtAll().endNamedCapture()
@@ -7048,25 +7047,25 @@ public abstract class DBDefinition implements Serializable {
 	protected static final String INTERVAL_SINGLEUNIT_UNIT = "unit";
 	protected static final String INTERVAL_SINGLEUNIT_VALUE = "value";
 	final Regex daysRegex
-			= RegexBuilder.startingAnywhere()
+			= Regex.startingAnywhere()
 					.beginCaseInsensitiveSection()
 					.literal("day").once().literal('s').onceOrNotAtAll()
 					.endCaseInsensitiveSection();
 
 	final Regex hoursRegex
-			= RegexBuilder.startingAnywhere()
+			= Regex.startingAnywhere()
 					.beginCaseInsensitiveSection()
 					.literal("hour").once().literal('s').onceOrNotAtAll()
 					.endCaseInsensitiveSection();
 
 	final Regex minutesRegex
-			= RegexBuilder.startingAnywhere()
+			= Regex.startingAnywhere()
 					.beginCaseInsensitiveSection()
 					.literal("minute").once().literal('s').onceOrNotAtAll()
 					.endCaseInsensitiveSection();
 
 	Regex SINGLE_UNIT_INTERVAL_STRING_REGEX
-			= RegexBuilder.startingAnywhere()
+			= Regex.startingAnywhere()
 					.literalCaseInsensitive("interval").onceOrNotAtAll()
 					.space().onceOrNotAtAll()
 					.beginNamedCapture(INTERVAL_SINGLEUNIT_VALUE)
@@ -7083,7 +7082,7 @@ public abstract class DBDefinition implements Serializable {
 	// -2 days 00:00:00
 	// 1 days 00:00:5.5
 	// 0 days 00:00:-5.5
-	Regex DURATION_PATTERN_DAYHOURSMINUTESSECONDS = RegexBuilder.startingAnywhere()
+	Regex DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Regex.startingAnywhere()
 			.literal('-').onceOrNotAtAll()
 			.anyCharacterBetween('0', '9').atLeastOnce()
 			.beginRange('0', '9').includeMinus().negated().endRange().atLeastOnce()
@@ -7096,7 +7095,7 @@ public abstract class DBDefinition implements Serializable {
 			.literal('-').onceOrNotAtAll()
 			.anyCharacterBetween('0', '9').atLeastOnce()
 			.add(
-					RegexBuilder.startingAnywhere().dot().digits()
+					Regex.startingAnywhere().dot().digits()
 			).onceOrNotAtAll();
 
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
