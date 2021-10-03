@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuild
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
+import nz.co.gregs.regexi.Regex;
 import org.h2.jdbc.JdbcException;
 
 /**
@@ -222,10 +223,10 @@ public class H2DB extends DBDatabase {
 		return (H2DB) super.clone();
 	}
 
-	private final static Pattern BROKEN_CONNECTION_PATTERN = Pattern.compile("Connection is broken: \"session closed\"");
-	private final static Pattern ALREADY_CLOSED_PATTERN = Pattern.compile("The object is already closed");
-	private final static Pattern DROPPING_NONEXISTENT_TABLE_PATTERN = Pattern.compile("Table \"([^\"]*)\" not found; SQL statement:.*DROP TABLE \\1");
-	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("Table \"[^\"]*\" already exists; SQL statement:");
+	private final static Regex BROKEN_CONNECTION_PATTERN = Regex.startingAnywhere().literal("Connection is broken: \"session closed\"");
+	private final static Regex ALREADY_CLOSED_PATTERN = Regex.startingAnywhere().literal("The object is already closed");
+	private final static Regex DROPPING_NONEXISTENT_TABLE_PATTERN = Regex.startingAnywhere().literal("Table \"").beginNamedCapture("table").noneOfTheseCharacters("\"").oneOrMore().endNamedCapture().literal("\" not found; SQL statement:").anyCharacter().optionalMany().literal("DROP TABLE ").namedBackReference("table");
+	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.startingAnywhere().literal("Table \"").noneOfTheseCharacters("\"").oneOrMore().literal("\" already exists; SQL statement:");
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
@@ -233,12 +234,12 @@ public class H2DB extends DBDatabase {
 		if ((exp instanceof JdbcException)) {
 			String message = exp.getMessage();
 			if (message != null) {
-				if (BROKEN_CONNECTION_PATTERN.matcher(message).lookingAt()
-						|| ALREADY_CLOSED_PATTERN.matcher(message).lookingAt()) {
+				if (BROKEN_CONNECTION_PATTERN.matchesWithinString(message)
+						|| ALREADY_CLOSED_PATTERN.matchesWithinString(message)) {
 					return ResponseToException.REPLACECONNECTION;
-				} else if (DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt()) {
+				} else if (DROPPING_NONEXISTENT_TABLE_PATTERN.matchesWithinString(message)) {
 					return ResponseToException.SKIPQUERY;
-				} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
+				} else if (CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
 					return ResponseToException.SKIPQUERY;
 				} else {
 					try (DBStatement statement = getConnection().createDBStatement()) {
