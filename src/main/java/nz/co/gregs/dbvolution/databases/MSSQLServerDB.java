@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.regex.Pattern;
+import nz.co.gregs.regexi.Regex;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
@@ -320,11 +320,14 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	//Invalid object name 'TableThatDoesntExistOnTheCluster'.
-	private final static Pattern NONEXISTANT_TABLE_PATTERN = Pattern.compile("Invalid object name '[^\"]*\'.");
+//	private final static Pattern NONEXISTANT_TABLE_PATTERN = Pattern.compile("Invalid object name '[^\"]*\'.");
+	private final static Regex NONEXISTANT_TABLE_PATTERN = Regex.startingAnywhere().literal("Invalid object name '").noneOfTheseCharacters("'").optionalMany().literal("'.");
 	//There is already an object named 'TableThatDoesExistOnTheCluster' in the database.
-	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("There is already an object named '[^\"]*\' in the database.");
+//	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("There is already an object named '[^\"]*\' in the database.");
+	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.startingAnywhere().literal("There is already an object named '").noneOfTheseCharacters("'").optionalMany().literal("' in the database.");
 	//Cannot find the object "TableThatDoesntExistOnTheCluster" because it does not exist or you do not have permissions.
-	private final static Pattern UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Pattern.compile("Cannot find the object \"[^\"]*\" because it does not exist or you do not have permissions.");
+//	private final static Pattern UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Pattern.compile("Cannot find the object \"[^\"]*\" because it does not exist or you do not have permissions.");
+	private final static Regex UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Regex.startingAnywhere().literal("Cannot find the object \"").noneOfTheseCharacters("\"").optionalMany().literal("\" because it does not exist or you do not have permissions.");
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
@@ -333,13 +336,13 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			String table = message.split("'")[1];
 			DBStatement stmt = getConnection().createDBStatement();
 			final String sql = "SET IDENTITY_INSERT " + table + " ON;";
-			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT,sql));
+			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql));
 			return ResponseToException.REQUERY;
-		} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
+		} else if (CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
-		} else if (NONEXISTANT_TABLE_PATTERN.matcher(message).lookingAt()) {
+		} else if (NONEXISTANT_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
-		} else if (UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN.matcher(message).lookingAt()) {
+		} else if (UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp, intent);
