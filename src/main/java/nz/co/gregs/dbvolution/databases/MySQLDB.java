@@ -21,7 +21,7 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
+import nz.co.gregs.regexi.Regex;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
@@ -144,14 +144,14 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 		return 3306;
 	}
 
-	private final static Pattern FUNCTION_DOES_NOT_EXISTS = Pattern.compile("FUNCTION [^ ]* does not exist");
-	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("Table '[^']*' already exists");
+	private final static Regex FUNCTION_DOES_NOT_EXISTS = Regex.startingAnywhere().literal("FUNCTION ").noneOfThisCharacter(' ').atLeastOnce().literal(" does not exist");
+	private final static Regex TABLE_ALREADY_EXISTS = Regex.startingAnywhere().literal("Table ").charactersWrappedBy('\'').literal(" already exists");
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
-		if (TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()) {
+		if (TABLE_ALREADY_EXISTS.matchesEntireString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
-		} else if (intent.is(QueryIntention.DROP_FUNCTION) && FUNCTION_DOES_NOT_EXISTS.matcher(exp.getMessage()).matches()) {
+		} else if (intent.is(QueryIntention.DROP_FUNCTION) && FUNCTION_DOES_NOT_EXISTS.matchesEntireString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp, intent);
