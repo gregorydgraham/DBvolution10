@@ -39,10 +39,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsB
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractVendorSettingsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MSSQLServerContainer;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.containers.*;
 import org.testcontainers.containers.output.OutputFrame;
 
 /**
@@ -60,12 +57,30 @@ public class ContainerUtils {
 		container.withConnectTimeoutSeconds(300);
 	}
 
-	protected static void startContainer(JdbcDatabaseContainer<?> container) throws org.testcontainers.containers.ContainerLaunchException {
+	/**
+	 * Simplified method to start the container.
+	 *
+	 * <p>
+	 * This fairly simple but the MySQL version is a bit more complicated.</p>
+	 *
+	 * @param container the container to start
+	 * @throws org.testcontainers.containers.ContainerLaunchException  an exception thrown by TestContainers when the launch fails
+	 */
+	protected static void startContainer(JdbcDatabaseContainer<?> container) throws ContainerLaunchException {
 		setStandardContainerSettings(container);
 		container.start();
 	}
 
-	protected static void startContainer(MySQLContainer<?> container) {
+	/**
+	 * Simplified method to start the container.
+	 *
+	 * <p>
+	 * This fairly simple but the MySQL version is a bit more complicated.</p>
+	 *
+	 * @param container the container to start
+	 * @throws org.testcontainers.containers.ContainerLaunchException an exception thrown by TestContainers when the launch fails
+	 */
+	protected static void startContainer(MySQLContainer<?> container) throws ContainerLaunchException{
 		setStandardContainerSettings(container);
 		container.withDatabaseName("some_database");
 		container.withLogConsumer(new ConsumerImpl());
@@ -76,6 +91,17 @@ public class ContainerUtils {
 		container.start();
 	}
 
+	/**
+	 * Adds the standard settings thar used for all databases.
+	 *
+	 * @param <BUILDER> the type of builder to be used
+	 * @param <CONTAINER> the type of container to be configured
+	 * @param builder the builder to be used
+	 * @param container the container to be configured
+	 * @param label the label used to identify this container within the
+	 * application
+	 * @return a properly configured builder
+	 */
 	private static <CONTAINER extends JdbcDatabaseContainer<?>, BUILDER extends AbstractVendorSettingsBuilder<?, ?>> BUILDER getStandardSettings(BUILDER builder, CONTAINER container, String label) {
 		builder
 				.fromJDBCURL(
@@ -89,17 +115,28 @@ public class ContainerUtils {
 
 	/**
 	 *
-	 * @param <BUILDER>
-	 * @param <CONTAINER>
-	 * @param builder
-	 * @param container
-	 * @param label
-	 * @return
+	 * @param <BUILDER> the type of builder to be used
+	 * @param <CONTAINER> the type of container to be configured
+	 * @param builder the builder to be used
+	 * @param container the container to be configured
+	 * @param label the label used to identify this container within the
+	 * application
+	 * @return a properly configured builder
 	 */
 	protected static <BUILDER extends AbstractVendorSettingsBuilder<?, ?>, CONTAINER extends JdbcDatabaseContainer<?>> BUILDER getContainerSettings(BUILDER builder, CONTAINER container, String label) {
 		return getStandardSettings(builder, container, label);
 	}
 
+	/**
+	 *
+	 * @param <BUILDER> the type of builder to be used
+	 * @param <CONTAINER> the type of container to be configured
+	 * @param builder the builder to be used
+	 * @param container the container to be configured
+	 * @param label the label used to identify this container within the
+	 * application
+	 * @return a properly configured builder
+	 */
 	protected static <BUILDER extends AbstractOracleSettingsBuilder<?, ?>, CONTAINER extends OracleContainer> BUILDER getContainerSettings(BUILDER builder, CONTAINER container, String label) {
 		getStandardSettings(builder, container, label)
 				.setHost(container.getContainerIpAddress())
@@ -110,12 +147,13 @@ public class ContainerUtils {
 
 	/**
 	 *
-	 * @param <BUILDER>
-	 * @param <CONTAINER>
-	 * @param builder
-	 * @param container
-	 * @param label
-	 * @return
+	 * @param <BUILDER> the type of builder to be used
+	 * @param <CONTAINER> the type of container to be configured
+	 * @param builder the builder to be used
+	 * @param container the container to be configured
+	 * @param label the label used to identify this container within the
+	 * application
+	 * @return a properly configured builder
 	 */
 	protected static <BUILDER extends AbstractMySQLSettingsBuilder<?, ?>, CONTAINER extends MySQLContainer<?>> BUILDER getContainerSettings(BUILDER builder, CONTAINER container, String label) {
 		getStandardSettings(builder, container, label)
@@ -130,6 +168,16 @@ public class ContainerUtils {
 		return builder;
 	}
 
+	/**
+	 *
+	 * @param <BUILDER> the type of builder to be used
+	 * @param <CONTAINER> the type of container to be configured
+	 * @param builder the builder to be used
+	 * @param container the container to be configured
+	 * @param label the label used to identify this container within the
+	 * application
+	 * @return a properly configured builder
+	 */
 	protected static <BUILDER extends AbstractMSSQLServerSettingsBuilder<?, ?>, CONTAINER extends MSSQLServerContainer<?>> BUILDER getContainerSettings(BUILDER builder, CONTAINER container, String label) {
 		getStandardSettings(builder, container, label)
 				.setHost(container.getContainerIpAddress())
