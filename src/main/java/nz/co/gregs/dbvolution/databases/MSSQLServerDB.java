@@ -321,13 +321,13 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	//Invalid object name 'TableThatDoesntExistOnTheCluster'.
 //	private final static Pattern NONEXISTANT_TABLE_PATTERN = Pattern.compile("Invalid object name '[^\"]*\'.");
-	private final static Regex NONEXISTANT_TABLE_PATTERN = Regex.startingAnywhere().literal("Invalid object name '").noneOfTheseCharacters("'").optionalMany().literal("'.");
+	private final static Regex NONEXISTANT_TABLE_PATTERN = Regex.startingAnywhere().literal("Invalid object name '").noneOfTheseCharacters("'").optionalMany().literal("'.").toRegex();
 	//There is already an object named 'TableThatDoesExistOnTheCluster' in the database.
 //	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("There is already an object named '[^\"]*\' in the database.");
-	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.startingAnywhere().literal("There is already an object named '").noneOfTheseCharacters("'").optionalMany().literal("' in the database.");
+	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.startingAnywhere().literal("There is already an object named '").noneOfTheseCharacters("'").optionalMany().literal("' in the database.").toRegex();
 	//Cannot find the object "TableThatDoesntExistOnTheCluster" because it does not exist or you do not have permissions.
 //	private final static Pattern UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Pattern.compile("Cannot find the object \"[^\"]*\" because it does not exist or you do not have permissions.");
-	private final static Regex UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Regex.startingAnywhere().literal("Cannot find the object \"").noneOfTheseCharacters("\"").optionalMany().literal("\" because it does not exist or you do not have permissions.");
+	private final static Regex UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Regex.startingAnywhere().literal("Cannot find the object \"").noneOfTheseCharacters("\"").optionalMany().literal("\" because it does not exist or you do not have permissions.").toRegex();
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {

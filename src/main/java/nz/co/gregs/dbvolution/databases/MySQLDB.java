@@ -144,8 +144,8 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 		return 3306;
 	}
 
-	private final static Regex FUNCTION_DOES_NOT_EXISTS = Regex.startingAnywhere().literal("FUNCTION ").noneOfThisCharacter(' ').atLeastOnce().literal(" does not exist");
-	private final static Regex TABLE_ALREADY_EXISTS = Regex.startingAnywhere().literal("Table ").charactersWrappedBy('\'').literal(" already exists");
+	private final static Regex FUNCTION_DOES_NOT_EXISTS = Regex.startingAnywhere().literal("FUNCTION ").noneOfThisCharacter(' ').atLeastOnce().literal(" does not exist").toRegex();
+	private final static Regex TABLE_ALREADY_EXISTS = Regex.startingAnywhere().literal("Table ").charactersWrappedBy('\'').literal(" already exists").toRegex();
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {

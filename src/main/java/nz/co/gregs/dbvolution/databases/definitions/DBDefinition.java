@@ -7042,7 +7042,7 @@ public abstract class DBDefinition implements Serializable {
 			.literal(":")
 			.beginNamedCapture(INTERVAL_MULTIUNIT_SECONDS).numberLikeIncludingScientificNotation().once().endNamedCapture()
 			.beginNamedCapture(INTERVAL_MULTIUNIT_NANOS).number().onceOrNotAtAll().endNamedCapture()
-			.literal("'").onceOrNotAtAll();
+			.literal("'").onceOrNotAtAll().toRegex();
 
 	protected static final String INTERVAL_SINGLEUNIT_UNIT = "unit";
 	protected static final String INTERVAL_SINGLEUNIT_VALUE = "value";
@@ -7050,19 +7050,19 @@ public abstract class DBDefinition implements Serializable {
 			= Regex.startingAnywhere()
 					.beginCaseInsensitiveSection()
 					.literal("day").once().literal('s').onceOrNotAtAll()
-					.endCaseInsensitiveSection();
+					.endCaseInsensitiveSection().toRegex();
 
 	final Regex hoursRegex
 			= Regex.startingAnywhere()
 					.beginCaseInsensitiveSection()
 					.literal("hour").once().literal('s').onceOrNotAtAll()
-					.endCaseInsensitiveSection();
+					.endCaseInsensitiveSection().toRegex();
 
 	final Regex minutesRegex
 			= Regex.startingAnywhere()
 					.beginCaseInsensitiveSection()
 					.literal("minute").once().literal('s').onceOrNotAtAll()
-					.endCaseInsensitiveSection();
+					.endCaseInsensitiveSection().toRegex();
 
 	Regex SINGLE_UNIT_INTERVAL_STRING_REGEX
 			= Regex.startingAnywhere()
@@ -7077,7 +7077,7 @@ public abstract class DBDefinition implements Serializable {
 					.anyOf("DAY", "HOUR", "MINUTE", "SECOND").once().literal("S").onceOrNotAtAll()
 					.endCaseInsensitiveSection()
 					.endNamedCapture()
-					.endOfTheString();
+					.endOfTheString().toRegex();
 
 	// -2 days 00:00:00
 	// 1 days 00:00:5.5
@@ -7085,7 +7085,7 @@ public abstract class DBDefinition implements Serializable {
 	Regex DURATION_PATTERN_DAYHOURSMINUTESSECONDS = Regex.startingAnywhere()
 			.literal('-').onceOrNotAtAll()
 			.anyCharacterBetween('0', '9').atLeastOnce()
-			.beginRange('0', '9').includeMinus().negated().endRange().atLeastOnce()
+			.beginRange().addRange('0', '9').includeMinus().negated().endRange().atLeastOnce()
 			.literal('-').onceOrNotAtAll()
 			.anyCharacterBetween('0', '9').atLeastOnce()
 			.literal(':').once()
@@ -7094,9 +7094,9 @@ public abstract class DBDefinition implements Serializable {
 			.literal(':').once()
 			.literal('-').onceOrNotAtAll()
 			.anyCharacterBetween('0', '9').atLeastOnce()
-			.add(
-					Regex.startingAnywhere().dot().digits()
-			).onceOrNotAtAll();
+			.addGroup(
+					Regex.startingAnywhere().literal(".").digits()
+			).onceOrNotAtAll().toRegex();
 
 	public String doDurationLessThanTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet.");
