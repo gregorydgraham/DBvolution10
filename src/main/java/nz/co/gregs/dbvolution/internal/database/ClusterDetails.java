@@ -63,12 +63,12 @@ public class ClusterDetails implements Serializable {
 
 	private static final Logger LOG = Logger.getLogger(ClusterDetails.class.getName());
 
-	private final DatabaseList allDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final DatabaseList unsynchronizedDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final DatabaseList synchronizingDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final DatabaseList readyDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final DatabaseList pausedDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final DatabaseList quarantinedDatabases = new DatabaseList();//Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final DatabaseList allDatabases = new DatabaseList();
+	private final DatabaseList unsynchronizedDatabases = new DatabaseList();
+	private final DatabaseList synchronizingDatabases = new DatabaseList();
+	private final DatabaseList readyDatabases = new DatabaseList();
+	private final DatabaseList pausedDatabases = new DatabaseList();
+	private final DatabaseList quarantinedDatabases = new DatabaseList();
 
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
 	private final Set<DBRow> trackedTables = Collections.synchronizedSet(new HashSet<DBRow>());
@@ -630,7 +630,8 @@ public class ClusterDetails implements Serializable {
 			final String name = getAddedDatabasesPrefsIdentifier();
 			SeparatedString databaseConnections = getAddedDatabasesSeparatedStringTemplate();
 			for (DBDatabase db : allDatabases.toArray()) {
-				databaseConnections.add(db.getSettings().encode());
+				final String encode = db.getSettings().encode();
+				databaseConnections.add(encode);
 			}
 			String encodedDBs = databaseConnections.encode();
 			try {
