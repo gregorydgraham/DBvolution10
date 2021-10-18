@@ -136,6 +136,21 @@ public class H2MemoryDB extends H2DB {
 	}
 
 	/**
+	 * Creates a new database with designated label
+	 *
+	 * <p>
+	 * Great for we you just need to make a database and don't need to keep
+	 * it.</p>
+	 *
+	 * @param label the database label to be used internally to identify the
+	 * database (not related to the database name)
+	 * @return @throws SQLException
+	 */
+	public static H2MemoryDB createDatabase(String label) throws SQLException {
+		return new H2MemoryDB(new H2MemorySettingsBuilder().setLabel(label));
+	}
+
+	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
 	 * <p>
@@ -147,7 +162,7 @@ public class H2MemoryDB extends H2DB {
 	public H2MemoryDB(DatabaseConnectionSettings dcs) throws SQLException {
 		this(new H2MemorySettingsBuilder().fromSettings(dcs));
 	}
-	
+
 	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {
 		return (H2MemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
