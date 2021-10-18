@@ -1611,12 +1611,6 @@
 			<version>1.15.1</version>
 			<scope>test</scope>
 		</dependency>
-<!--		<dependency>
-			<groupId>com.oracle.jdbc</groupId>
-			<artifactId>ojdbc8</artifactId>
-			<version>19.3.0.0</version>
-			<scope>test</scope>
-		</dependency>-->
 		<dependency>
 			<groupId>com.oracle.jdbc</groupId>
 			<artifactId>xdb6</artifactId>
@@ -1626,13 +1620,13 @@
 		<dependency>
 			<groupId>nz.co.gregs</groupId>
 			<artifactId>regexi</artifactId>
-			<version>2.2</version>
+			<version>2.4</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>nz.co.gregs</groupId>
 			<artifactId>separatedstring</artifactId>
-			<version>1.5</version>
+			<version>1.6</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
