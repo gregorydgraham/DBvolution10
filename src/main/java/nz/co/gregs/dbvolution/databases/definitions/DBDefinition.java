@@ -69,7 +69,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.regexi.internal.Match;
+import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
