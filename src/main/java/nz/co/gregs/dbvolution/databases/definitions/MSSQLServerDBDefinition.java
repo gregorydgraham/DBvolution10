@@ -510,8 +510,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doSecondAndSubsecondTransform(String dateExpression) {
+		return "(" + doSubsecondTransform(dateExpression) + " + " + doSecondTransform(dateExpression) + ")";
+	}
+
+	@Override
 	public String doSubsecondTransform(String dateExpression) {
-		return "(DATEPART(MILLISECOND , " + dateExpression + ")/1000.0000)";
+		return "(DATEPART(MICROSECOND , " + dateExpression + ")/1000000.0000)";
 	}
 
 	@Override
@@ -1444,5 +1449,5 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
 	}
-
+	
 }
