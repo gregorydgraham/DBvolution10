@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
@@ -42,7 +43,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * @author gregorygraham
  */
 public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster>
-		implements NamedDatabaseCapableSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster> {
+		implements ClusterCapableSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster> 
+{
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 	private boolean useAutoRebuild = false;
@@ -111,6 +113,14 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 		return new DBDatabaseCluster(this);
 	}
 
+	public DBDatabaseClusterSettingsBuilder setConfiguration(DBDatabaseCluster.Configuration  config) {
+		this.useAutoRebuild = config.isUseAutoRebuild();
+		this.useAutoConnect = config.isUseAutoConnect();
+		this.useAutoReconnect = config.isUseAutoReconnect();
+		this.useAutoStart = config.isUseAutoStart();
+		return this;
+	}
+
 	public DBDatabaseClusterSettingsBuilder setAutoRebuild(boolean useAutoRebuild) {
 		this.useAutoRebuild = useAutoRebuild;
 		return this;
@@ -157,5 +167,16 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 	public DBDatabaseClusterSettingsBuilder setDefinition(DBDefinition defn) {
 		this.defn = defn;
 		return this;
+	}
+
+	@Override
+	public DBDatabaseClusterSettingsBuilder setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		getStoredSettings().setClusterHosts(hosts);
+		return this;
+	}
+
+	@Override
+	public List<DatabaseConnectionSettings> getClusterHosts() {
+		return getStoredSettings().getClusterHosts();
 	}
 }
