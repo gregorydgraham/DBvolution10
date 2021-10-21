@@ -56,6 +56,8 @@ import nz.co.gregs.dbvolution.results.SimpleNumericResult;
 public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResult, DBInteger> implements IntegerResult {
 
 	private final static long serialVersionUID = 1l;
+	public static final IntegerExpression ZERO = IntegerExpression.value(0);
+	public static final IntegerExpression ONE = IntegerExpression.value(1);
 
 	public static IntegerExpression ifThenElse(BooleanExpression test, IntegerExpression trueResult, IntegerExpression falseResult) {
 		return test.ifThenElse(trueResult, falseResult);
