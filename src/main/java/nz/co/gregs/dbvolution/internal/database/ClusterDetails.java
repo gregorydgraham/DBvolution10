@@ -84,9 +84,10 @@ public class ClusterDetails implements Serializable {
 	private final Lock synchronisingLock = new ReentrantLock();
 	private final Condition allDatabasesAreSynchronised = synchronisingLock.newCondition();
 	private final Condition someDatabasesNeedSynchronizing = synchronisingLock.newCondition();
+	private DatabaseConnectionSettings clusterSettings;
 
-	public ClusterDetails(String clusterName) {
-		this.clusterLabel = clusterName;
+	public ClusterDetails(String label) {
+		this.clusterLabel = label;
 	}
 
 	public final synchronized boolean add(DBDatabase databaseToAdd) throws SQLException {
@@ -117,7 +118,7 @@ public class ClusterDetails implements Serializable {
 				addDatabaseAsUnsynchronized(database);
 				boolean added = allDatabases.add(database);
 				if (added) {
-					saveAddedDatabasesToPrefs();
+					saveClusterSettingsToPrefs();
 				}
 				return added;
 			}
@@ -209,7 +210,7 @@ public class ClusterDetails implements Serializable {
 			final boolean result = removeDatabaseFromAllLists(database);
 			if (result) {
 				setAuthoritativeDatabase();
-				saveAddedDatabasesToPrefs();
+				saveClusterSettingsToPrefs();
 				checkSupportForDifferenceBetweenNullAndEmptyString();
 			}
 			return result;
@@ -622,39 +623,31 @@ public class ClusterDetails implements Serializable {
 	}
 
 	private synchronized void removeAddedDatabasesFromPrefs() {
-		prefs.remove(getAddedDatabasesPrefsIdentifier());
+		prefs.remove(getPrefsClusterSettingsKey());
 	}
 
-	private synchronized void saveAddedDatabasesToPrefs() {
+	private synchronized void saveClusterSettingsToPrefs() {
 		if (configuration.isUseAutoConnect()) {
-			final String name = getAddedDatabasesPrefsIdentifier();
-			SeparatedString databaseConnections = getAddedDatabasesSeparatedStringTemplate();
-			for (DBDatabase db : allDatabases.toArray()) {
-				final String encode = db.getSettings().encode();
-				databaseConnections.add(encode);
-			}
-			String encodedDBs = databaseConnections.encode();
+			final String name = getPrefsClusterSettingsKey();
 			try {
-				prefs.put(name, Encryption_Internal.encrypt(encodedDBs));
+				final String encode = clusterSettings.encode();
+				final String encrypt = Encryption_Internal.encrypt(encode);
+				prefs.put(name, encrypt);
 			} catch (CannotEncryptInputException ex) {
 				LOG.log(Level.SEVERE, null, ex);
 			}
 		}
 	}
 
-	private String getAddedDatabasesPrefsIdentifier() {
-		return getClusterLabel() + "_addeddatabases";
+	private String getPrefsClusterSettingsKey() {
+		return getClusterLabel() + "_settings";
 	}
 
-	private SeparatedString getAddedDatabasesSeparatedStringTemplate() {
-		return SeparatedStringBuilder.commaSeparated();
-	}
-
-	public synchronized List<DBDatabase> getAddedDatabasesFromPrefs() {
+	public synchronized List<DBDatabase> getClusterHostsFromPrefs() {
 		List<DBDatabase> databases = new ArrayList<>();
 		if (configuration.isUseAutoConnect()) {
 			String encodedSettings = "";
-			final String rawPrefsValue = prefs.get(getAddedDatabasesPrefsIdentifier(), null);
+			final String rawPrefsValue = prefs.get(getPrefsClusterSettingsKey(), null);
 			if (StringCheck.isNotEmptyNorNull(rawPrefsValue)) {
 				try {
 					encodedSettings = Encryption_Internal.decrypt(rawPrefsValue);
@@ -664,13 +657,19 @@ public class ClusterDetails implements Serializable {
 				}
 			}
 			if (StringCheck.isNotEmptyNorNull(encodedSettings)) {
-				List<String> decodedSettings = getAddedDatabasesSeparatedStringTemplate().decode(encodedSettings);
-				for (String setting : decodedSettings) {
-					try {
-						databases.add(DatabaseConnectionSettings.decode(setting).createDBDatabase());
-					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-						Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+				try {
+					final DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
+					List<DatabaseConnectionSettings> decodedSettings = settings.getClusterHosts();
+					for (DatabaseConnectionSettings host : decodedSettings) {
+						try {
+							final DBDatabase db = host.createDBDatabase();
+							databases.add(db);
+						} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+							Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+						}
 					}
+				} catch (Exception exc) {
+					exc.printStackTrace();
 				}
 			}
 		}
@@ -747,13 +746,14 @@ public class ClusterDetails implements Serializable {
 								LOG.log(Level.FINEST, "{0} CREATED ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
 								// Check that the table has data
 								final DBTable<DBRow> primaryTable = template.getDBTable(table);
-								final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
 								final Long primaryTableCount = primaryTable.count();
 								if (primaryTableCount > 0) {
 									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 									// Check that the new database has data
 									LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
 									List<DBRow> allRows = primaryData.getAllRows();
+									LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2} with {3} rows", new Object[]{clusterLabel, secondaryLabel, table.getTableName(), allRows.size()});
+									final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
 									secondaryTable.insert(allRows);
 									LOG.log(Level.FINEST, "{0} FILLED TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
 								}
@@ -762,6 +762,7 @@ public class ClusterDetails implements Serializable {
 						}
 					}
 				} catch (Throwable e) {
+					LOG.severe(e.getLocalizedMessage());
 					throw e;
 				} finally {
 					releaseTemplateDatabase(template);
@@ -784,7 +785,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	private synchronized void synchronizeActions(DBDatabase db) throws SQLException, NoAvailableDatabaseException, NoAvailableDatabaseException {
+	private synchronized void synchronizeActions(DBDatabase db) throws SQLException, NoAvailableDatabaseException {
 		if (db != null) {
 			Queue<DBAction> queue = getActionQueue(db);
 			while (queue != null && !queue.isEmpty()) {
@@ -813,5 +814,9 @@ public class ClusterDetails implements Serializable {
 				synchronisingLock.unlock();
 			}
 		}
+	}
+
+	public void setClusterSettings(DatabaseConnectionSettings settings) {
+		this.clusterSettings = settings;
 	}
 }
