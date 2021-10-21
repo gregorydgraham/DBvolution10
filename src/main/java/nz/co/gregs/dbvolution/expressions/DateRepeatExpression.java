@@ -921,10 +921,22 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 				return db.doDateRepeatLessThanTransform(firstSQL, secondSQL);
 			} catch (UnsupportedOperationException exp) {
 				return CaseExpression
-						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
-						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
-						.when(firstExpr.stringResult().isLessThan(secondExpr.stringResult()), trueExpression())
-						.defaultValue(falseExpression())
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullInteger())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullInteger())
+						.when(firstExpr.getYears().isLessThan(secondExpr.getYears()), ONE)
+						.when(firstExpr.getYears().isGreaterThan(secondExpr.getYears()), ZERO)
+						.when(firstExpr.getMonths().isLessThan(secondExpr.getMonths()), ONE)
+						.when(firstExpr.getMonths().isGreaterThan(secondExpr.getMonths()), ZERO)
+						.when(firstExpr.getDays().isLessThan(secondExpr.getDays()), ONE)
+						.when(firstExpr.getDays().isGreaterThan(secondExpr.getDays()), ZERO)
+						.when(firstExpr.getHours().isLessThan(secondExpr.getHours()), ONE)
+						.when(firstExpr.getHours().isGreaterThan(secondExpr.getHours()), ZERO)
+						.when(firstExpr.getMinutes().isLessThan(secondExpr.getMinutes()), ONE)
+						.when(firstExpr.getMinutes().isGreaterThan(secondExpr.getMinutes()), ZERO)
+						.when(firstExpr.getSeconds().isLessThan(secondExpr.getSeconds()), ONE)
+						.when(firstExpr.getSeconds().isGreaterThan(secondExpr.getSeconds()), ZERO)
+						.defaultValue(ZERO)
+						.is(ONE)
 						.toSQLString(db);
 			}
 		}
@@ -953,11 +965,24 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 				final DateRepeatExpression firstExpr = this.getFirst();
 				final DateRepeatExpression secondExpr = this.getSecond();
 				return CaseExpression
-						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
-						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
-						.when(firstExpr.stringResult().isGreaterThan(secondExpr.stringResult()), trueExpression())
-						.defaultValue(falseExpression())
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullInteger())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullInteger())
+						.when(firstExpr.getYears().isLessThan(secondExpr.getYears()), ZERO)
+						.when(firstExpr.getYears().isGreaterThan(secondExpr.getYears()), ONE)
+						.when(firstExpr.getMonths().isLessThan(secondExpr.getMonths()), ZERO)
+						.when(firstExpr.getMonths().isGreaterThan(secondExpr.getMonths()), ONE)
+						.when(firstExpr.getDays().isLessThan(secondExpr.getDays()), ZERO)
+						.when(firstExpr.getDays().isGreaterThan(secondExpr.getDays()), ONE)
+						.when(firstExpr.getHours().isLessThan(secondExpr.getHours()), ZERO)
+						.when(firstExpr.getHours().isGreaterThan(secondExpr.getHours()), ONE)
+						.when(firstExpr.getMinutes().isLessThan(secondExpr.getMinutes()), ZERO)
+						.when(firstExpr.getMinutes().isGreaterThan(secondExpr.getMinutes()), ONE)
+						.when(firstExpr.getSeconds().isLessThan(secondExpr.getSeconds()), ZERO)
+						.when(firstExpr.getSeconds().isGreaterThan(secondExpr.getSeconds()), ONE)
+						.defaultValue(ZERO)
+						.is(ONE)
 						.toSQLString(db);
+
 			}
 		}
 
@@ -984,12 +1009,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 			} catch (UnsupportedOperationException exp) {
 				final DateRepeatExpression firstExpr = this.getFirst();
 				final DateRepeatExpression secondExpr = this.getSecond();
-				return CaseExpression
-						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
-						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
-						.when(firstExpr.stringResult().isLessThanOrEqual(secondExpr.stringResult()), trueExpression())
-						.defaultValue(falseExpression())
-						.toSQLString(db);
+				return firstExpr.isGreaterThan(secondExpr).not().toSQLString(db);
 			}
 		}
 
@@ -1016,12 +1036,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 			} catch (UnsupportedOperationException exp) {
 				final DateRepeatExpression firstExpr = this.getFirst();
 				final DateRepeatExpression secondExpr = this.getSecond();
-				return CaseExpression
-						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
-						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
-						.when(firstExpr.stringResult().isGreaterThanOrEqual(secondExpr.stringResult()), trueExpression())
-						.defaultValue(falseExpression())
-						.toSQLString(db);
+				return firstExpr.isLessThan(secondExpr).not().toSQLString(db);
 			}
 		}
 
@@ -1049,10 +1064,17 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 				final DateRepeatExpression firstExpr = this.getFirst();
 				final DateRepeatExpression secondExpr = this.getSecond();
 				return CaseExpression
-						.when(firstExpr.isNull().or(secondExpr.isNull()), nullBoolean())
-						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullBoolean())
-						.when(firstExpr.stringResult().is(secondExpr.stringResult()), trueExpression())
-						.defaultValue(falseExpression())
+						.when(firstExpr.isNull().or(secondExpr.isNull()), nullInteger())
+						.when(firstExpr.stringResult().isEmpty().or(secondExpr.stringResult().isEmpty()), nullInteger())
+						.when(firstExpr.getYears().is(secondExpr.getYears())
+								.and(firstExpr.getMonths().is(secondExpr.getMonths()))
+								.and(firstExpr.getDays().is(secondExpr.getDays()))
+								.and(firstExpr.getHours().is(secondExpr.getHours()))
+								.and(firstExpr.getMinutes().is(secondExpr.getMinutes()))
+								.and(firstExpr.getSeconds().is(secondExpr.getSeconds()))
+								, ONE)
+						.defaultValue(ZERO)
+						.is(ONE)
 						.toSQLString(db);
 			}
 		}
