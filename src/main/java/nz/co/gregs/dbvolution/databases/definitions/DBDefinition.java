@@ -4434,7 +4434,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doFormatAsDateRepeatSeconds(String numericSQL) {
-		return numericSQL;
+		return doNumberToStringTransform(numericSQL);
 	}
 
 	/**
