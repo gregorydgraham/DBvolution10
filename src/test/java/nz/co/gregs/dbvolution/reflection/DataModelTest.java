@@ -71,7 +71,7 @@ public class DataModelTest extends AbstractTest {
 		List<String> knownStrings = new ArrayList<>();
 		knownStrings.add("class nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$1");
-		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$2");
+		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$SlowSynchingDatabase");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("KNOWN BUT NOT FOUND: " + knownString);
@@ -100,7 +100,7 @@ public class DataModelTest extends AbstractTest {
 		List<String> knownStrings = new ArrayList<>();
 		knownStrings.add("public nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass() throws java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
-		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$2(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.DBDatabaseClusterTest$SlowSynchingDatabase(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
