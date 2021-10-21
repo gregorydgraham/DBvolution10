@@ -120,7 +120,7 @@ public class DatabaseConnectionSettings {
 	private String password = "";
 	private String schema = "";
 	private final Map<String, String> extras = new HashMap<>();
-	private final List<DatabaseConnectionSettings> clusterHosts = new ArrayList<>();
+	private final List<String> clusterHosts = new ArrayList<String>();
 	private String dbdatabase = "";
 	private String label = "";
 	private DataSource dataSource = null;
@@ -156,7 +156,8 @@ public class DatabaseConnectionSettings {
 				+ getUsername() + TOSTRING_SEPARATOR
 				+ getLabel() + TOSTRING_SEPARATOR
 				+ getFilename() + TOSTRING_SEPARATOR
-				+ encodeClusterHosts(getClusterHosts()) + TOSTRING_SEPARATOR;
+				+ encodeClusterHosts(getClusterHosts()) + TOSTRING_SEPARATOR
+				+ encodeExtras(getExtras());
 	}
 
 	/**
@@ -169,26 +170,32 @@ public class DatabaseConnectionSettings {
 	 * @return encoded settings suitable for decoding.
 	 */
 	public String encode() {
-		return "DATABASECONNECTIONSETTINGS: "
-				+ getDbdatabaseClass() + FIELD_SEPARATOR
-				+ getHost() + FIELD_SEPARATOR
-				+ getPort() + FIELD_SEPARATOR
-				+ getInstance() + FIELD_SEPARATOR
-				+ getDatabaseName() + FIELD_SEPARATOR
-				+ getSchema() + FIELD_SEPARATOR
-				+ getUrl() + FIELD_SEPARATOR
-				+ getUsername() + FIELD_SEPARATOR
-				+ getPassword() + FIELD_SEPARATOR
-				+ getLabel() + FIELD_SEPARATOR
-				+ getFilename() + FIELD_SEPARATOR
-				+ encodeClusterHosts(getClusterHosts()) + FIELD_SEPARATOR
-				+ encodeExtras(getExtras()) + FIELD_SEPARATOR;
+		SeparatedString encoder = getEncoder();
+		encoder.addAll(getDbdatabaseClass(),
+				getHost(),
+				getPort(),
+				getInstance(),
+				getDatabaseName(),
+				getSchema(),
+				getUrl(),
+				getUsername(),
+				getPassword(),
+				getLabel(),
+				getFilename(),
+				encodeClusterHosts(getClusterHosts()),
+				encodeExtras(getExtras()));
+		return encoder.encode();
+	}
+
+	private static SeparatedString getEncoder() {
+		return SeparatedStringBuilder.forSeparator(FIELD_SEPARATOR).withEscapeChar("\\").withPrefix("DATABASECONNECTIONSETTINGS: ");
 	}
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
 
-		String[] data = encodedSettings.split("DATABASECONNECTIONSETTINGS: ")[1].split(FIELD_SEPARATOR);
+		String[] data = getEncoder().decode(encodedSettings).toArray(new String[]{});
+//		String[] data = encodedSettings.split("DATABASECONNECTIONSETTINGS: ")[1].split(FIELD_SEPARATOR);
 		if (data.length > 0) {
 			settings.setDbdatabaseClass(data[0]);
 			if (data.length > 1) {
@@ -214,7 +221,7 @@ public class DatabaseConnectionSettings {
 													if (data.length > 11) {
 														settings.setClusterHosts(decodeClusterHosts(data[11]));
 														if (data.length > 12) {
-															settings.setExtras(decodeExtras(data[12], "", "=", ";", ""));
+															settings.setExtras(decodeExtras(data[12]));
 														}
 													}
 												}
@@ -593,10 +600,10 @@ public class DatabaseConnectionSettings {
 		settings.setDatabaseName(System.getProperty(prefix + ".database"));
 		settings.setSchema(System.getProperty(prefix + ".schema"));
 		settings.setFilename(StringCheck.check(
-						System.getProperty(prefix + ".filename"),
-						System.getProperty(prefix + ".file"),
-						System.getProperty(prefix + ".filepath")
-				)
+				System.getProperty(prefix + ".filename"),
+				System.getProperty(prefix + ".file"),
+				System.getProperty(prefix + ".filepath")
+		)
 		);
 		settings.setClusterHosts(decodeClusterHosts(System.getProperty(prefix + ".clusterhosts")));
 		final String extrasFound = System.getProperty(prefix + ".extras");
@@ -844,10 +851,6 @@ public class DatabaseConnectionSettings {
 	}
 
 	public final String formatExtras(String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
-		return encodeExtras(extras, prefix, nameValueSeparator, nameValuePairSeparator, suffix);
-	}
-
-	public static String encodeExtras(Map<String, String> extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
 		return SeparatedStringBuilder
 				.forSeparator(nameValuePairSeparator)
 				.withKeyValueSeparator(nameValueSeparator)
@@ -858,24 +861,24 @@ public class DatabaseConnectionSettings {
 	}
 
 	public static Map<String, String> decodeExtras(String extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
-		Map<String, String> map = new HashMap<String, String>();
-		if (extras != null && !extras.isEmpty()) {
-			String onlyValues = extras.replaceAll("$" + prefix, "");
-			String[] split = onlyValues.split(nameValuePairSeparator);
-			for (String string : split) {
-				String[] nameAndValue = string.split(nameValueSeparator);
-				map.put(nameAndValue[0], nameAndValue[1]);
-			}
-		}
-		return map;
+		return SeparatedStringBuilder
+				.forSeparator(nameValuePairSeparator)
+				.withKeyValueSeparator(nameValueSeparator)
+				.withPrefix(prefix)
+				.withSuffix(suffix)
+				.parseToMap(extras);
+	}
+
+	private static SeparatedString clusterHostEncoder() {
+		return SeparatedStringBuilder
+				.forSeparator("|")
+				.withPrefix("<")
+				.withSuffix(">")
+				.withEscapeChar("!");
 	}
 
 	public static String encodeClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
-		SeparatedString csv
-				= SeparatedStringBuilder
-						.forSeparator("|")
-						.withPrefix("<")
-						.withSuffix(">");
+		SeparatedString csv = clusterHostEncoder();
 		clusterHosts.forEach((each) -> {
 			csv.add(each.encode());
 		});
@@ -883,19 +886,18 @@ public class DatabaseConnectionSettings {
 	}
 
 	public static List<DatabaseConnectionSettings> decodeClusterHosts(String clusterHosts) {
-		List<String> hosts = SeparatedStringBuilder
-				.forSeparator("|")
-				.withPrefix("<")
-				.withSuffix(">")
-				.parseToList(clusterHosts);
-		List<DatabaseConnectionSettings> collected
-				= hosts
-						.stream()
-						.map((t) -> {
-							return decode(t);
-						})
-						.collect(Collectors.toList());
-		return collected;
+		final ArrayList<DatabaseConnectionSettings> results = new ArrayList<>(0);
+		final SeparatedString clusterHostEncoder = clusterHostEncoder();
+		List<String> hosts = clusterHostEncoder.parseToList(clusterHosts);
+		for (String host : hosts) {
+			try {
+				DatabaseConnectionSettings decodedHost = decode(host);
+				results.add(decodedHost);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return results;
 	}
 
 	public final DatabaseConnectionSettings setDbdatabaseClass(String canonicalNameOfADBDatabaseSubclass) {
@@ -974,7 +976,7 @@ public class DatabaseConnectionSettings {
 	}
 
 	public final List<DatabaseConnectionSettings> getClusterHosts() {
-		return this.clusterHosts;
+		return clusterHosts.stream().map(s -> DatabaseConnectionSettings.decode(s)).collect(Collectors.toList());
 	}
 
 	public final DatabaseConnectionSettings setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
@@ -984,25 +986,43 @@ public class DatabaseConnectionSettings {
 	}
 
 	public final void addClusterHost(DatabaseConnectionSettings clusterHost) {
-		this.clusterHosts.add(clusterHost);
+		if (clusterHost != null) {
+			final String newHost = clusterHost.encode();
+			if (!clusterHosts.contains(newHost)) {
+				this.clusterHosts.add(newHost);
+			}
+		}
 	}
 
 	public final void addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		if (clusterHosts != null) {
-			this.clusterHosts.addAll(clusterHosts);
+			for (DatabaseConnectionSettings clusterHost : clusterHosts) {
+				this.addClusterHost(clusterHost);
+			}
 		}
 	}
 
 	public static String encodeExtras(Map<String, String> extras) {
-		return encodeExtras(extras, "", "=", ";", "");
+		return extrasEncoder().addAll(extras).encode();
 	}
 
 	public static Map<String, String> decodeExtras(String extras) {
+		return extrasEncoder()
+				.parseToMap(extras);
+	}
+
+	private static SeparatedString extrasEncoder() {
 		return SeparatedStringBuilder
 				.forSeparator(";")
-				.withPrefix("")
-				.withSuffix("")
 				.withKeyValueSeparator("=")
-				.parseToMap(extras);
+				.withEscapeChar("!");
+	}
+
+	public boolean removeClusterHost(DatabaseConnectionSettings settings) {
+		return this.clusterHosts.remove(settings.encode());
+	}
+
+	public String removeExtra(String key) {
+		return this.extras.remove(key);
 	}
 }
