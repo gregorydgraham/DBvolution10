@@ -37,14 +37,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -122,25 +120,17 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					.setDatabaseName("SlowSynchingDB")
 					.setUsername("who")
 					.setPassword("what");
-			H2MemoryDB slowSynchingDB = new H2MemoryDB(settings) {
-				private static final long serialVersionUID = 1l;
-
-				@Override
-				public boolean tableExists(DBRow table) throws SQLException {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException ex) {
-						Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
-					}
-					return super.tableExists(table);
-				}
-			};
+			SlowSynchingDatabase slowSynchingDB = new SlowSynchingDatabase(settings);
 			try (slowSynchingDB) {
+				slowSynchingDB.setSlownessRequired(false);
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
+				slowSynchingDB.setSlownessRequired(true);
 
 				cluster.addDatabase(slowSynchingDB);
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), not(DBDatabaseCluster.Status.READY));
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
+				
+				slowSynchingDB.setSlownessRequired(false);
 
 				int i = 1;
 				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY) {
@@ -506,7 +496,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 					cluster.addTrackedTable(trackedTable);
 					List<String> asList = Arrays.asList(cluster.getTrackedTables()).stream().map(t -> t.getClass().getCanonicalName()).collect(Collectors.toList());
-					assertThat(asList, hasItem(DBDatabaseClusterTestTrackedTable.class.getCanonicalName()));
+					assertThat(asList, hasItem(DBDatabaseClusterTestTrackedTable.class
+							.getCanonicalName()));
 					dismantleCluster = false;
 				} finally {
 					if (dismantleCluster) {
@@ -524,6 +515,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					assertThat(asList, not(hasItem(trackedTable)));
 				} finally {
 					cluster.dismantle();
+
 				}
 			}
 		}
@@ -557,7 +549,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				cluster.removeDatabase(cluster.getReadyDatabase());
 				Assert.fail();
 			} catch (Exception e) {
-				assertThat(e, is(instanceOf(UnableToRemoveLastDatabaseFromClusterException.class)));
+				assertThat(e, is(instanceOf(UnableToRemoveLastDatabaseFromClusterException.class
+				)));
 			}
 			assertThat(cluster.size(), is(1));
 		}
@@ -689,32 +682,35 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public void testYAMLFileProcessing() {
+	public void testYAMLFileProcessing() throws SQLException {
 		final String yamlConfigFilename = "DBDatabaseCluster.yml";
 
 		File file = new File(yamlConfigFilename);
 		file.delete();
 
 		DBDatabaseCluster db = new DBDatabaseCluster("testYAMLFileProcessing",
-				DBDatabaseCluster.Configuration.manual());
+				DBDatabaseCluster.Configuration.autoStart());
 		try {
 			db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing2",
 					DBDatabaseCluster.Configuration.manual(), yamlConfigFilename);
 		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
-			assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class)));
+			assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class
+			)));
 		}
 		assertThat(
 				db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
 				is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
-		source.setDbdatabaseClass(H2MemoryDB.class.getCanonicalName());
+		source.setDbdatabaseClass(H2MemoryDB.class
+				.getCanonicalName());
 		source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
 		source.setUsername("admin");
 		source.setPassword("admin");
 
 		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
-		source2.setDbdatabaseClass(SQLiteDB.class.getCanonicalName());
+		source2.setDbdatabaseClass(SQLiteDB.class
+				.getCanonicalName());
 		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
 		source2.setUsername("admin");
 		source2.setPassword("admin");
@@ -725,16 +721,19 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try {
 			generator = yamlFactory.createGenerator(file, JsonEncoding.UTF8);
 		} catch (IOException ex) {
-			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DBDatabaseClusterTest.class
+					.getName()).log(Level.SEVERE, null, ex);
 			Assert.fail(ex.getMessage());
 		}
 		ObjectMapper mapper = new ObjectMapper(yamlFactory);
-		ObjectWriter writerFor = mapper.writerFor(DatabaseConnectionSettings.class);
+		ObjectWriter writerFor = mapper.writerFor(DatabaseConnectionSettings.class
+		);
 		SequenceWriter writeValuesAsArray = null;
 		try {
 			writeValuesAsArray = writerFor.writeValuesAsArray(generator);
 		} catch (IOException ex) {
-			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DBDatabaseClusterTest.class
+					.getName()).log(Level.SEVERE, null, ex);
 			Assert.fail(ex.getMessage());
 		}
 		try {
@@ -742,17 +741,19 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				writeValuesAsArray.writeAll(new DatabaseConnectionSettings[]{source, source2});
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DBDatabaseClusterTest.class
+					.getName()).log(Level.SEVERE, null, ex);
 			Assert.fail(ex.getMessage());
 		}
 		try {
 			try {
 				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing3",
 						DBDatabaseCluster.Configuration.manual(), yamlConfigFilename);
-				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
-				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
+				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
+				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 			} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
-				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DBDatabaseClusterTest.class
+						.getName()).log(Level.SEVERE, null, ex);
 				Assert.fail(ex.getMessage());
 			}
 			assertThat(
@@ -766,7 +767,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public void testYAMLFileProcessingWithFile() {
+	public void testYAMLFileProcessingWithFile() throws SQLException {
 
 		new DBDatabaseCluster("testYAMLFileProcessingWithFile",
 				DBDatabaseCluster.Configuration.manual()).dismantle();
@@ -785,20 +786,23 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile2",
 						DBDatabaseCluster.Configuration.manual(), yamlConfigFilename);
 			} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
-				assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class)));
+				assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class
+				)));
 			}
 			assertThat(
 					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
 					is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
 
 			DatabaseConnectionSettings source = new DatabaseConnectionSettings();
-			source.setDbdatabaseClass(H2MemoryDB.class.getCanonicalName());
+			source.setDbdatabaseClass(H2MemoryDB.class
+					.getCanonicalName());
 			source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
 			source.setUsername("admin");
 			source.setPassword("admin");
 
 			DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
-			source2.setDbdatabaseClass(SQLiteDB.class.getCanonicalName());
+			source2.setDbdatabaseClass(SQLiteDB.class
+					.getCanonicalName());
 			source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
 			source2.setUsername("admin");
 			source2.setPassword("admin");
@@ -809,16 +813,19 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			try {
 				generator = yamlFactory.createGenerator(file, JsonEncoding.UTF8);
 			} catch (IOException ex) {
-				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DBDatabaseClusterTest.class
+						.getName()).log(Level.SEVERE, null, ex);
 				Assert.fail(ex.getMessage());
 			}
 			ObjectMapper mapper = new ObjectMapper(yamlFactory);
-			ObjectWriter writerFor = mapper.writerFor(DatabaseConnectionSettings.class);
+			ObjectWriter writerFor = mapper.writerFor(DatabaseConnectionSettings.class
+			);
 			SequenceWriter writeValuesAsArray = null;
 			try {
 				writeValuesAsArray = writerFor.writeValuesAsArray(generator);
 			} catch (IOException ex) {
-				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DBDatabaseClusterTest.class
+						.getName()).log(Level.SEVERE, null, ex);
 				Assert.fail(ex.getMessage());
 			}
 			try {
@@ -826,17 +833,19 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					writeValuesAsArray.writeAll(new DatabaseConnectionSettings[]{source, source2});
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DBDatabaseClusterTest.class
+						.getName()).log(Level.SEVERE, null, ex);
 				Assert.fail(ex.getMessage());
 			}
 
 			try {
 				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile",
 						DBDatabaseCluster.Configuration.manual(), file);
-				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
-				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
+				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
+				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 			} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
-				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DBDatabaseClusterTest.class
+						.getName()).log(Level.SEVERE, null, ex);
 				Assert.fail(ex.getMessage());
 			}
 			assertThat(
@@ -931,7 +940,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 							nameOfCluster,
 							DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart(),
 							database);
-			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
+			cluster.waitUntilSynchronised();
+			H2MemoryDB soloDB2 = H2MemoryDB.createDatabase("soloDB2");
 			soloDB2Settings = soloDB2.getSettings().toString();
 			cluster.addDatabase(soloDB2);
 			assertThat(cluster.size(), is(2));
@@ -941,6 +951,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			DBDatabaseCluster cluster = new DBDatabaseCluster(
 					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart()
 			);
+			System.out.println("" + cluster.getClusterStatus());
 			assertThat(cluster.size(), is(2));
 			final DBDatabase[] dbsInCluster = cluster.getDatabases();
 			List<String> databases = new ArrayList<>();
@@ -952,7 +963,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			assertThat(databases, hasItem(soloDB2Settings));
 			assertThat(databases, hasItem(is(database.getSettings().toString())));
 
-			cluster.addDatabase(H2MemoryDB.createANewRandomDatabase());
+			cluster.addDatabase(H2MemoryDB.createDatabase("Check Added Database Is Recreated At Startup"));
 			cluster.stop();
 		}
 		{
@@ -1051,6 +1062,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		data.add(new DBDatabaseClusterTestTable(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
 		return data;
+
 	}
 
 	@DBRequiredTable
@@ -1130,6 +1142,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		data.add(new DBDatabaseClusterTestTable2(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
 		return data;
+
 	}
 
 	@DBRequiredTable
@@ -1203,4 +1216,53 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		public DBInteger pkid = new DBInteger();
 	}
 
+	private class SlowSynchingDatabase extends H2MemoryDB {
+
+		private boolean slowness = true;
+
+		public SlowSynchingDatabase(H2MemorySettingsBuilder hmsb) throws SQLException {
+			super(hmsb);
+		}
+		private static final long serialVersionUID = 1l;
+
+		@Override
+		public <R extends DBRow> DBTable<R> getDBTable(R example) {
+			return SlowSynchingDBTable.getInstance(this, example, slowness);
+		}
+		
+		public void setSlownessRequired(boolean slowPlease) {
+			slowness = slowPlease;
+		}
+	}
+
+	private static class SlowSynchingDBTable<E extends DBRow> extends DBTable<E> {
+
+		private boolean slowness;
+
+		public SlowSynchingDBTable(DBDatabase database, E exampleRow) {
+			super(database, exampleRow);
+		}
+
+		public static <R extends DBRow> DBTable<R> getInstance(DBDatabase database, R example, boolean slowness) {
+			SlowSynchingDBTable<R> dbTable = new SlowSynchingDBTable<>(database, example);
+			dbTable.setSlownessRequired(slowness);
+			return dbTable;
+		}
+
+		@Override
+		public DBActionList insert(Collection<E> newRows) throws SQLException {
+			try {
+				if (slowness) {
+					Thread.sleep(1000);
+				}
+			} catch (InterruptedException ex) {
+				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			return super.insert(newRows);
+		}
+
+		public void setSlownessRequired(boolean slowPlease) {
+			slowness = slowPlease;
+		}
+	}
 }

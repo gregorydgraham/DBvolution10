@@ -152,8 +152,9 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	 * @param yamlConfigFilename a YAML configuration file of database to add to the cluster
 	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound Unable to find the YAML configuration file
 	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster thrown if there are errors during cluster creation
+	 * @throws java.sql.SQLException if the database connection has an issue
 	 */
-	public DBDatabaseClusterWithConfigFile(String clusterName, Configuration config, String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
+	public DBDatabaseClusterWithConfigFile(String clusterName, Configuration config, String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster, SQLException {
 		super(clusterName, config);
 		this.yamlConfigFilename = yamlConfigFilename;
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
@@ -202,15 +203,16 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	 * @param yamlConfigFile the YAML configuration file
 	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound Unable to find the YAML file
 	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster unable to create the databases
+	 * @throws java.sql.SQLException if the database connection has an issue
 	 */
-	public DBDatabaseClusterWithConfigFile(String clusterName, Configuration config, File yamlConfigFile) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
+	public DBDatabaseClusterWithConfigFile(String clusterName, Configuration config, File yamlConfigFile) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster, SQLException {
 		super(clusterName, config);
 		this.yamlConfigFilename = yamlConfigFile.getName();
 		parseYAMLAndAddDatabases(yamlConfigFile, yamlConfigFilename);
 	}
 
 	public void reloadConfiguration() throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster, UnableToRemoveLastDatabaseFromClusterException, SQLException {
-		this.removeDatabases(details.getAllDatabases());
+		this.removeDatabases(getDetails().getAllDatabases());
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
 
@@ -333,15 +335,6 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 		private NoDatabaseConfigurationFound(String yamlConfigFilename) {
 			super("No DBDatabase Configuration File named \"" + yamlConfigFilename + "\" was found in the filesystem: check the filename and ensure that the location is accessible from \".\"" + (Paths.get(".").toAbsolutePath()));
-		}
-	}
-
-	public static class NoDatabasesSpecifiedWithinConfiguration extends Exception {
-
-		static final long serialVersionUID = 1L;
-
-		private NoDatabasesSpecifiedWithinConfiguration(String yamlConfigFilename) {
-			super("The Configuration File named \"" + yamlConfigFilename + "\" was found but no databases were specified within: check the filename, location, and syntax of databases within .");
 		}
 	}
 
