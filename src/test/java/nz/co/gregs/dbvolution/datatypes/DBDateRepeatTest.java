@@ -159,6 +159,46 @@ public class DBDateRepeatTest extends AbstractTest {
 		allRows = query.getAllRows();
 
 		if (allRows.size() != 1) {
+			query.setPrintSQLBeforeExecution(true);
+			allRows = query.getAllRows();
+			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
+			allRows.stream().forEachOrdered(r -> System.out.println("CREATION DATE SHOULD BE NULL: " + "'" + r.get(marq).creationDate.getValue()));
+		}
+
+		assertThat(allRows.size(), is(1));
+	}
+
+	@Test
+	public void testDateRepeatIsWithOracleCompatibility() throws SQLException {
+		MarqueWithDateRepeatExprCol marq;
+		marq = new MarqueWithDateRepeatExprCol();
+		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true).setReturnEmptyStringForNullString(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		final Period zero = new Period();
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).is(zero));
+		allRows = query.getAllRows();
+
+		if (allRows.size() != 3) {
+			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
+			allRows.stream().forEachOrdered(r -> System.out.println("2011-04-02: " + marq.creationDate.getValue()));
+		}
+
+		assertThat(allRows.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNot(zero));
+		allRows = query.getAllRows();
+
+		assertThat(allRows.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNull());
+		allRows = query.getAllRows();
+
+		if (allRows.size() != 1) {
+			query.setPrintSQLBeforeExecution(true);
+			allRows = query.getAllRows();
 			allRows.stream().forEachOrdered(r -> System.out.println("" + r));
 			allRows.stream().forEachOrdered(r -> System.out.println("CREATION DATE SHOULD BE NULL: " + "'" + r.get(marq).creationDate.getValue()));
 		}
