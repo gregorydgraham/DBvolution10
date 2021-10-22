@@ -23,6 +23,7 @@ import java.util.Comparator;
 import nz.co.gregs.dbvolution.columns.DurationColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.DurationExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -43,9 +44,6 @@ import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
  * <p>
  * Generally DBDuration is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBDuration myColumn = new DBDuration();}
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
