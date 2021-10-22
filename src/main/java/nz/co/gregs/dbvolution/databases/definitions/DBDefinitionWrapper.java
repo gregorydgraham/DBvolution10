@@ -2523,6 +2523,16 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
+	public String doIsEmptyStringTransform(String expressionSQL) {
+		return base.doIsEmptyStringTransform(expressionSQL);
+	}
+
+	@Override
+	public String doIsNullOrIsEmptyStringTransform(String expressionSQL) {
+		return base.doIsNullOrIsEmptyStringTransform(expressionSQL);
+	}
+
+	@Override
 	public DBDefinition getOracleCompatibleVersion() {
 		return base.getOracleCompatibleVersion();
 	}
