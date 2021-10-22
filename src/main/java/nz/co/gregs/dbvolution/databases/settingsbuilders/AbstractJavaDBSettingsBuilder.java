@@ -34,17 +34,15 @@ import java.util.HashMap;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.databases.Informix11DB;
 import nz.co.gregs.dbvolution.databases.JavaDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 
 /**
  *
  * @author gregorygraham
- * @param <SELF>
- * @param <DATABASE>
+ * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
+ * @param <DATABASE> the class returned by {@link #getDBDatabase}
  */
 public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
 		extends AbstractVendorSettingsBuilder<SELF, DATABASE>

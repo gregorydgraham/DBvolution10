@@ -36,8 +36,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 /**
  *
  * @author gregorygraham
- * @param <SELF>
- * @param <DATABASE>
+ * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
+ * @param <DATABASE> the class returned by {@link #getDBDatabase}
  */
 public interface UniqueDatabaseCapableSettingsBuilder<SELF extends NamedDatabaseCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends NamedDatabaseCapableSettingsBuilder<SELF, DATABASE> {
 

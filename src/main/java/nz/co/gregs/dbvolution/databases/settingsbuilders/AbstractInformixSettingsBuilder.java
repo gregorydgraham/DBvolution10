@@ -41,8 +41,8 @@ import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 /**
  *
  * @author gregorygraham
- * @param <SELF>
- * @param <DATABASE>
+ * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
+ * @param <DATABASE> the class returned by {@link #getDBDatabase}
  */
 public abstract class AbstractInformixSettingsBuilder<SELF extends AbstractInformixSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
 		extends AbstractVendorSettingsBuilder<SELF, DATABASE>

@@ -43,8 +43,8 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 /**
  *
  * @author gregorygraham
- * @param <SELF> the type returned by all SELF methods
- * @param <DATABASE>
+ * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
+ * @param <DATABASE> the class returned by {@link #getDBDatabase}
  */
 public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
 		extends AbstractVendorSettingsBuilder<SELF, DATABASE>

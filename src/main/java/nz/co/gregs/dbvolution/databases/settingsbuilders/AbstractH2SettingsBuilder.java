@@ -44,8 +44,8 @@ import nz.co.gregs.dbvolution.utility.StringCheck;
 /**
  *
  * @author gregorygraham
- * @param <SELF>
- * @param <DATABASE>
+ * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
+ * @param <DATABASE> the class returned by {@link #getDBDatabase}
  */
 public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
 		extends AbstractVendorSettingsBuilder<SELF, DATABASE>

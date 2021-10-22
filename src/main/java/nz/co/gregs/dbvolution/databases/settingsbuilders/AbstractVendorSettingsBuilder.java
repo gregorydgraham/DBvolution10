@@ -39,8 +39,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * <p>That is all databases that aren't DBvolution clusters.</p>
  *
  * @author gregorygraham
- * @param <SELF>
- * @param <DATABASE>
+ * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
+ * @param <DATABASE> the class returned by {@link SettingsBuilder#getDBDatabase}
  */
 public abstract class AbstractVendorSettingsBuilder<SELF extends AbstractVendorSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> 
 		extends AbstractSettingsBuilder<SELF, DATABASE> 

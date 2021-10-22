@@ -37,12 +37,14 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 /**
  *
  * @author gregorygraham
- * @param <SELF>
- * @param <DATABASE>
+ * @param <SELF> the class of the object returned by most methods, this should
+ * be the Class of "this"
+ * @param <DATABASE> the class returned by {@link #getDBDatabase}
+ *
  */
 public interface FileBasedSettingsBuilder<SELF extends FileBasedSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
 
-	public default String getFilename(){
+	public default String getFilename() {
 		return getStoredSettings().getFilename();
 	}
 
@@ -51,11 +53,11 @@ public interface FileBasedSettingsBuilder<SELF extends FileBasedSettingsBuilder<
 		getStoredSettings().setFilename(filename);
 		return (SELF) this;
 	}
-	
+
 	@SuppressWarnings(value = "unchecked")
-	default SELF setFilename(File databaseFile) throws IOException{
+	default SELF setFilename(File databaseFile) throws IOException {
 		setFilename(databaseFile.getCanonicalFile().toString());
 		return (SELF) this;
 	}
-	
+
 }
