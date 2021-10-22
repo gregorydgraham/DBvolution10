@@ -4665,7 +4665,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetYearsTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetYearsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetYearsTransform(String) yet.");
 	}
 
 	/**
@@ -4677,7 +4677,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMonthsTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetMonthsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetMonthsTransform(String) yet.");
 	}
 
 	/**
@@ -4689,7 +4689,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetDaysTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetDaysTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetDaysTransform(String) yet.");
 	}
 
 	/**
@@ -4701,7 +4701,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetHoursTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetHoursTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetHoursTransform(String) yet.");
 	}
 
 	/**
@@ -4713,7 +4713,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMinutesTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetMinutesTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetMinutesTransform(String) yet.");
 	}
 
 	/**
@@ -4725,7 +4725,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doDateRepeatGetSecondsTransform(String dateRepeatSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetSecondsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doDateRepeatGetSecondsTransform(String) yet.");
 	}
 
 	/**
@@ -4848,7 +4848,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DGetXTransform(String pont2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetXTransform(String) yet.");
 	}
 
 	/**
@@ -4860,7 +4860,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DGetYTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetYTransform(String) yet.");
 	}
 
 	/**
@@ -4875,7 +4875,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DMeasurableDimensionsTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetMeasurableDimensionsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetMeasurableDimensionsTransform(String) yet.");
 	}
 
 	/**
@@ -4888,7 +4888,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetBioundingBoxTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetBioundingBoxTransform(String) yet.");
 	}
 
 	/**
@@ -4900,7 +4900,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPoint2DAsTextTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DAsTextTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DAsTextTransform(String) yet.");
 	}
 
 	/**
@@ -5052,7 +5052,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DAsTextTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DAsTextTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DAsTextTransform(String) yet.");
 	}
 
 	/**
@@ -5065,7 +5065,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DEqualsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DEqualsTransform(String) yet.");
 	}
 
 	/**
@@ -5090,7 +5090,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the dimension (probably 1)
 	 */
 	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DMeasurableDimensionsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DMeasurableDimensionsTransform(String) yet.");
 	}
 
 	/**
@@ -5102,7 +5102,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetBoundingBoxTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetBoundingBoxTransform(String) yet.");
 	}
 
 	/**
@@ -5114,7 +5114,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support transformPoint2DArrayToDatabasePolygon2DFormat(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support transformPoint2DArrayToDatabasePolygon2DFormat(String) yet.");
 	}
 
 	/**
@@ -5127,7 +5127,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMaxXTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMaxXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMaxXTransform(String) yet.");
 	}
 
 	/**
@@ -5140,7 +5140,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMinXTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMinXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMinXTransform(String) yet.");
 	}
 
 	/**
@@ -5153,7 +5153,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMaxYTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMaxYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMaxYTransform(String) yet.");
 	}
 
 	/**
@@ -5166,7 +5166,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLine2DGetMinYTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMinYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMinYTransform(String) yet.");
 	}
 
 	/**
@@ -5179,7 +5179,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMaxXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMaxXTransform(String) yet.");
 	}
 
 	/**
@@ -5192,7 +5192,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMinXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMinXTransform(String) yet.");
 	}
 
 	/**
@@ -5205,7 +5205,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMaxYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMaxYTransform(String) yet.");
 	}
 
 	/**
@@ -5218,7 +5218,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMinYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMinYTransform(String) yet.");
 	}
 
 	/**
@@ -5231,7 +5231,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support transformPolygonIntoDatabasePolygon2DFormat(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support transformPolygonIntoDatabasePolygon2DFormat(String) yet.");
 	}
 
 	/**
@@ -5244,7 +5244,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL:
 	 */
 	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, String otherPolygon2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DDistanceBetweenTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DDistanceBetweenTransform(String, String) yet.");
 	}
 
 	/**
@@ -5285,7 +5285,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
-		throw new UnsupportedOperationException("DBDefinition does not support doSubstringBeforeTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doSubstringBeforeTransform(String, String) yet.");
 	}
 
 	/**
@@ -5300,7 +5300,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
-		throw new UnsupportedOperationException("DBDefinition does not support doSubstringAfterTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doSubstringAfterTransform(String, String) yet.");
 	}
 
 	/**
@@ -5345,7 +5345,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DContainsPoint2DTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DContainsPoint2DTransform(String, String) yet.");
 	}
 
 	/**
@@ -5358,7 +5358,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DAsTextTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DAsTextTransform(String) yet.");
 	}
 
 	/**
@@ -5372,7 +5372,7 @@ public abstract class DBDefinition implements Serializable {
 	 * depending on whether the lines cross at any point.
 	 */
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DIntersectsLine2DTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DIntersectsLine2DTransform(String, String) yet.");
 	}
 
 	/**
@@ -5387,7 +5387,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the 2 line segments or NULL.
 	 */
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DIntersectionPointWithLine2DTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DIntersectionPointWithLine2DTransform(String, String) yet.");
 	}
 
 	/**
@@ -5402,7 +5402,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the 2 line segments or NULL.
 	 */
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstLine, String secondLine) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DAllIntersectionPointsWithLine2DTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DAllIntersectionPointsWithLine2DTransform(String, String) yet.");
 	}
 
 	/**
@@ -5468,7 +5468,7 @@ public abstract class DBDefinition implements Serializable {
 	 * java.lang.String)
 	 */
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DIntersectsLineSegment2DTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DIntersectsLineSegment2DTransform(String, String) yet.");
 	}
 
 	/**
@@ -5481,7 +5481,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMaxXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMaxXTransform(String) yet.");
 	}
 
 	/**
@@ -5494,7 +5494,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMinXTransform(String lineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMinXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMinXTransform(String) yet.");
 	}
 
 	/**
@@ -5507,7 +5507,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMaxYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMaxYTransform(String) yet.");
 	}
 
 	/**
@@ -5520,7 +5520,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMinYTransform(String lineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMinYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMinYTransform(String) yet.");
 	}
 
 	/**
@@ -5533,7 +5533,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetBoundingBoxTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetBoundingBoxTransform(String) yet.");
 	}
 
 	/**
@@ -5546,7 +5546,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DDimensionTransform(String lineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DDimensionTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DDimensionTransform(String) yet.");
 	}
 
 	/**
@@ -5560,7 +5560,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DNotEqualsTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DNotEqualsTransform(String, String) yet.");
 	}
 
 	/**
@@ -5574,7 +5574,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DEqualsTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DEqualsTransform(String, String) yet.");
 	}
 
 	/**
@@ -5587,7 +5587,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DAsTextTransform(String lineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DAsTextTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DAsTextTransform(String) yet.");
 	}
 
 	/**
@@ -5602,7 +5602,7 @@ public abstract class DBDefinition implements Serializable {
 	 * the 2 line segments or NULL.
 	 */
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DIntersectionPointWithLineSegment2DTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DIntersectionPointWithLineSegment2DTransform(String, String) yet.");
 	}
 
 	/**
@@ -5615,7 +5615,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DStartPointTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DStartPointTransform(String) yet.");
 	}
 
 	/**
@@ -5685,7 +5685,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DEqualsTransform(String firstMultiPointValue, String secondMultiPointValue) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DEqualsTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DEqualsTransform(String, String) yet.");
 	}
 
 	/**
@@ -5699,7 +5699,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DNotEqualsTransform(String first, String second) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DNotEqualsTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DNotEqualsTransform(String, String) yet.");
 	}
 
 	/**
@@ -5712,7 +5712,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetPointAtIndexTransform(String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetPointAtIndexTransform(String, String) yet.");
 	}
 
 	/**
@@ -5724,7 +5724,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetNumberOfPointsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetNumberOfPointsTransform(String) yet.");
 	}
 
 	/**
@@ -5737,7 +5737,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DMeasurableDimensionsTransform(String multipoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DMeasurableDimensionsTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DMeasurableDimensionsTransform(String) yet.");
 	}
 
 	/**
@@ -5750,7 +5750,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetBoundingBoxTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetBoundingBoxTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetBoundingBoxTransform(String) yet.");
 	}
 
 	/**
@@ -5762,7 +5762,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DAsTextTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DAsTextTransform(String) yet.");
 	}
 
 	/**
@@ -5775,7 +5775,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DToLine2DTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DToLine2DTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DToLine2DTransform(String) yet.");
 	}
 
 	/**
@@ -5788,7 +5788,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMinYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMinYTransform(String) yet.");
 	}
 
 	/**
@@ -5801,7 +5801,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMinXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMinXTransform(String) yet.");
 	}
 
 	/**
@@ -5814,7 +5814,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMaxYTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMaxYTransform(String) yet.");
 	}
 
 	/**
@@ -5827,7 +5827,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMaxXTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMaxXTransform(String) yet.");
 	}
 
 	/**
@@ -5869,7 +5869,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return an ordered list of SQL.
 	 */
 	public List<String> getSpatial2DIndexSQL(DBDatabase database, String formatTableName, String formatColumnName) {
-		throw new UnsupportedOperationException("DBDefinition does not support getSpatial2DIndexSQL(DBDatabase, String, String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support getSpatial2DIndexSQL(DBDatabase, String, String) yet.");
 	}
 
 	/**
@@ -5931,7 +5931,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMagnitudeTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLine2DGetMagnitudeTransform(String) yet.");
 	}
 
 	/**
@@ -5974,7 +5974,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doPoint2DGetMagnitudeTransform(String point2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetMagnitudeTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPoint2DGetMagnitudeTransform(String) yet.");
 	}
 
 	/**
@@ -6017,7 +6017,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doMultiPoint2DGetMagnitudeTransform(String multipoint2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMagnitudeTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doMultiPoint2DGetMagnitudeTransform(String) yet.");
 	}
 
 	/**
@@ -6060,7 +6060,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doPolygon2DGetMagnitudeTransform(String polygon2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMagnitudeTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doPolygon2DGetMagnitudeTransform(String) yet.");
 	}
 
 	/**
@@ -6103,7 +6103,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doLineSegment2DGetMagnitudeTransform(String lineSegment2DSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMagnitudeTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doLineSegment2DGetMagnitudeTransform(String) yet.");
 	}
 
 	/**
@@ -6121,7 +6121,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a polygon2d value
 	 */
 	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support transformCoordinateArrayToDatabasePolygon2DFormat(List<String>) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support transformCoordinateArrayToDatabasePolygon2DFormat(List<String>) yet.");
 	}
 
 	/**
@@ -6138,7 +6138,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the last day of the month that the date is in.
 	 */
 	public String doEndOfMonthTransform(String dateSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doEndOfMonthTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doEndOfMonthTransform(String) yet.");
 	}
 
 	/**
@@ -6155,7 +6155,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the last day of the month that the date is in.
 	 */
 	public String doInstantEndOfMonthTransform(String dateSQL) {
-		throw new UnsupportedOperationException("DBDefinition does not support doEndOfMonthTransform(String) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support doEndOfMonthTransform(String) yet.");
 	}
 
 	/**
@@ -6601,7 +6601,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String getSQLToCheckTableExists(DBRow table) {
-		throw new UnsupportedOperationException("DBDefinition does not support getSQLToCheckTableExists(DBRow) yet."); 
+		throw new UnsupportedOperationException("DBDefinition does not support getSQLToCheckTableExists(DBRow) yet.");
 	}
 
 	public boolean supportsTableCheckingViaMetaData() {
@@ -7072,6 +7072,14 @@ public abstract class DBDefinition implements Serializable {
 
 	public String doIsNullTransform(String expressionSQL) {
 		return expressionSQL + " IS NULL ";
+	}
+
+	public String doIsEmptyStringTransform(String expressionSQL) {
+		return "(" + expressionSQL + " = '')";
+	}
+
+	public String doIsNullOrIsEmptyStringTransform(String expressionSQL) {
+		return "(" + doIsNullTransform(expressionSQL) + " OR " + doIsEmptyStringTransform(expressionSQL) + ")";
 	}
 
 	public DBDefinition getOracleCompatibleVersion() {
