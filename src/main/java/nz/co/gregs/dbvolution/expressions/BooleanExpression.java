@@ -729,6 +729,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	public static BooleanExpression isNull(DBExpression possibleNullExpression) {
 		if (possibleNullExpression instanceof StringExpression) {
 			return isNull((StringExpression) possibleNullExpression);
+		} else if (possibleNullExpression instanceof DateRepeatExpression) {
+			// DateRepeat pretends to be a really datatype but is actually a type of String
+			return isNull(((DateRepeatExpression) possibleNullExpression).stringResult());
 		} else {
 			return new BooleanExpression(new IsNullExpression(possibleNullExpression));
 		}
@@ -2924,20 +2927,20 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	protected static class IsNullStringExpression extends BooleanExpression {
 
-		private final StringExpression onlyBool;
+		private final StringExpression onlyString;
 
 		public IsNullStringExpression(StringExpression bool) {
-			onlyBool = bool;
+			onlyString = bool;
 		}
 		private final static long serialVersionUID = 1l;
 
 		@Override
 		public String toSQLString(DBDefinition db) {
 			String returnStr;
-			final String onlyBoolStr = onlyBool.toSQLString(db);
-			returnStr = onlyBoolStr + " IS " + db.getNull();
+			final String onlySQL = onlyString.toSQLString(db);
+			returnStr = db.doIsNullTransform(onlySQL);
 			if (db.requiredToProduceEmptyStringsForNull() && db.supportsDifferenceBetweenNullAndEmptyStringNatively()) {
-				returnStr = " (" + returnStr + " OR " + onlyBoolStr + " = '') ";
+				returnStr = db.doIsNullOrIsEmptyStringTransform(onlySQL);
 			}
 			return returnStr;
 		}
@@ -2949,7 +2952,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 		@Override
 		public IsNullExpression copy() {
-			return new IsNullExpression(onlyBool == null ? null : onlyBool.copy());
+			return new IsNullExpression(onlyString == null ? null : onlyString.copy());
 		}
 	}
 
