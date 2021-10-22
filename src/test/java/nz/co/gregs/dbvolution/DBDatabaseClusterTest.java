@@ -331,7 +331,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				DBDatabaseCluster cluster
 						= new DBDatabaseCluster(
 								nameOfCluster,
-								DBDatabaseCluster.Configuration.manual(),
+								DBDatabaseCluster.Configuration.autoStart(),
 								database);
 				boolean dismantleCluster = true;
 				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
@@ -353,7 +353,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			}
 			{
 				DBDatabaseCluster cluster
-						= new DBDatabaseCluster(nameOfCluster, DBDatabaseCluster.Configuration.manual());
+						= new DBDatabaseCluster(nameOfCluster, DBDatabaseCluster.Configuration.autoStart());
 
 				try {
 					H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
@@ -486,7 +486,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				DBDatabaseCluster cluster
 						= new DBDatabaseCluster(
 								nameOfCluster,
-								DBDatabaseCluster.Configuration.manual(),
+								DBDatabaseCluster.Configuration.autoStart(),
 								database);
 				boolean dismantleCluster = true;
 				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
@@ -692,7 +692,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				DBDatabaseCluster.Configuration.autoStart());
 		try {
 			db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing2",
-					DBDatabaseCluster.Configuration.manual(), yamlConfigFilename);
+					DBDatabaseCluster.Configuration.autoStart(), yamlConfigFilename);
 		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class
 			)));
@@ -748,7 +748,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try {
 			try {
 				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing3",
-						DBDatabaseCluster.Configuration.manual(), yamlConfigFilename);
+						DBDatabaseCluster.Configuration.autoStart(), yamlConfigFilename);
 				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
 				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 			} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
@@ -770,9 +770,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public void testYAMLFileProcessingWithFile() throws SQLException {
 
 		new DBDatabaseCluster("testYAMLFileProcessingWithFile",
-				DBDatabaseCluster.Configuration.manual()).dismantle();
+				DBDatabaseCluster.Configuration.autoStart()).dismantle();
 		new DBDatabaseCluster("testYAMLFileProcessingWithFile2",
-				DBDatabaseCluster.Configuration.manual()).dismantle();
+				DBDatabaseCluster.Configuration.autoStart()).dismantle();
 
 		final String yamlConfigFilename = "DBDatabaseCluster.yml";
 
@@ -780,11 +780,11 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		file.delete();
 
 		DBDatabaseCluster db = new DBDatabaseCluster("testYAMLFileProcessingWithFile",
-				DBDatabaseCluster.Configuration.manual());
+				DBDatabaseCluster.Configuration.autoStart());
 		try {
 			try {
 				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile2",
-						DBDatabaseCluster.Configuration.manual(), yamlConfigFilename);
+						DBDatabaseCluster.Configuration.autoStart(), yamlConfigFilename);
 			} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 				assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class
 				)));
@@ -840,7 +840,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			try {
 				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile",
-						DBDatabaseCluster.Configuration.manual(), file);
+						DBDatabaseCluster.Configuration.autoStart(), file);
 				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
 				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 			} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
@@ -856,9 +856,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		} finally {
 			new DBDatabaseCluster("testYAMLFileProcessingWithFile",
-					DBDatabaseCluster.Configuration.manual()).dismantle();
+					DBDatabaseCluster.Configuration.autoStart()).dismantle();
 			new DBDatabaseCluster("testYAMLFileProcessingWithFile2",
-					DBDatabaseCluster.Configuration.manual()).dismantle();
+					DBDatabaseCluster.Configuration.autoStart()).dismantle();
 		}
 	}
 
@@ -1253,7 +1253,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		public DBActionList insert(Collection<E> newRows) throws SQLException {
 			try {
 				if (slowness) {
-					Thread.sleep(1000);
+					Thread.sleep(100);
 				}
 			} catch (InterruptedException ex) {
 				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
