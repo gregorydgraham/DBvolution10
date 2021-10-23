@@ -13,7 +13,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 /**
  *
  * @author gregorygraham
- * @param <R>
+ * @param <R> the DBRow type this comparator works on
  */
 public class RowPropertyComparator<R extends DBRow> implements Comparator<R> {
 	
