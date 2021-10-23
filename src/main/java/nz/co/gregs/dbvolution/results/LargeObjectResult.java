@@ -29,16 +29,11 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Add {@code implements LargeObjectResult} to your class and override the copy
  * method so that it returns your class type.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author greg
  * @param <BASETYPE>
- * @see DBExpression
+ * @see DBExpression the base Java type that this result class produces and
+ * manipulates, e.g. Integer
  */
 public interface LargeObjectResult<BASETYPE> extends AnyResult<BASETYPE> {
-
-//	@Override
-//	public LargeObjectResult<BASETYPE> copy();
 
 }
