@@ -19,8 +19,9 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
  * Abstracts a java field or bean-property as a DBvolution-centric property,
- * which contains values from a specific column in a database table.Transparently handles all annotations associated with the property, including
- type adaption.<p>
+ * which contains values from a specific column in a database
+ * table.Transparently handles all annotations associated with the property,
+ * including type adaption.<p>
  * Provides access to the meta-data defined on a single java property of a
  * class, and provides methods for reading and writing the value of the property
  * on target objects. Instances of this class are not bound to specific target
@@ -56,10 +57,11 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * <p>
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
- * @param <ROW>
- * @param <BASETYPE>
+ *
+ * @param <ROW> the class of the DBRow (probably) that this instance wraps
+ * @param <BASETYPE> the class of the field (probably) that this instance wraps
  */
-public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE extends Object > implements Serializable {
+public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE extends Object> implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -68,7 +70,7 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 
 	private final ColumnHandler<BASETYPE> columnHandler;
 	private final PropertyTypeHandler<BASETYPE> typeHandler;
-	private final ForeignKeyHandler<?,BASETYPE> foreignKeyHandler;
+	private final ForeignKeyHandler<?, BASETYPE> foreignKeyHandler;
 	private final EnumTypeHandler<BASETYPE> enumTypeHandler;
 	private boolean checkedForColumnExpression = false;
 	private Integer columnIndex = null;
@@ -94,9 +96,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * Gets a string representation of the wrapped property, suitable for
 	 * debugging and logging.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a string representation of this object
 	 */
 	@Override
@@ -121,9 +120,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * Generates a hash-code of this property wrapper definition, based entirely
 	 * on the java property it wraps.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a hash-code.
 	 */
 	@Override
@@ -140,10 +136,8 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * same java property (field or bean-property) in the same class and the same
 	 * class-loader.
 	 *
-	 * @param obj the other object to compare to.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
+	 * @param obj the other object to compare to. @return {@code true} if the two
+	 * objects are equal, {@code false} otherwise.
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -174,9 +168,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * <p>
 	 * Use {@link #getColumnName()} to determine column name.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a String of the Java field name for this property
 	 */
 	public String javaName() {
@@ -190,9 +181,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 *
 	 * <p>
 	 * Use {@link #getColumnName()} to determine column name.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a String of the short name of the declared class of this property
 	 */
@@ -209,9 +197,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * <p>
 	 * Use {@link #getColumnName()} to determine column name.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a String of the full name of the class of this property
 	 */
 	public String qualifiedJavaName() {
@@ -227,9 +212,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * Use {@link #getRawJavaType()} in the rare case that you need to know the
 	 * underlying java property type.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the Class of the internal QueryableDatatype used by this property
 	 */
 	@SuppressWarnings("unchecked")
@@ -238,14 +220,12 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	}
 
 	/**
-	 * Convenience method for testing the type. Equivalent to
-	 * {@code refType.isAssignableFrom(this.type())}.
+	 * Convenience method for testing the type.Equivalent to
+	 * {@code refType.isAssignableFrom(this.type())}
 	 *
-	 * @param refType	refType
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return TRUE if the supplied type is assignable from the internal
-	 * QueryableDatatype, FALSE otherwise.
+	 * @param refType	refType @return TRUE if the supplied type is assignable from
+	 * the internal QueryableDatatype, FALSE otherwise.
+	 * @return true if refType will accept the wrapped field as a valid value
 	 */
 	public boolean isInstanceOf(Class<? extends QueryableDatatype<?>> refType) {
 		return refType.isAssignableFrom(type());
@@ -254,9 +234,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	/**
 	 * Convenience method for testing the type. Equivalent to
 	 * {@code this.type().isAssignableFrom(DBLargeObject.class)}.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if a DBLargeObject is assignable from the internal
 	 * QueryableDatatype, FALSE otherwise.
@@ -268,9 +245,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	/**
 	 * Gets the annotated table name of the table this property belongs to.
 	 * Equivalent to {@code getRowDefinitionClassWrapper().tableName()}.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a String of the table name containing this property.
 	 */
@@ -286,9 +260,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * If the {@code DBColumn} annotation is missing, this method returns
 	 * {@code null}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the column name, if specified explicitly or implicitly
 	 */
 	public String getColumnName() {
@@ -297,9 +268,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 
 	/**
 	 * Indicates whether this property is a column.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return {@code true} if this property is a column
 	 */
@@ -310,9 +278,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	/**
 	 * Indicates whether this property is a primary key.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return {@code true} if this property is a primary key
 	 */
 	public boolean isPrimaryKey() {
@@ -321,9 +286,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 
 	/**
 	 * Indicates whether this property is a foreign key.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return {@code true} if this property is a foreign key
 	 */
@@ -335,9 +297,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * Gets the class referenced by this property, if this property is a foreign
 	 * key.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the referenced class if this property is a foreign key; null if not
 	 * a foreign key
 	 */
@@ -348,9 +307,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	/**
 	 * Gets the table referenced by this property, if this property is a foreign
 	 * key.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the referenced table name if this property is a foreign key; null
 	 * if not a foreign key
@@ -365,9 +321,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * {@link DBForeignKey#column()} attribute, or it is implicitly the single
 	 * primary key of the referenced table if the {@link DBForeignKey#column()}
 	 * attribute is unset.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the referenced column name if this property is a foreign key; null
 	 * if not a foreign key
@@ -389,21 +342,15 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * table name). Attempts to get or set its value or get the type adaptor
 	 * instance will result in an internal exception.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the referenced property if this property is a foreign key; null if
 	 * not a foreign key
 	 */
-	public PropertyWrapperDefinition<?,?> referencedPropertyDefinitionIdentity() {
+	public PropertyWrapperDefinition<?, ?> referencedPropertyDefinitionIdentity() {
 		return foreignKeyHandler.getReferencedPropertyDefinitionIdentity();
 	}
 
 	/**
 	 * Gets the enum type, or null if not appropriate
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the enum type, which may also implement {@link DBEnumValue}
 	 */
@@ -414,9 +361,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	/**
 	 * Gets the type of the code supplied by enum values. This is derived from the
 	 * {@link DBEnumValue} implementation in the enum.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return null if not known or not appropriate
 	 */
@@ -429,9 +373,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * properties which are missing a 'getter' can not be read, but may be able to
 	 * be set.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return TRUE if the property is readable, FALSE otherwise.
 	 */
 	public boolean isReadable() {
@@ -442,9 +383,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * Indicates whether the value of the property can be modified. Bean
 	 * properties which are missing a 'setter' can not be written to, but may be
 	 * able to be read.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the property can be set, FALSE otherwise
 	 */
@@ -457,9 +395,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * type adaptor. (Note: at present there is no support for implicit type
 	 * adaptors)
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return {@code true} if a type adaptor is being used
 	 */
 	public boolean isTypeAdapted() {
@@ -467,18 +402,15 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	}
 
 	/**
-	 * Gets the DBvolution-centric value of the property. The value returned may
+	 * Gets the DBvolution-centric value of the property.The value returned may
 	 * have undergone type conversion from the target object's actual property
-	 * type, if a type adaptor is present.
-	 *
-	 * <p>
+	 * type, if a type adaptor is present.<p>
 	 * Use {@link #isReadable()} beforehand to check whether the property can be
 	 * read.
 	 *
-	 * @param target object instance containing this property
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the QueryableDatatype used internally.
+	 * @param target object instance containing this property @return the
+	 * QueryableDatatype used internally.
+	 * @return the appropriate QDT for this field
 	 * @throws IllegalStateException if not readable (you should have called
 	 * isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
@@ -525,10 +457,8 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * Use {@link #isReadable()} beforehand to check whether the property can be
 	 * read.
 	 *
-	 * @param target object instance containing this property
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return value
+	 * @param target object instance containing this property @return value
+	 * @return the field this wrapper wraps
 	 * @throws IllegalStateException if not readable (you should have called
 	 * isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
@@ -574,9 +504,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * methods. Use the {@link #type()} method to get the DBv-centric property
 	 * type, after type conversion.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the declared class of the property
 	 */
 	public Class<?> getRawJavaType() {
@@ -587,9 +514,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	 * Gets the wrapper for the RowDefinition (DBRow or DBReport) subclass
 	 * containing this property.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the RowDefinitionClassWrapper representing the enclosing object of
 	 * this property
 	 */
@@ -598,9 +522,6 @@ public class PropertyWrapperDefinition<ROW extends RowDefinition, BASETYPE exten
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the columnExpression
 	 */
 	public DBExpression[] getColumnExpression() {
