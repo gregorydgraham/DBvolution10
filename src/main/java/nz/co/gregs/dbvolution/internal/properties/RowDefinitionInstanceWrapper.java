@@ -29,11 +29,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <p>
  * Instances of this class are <i>thread-safe</i>.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Malcolm Lett
- * @param <ROW>
+ * @param <ROW> the class of the DBRow (probably) that this RowDefinitionInstanceWrapper wraps
  */
 public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements Serializable{
 
