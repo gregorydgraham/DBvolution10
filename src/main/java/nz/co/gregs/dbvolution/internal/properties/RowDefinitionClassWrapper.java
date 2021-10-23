@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Malcolm Lett
- * @param <ROW>
+ * @param <ROW> the class of the DBRow (probably) that this instance wraps
  */
 public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Serializable {
 
