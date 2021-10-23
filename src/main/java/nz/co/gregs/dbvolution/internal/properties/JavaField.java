@@ -24,7 +24,8 @@ import nz.co.gregs.dbvolution.exceptions.FailedToSetPropertyValueOnRowDefinition
 
 /**
  * Implementation over java fields.
- * @param <BASETYPE>
+ *
+ * @param <BASETYPE> the class of the field wrapped by this instance
  */
 public class JavaField<BASETYPE> implements JavaProperty<BASETYPE>, Serializable {
 
@@ -50,9 +51,6 @@ public class JavaField<BASETYPE> implements JavaProperty<BASETYPE>, Serializable
 	/**
 	 * Hash-code based on the underlying java field or bean-property.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the hash code
 	 */
 	@Override
@@ -67,10 +65,8 @@ public class JavaField<BASETYPE> implements JavaProperty<BASETYPE>, Serializable
 	 * Tests for equality, based entirely on whether the underlying java field or
 	 * bean-property is the same.
 	 *
-	 * @param second	second
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return TRUE if second is equal to this instance, otherwise FALSE
+	 * @param second	second @return TRUE if second is equal to this instance,
+	 * otherwise FALSE
 	 */
 	@Override
 	public boolean equals(Object second) {
