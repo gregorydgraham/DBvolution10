@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  *
  * @author gregorygraham
- * @param <T>
+ * @param <T> The class for which this comparator works
  */
 public class ComparableComparator<T extends Comparable<? super T>> implements Comparator<T> {
 
