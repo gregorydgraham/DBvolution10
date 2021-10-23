@@ -37,17 +37,10 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * methods in {@link LargeObjectExpression} to insert the column into the
  * expression.
  *
- * <p>
- * Generally you get a LargeObjectColumn using
- * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBLargeObject)  RowDefinition.column(DBlargeObject)}.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
- * @param <BASETYPE>
- * @param <RESULT>
- * @param <QDT>
+ * @param <BASETYPE> the standard Java class or type used with this instance
+ * @param <RESULT> the result class used to make expression with this type
+ * @param <QDT> the QueryableDatatype used to represent this instance
  * @see RowDefinition
  * @see AbstractColumn
  * @see LargeObjectExpression
@@ -74,12 +67,6 @@ public abstract class LargeObjectColumn<BASETYPE extends Object, RESULT extends 
 	public String toSQLString(DBDefinition db) {
 		return column.toSQLString(db);
 	}
-
-//	@Override
-//	public LargeObjectColumn copy() {
-//		final DBRow row = column.getInstanceOfRow();
-//		return new LargeObjectColumn(row, (DBLargeObject<?>) column.getAppropriateQDTFromRow(row));
-//	}
 
 	@Override
 	public AbstractColumn getColumn() {
