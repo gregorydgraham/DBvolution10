@@ -33,7 +33,7 @@ package nz.co.gregs.dbvolution.results;
 /**
  *
  * @author gregorygraham
- * @param <B>
+ * @param <B> the base Java type that this result class produces and manipulates, e.g. Integer
  */
 public interface NullCapableResult<B> extends AnyResult<B> {
 }
