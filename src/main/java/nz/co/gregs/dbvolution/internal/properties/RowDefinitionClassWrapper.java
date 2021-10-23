@@ -36,9 +36,6 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <p>
  * Instances of this class are <i>thread-safe</i>.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Malcolm Lett
  * @param <ROW> the class of the DBRow (probably) that this instance wraps
  */
@@ -209,8 +206,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets a new instance of the java property finder, configured as required
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return A new JavePropertyFinder for all fields, public methods, that have
 	 * DBColumn annotation, and are fields or beans.
@@ -258,8 +255,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 * Gets an object wrapper instance for the given target object
 	 *
 	 * @param target the {@code DBRow} instance
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return A RowDefinitionInstanceWrapper for the supplied target.
 	 */
 	public RowDefinitionInstanceWrapper<ROW> instanceWrapperFor(ROW target) {
@@ -273,8 +270,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets a string representation suitable for debugging.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a string representation of this object.
 	 */
@@ -292,8 +289,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 * classes.
 	 *
 	 * @param obj	obj
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
@@ -322,8 +319,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Calculates the hash-code based on the hash-code of the wrapped class.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the hash-code
 	 */
@@ -338,8 +335,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets the underlying wrapped class.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the DBRow or Object wrapped by this instance.
 	 */
@@ -355,8 +352,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 * <p>
 	 * Equivalent to {@code this.adaptee().getSimpleName();}
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the SimpleName of the class being wrapped.
 	 */
@@ -369,8 +366,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 * <p>
 	 * Use {@link #tableName()} for the name of the table mapped to this class.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the fully qualified name of the class being wrapped.
 	 */
@@ -381,8 +378,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Indicates whether this class maps to a database table.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return TRUE if this RowDefinitionClassWrapper represents a database table
 	 * or view, otherwise FALSE.
@@ -403,8 +400,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 * <p>
 	 * Use {@link TableHandler#getDBTableNameAnnotation() } for low level access.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
@@ -414,8 +411,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
@@ -449,8 +446,6 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 * @param database active database
 	 * @param columnName columnName columnName
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the PropertyWrapperDefinition for the column name supplied. Null if
 	 * no such column is found.
 	 * @throws AssertionError if called when in {@code identityOnly} mode.
@@ -475,10 +470,6 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 *
 	 * <p>
 	 * Assumes working in "identity-only" mode.
-	 *
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the non-null list of matching property definitions, with only
 	 * identity information available, empty if no such properties found
@@ -507,8 +498,6 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	 * well and returns only the first one it sees.
 	 *
 	 * @param propertyName	propertyName
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the PropertyWrapperDefinition for the named object property Null if
 	 * no such property is found.
 	 * @throws AssertionError if called when in {@code identityOnly} mode.
@@ -523,8 +512,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets all properties annotated with {@code DBColumn}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a List of all PropertyWrapperDefinitions for the wrapped class.
 	 */
@@ -538,8 +527,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets all properties NOT annotated with {@code DBColumn}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a List of all PropertyWrapperDefinitions for the wrapped class.
 	 */
@@ -553,8 +542,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets all foreign key properties.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a list of ProperyWrapperDefinitions for all the foreign keys
 	 * defined in the wrapped object
@@ -577,8 +566,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets all recursive foreign key properties.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a list of ProperyWrapperDefinitions for all the recursive foreign
 	 * keys defined in the wrapped object
@@ -604,8 +593,8 @@ public class RowDefinitionClassWrapper<ROW extends RowDefinition> implements Ser
 	/**
 	 * Gets all primary key properties.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 *
 	 *
 	 * @return a list of ProperyWrapperDefinitions for all the foreign keys
 	 * defined in the wrapped object
