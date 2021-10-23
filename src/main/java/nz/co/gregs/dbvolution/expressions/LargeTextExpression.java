@@ -37,7 +37,6 @@ import nz.co.gregs.dbvolution.results.LargeTextResult;
 /**
  *
  * @author gregorygraham
- * @param <O> the java object returned by this expression
  */
 public class LargeTextExpression extends LargeObjectExpression<byte[], LargeTextResult, DBLargeText> implements LargeTextResult, ExpressionColumn<DBLargeText>{
 
