@@ -36,7 +36,6 @@ import nz.co.gregs.dbvolution.results.LargeBinaryResult;
 /**
  *
  * @author gregorygraham
- * @param <O> the java object returned by this expression
  */
 public class LargeBinaryExpression extends LargeObjectExpression<byte[], LargeBinaryResult, DBLargeBinary> implements LargeBinaryResult, ExpressionColumn<DBLargeBinary>{
 
