@@ -21,13 +21,11 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
 import nz.co.gregs.dbvolution.columns.LargeTextColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.LargeTextResult;
 import nz.co.gregs.dbvolution.utility.comparators.ByteArrayComparator;
@@ -50,9 +48,6 @@ import org.apache.commons.codec.binary.Base64;
  * <p>
  * DBLargeText is the standard type of
  * {@link DBLargeObject CLOB and Text columns}.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -89,9 +84,6 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the standard SQL datatype that corresponds to this QDT as a String
 	 */
 	@Override
@@ -107,11 +99,6 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	@Override
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
-//		if (byteArray == null) {
-//			byteStream = new BufferedInputStream(new ByteArrayInputStream(new byte[]{}));
-//		} else {
-//			byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
-//		}
 	}
 
 	/**
@@ -125,7 +112,6 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	 */
 	public void setValue(InputStream inputViaStream) {
 		super.setLiteralValue(null);
-//		byteStream = new BufferedInputStream(inputViaStream);
 	}
 
 	/**
@@ -360,8 +346,6 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -380,8 +364,6 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -397,8 +379,6 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	 * Tries to set the DBDyteArray to the contents of the supplied file.
 	 *
 	 * @param originalFile	originalFile
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -498,25 +478,15 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	/**
 	 * Returns the internal InputStream.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return an InputStream to read the bytes.
 	 */
 	@Override
 	public InputStream getInputStream() {
 		return new BufferedInputStream(new ByteArrayInputStream(getBytes()));
-//		if (byteStream == null) {
-//			this.setValue(getBytes());
-//		}
-//		return byteStream;
 	}
 
 	/**
 	 * Returns the byte[] used internally to store the value of this DBByteObject.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the byte[] value of this DBByteObject.
 	 */
@@ -584,11 +554,7 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 				bytes = getFromBinaryStream(resultSet, fullColumnName);
 				break;
 			case CHARSTREAM:
-//				try {
 				bytes = getFromCharacterReader(resultSet, fullColumnName);
-//				} catch (IOException exp) {
-//					throw new DBRuntimeException(exp);
-//				}
 				break;
 			case CLOB:
 				bytes = getFromCLOB(resultSet, fullColumnName);
