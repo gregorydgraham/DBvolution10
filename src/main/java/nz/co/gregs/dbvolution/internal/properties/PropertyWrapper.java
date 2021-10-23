@@ -50,9 +50,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
  *
- * @param <ROW>
+ * @param <ROW> the class referenced by the RowDefinitionInstanceWrapper
  * @param <BASETYPE> the object returned by getValue on the QDT of this property
- * @param <QDT>
+ * @param <QDT> the class of the object returned by getQueryableDatatype
  */
 public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends QueryableDatatype<BASETYPE>> implements Serializable {
 

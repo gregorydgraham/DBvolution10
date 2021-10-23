@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException
 
 /**
  * Implementation over bean properties.
- * @param <BASETYPE>
+ * @param <BASETYPE> the base type of the Java bean
  */
 public class JavaBeanProperty<BASETYPE> implements JavaProperty<BASETYPE>, Serializable {
 
