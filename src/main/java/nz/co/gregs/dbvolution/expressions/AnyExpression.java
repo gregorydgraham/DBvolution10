@@ -983,9 +983,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 * If you would like more control over the running total use something like
 	 * tableName.column(tableName.priceColumn).sum().over() to get started.</p>
 	 *
-	 * @param expressionsToPartitionBy
-	 * @param expressionsToOrderBy
-	 * @return
+	 * @param expressionsToPartitionBy the expression that defines the "partition by" clause of the running count
+	 * @param expressionsToOrderBy the expression that defines the "order by" clause of the running count
+	 * @return an integer expression that evaluated to a running count of some aspect of the query
 	 */
 	public IntegerExpression runningCount(RangeExpression<?, ?, ?>[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
 		return this.count().over().partition(expressionsToPartitionBy).orderBy(expressionsToOrderBy).withoutFrame();
