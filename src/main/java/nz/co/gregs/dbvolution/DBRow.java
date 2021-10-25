@@ -155,7 +155,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Creates a new blank DBRow of the supplied RowDefinitionClassWrapper.
 	 *
-	 * @param <T> DBRow type
+	 * @param <ROW> DBRow type
 	 * @param requiredDBRowClass requiredDBRowClass
 	 * @return a new blank version of the specified class
 	 */
@@ -1805,7 +1805,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Might be helpful for recreating the database, but I recommend
 	 * triple-checking everything.
 	 *
-	 * @param referencePackage
+	 * @param referencePackage the Java package to search for DBRow classes
 	 * @return a list of all the direct subclasses of DBRow from the specified
 	 * package.
 	 */
