@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
