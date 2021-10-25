@@ -207,7 +207,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * numbers. given the max precision(28) of pre-2012 MS SQL Server, 16 decimals
 	 * seems as accurate as is reasonable</p>
 	 *
-	 * @return
+	 * @return 16
 	 */
 	public static int getNumericScale() {
 		return 16;
@@ -220,6 +220,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * 28 is the maximum precision for MS SQL Server pre-2012, other databases
 	 * seem not to be limited. 38 is the maximum for MSSQLServer 2012+</p>
 	 *
+	 * @return 28
 	 */
 	public static int getNumericPrecision() {
 		return 28;
