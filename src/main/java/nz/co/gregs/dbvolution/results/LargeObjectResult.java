@@ -30,9 +30,9 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * method so that it returns your class type.
  *
  * @author greg
- * @param <BASETYPE>
- * @see DBExpression the base Java type that this result class produces and
- * manipulates, e.g. Integer
+ * @param <BASETYPE> the base Java type that this result class produces and
+ * manipulates, e.g. byte[]
+ * @see DBExpression
  */
 public interface LargeObjectResult<BASETYPE> extends AnyResult<BASETYPE> {
 
