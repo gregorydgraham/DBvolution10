@@ -15,13 +15,13 @@ docker pull microsoft/mssql-server-linux
 -- -e 'TZ=Pacific/Auckland' sets the container timezone to the where I do my test (needs improving)
 -- -p 1433:1433 is the port of the host and container
 -- -d is detach "Run container in background and print container ID"
-docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d microsoft/mssql-server-linux
+docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d mcr.microsoft.com/mssql/server
 
 -- Apple silicon (while SQLServer isn't available for ARM chips)
 docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=Password23' -p 1433:1433 --name sqlserver_container -d mcr.microsoft.com/azure-sql-edge
 
 -- Start the container in winter
-docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d microsoft/mssql-server-linux
+docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d mcr.microsoft.com/mssql/server
 
 -- Windows version (doesn't work on Mac :( )
 docker pull microsoft/mssql-server-windows-developer
