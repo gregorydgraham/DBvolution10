@@ -2545,7 +2545,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * There is no guarantee that the particular database instance uses this port,
 	 * check with your DBA.</p>
 	 *
-	 * @return
+	 * @return the usual database port number
 	 */
 	@Override
 	public abstract Integer getDefaultPort();
