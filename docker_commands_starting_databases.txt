@@ -1,0 +1,4 @@
+docker run --name sqlserver_jenkins -v MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 11434:1433 -d mcr.microsoft.com/mssql/server
+docker run --name postgres_jenkins -e 'TZ=Pacific/Auckland' -p 16543:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgis/postgis:10-3.0-alpine                                                                                       
+docker run --name oracle_jenkins -i --cap-add=SYS_TIME -e 'TZ=Pacific/Auckland' -p 11521:1521 -d oracleinanutshell/oracle-xe-11g                                                       
+docker run --name mysql_jenkins -e 'TZ=Pacific/Auckland' -p 13306:3306 -e MYSQL_ROOT_PASSWORD=secret -d mysql:8
