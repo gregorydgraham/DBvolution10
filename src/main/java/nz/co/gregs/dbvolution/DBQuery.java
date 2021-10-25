@@ -1861,7 +1861,7 @@ public class DBQuery implements Serializable {
 	 * Adds Extra Examples to the Query.
 	 *
 	 * <p>
-	 * The included DBRow instances will be used to addTerm extra criteria as
+	 * The included DBRow instances will be used to add extra criteria as
 	 * though they were an added table.
 	 *
 	 * <p>
@@ -1870,9 +1870,9 @@ public class DBQuery implements Serializable {
 	 *
 	 * <p>
 	 * They will NOT be added as tables however, for that use
-	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) addTerm and related methods}.
+	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
 	 *
-	 * @param extraExamples
+	 * @param extraExamples DBRow examples that provide extra criteria
 	 *
 	 * @return this DBQuery with the extra examples added
 	 */
@@ -2256,7 +2256,7 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * Use this method If you require a longer running query.
 	 *
-	 * @param milliseconds
+	 * @param milliseconds the maximum time, in milliseconds, that this query is allowed to run
 	 *
 	 * @return this query.
 	 */
@@ -2279,7 +2279,7 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * Use this method If you require a longer running query.
 	 *
-	 * @param milliseconds
+	 * @param milliseconds the maximum time, in milliseconds, that this query is allowed to run
 	 *
 	 * @return this query.
 	 */
