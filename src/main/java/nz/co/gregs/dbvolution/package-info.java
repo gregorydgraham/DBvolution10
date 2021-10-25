@@ -1,3 +1,8 @@
+
+package nz.co.gregs.dbvolution;
+
+import nz.co.gregs.dbvolution.generation.DBRowSubclassGenerator;
+import nz.co.gregs.dbvolution.*;
 /**
  * <h2>Core DBvolution Classes</h2>
  * <p>
@@ -16,10 +21,10 @@
  * <p>
  * With the the DBDatabase you can create the DBRow classes required from the
  * database schema using
- * {@link nz.co.gregs.dbvolution.generation.DBTableClassGenerator} or you can
+ * {@link nz.co.gregs.dbvolution.generation.DBRowSubclassGenerator} or you can
  * write your own. DBDatabase provides methods to create and "drop" table from
  * the database so you can start from scratch or migrate easily. There are
- * examples to start from in {@link nz.co.gregs.dbvolution.example}.
+ * examples to start from in nz.co.gregs.dbvolution.example such as {@link nz.co.gregs.dbvolution.example.CarCompany}.
  * <p>
  * Using your {@link nz.co.gregs.dbvolution.DBRow DBRow subclasses} you can
  * create simple queries using
@@ -41,4 +46,3 @@
  * <p>
  * <b>Gregory Graham</b>
  */
-package nz.co.gregs.dbvolution;
