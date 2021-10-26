@@ -55,7 +55,7 @@ public interface DBQueryable {
 	 * @return The complete list of all actions performed to complete this action
 	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
-	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
+	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL may be thrown when a recursive query will infinitely recurse
 	 */
 	public DBQueryable query(DBDatabase db) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException;
 
