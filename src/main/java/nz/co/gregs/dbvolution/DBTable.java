@@ -495,7 +495,7 @@ public class DBTable<E extends DBRow> {
 	 * See also {@link #getSQLForCount() getSQLForCount} and {@link #getSQLForQuery()
 	 * }
 	 *
-	 * @param exemplar
+	 * @param exemplar an example DBRow to base the query on
 	 * @return a String of the SQL that will be used by {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)
 	 * }. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -563,7 +563,7 @@ public class DBTable<E extends DBRow> {
 	/**
 	 * Inserts DBRow into the database.
 	 *
-	 * @param row
+	 * @param row the row to insert
 	 * @return a DBActionList of all the actions performed 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
