@@ -50,14 +50,14 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 
 	/**
 	 * Executes required update actions for the row and returns a
-	 * {@link DBActionList} of those actions.
+	 * {@link DBActionList} of those actions.The original rows are not changed by this method, or any DBUpdate method.
 	 *
-	 * The original rows are not changed by this method, or any DBUpdate method.
 	 * Use {@link DBRow#setSimpleTypesToUnchanged() } if you need to ignore the
 	 * changes to the row.
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
+	 * @return a list of the actions taken to action this update
 	 * @throws SQLException database exceptions
 	 */
 	public static DBActionList updateAnyway(DBDatabase db, DBRow row) throws SQLException {
