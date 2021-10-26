@@ -59,7 +59,7 @@ interface DBDatabaseInterface {
 	/**
 	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
 	 *
-	 * @param statement the statement to use when adding features, DO NOT CLOSE
+	 * @param stmt the statement to use when adding features, DO NOT CLOSE
 	 * THIS STATEMENT.
 	 * @throws ExceptionDuringDatabaseFeatureSetup database exceptions may occur
 	 * @see PostgresDB
@@ -73,9 +73,6 @@ interface DBDatabaseInterface {
 
 	/**
 	 * Clones the DBDatabase
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a clone of the database.
 	 * @throws java.lang.CloneNotSupportedException
