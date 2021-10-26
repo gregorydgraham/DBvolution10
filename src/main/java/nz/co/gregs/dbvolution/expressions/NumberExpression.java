@@ -1929,7 +1929,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	StringResult formatAsDateRepeatSeconds() {
-		return new StringExpression(this){
+		return new StringExpression(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doFormatAsDateRepeatSeconds(getInnerResult().toSQLString(db));
@@ -2310,9 +2310,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * (new DBNumber( 1.5)).ceil() == 2<br>
 	 * (new DBNumber(-1.5)).ceil() == -1
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the value of the equation rounded up to the nearest integer.
 	 */
 	public NumberExpression roundUp() {
@@ -2335,19 +2332,19 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * If you would like more control over the running total use something like
 	 * tableName.column(tableName.priceColumn).sum().over() to get started.</p>
 	 *
-	 * @param expressionsToPartitionBy
-	 * @param expressionsToOrderBy
-	 * @return
+	 * @param expressionsToPartitionBy the expression used to define the
+	 * "partition by" clause of this running total
+	 * @param expressionsToOrderBy the expression used for the "order by" clause
+	 * of the running total
+	 * @return an expression that will provide a running total for some aspect of
+	 * the query
 	 */
-	public NumberExpression runningTotal(RangeExpression<?,?,?>[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
+	public NumberExpression runningTotal(RangeExpression<?, ?, ?>[] expressionsToPartitionBy, SortProvider... expressionsToOrderBy) {
 		return this.sum().over().partition(expressionsToPartitionBy).orderBy(expressionsToOrderBy).withoutFrame();
 	}
 
 	/**
 	 * Implements support for ROUND()
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the equation rounded to the nearest integer.
 	 */
@@ -2363,8 +2360,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(Integer decimalPlaces) {
@@ -2379,8 +2374,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(Long decimalPlaces) {
