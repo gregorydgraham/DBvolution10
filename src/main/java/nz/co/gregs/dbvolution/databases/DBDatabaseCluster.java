@@ -129,11 +129,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		if (config.useAutoRebuild) {
 			clusterDetails.loadTrackedTables();
 		}
-		
+
 		if (config.useAutoStart) {
 			startupCluster();
 		}
-		
+
 		// add any hosts found in the settings
 		for (var clusterHost : builder.getClusterHosts()) {
 			try {
@@ -287,10 +287,12 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Use this method to ensure that the new cluster will not clash with any
 	 * existing clusters.</p>
 	 *
-	 * @param config
-	 * @param databases
-	 * @return
-	 * @throws SQLException
+	 * @param config the database configuration
+	 * @param databases a database to build the cluster with
+	 * @return a cluster with a random name based on the configuration and the
+	 * database
+	 * @throws SQLException database errors may occur while intialising the
+	 * database and synchronising
 	 */
 	public static DBDatabaseCluster randomCluster(Configuration config, DBDatabase databases) throws SQLException {
 		final String dbName = getRandomClusterName();
@@ -304,8 +306,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Use this method to ensure that the new cluster will not clash with any
 	 * existing clusters.</p>
 	 *
-	 * @param databases
-	 * @return
+	 * @param databases a database to build the cluster with
+	 * @return a cluster with a random name based on the manual configuration and
+	 * the database
 	 * @throws SQLException
 	 */
 	public static DBDatabaseCluster randomManualCluster(DBDatabase databases) throws SQLException {
@@ -320,9 +323,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Use this method to ensure that the new cluster will not clash with any
 	 * existing clusters.</p>
 	 *
-	 * @param databases
-	 * @return
-	 * @throws SQLException
+	 * @param databases a database to base the cluster on
+	 * @return a cluster with a random name based the database, that will
+	 * automatically start, rebuild the structure, and reconnect added databases
+	 * @throws SQLException database errors may be thrown during initialisation
 	 */
 	public static DBDatabaseCluster randomAutomaticCluster(DBDatabase databases) throws SQLException {
 		final String dbName = getRandomClusterName();
@@ -531,10 +535,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * result of the call).
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
-	 * @return <code>true</code> if this list contained the specified element
+	 * @return <code>true</code> if the database was removed
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
-	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -544,9 +547,13 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the
 	 * <code>quarantineDatabase</code> operation is not supported by this list
 	 */
-	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
+	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
 		boolean removed = getSettings().removeClusterHost(database.getSettings());
-		return getDetails().removeDatabase(database);
+		if (removed) {
+			return getDetails().removeDatabase(database);
+		} else {
+			return removed;
+		}
 	}
 
 	/**
