@@ -81,6 +81,7 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	/**
 	 * Create a NumberColumn for the supplied field of the supplied row
 	 *
+	 * @param <NUMBER> the Java number type represented by the number column
 	 * @param <ENUM> an DBEnumValue&lt;Number&gt; type
 	 * @param row the row containing the field
 	 * @param field the field defining the column
