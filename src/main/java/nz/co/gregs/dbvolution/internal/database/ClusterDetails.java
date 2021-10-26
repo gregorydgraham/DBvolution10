@@ -201,7 +201,7 @@ public class ClusterDetails implements Serializable {
 		return unsynchronizedDatabases.remove(database);
 	}
 
-	public synchronized boolean removeDatabase(DBDatabase databaseToRemove) throws SQLException {
+	public synchronized boolean removeDatabase(DBDatabase databaseToRemove) {
 		DBDatabase database = databaseToRemove;
 		if (hasTooFewReadyDatabases() && readyDatabases.contains(database)) {
 			// Unable to quarantine the only remaining database
@@ -221,7 +221,7 @@ public class ClusterDetails implements Serializable {
 		return readyDatabases.size() < 2;
 	}
 
-	private synchronized boolean removeDatabaseFromAllLists(DBDatabase databaseToRemove) throws SQLException {
+	private synchronized boolean removeDatabaseFromAllLists(DBDatabase databaseToRemove) {
 		DBDatabase database = databaseToRemove;
 		LOG.log(Level.INFO, "REMOVING: {0}", database.getLabel());
 		boolean result = removeDatabaseFromAllLists_Internal(database);
