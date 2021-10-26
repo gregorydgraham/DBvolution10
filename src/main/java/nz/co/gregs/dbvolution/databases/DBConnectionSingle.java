@@ -339,8 +339,8 @@ public class DBConnectionSingle implements DBConnection {
 
 	/**
 	 *
-	 * @return
-	 * @throws SQLException
+	 * @return the JDBC statement used internally
+	 * @throws SQLException database errors may occur when creating the statement
 	 */
 	@Override
 	public Statement getInternalStatement() throws SQLException {
