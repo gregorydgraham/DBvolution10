@@ -90,7 +90,7 @@ public class ClusterDetails implements Serializable {
 		this.clusterLabel = label;
 	}
 
-	public final synchronized boolean add(DBDatabase databaseToAdd) throws SQLException {
+	public final synchronized boolean add(DBDatabase databaseToAdd) {
 		if (databaseToAdd != null) {
 			DBDatabase database = databaseToAdd;
 			final boolean clusterSupportsDifferenceBetweenNullAndEmptyString = getSupportsDifferenceBetweenNullAndEmptyString();
@@ -243,7 +243,7 @@ public class ClusterDetails implements Serializable {
 		return unsynchronizedDatabases.toArray(new DBDatabase[]{});
 	}
 
-	public synchronized void synchronizingDatabase(DBDatabase datbaseIsSynchronized) throws SQLException {
+	public synchronized void synchronizingDatabase(DBDatabase datbaseIsSynchronized) {
 		DBDatabase database = datbaseIsSynchronized;
 		removeDatabaseFromUnsynchronized(database);
 		synchronizingDatabases.add(database);
@@ -703,7 +703,7 @@ public class ClusterDetails implements Serializable {
 		return !isSynchronised();
 	}
 
-	public void synchronizeSecondaryDatabases() throws SQLException {
+	public void synchronizeSecondaryDatabases() {
 		DBDatabase[] addedDBs;
 		addedDBs = getUnsynchronizedDatabases();
 		for (DBDatabase db : addedDBs) {
@@ -712,7 +712,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) {
 		synchronizingDatabase(secondary);
 
 		final String secondaryLabel = secondary.getLabel();

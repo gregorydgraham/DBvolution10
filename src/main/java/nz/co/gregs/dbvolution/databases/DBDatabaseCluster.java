@@ -258,7 +258,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		initDatabase(databases);
 	}
 
-	public DBDatabaseCluster(DatabaseConnectionSettings settings) throws SQLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public DBDatabaseCluster(DatabaseConnectionSettings settings) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
 		this(new DBDatabaseClusterSettingsBuilder().fromSettings(settings));
 	}
 
@@ -270,10 +270,8 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void initDatabase(DBDatabase[] databases) throws SQLException {
+	private void initDatabase(DBDatabase[] databases) {
 		for (DBDatabase database : databases) {
-			final DBDatabase databaseToAdd;
-			databaseToAdd = database;
 			addDatabaseWithoutWaiting(database);
 		}
 		setDefinition(new ClusterDatabaseDefinition());
@@ -429,7 +427,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return add;
 	}
 
-	private boolean addDatabaseWithoutWaiting(DBDatabase database) throws SQLException {
+	private boolean addDatabaseWithoutWaiting(DBDatabase database) {
 		getSettings().addClusterHost(database.getSettings());
 		boolean add = getDetails().add(database);
 		return add;
@@ -1566,7 +1564,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			return database;
 		}
 
-		final public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException {
+		final public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) {
 			cluster.getDetails().synchronizeSecondaryDatabase(database);
 			return null;
 		}
