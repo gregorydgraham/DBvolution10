@@ -39,9 +39,6 @@ import nz.co.gregs.dbvolution.internal.query.QueryDetails;
  * Each instance is accessible thru the
  * {@link #get(nz.co.gregs.dbvolution.DBRow) get(DBRow) method}.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  *
  */
@@ -54,10 +51,6 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	public DBQueryRow(QueryDetails queryThatThisRowWasGeneratedFor) {
 		super();
 		baseQuery = queryThatThisRowWasGeneratedFor;
-	}
-
-	private DBQueryRow() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -79,8 +72,7 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	 *
 	 * @param <E> DBRow type
 	 * @param exemplar exemplar
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the instance of exemplar that is in the DBQueryRow instance
 	 */
 	@SuppressWarnings("unchecked")
@@ -90,9 +82,6 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 
 	/**
 	 * Returns the all DBRow instances contained within this DBQueryRow.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return all DBRow instances that are in this DBQueryRow instance
 	 */
@@ -121,9 +110,7 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	 * @param ps	ps
 	 */
 	public void print(PrintStream ps) {
-		for (DBRow row : values()) {
-			ps.print("" + row);
-		}
+		values().forEach(row -> ps.print("" + row));
 	}
 
 	public void addExpressionColumnValue(Object key, QueryableDatatype<?> expressionQDT) {
@@ -134,7 +121,7 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 		return expressionColumnValues.get(key);
 	}
 
-	public Map<Object,QueryableDatatype<?>> getExpressionColumns() {
+	public Map<Object, QueryableDatatype<?>> getExpressionColumns() {
 		return expressionColumnValues;
 	}
 
@@ -279,9 +266,6 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	 * The line separator is not included in the results, to allow for portability
 	 * and post-processing.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
 	 */
 	public String toCSVLine() {
@@ -296,8 +280,6 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	 * and post-processing.
 	 *
 	 * @param dateFormat	dateFormat
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
 	 */
 	public String toCSVLine(SimpleDateFormat dateFormat) {
@@ -312,9 +294,6 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	 * The line separator is not included in the results, to allow for portability
 	 * and post-processing.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all the fields in the DBQueryRow formatted for a TSV file
 	 */
 	public String toTabbedHeader() {
@@ -328,9 +307,6 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	 * The line separator is not included in the results, to allow for portability
 	 * and post-processing.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV file
 	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
 	 *
@@ -341,6 +317,6 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 
 	@Override
 	public DBQueryRow clone() {
-		return (DBQueryRow) super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return (DBQueryRow) super.clone();
 	}
 }
