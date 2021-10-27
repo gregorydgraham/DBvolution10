@@ -98,8 +98,7 @@ public class DBDatabaseHandle extends DBDatabase {
 	 *
 	 * @param stmt the statement to use when adding features, DO NOT CLOSE
 	 * THIS STATEMENT .
-	 * @
-	 * throws ExceptionDuringDatabaseFeatureSetup database exceptions may occur
+	 * @throws ExceptionDuringDatabaseFeatureSetup database exceptions may occur
 	 * @see PostgresDB
 	 * @see H2DB
 	 * @see SQLiteDB
