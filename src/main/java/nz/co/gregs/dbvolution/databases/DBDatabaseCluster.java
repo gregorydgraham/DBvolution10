@@ -307,7 +307,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @param databases a database to build the cluster with
 	 * @return a cluster with a random name based on the manual configuration and
 	 * the database
-	 * @throws SQLException
+	 * @throws SQLException database errors may be thrown during initialisation
 	 */
 	public static DBDatabaseCluster randomManualCluster(DBDatabase databases) throws SQLException {
 		final String dbName = getRandomClusterName();
@@ -466,7 +466,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation).If this list does not contain the element,
-	 * it is unchanged. More formally, removes the element with the lowest index
+	 * it is unchanged.More formally, removes the element with the lowest index
 	 * <code>i</code> such that
 	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
 	 * (if such an element exists). Returns true if this list contained the
@@ -477,7 +477,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @return true if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
-	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -487,14 +486,14 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the quarantineDatabase operation
 	 * is not supported by this list
 	 */
-	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
+	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException {
 		return removeDatabases(databases.toArray(new DBDatabase[]{}));
 	}
 
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
 	 * is present (optional operation).If this list does not contain the element,
-	 * it is unchanged. More formally, removes the element with the lowest index i
+	 * it is unchanged.More formally, removes the element with the lowest index i
 	 * such that
 	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
 	 * (if such an element exists). Returns <code>true</code> if this list
@@ -505,7 +504,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @return true if this list contained the specified element
 	 * @throws UnableToRemoveLastDatabaseFromClusterException cluster cannot
 	 * remove the last remaining database
-	 * @throws java.sql.SQLException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -515,7 +513,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the quarantineDatabase operation
 	 * is not supported by this list
 	 */
-	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
+	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException {
 		for (DBDatabase database : databases) {
 			removeDatabase(database);
 		}
@@ -722,8 +720,11 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param <TR> DBRow type
 	 * @param tableRow tableRow
-	 * @throws SQLException, AccidentalDroppingOfTableException,
-	 * AutoCommitActionDuringTransactionException
+	 * @throws SQLException database errors may occur
+	 * @throws AccidentalDroppingOfTableException Always ensure that this not done
+	 * accidentally
+	 * @throws AutoCommitActionDuringTransactionException dropping a table within
+	 * a transaction is not permitted
 	 */
 	@Override
 	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
