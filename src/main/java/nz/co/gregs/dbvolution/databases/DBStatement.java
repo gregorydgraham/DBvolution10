@@ -27,6 +27,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
+import nz.co.gregs.dbvolution.utility.StringCheck;
+import nz.co.gregs.regexi.Regex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -73,8 +75,9 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	/**
 	 * Executes the given SQL statement, which returns a single ResultSet object.
 	 *
-	 * @param details
-	 * @return a ResultSet
+	 * @param details the full details of the query including the SQL to be
+	 * executed
+	 * @return a ResultSet the results, if any, of the query
 	 * @throws SQLException database exceptions
 	 */
 	public ResultSet executeQuery(StatementDetails details) throws SQLException {
@@ -88,7 +91,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			executeQuery = getInternalStatement().executeQuery(sql);
 		} catch (SQLException exp) {
 			try {
-				var statementDetails = new StatementDetails("UNLABELLED QUERY", intent, sql, exp);
+				var statementDetails = details.copy().withLabel("UNLABELLED QUERY").withException(exp);
 				statementDetails.setIgnoreExceptions(details.isIgnoreExceptions());
 				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
 			} catch (LoopDetectedInRecursiveSQL loop) {
@@ -135,7 +138,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			if (exp.getMessage().equals(exp2.getMessage())) {
 				throw exp;
 			} else {
-				final StatementDetails statementDetails = new StatementDetails("RETRYING FAILED SQL", intent, sql, exp2);
+				final StatementDetails statementDetails = details.copy().withLabel("RETRYING FAILED SQL").withException(exp2);
 				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
 				return executeQuery;
 			}
@@ -299,7 +302,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * 1 Database exceptions may be thrown
 	 *
 	 * @param i i
-	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.sql.SQLException Database exceptions may be thrown
 	 */
 	public void setQueryTimeout(int i) throws SQLException {
 		getInternalStatement().setQueryTimeout(i);
@@ -311,7 +314,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * statement that is being executed by another thread. 1 Database exceptions
 	 * may be thrown
 	 *
-	 * @throws java.sql.SQLException
+	 * @throws SQLException Database exceptions may be thrown
 	 */
 	public synchronized void cancel() throws SQLException {
 		try {
@@ -398,9 +401,6 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * support updates, the cursor's SELECT statement should have the form SELECT
 	 * FOR UPDATE. If FOR UPDATE is not present, positioned updates may fail.
 	 *
-	 *
-	 * 1 Database exceptions may be thrown
-	 *
 	 * @param string string
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -423,23 +423,24 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * to retrieve the result, and getMoreResults to move to any subsequent
 	 * result(s).
 	 *
-	 * @param details
+	 * @param details the full details of the query including the SQL to be
+	 * executed
 	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
 	 * object; <code>FALSE</code> if it is an update count or there are no results
-	 * 1 Database exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
+	 *
+	 * @throws SQLException Database exceptions may be thrown
 	 */
 	public boolean execute(StatementDetails details) throws SQLException {
 		String sql = details.getSql();
-		QueryIntention intent = details.getIntention();
 		final String logSQL = "EXECUTING: " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		final boolean execute;
 		try {
-			execute = getInternalStatement().execute(sql);
+			final var stmt = getInternalStatement();
+			execute = details.execute(stmt);
 		} catch (SQLException exp) {
-			StatementDetails statementDetails = new StatementDetails("RETRY EXECUTE", intent, sql, exp);
+			StatementDetails statementDetails = details.copy().withLabel("RETRY EXECUTE").withException(exp);
 			return addFeatureAndAttemptExecuteAgain(statementDetails);
 		}
 		return execute;
@@ -463,7 +464,7 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			return executeQuery;
 		} catch (SQLException exp2) {
 			if (!exp.getMessage().equals(exp2.getMessage())) {
-				var dets = new StatementDetails("RETRY EXECUTE", intent, sql, exp);
+				var dets = details.copy().withLabel("RETRY EXECUTE");
 				executeQuery = addFeatureAndAttemptExecuteAgain(dets);
 				return executeQuery;
 			} else {
@@ -874,7 +875,10 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @return true if the first result is a ResultSet object; false if it is an
 	 * update count or there are no results. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @deprecated this method is used once and provides little improvement over
+	 * the JDBC method, and will be removed soon
 	 */
+	@Deprecated
 	public boolean execute(String string, int i) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -907,7 +911,9 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * @return true if the first result is a ResultSet object; false if it is an
 	 * update count or there are no results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @deprecated This method is not used and will be replaced
 	 */
+	@Deprecated
 	public boolean execute(String string, int[] ints) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -935,13 +941,18 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 * to retrieve the result, and getMoreResults to move to any subsequent
 	 * result(s).
 	 *
-	 * @param string string
-	 * @param strings strings
+	 * @param string string the first query
+	 * @param strings the subsequent queries
+	 * @param intent the intent of the queries overall, so that the algorithm can
+	 * determine how to handle errors
 	 * @return true if the next result is a ResultSet object; false if it is an
 	 * update count or there are no more results 1 Database exceptions may be
 	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @deprecated this method is only used once and will be replaced when
+	 * StatementDetails has been improved to accommodate it's functionality
 	 */
+	@Deprecated
 	public boolean execute(String string, String[] strings, QueryIntention intent) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
@@ -1127,12 +1138,16 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	}
 
 	private void checkForBrokenConnection(Exception exp, String sql) throws SQLException {
-		final String message = exp.getMessage().toLowerCase();
-		if (message.matches(".*connection.*broken.*")
-				|| message.matches(".*connection.*closed.*")
-				|| message.matches(".*statement.*broken.*")
-				|| message.matches(".*statement.*closed.*")) {
-			replaceBrokenConnection();
+		if (exp != null) {
+			if (StringCheck.isNotEmptyNorNull(exp.getMessage())) {
+				final String message = exp.getMessage().toLowerCase();
+				if (message.matches(".*connection.*broken.*")
+						|| message.matches(".*connection.*closed.*")
+						|| message.matches(".*statement.*broken.*")
+						|| message.matches(".*statement.*closed.*")) {
+					replaceBrokenConnection();
+				}
+			}
 		}
 	}
 }

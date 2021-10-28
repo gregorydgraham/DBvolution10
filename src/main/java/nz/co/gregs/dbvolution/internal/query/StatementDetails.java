@@ -30,6 +30,8 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 
 /**
@@ -39,21 +41,32 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 public class StatementDetails {
 
 	private final String sql;
-	private final Exception exception;
+	private Exception exception;
 	private final QueryIntention intention;
 
-	private final String label;
+	private String label = "Unlabelled SQL";
 	private boolean ignoreExceptions = false;
+	private boolean withGeneratedKeys = false;
 
 	public StatementDetails(String label, QueryIntention intent, String sql) {
-		this(label, intent, sql, null);
+		this(label, intent, sql, null, false, false);
 	}
 
-	public StatementDetails(String label, QueryIntention intent, String sql, Exception except) {
+	public StatementDetails(StatementDetails old) {
+		this(old.label, old.intention, old.sql, old.exception, old.withGeneratedKeys, old.ignoreExceptions);
+	}
+
+	public StatementDetails copy() {
+		return new StatementDetails(this);
+	}
+
+	public StatementDetails(String label, QueryIntention intent, String sql, Exception except, boolean generatedKeys, boolean ignoreExceptions) {
 		this.label = label;
 		this.sql = sql;
 		this.intention = intent;
 		this.exception = except;
+		this.withGeneratedKeys = generatedKeys;
+		this.ignoreExceptions = ignoreExceptions;
 	}
 
 	public String getSql() {
@@ -71,13 +84,42 @@ public class StatementDetails {
 	public String getLabel() {
 		return label;
 	}
-	
+
+	public StatementDetails withLabel(String label) {
+		this.label = label;
+		return this;
+	}
+
 	public boolean isIgnoreExceptions() {
 		return ignoreExceptions;
 	}
 
-	public void setIgnoreExceptions(boolean ignoreExceptions) {
+	public final void setIgnoreExceptions(boolean ignoreExceptions) {
 		this.ignoreExceptions = ignoreExceptions;
+	}
+
+	public boolean requiresGeneratedKeys() {
+		return withGeneratedKeys;
+	}
+
+	public StatementDetails withGeneratedKeys() {
+		this.withGeneratedKeys = true;
+		return this;
+	}
+
+	public boolean execute(Statement stmt) throws SQLException {
+		boolean execute;
+		if (requiresGeneratedKeys()) {
+			execute = stmt.execute(sql, Statement.RETURN_GENERATED_KEYS);
+		} else {
+			execute = stmt.execute(sql);
+		}
+		return execute;
+	}
+
+	public StatementDetails withException(SQLException exp2) {
+		this.exception = exp2;
+		return this;
 	}
 
 }
