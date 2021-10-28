@@ -56,16 +56,6 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public boolean execute(String string, String[] strings, QueryIntention intent) throws SQLException {
-		boolean executed = true;
-		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
-		for (DBStatement next : dbStatements) {
-			executed &= next.execute(string, strings, intent);
-		}
-		return executed;
-	}
-
-	@Override
 	public int executeUpdate(String string, String[] strings) throws SQLException {
 		int executed = 0;
 		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();

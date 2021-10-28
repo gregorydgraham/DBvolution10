@@ -33,6 +33,7 @@ package nz.co.gregs.dbvolution.internal.query;
 import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 
 /**
  *
@@ -42,31 +43,29 @@ public class StatementDetails {
 
 	private final String sql;
 	private Exception exception;
-	private final QueryIntention intention;
+	private QueryIntention intention;
 
 	private String label = "Unlabelled SQL";
 	private boolean ignoreExceptions = false;
 	private boolean withGeneratedKeys = false;
+	private String namedPKColumn;
 
 	public StatementDetails(String label, QueryIntention intent, String sql) {
-		this(label, intent, sql, null, false, false);
-	}
-
-	public StatementDetails(StatementDetails old) {
-		this(old.label, old.intention, old.sql, old.exception, old.withGeneratedKeys, old.ignoreExceptions);
+		this(label, intent, sql, null, false, false, "");
 	}
 
 	public StatementDetails copy() {
-		return new StatementDetails(this);
+		return new StatementDetails(label, intention, sql, exception, withGeneratedKeys, ignoreExceptions, namedPKColumn);
 	}
 
-	public StatementDetails(String label, QueryIntention intent, String sql, Exception except, boolean generatedKeys, boolean ignoreExceptions) {
+	public StatementDetails(String label, QueryIntention intent, String sql, Exception except, boolean generatedKeys, boolean ignoreExceptions, String pkColumn) {
 		this.label = label;
 		this.sql = sql;
 		this.intention = intent;
 		this.exception = except;
 		this.withGeneratedKeys = generatedKeys;
 		this.ignoreExceptions = ignoreExceptions;
+		this.namedPKColumn = pkColumn;
 	}
 
 	public String getSql() {
@@ -107,9 +106,18 @@ public class StatementDetails {
 		return this;
 	}
 
+	/**
+	 * Calls the appropriate execute method on the Statement and returns the boolean result.
+	 * 
+	 * @param stmt the statement on which to excute this SQL command
+	 * @return the result of calling the appropriate execute method
+	 * @throws SQLException database errors are propogated
+	 */
 	public boolean execute(Statement stmt) throws SQLException {
 		boolean execute;
-		if (requiresGeneratedKeys()) {
+		if (StringCheck.isNotEmptyNorNull(namedPKColumn)) {
+			execute = stmt.execute(sql, new String[]{namedPKColumn});
+		} else if (requiresGeneratedKeys()) {
 			execute = stmt.execute(sql, Statement.RETURN_GENERATED_KEYS);
 		} else {
 			execute = stmt.execute(sql);
@@ -119,6 +127,16 @@ public class StatementDetails {
 
 	public StatementDetails withException(SQLException exp2) {
 		this.exception = exp2;
+		return this;
+	}
+
+	public StatementDetails withNamedPKColumn(String primaryKeyForRetrievingGeneratedKeys) {
+		namedPKColumn = primaryKeyForRetrievingGeneratedKeys;
+		return this;
+	}
+
+	public StatementDetails withIntention(QueryIntention queryIntention) {
+		this.intention = queryIntention;
 		return this;
 	}
 

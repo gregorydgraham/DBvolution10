@@ -204,7 +204,9 @@ public class DBInsert extends DBAction {
 											statement.execute(statementDetails);
 										} else {
 											// execute and ask for the column specifically, also cross fingers.
-											statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)}, QueryIntention.INSERT_ROW);
+											statementDetails = statementDetails
+													.withNamedPKColumn(db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName));
+											statement.execute(statementDetails);
 											pkIndex = 1;
 										}
 										if (primaryKey.hasBeenSet() == false) {
