@@ -168,6 +168,7 @@ public class DBInsert extends DBAction {
 
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
+				StatementDetails statementDetails = new StatementDetails("INSERT ROW",QueryIntention.INSERT_ROW,sql);
 				if (defn.supportsGeneratedKeys()) {
 					try {
 						final List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
@@ -182,10 +183,10 @@ public class DBInsert extends DBAction {
 							if (allPKsHaveBeenSet) {
 								// The primary key has already been sorted for us so execute and move on.
 								try {
-									statement.execute(new StatementDetails("INSERT_ROW", QueryIntention.INSERT_ROW,sql));
+									statement.execute(statementDetails);
 								} catch (java.sql.SQLIntegrityConstraintViolationException alreadyExists) {
 									db.delete(table);
-									statement.execute(new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW,sql));
+									statement.execute(statementDetails);
 								}
 							} else {
 								if (primaryKeys.size() == 1) {
@@ -194,12 +195,13 @@ public class DBInsert extends DBAction {
 									Integer pkIndex = table.getPrimaryKeyIndexes().get(0);
 									if (pkIndex == null || primaryKeyColumnName == null) {
 										// We can't find the PK so just execute and move on.
-										statement.execute(new StatementDetails("INSERT ROW",QueryIntention.INSERT_ROW,sql));
+										statement.execute(statementDetails);
 									} else {
 										// There is a PK, it's not set, and we can find it, so we need to get it's value...
 										if (primaryKeyColumnName.isEmpty()) {
 											// Not sure of the column name, so ask for the keys and cross fingers.
-											statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+											statementDetails = statementDetails.withGeneratedKeys();
+											statement.execute(statementDetails);
 										} else {
 											// execute and ask for the column specifically, also cross fingers.
 											statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)}, QueryIntention.INSERT_ROW);
@@ -228,14 +230,14 @@ public class DBInsert extends DBAction {
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException sqlex) {
 						try {
-							statement.execute(new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW,sql));
+							statement.execute(statementDetails);
 						} catch (SQLException ex) {
 							throw new DBSQLException(db, sql, sqlex);
 						}
 					}
 				} else {
 					try {
-						statement.execute(new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW, sql));
+						statement.execute(statementDetails);
 						final var primaryKeyWrappers = table.getPrimaryKeyPropertyWrappers();
 						if (primaryKeyWrappers.size() > 0) {
 							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
