@@ -42,6 +42,10 @@ public class LoopVariable {
 	private int tries = 0;
 	private int maxAttemptsAllowed = 1000;
 	private boolean limitMaxAttempts = true;
+	
+	public static LoopVariable factory(){
+		return new LoopVariable();
+	}
 
 	public boolean isNeeded() {
 		if (limitMaxAttempts) {
