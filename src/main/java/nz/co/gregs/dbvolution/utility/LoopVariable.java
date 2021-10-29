@@ -33,56 +33,117 @@ package nz.co.gregs.dbvolution.utility;
 import java.util.function.Supplier;
 
 /**
- *
+ * Implements a while/for loop combination.
+ * 
  * @author gregorygraham
  */
 public class LoopVariable {
 
-	private boolean toggle = true;
+	private boolean needed = true;
 	private int tries = 0;
 	private int maxAttemptsAllowed = 1000;
 	private boolean limitMaxAttempts = true;
-	
-	public static LoopVariable factory(){
+
+	public static LoopVariable factory() {
 		return new LoopVariable();
 	}
 
+	/**
+	 * Checks the whether the loop is still needed (that is {@link #done()} has
+	 * not been called) and if the loop has exceeded the maximum attempts (if a
+	 * max is defined).
+	 *
+	 * @return true if the loop is still needed.
+	 */
 	public boolean isNeeded() {
 		if (limitMaxAttempts) {
-			return toggle && attempts() < maxAttemptsAllowed;
+			return needed && attempts() < maxAttemptsAllowed;
 		} else {
-			return toggle;
+			return needed;
 		}
 	}
 
+	/**
+	 * Checks the whether the loop is still needed (that is {@link #done()} has
+	 * not been called) and if the loop has exceeded the maximum attempts (if a
+	 * max is defined).
+	 *
+	 * @return true if the loop is no longer needed.
+	 */
 	public boolean isNotNeeded() {
 		if (limitMaxAttempts) {
-			return !toggle || attempts() >= maxAttemptsAllowed;
+			return !needed || attempts() >= maxAttemptsAllowed;
 		} else {
-			return !toggle;
+			return !needed;
 		}
 	}
 
+	/**
+	 * Synonym for {@link #isNotNeeded() }.
+	 *
+	 * @return true if the loop is no longer needed.
+	 */
 	public boolean hasHappened() {
 		return isNotNeeded();
 	}
 
+	/**
+	 * Synonym for {@link #isNeeded() }.
+	 *
+	 * @return true if the loop is still needed.
+	 */
 	public boolean hasNotHappened() {
 		return isNeeded();
 	}
 
+	/**
+	 * Informs the LoopVariable that the loop has been successful and is no longer
+	 * needed.
+	 * <p>
+	 * This method is used to indicate that a loop that takes multiple attempts to
+	 * complete one task, has successfully completed that task.</p>
+	 */
 	public void done() {
-		toggle = false;
+		needed = false;
 	}
 
+	/**
+	 * Indicates that an attempt has been started.
+	 *
+	 * <p>
+	 * This method is used to indicate that a loop that takes multiple attempts to
+	 * complete one task, has started an attempt to complete that task. Each cvall
+	 * of {@link #attempt() } counts towards the
+	 * {@link #setMaxAttemptsAllowed(int) maximum attempts} if a maximum has been
+	 * set.</p>
+	 *
+	 */
 	public void attempt() {
 		tries++;
 	}
 
+	/**
+	 * The number of attempts recorded using {@link #attempt() }.
+	 *
+	 * @return the number of attempts started.
+	 */
 	public int attempts() {
 		return tries;
 	}
 
+	/**
+	 * Sets the maximum attempts allowed for this loop variable.
+	 *
+	 * <p>
+	 * Maximum attempts will stop a correctly used LoopVariable after the maximum
+	 * attempts by changing {@link #isNeeded() } to false</p>
+	 *
+	 * <p>
+	 * Attempts are registered by calling {@link #attempt() } at the start of each
+	 * loop.</p>
+	 *
+	 * @param maxAttemptsAllowed
+	 */
 	public void setMaxAttemptsAllowed(int maxAttemptsAllowed) {
 		if (maxAttemptsAllowed > 0) {
 			limitMaxAttempts = true;
@@ -90,6 +151,17 @@ public class LoopVariable {
 		}
 	}
 
+	/**
+	 * Removes the default limit from the LoopVariable.
+	 *
+	 * <p>
+	 * By default {@link #isNeeded() } will return false after 1000 attempts. Use
+	 * this method to remove the limit and permit infinite loops.</p>
+	 *
+	 * <p>
+	 * Alternatively you can seta higher, or lower, limit with {@link #setMaxAttemptsAllowed(int)
+	 * }.</p>
+	 */
 	public void setInfiniteLoopPermitted() {
 		limitMaxAttempts = false;
 	}
@@ -104,23 +176,29 @@ public class LoopVariable {
 	 * <p>
 	 * recommended use:</p>
 	 * <pre>
-	 *		// Create the variable for check for the end of the loop
+	 *		// Decide on a maximum number of loops
 	 *		final int intendedAttempts = 10;
-	 *		// Create the LoopVariable
-	 *		LoopVariable looper = new LoopVariable();
+	 *		
 	 *		// Create the method to loop over
 	 *		final Supplier&lt;Void&gt; action = () -> {
 	 *			// do your processing
 	 *			// here
 	 *
 	 *			// check for terminating condition
-	 *			if (looper.attempts() >= intendedAttempts) {
+	 *			if (successfullyCompleted()) {
 	 *				// call done() on the LoopVariable to stop the loop
 	 *				looper.done();
 	 *			}
 	 *			// return null as required by the Java spec
 	 *			return null;
 	 *		};
+	 * 
+	 *		// Create the LoopVariable
+	 *		LoopVariable looper = new LoopVariable();
+	 * 
+	 *		// set the maximum number of loops (this is optional, but will default to 1000 anyway)
+	 *		looper.setMaxAttemptsAllowed(intendedAttempts);
+	 * 
 	 *		// loop over the action
 	 *		looper.loop(action);
 	 * </pre>
@@ -164,7 +242,9 @@ public class LoopVariable {
 	 *
 	 * @param maxAttempts
 	 * @param action
+	 * @deprecated this is superfluous and, very slightly, slower. Just use {@link #loop(java.util.function.Supplier) }
 	 */
+	@Deprecated
 	public void loop(int maxAttempts, Supplier<Void> action) {
 		while (isNeeded() && attempts() < maxAttempts) {
 			attempt();
@@ -191,7 +271,7 @@ public class LoopVariable {
 	 *				},
 	 *				() -> {
 	 *					// Check for termination conditions here
-	 *					return looper.attempts() >= intendedAttempts;
+	 *					return trueIfTaskCompletedOtherwiseFalse();
 	 *				}
 	 *		);
 	 * </pre>
