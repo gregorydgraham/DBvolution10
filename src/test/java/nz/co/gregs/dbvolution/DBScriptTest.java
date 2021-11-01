@@ -35,19 +35,12 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
-import org.junit.rules.ExpectedException;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
 public class DBScriptTest extends AbstractTest {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	public DBScriptTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
@@ -119,15 +112,19 @@ public class DBScriptTest extends AbstractTest {
 
 	@Test
 	public void testExceptionThrowing() throws Exception {
-		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-
-		thrown.expect(ExceptionThrownDuringTransaction.class);
 		DBScript script = new ScriptThatThrowsAnException();
-		DBActionList result = script.test(database);
-		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		assertThat(
-				allMarques2.size(),
-				is(allMarques.size()));
+		ExceptionThrownDuringTransaction assertThrows = Assert.assertThrows(ExceptionThrownDuringTransaction.class, ()->script.test(database));
+		assertThat(assertThrows.getCause(), is(instanceOf(IndexOutOfBoundsException.class)));
+		
+//		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+//
+//		thrown.expect(ExceptionThrownDuringTransaction.class);
+//		DBScript script = new ScriptThatThrowsAnException();
+//		DBActionList result = script.test(database);
+//		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+//		assertThat(
+//				allMarques2.size(),
+//				is(allMarques.size()));
 	}
 
 	/**
