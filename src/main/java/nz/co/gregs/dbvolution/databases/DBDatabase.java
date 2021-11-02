@@ -2683,7 +2683,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		String randomName = new BigInteger(130, new SecureRandom()).toString(32);
-		DBDatabaseCluster cluster = new DBDatabaseCluster(randomName, DBDatabaseCluster.Configuration.manual());
+		DBDatabaseCluster cluster = new DBDatabaseCluster(randomName, DBDatabaseCluster.Configuration.autoStart());
 		cluster.addDatabase(this);
 		cluster.backupToDBDatabase(backupDatabase);
 		cluster.dismantle();
