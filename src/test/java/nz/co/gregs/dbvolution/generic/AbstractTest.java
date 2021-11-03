@@ -91,7 +91,7 @@ public abstract class AbstractTest {
 			final DBDatabaseCluster cluster
 					= new DBDatabaseCluster(
 							"testSmallCluster",
-							DBDatabaseCluster.Configuration.manual(),
+							DBDatabaseCluster.Configuration.autoStart(),
 							getSQLiteDBFromSystem(),
 							new H2MemorySettingsBuilder().fromSystemUsingPrefix("h2memory").getDBDatabase()
 					);
@@ -99,14 +99,14 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
-				new DBDatabaseCluster("testBundledCluster", DBDatabaseCluster.Configuration.manual(),
+				new DBDatabaseCluster("testBundledCluster", DBDatabaseCluster.Configuration.autoStart(),
 				getSQLiteDBFromSystem("bundle"),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
-				new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.manual(),
+				new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.autoStart(),
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				getSQLiteDBFromSystem("open"),
 				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
@@ -120,14 +120,14 @@ public abstract class AbstractTest {
 			final MySQLDB mysql = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase();
 			final MSSQLServerDB sqlserver = MSSQLServerLocalTestDB.getFromSettings("sqlserver");
 			final Oracle11XEDB oracle = new Oracle11XESettingsBuilder().fromSystemUsingPrefix("oraclexe").getDBDatabase();
-			final DBDatabaseCluster cluster = new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.manual(), h2Mem, sqlite, 
+			final DBDatabaseCluster cluster = new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.autoStart(), h2Mem, sqlite, 
 					postgres, mysql,sqlserver, 
 					oracle);
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle", cluster});
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
-				new DBDatabaseCluster("MySQL+Cluster", DBDatabaseCluster.Configuration.manual(),
+				new DBDatabaseCluster("MySQL+Cluster", DBDatabaseCluster.Configuration.autoStart(),
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				getSQLiteDBFromSystem(),
 				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
