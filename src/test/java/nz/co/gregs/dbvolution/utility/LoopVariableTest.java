@@ -120,36 +120,4 @@ public class LoopVariableTest {
 		});
 		assertThat(looper.attempts(), is(20));
 	}
-
-	@Test
-	public void testLoopWithMaxAttempts() {
-		// Create the LoopVariable
-		LoopVariable looper = new LoopVariable();
-		final int intendedAttempts = 10;
-		// Call loop() with maximum number of attempts to try
-		looper.loop(100, () -> {
-			// Perform your actions here
-
-			// check for the termination conditions
-			if (looper.attempts() >= intendedAttempts) {
-				// call done() to terminate the loop
-				looper.done();
-			}
-			// return NULL because Java requires us to
-			return null;
-		});
-		assertThat(looper.attempts(), is(intendedAttempts));
-	}
-
-	@Test
-	public void testLoopStopsAtMaxAttemptsWhenUsedWrong() {
-		LoopVariable looper = new LoopVariable();
-		final int maxAttempts = 20;
-		looper.loop(maxAttempts, () -> {
-			return null;
-		});
-		assertThat(looper.attempts(), is(maxAttempts));
-
-	}
-
 }
