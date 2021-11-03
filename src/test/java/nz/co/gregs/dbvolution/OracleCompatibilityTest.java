@@ -280,7 +280,7 @@ public class OracleCompatibilityTest extends AbstractTest {
 
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 
-		try (DBDatabaseCluster cluster = new DBDatabaseCluster("CountIfClusterTest", DBDatabaseCluster.Configuration.manual(), getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull())) {
+		try (DBDatabaseCluster cluster = new DBDatabaseCluster("CountIfClusterTest", DBDatabaseCluster.Configuration.autoStart(), getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull())) {
 			cluster.createTable(new Marque());
 			cluster.insert(allMarques);
 			cluster.addDatabaseAndWait(database);
