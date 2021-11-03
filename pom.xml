@@ -934,6 +934,7 @@
 								<!--<testMySQLContainer>true</testMySQLContainer>-->
 								<testOracleXE>true</testOracleXE>
 								<testMSSQLServer>true</testMSSQLServer>
+								<testMSSQLServerLocal>true</testMSSQLServerLocal>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
