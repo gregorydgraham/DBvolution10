@@ -22,7 +22,6 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuilder;
