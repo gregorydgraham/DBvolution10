@@ -19,12 +19,7 @@ import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -58,7 +53,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	 * The date format used internally within DBvolution's SQLite implementation.
 	 *
 	 */
-	private final DateFormat DATETIME_PRECISE_FORMAT = getDateTimeFormat();//
 	private static final String[] RESERVED_WORDS_ARRAY = new String[]{};
 	private static final List<String> RESERVED_WORDS_LIST = Arrays.asList(RESERVED_WORDS_ARRAY);
 
@@ -78,7 +72,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||" + seconds), "1"), "'0'", "''")
 				+ "||(" + seconds + "+" + (subsecond.length() > 5 ? subsecond.substring(0, 5) : subsecond) + ")"
 				+ " )";
-		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -359,24 +352,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	}
 
 	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT_WITH_MILLISECONDS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT_WITH_SECONDS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	@Override
-	public synchronized Date parseDateFromGetString(String getStringDate) throws ParseException {
-		try {
-			return DATETIME_PRECISE_FORMAT.parse(getStringDate);
-		} catch (ParseException ex) {
-			try {
-				return DATETIME_SIMPLE_FORMAT_WITH_MILLISECONDS.parse(getStringDate);
-			} catch (ParseException ex2) {
-				try {
-					return DATETIME_SIMPLE_FORMAT_WITH_SECONDS.parse(getStringDate);
-				} catch (ParseException ex3) {
-					throw ex;
-				}
-			}
-		}
-	}
-
+	
 	@Override
 	public boolean supportsRetrievingLastInsertedRowViaSQL() {
 		return true;
@@ -551,7 +527,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 		return DateRepeatFunctions.DATEREPEAT_EQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 //		return "(" + leftHandSide + " = " + rightHandSide + ")";
 	}
-	
+
 	@Override
 	public String doDateRepeatNotEqualsTransform(String leftHandSide, String rightHandSide) {
 		return DateRepeatFunctions.DATEREPEAT_NOTEQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
@@ -1045,24 +1021,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	}
 
 	@Override
-	public LocalDate parseLocalDateFromGetString(String inputFromResultSet) throws ParseException {
-		String getStringDate = inputFromResultSet.replaceAll(" ", "T");
-		return LocalDate.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE_TIME);
-	}
-
-	@Override
-	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
-		String getStringDate = inputFromResultSet.replaceAll(" ", "T");
-		return LocalDateTime.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE_TIME);
-	}
-
-	@Override
-	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
-		String getStringDate = inputFromResultSet.replaceAll(" ", "T") + "Z";
-		return Instant.parse(getStringDate.subSequence(0, getStringDate.length()));
-	}
-
-	@Override
 	public String doRightPadTransform(String toPad, String padWith, String length) {
 		return "(" + toPad
 				+ "||substr(replace(hex(zeroblob("
@@ -1123,6 +1081,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	public boolean supportsDurationNatively() {
 		return false;
 	}
+
 	@Override
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return true;
