@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -243,11 +244,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 		if (string == null || string.isEmpty()) {
 			return null;
 		} else {
-			try {
-				return database.parseLocalDateFromGetString(string);
-			} catch (ParseException ex) {
-				throw new DBRuntimeException("Unable To Parse LocalDate: " + string, ex);
-			}
+			return database.parseLocalDateFromGetString(string);
 		}
 	}
 
