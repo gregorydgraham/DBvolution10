@@ -2777,10 +2777,10 @@ public abstract class DBDefinition implements Serializable {
 		try {
 			return SIMPLE_DATE_FORMAT.parse(getStringDate);
 		} catch (ParseException parse) {
-			return TemporalStringParser.toDate(getStringDate, STANDARD_DATETIME_PARSER_FORMAT);
+			return TemporalStringParser.toDate(getStringDate, STANDARD_DATETIME_PARSER_FORMATS);
 		}
 	}
-	private static final String STANDARD_DATETIME_PARSER_FORMAT = "uuuu-MM-dd[ ]['T'][HH:mm:ss][.][S][S][S][S][S][S][S][S][S][ ][VV]";
+	private static final String[] STANDARD_DATETIME_PARSER_FORMATS = new String[]{"uuuu-MM-dd[ ]['T'][HH:mm:ss][.][S][S][S][S][S][S][S][S][S][ ][VV]", "uuuu-MM-dd HH:mm:ss.SSSSSS[ ]VV", "uuuu-MM-dd HH:mm:ss.SSSSSSX"};
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	/**
@@ -2804,7 +2804,7 @@ public abstract class DBDefinition implements Serializable {
 		try {
 			return LocalDate.parse(parsableString, DateTimeFormatter.ISO_DATE);
 		} catch (Exception parse) {
-			return TemporalStringParser.toLocalDate(getStringDate, STANDARD_DATETIME_PARSER_FORMAT);
+			return TemporalStringParser.toLocalDate(getStringDate, STANDARD_DATETIME_PARSER_FORMATS);
 		}
 	}
 
@@ -2829,7 +2829,7 @@ public abstract class DBDefinition implements Serializable {
 		try {
 			return LocalDateTime.parse(parsableString, DateTimeFormatter.ISO_DATE_TIME);
 		} catch (Exception parse) {
-			return TemporalStringParser.toLocalDateTime(inputFromResultSet, STANDARD_DATETIME_PARSER_FORMAT);
+			return TemporalStringParser.toLocalDateTime(inputFromResultSet, STANDARD_DATETIME_PARSER_FORMATS);
 		}
 	}
 
@@ -2857,7 +2857,7 @@ public abstract class DBDefinition implements Serializable {
 		try {
 			parse = ZonedDateTime.parse(temp, DateTimeFormatter.ISO_DATE_TIME);
 		} catch (Exception except) {
-			return TemporalStringParser.toInstant(inputFromResultSet, STANDARD_DATETIME_PARSER_FORMAT);
+			return TemporalStringParser.toInstant(inputFromResultSet, STANDARD_DATETIME_PARSER_FORMATS);
 		}
 		toInstant = parse.toInstant();
 		return toInstant;
