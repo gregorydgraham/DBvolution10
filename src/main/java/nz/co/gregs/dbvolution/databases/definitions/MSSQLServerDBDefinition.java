@@ -144,70 +144,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return true;
 	}
 
-	@Override
-	public Date parseDateFromGetString(String getStringDate) throws ParseException {
-		Date parsed;
-		try {
-			parsed = TemporalStringParser.toDate(getStringDate);
-		} catch (ParseException ex1) {
-			String tempString = getStringDate.replaceAll(":([0-9]*)$", "$1");
-			try {
-				parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
-			} catch (ParseException ex) {
-				parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
-			}
-		}
-		return parsed;
-	}
-
 	//'2019-06-11 23:09:06.1075250 +12:00'
 	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n XXX");
 	DateTimeFormatter DATETIMEFORMATTER_WITHOUT_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
-
-	@Override
-	public LocalDate parseLocalDateFromGetString(String inputFromResultSet) throws ParseException {
-		LocalDate parsed;
-		try {
-			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITH_ZONE);
-		} catch (DateTimeParseException ex) {
-			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
-		}
-		return parsed;
-	}
-
-	@Override
-	public LocalDateTime parseLocalDateTimeFromGetString(String input) throws ParseException {
-		LocalDateTime parsed;
-		//either '2019-08-19 08:22:40.8135410' or '2019-08-19 20:22:40.8910319 +12:00'
-		String inputFromResultSet = input.replaceFirst(" ", "T");
-		if (inputFromResultSet.contains(" ")) {
-			inputFromResultSet = inputFromResultSet.replaceAll(" ", "");
-			parsed = ZonedDateTime.parse(inputFromResultSet).toLocalDateTime();
-		} else {
-			parsed = LocalDateTime.parse(inputFromResultSet);
-		}
-		return parsed;
-	}
-
-	@Override
-	public Instant parseInstantFromGetString(String input) throws ParseException {
-		Instant parsed;
-		//either '2019-08-19 08:22:40.8135410' or '2019-08-19 20:22:40.8910319 +12:00'
-//		System.out.println("PARSING RESULTSET STRING: " + input);
-		String inputFromResultSet = input.replaceFirst(" ", "T");
-		if (inputFromResultSet.contains(" ")) {
-			inputFromResultSet = inputFromResultSet.replaceAll(" ", "");
-		} else {
-			inputFromResultSet += "Z";
-		}
-//		System.out.println("PARSING RESULTSET STRING: " + inputFromResultSet);
-		try {
-			parsed = Instant.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()));
-		} catch (DateTimeParseException ex) {
-			parsed = Instant.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()));
-		}
-		return parsed;
-	}
 
 	@Override
 	public String formatTableName(DBRow table) {
