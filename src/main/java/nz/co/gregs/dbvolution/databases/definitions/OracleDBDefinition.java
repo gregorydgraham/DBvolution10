@@ -15,14 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,7 +50,6 @@ import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.AnyResult;
-import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 
 /**
  * Defines the features of the Oracle database that differ from the standard
@@ -105,40 +97,6 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public boolean prefersDatesReadAsStrings() {
 		return true;
-	}
-
-	DateTimeFormatter[] PARSE_ZONEDDATETIME_FORMATS = new DateTimeFormatter[]{
-		DateTimeFormatter.ofPattern("y-M-d H:m:s Z"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.S Z"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSSSS Z"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.n Z"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.S X"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSSSS X"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.S XXX"),// this works for LocalDate
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSSSS XXX"),// this works for Instant
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.n XXX"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.S VV"),
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.SSSSSS VV"),// works for named offsets
-		DateTimeFormatter.ofPattern("y-M-d H:m:s.nnnnnn XXX")
-	};
-
-	public ZonedDateTime parseZonedDateTimeFromGetString(String inputFromResultSet) throws DateTimeParseException {
-		return TemporalStringParser.toZonedDateTime(inputFromResultSet);
-	}
-
-	@Override
-	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
-		return parseZonedDateTimeFromGetString(inputFromResultSet).toLocalDateTime();
-	}
-
-	@Override
-	public LocalDate parseLocalDateFromGetString(String getStringDate) throws ParseException {
-		return parseZonedDateTimeFromGetString(getStringDate).toLocalDate();
-	}
-
-	@Override
-	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
-		return parseZonedDateTimeFromGetString(inputFromResultSet).toInstant();
 	}
 
 	@Override
