@@ -353,11 +353,7 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 		if (string == null || string.isEmpty()) {
 			return null;
 		} else {
-			try {
-				return database.parseInstantFromGetString(string);
-			} catch (ParseException ex) {
-				throw new DBRuntimeException("Unable To Parse Instant: " + string, ex);
-			}
+			return database.parseInstantFromGetString(string);
 		}
 	}
 
