@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -287,7 +288,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 		} else {
 			try {
 				return new Date(database.parseDateFromGetString(string).getTime());
-			} catch (ParseException ex) {
+			} catch (DateTimeParseException ex) {
 				throw new DBRuntimeException("Unable To Parse Date: " + string, ex);
 			}
 		}
