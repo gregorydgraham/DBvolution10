@@ -64,11 +64,13 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.separatedstring.SeparatedString;
@@ -2768,13 +2770,17 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 *
 	 * @return return the date format required to interpret strings as dates.
-	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
-	 * exception
+	 * @throws DateTimeParseException SimpleDateFormat may throw a parse exception
 	 * @see #prefersDatesReadAsStrings()
 	 */
-	public Date parseDateFromGetString(String getStringDate) throws ParseException {
-		return SIMPLE_DATE_FORMAT.parse(getStringDate);
+	public Date parseDateFromGetString(String getStringDate) throws DateTimeParseException {
+		try {
+			return SIMPLE_DATE_FORMAT.parse(getStringDate);
+		} catch (ParseException parse) {
+			return TemporalStringParser.toDate(getStringDate, STANDARD_DATETIME_PARSER_FORMAT);
+		}
 	}
+	private static final String STANDARD_DATETIME_PARSER_FORMAT = "uuuu-MM-dd[ ]['T'][HH:mm:ss][.][S][S][S][S][S][S][S][S][S][ ][VV]";
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	/**
@@ -2790,12 +2796,16 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 *
 	 * @return return the date format required to interpret strings as dates.
-	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
-	 * exception
+	 * @throws DateTimeParseException may throw a parse exception
 	 * @see #prefersDatesReadAsStrings()
 	 */
-	public LocalDate parseLocalDateFromGetString(String getStringDate) throws ParseException {
-		return LocalDate.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE);
+	public LocalDate parseLocalDateFromGetString(String getStringDate) throws DateTimeParseException {
+		String parsableString = getStringDate.replaceAll(" ", "T");
+		try {
+			return LocalDate.parse(parsableString, DateTimeFormatter.ISO_DATE);
+		} catch (Exception parse) {
+			return TemporalStringParser.toLocalDate(getStringDate, STANDARD_DATETIME_PARSER_FORMAT);
+		}
 	}
 
 	/**
@@ -2811,12 +2821,16 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 *
 	 * @return return the date format required to interpret strings as dates.
-	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
-	 * exception
+	 * @throws DateTimeParseException may throw a parse exception
 	 * @see #prefersDatesReadAsStrings()
 	 */
-	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
-		return LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DateTimeFormatter.ISO_DATE_TIME);
+	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws DateTimeParseException {
+		String parsableString = inputFromResultSet.replaceAll(" ", "T");
+		try {
+			return LocalDateTime.parse(parsableString, DateTimeFormatter.ISO_DATE_TIME);
+		} catch (Exception parse) {
+			return TemporalStringParser.toLocalDateTime(inputFromResultSet, STANDARD_DATETIME_PARSER_FORMAT);
+		}
 	}
 
 	/**
@@ -2832,15 +2846,19 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 *
 	 * @return return the date format required to interpret strings as dates.
-	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
+	 * @throws DateTimeParseException malformed instant strings may throw a parse
 	 * exception
 	 * @see #prefersDatesReadAsStrings()
 	 */
-	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
+	public Instant parseInstantFromGetString(String inputFromResultSet) throws DateTimeParseException {
 		Instant toInstant;
-		String temp = inputFromResultSet;
-
-		ZonedDateTime parse = ZonedDateTime.parse(temp.subSequence(0, temp.length()), DateTimeFormatter.ISO_DATE_TIME);
+		String temp = inputFromResultSet.replaceAll(" ", "T") + "Z";
+		ZonedDateTime parse;
+		try {
+			parse = ZonedDateTime.parse(temp, DateTimeFormatter.ISO_DATE_TIME);
+		} catch (Exception except) {
+			return TemporalStringParser.toInstant(inputFromResultSet, STANDARD_DATETIME_PARSER_FORMAT);
+		}
 		toInstant = parse.toInstant();
 		return toInstant;
 	}
