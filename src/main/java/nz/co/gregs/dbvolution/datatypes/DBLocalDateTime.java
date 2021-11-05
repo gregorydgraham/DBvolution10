@@ -299,11 +299,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 		if (string == null || string.isEmpty()) {
 			return null;
 		} else {
-			try {
-				return database.parseLocalDateTimeFromGetString(string);
-			} catch (ParseException ex) {
-				throw new DBRuntimeException("Unable To Parse LocalDateTime: " + string, ex);
-			}
+			return database.parseLocalDateTimeFromGetString(string);
 		}
 	}
 
