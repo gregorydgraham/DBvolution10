@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
 import java.text.*;
-import java.time.Instant;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
@@ -30,7 +29,6 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
-import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
@@ -1077,11 +1075,6 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public boolean prefersInstantsReadAsStrings() {
 		return true;
-	}
-
-	@Override
-	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
-		return TemporalStringParser.toInstant(inputFromResultSet);
 	}
 
 	@Override
