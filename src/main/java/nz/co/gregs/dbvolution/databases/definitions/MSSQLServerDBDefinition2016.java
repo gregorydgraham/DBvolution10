@@ -141,18 +141,6 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	}
 
 	@Override
-	public Date parseDateFromGetString(String getStringDate) throws ParseException {
-		String tempString = getStringDate.replaceAll(":([0-9]*)$", "$1");
-		Date parsed;
-		try {
-			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z").parse(tempString);
-		} catch (ParseException ex) {
-			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(tempString);
-		}
-		return parsed;
-	}
-
-	@Override
 	public String formatTableName(DBRow table) {
 		final String schemaName = table.getSchemaName();
 		if (table.getSchemaName() == null || "".equals(schemaName)) {
