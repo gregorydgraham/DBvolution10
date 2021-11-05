@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.internal.sqlite;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -168,7 +169,7 @@ public class DateRepeatFunctions {
 					String intervalString = DateRepeatImpl.repeatFromTwoDates(original, compareTo);
 					result(intervalString);
 				}
-			} catch (ParseException ex) {
+			} catch (DateTimeParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Date", ex);
 			}
