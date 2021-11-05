@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -976,22 +977,22 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
-	public Date parseDateFromGetString(String getStringDate) throws ParseException {
+	public Date parseDateFromGetString(String getStringDate) throws DateTimeParseException {
 		return base.parseDateFromGetString(getStringDate);
 	}
 
 	@Override
-	public LocalDate parseLocalDateFromGetString(String getStringDate) throws ParseException {
+	public LocalDate parseLocalDateFromGetString(String getStringDate) throws DateTimeParseException {
 		return base.parseLocalDateFromGetString(getStringDate);
 	}
 
 	@Override
-	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
+	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws DateTimeParseException {
 		return base.parseLocalDateTimeFromGetString(inputFromResultSet);
 	}
 
 	@Override
-	public Instant parseInstantFromGetString(String inputFromResultSet) throws ParseException {
+	public Instant parseInstantFromGetString(String inputFromResultSet) throws DateTimeParseException {
 		return base.parseInstantFromGetString(inputFromResultSet);
 	}
 
