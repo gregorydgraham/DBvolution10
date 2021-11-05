@@ -32,17 +32,14 @@ package nz.co.gregs.dbvolution.utility;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -62,25 +59,30 @@ public class TemporalStringParser {
 	private TemporalStringParser() {
 	}
 
-	public static OffsetDateTime toOffsetDateTime(String inputDateString) {
-		final ZonedDateTime toZonedDateTime = toZonedDateTime(inputDateString);
+	public static OffsetDateTime toOffsetDateTime(String inputDateString, String... expectedFormat) {
+		final ZonedDateTime toZonedDateTime = toZonedDateTime(inputDateString, Parser.ofPatterns(expectedFormat));
 		return toZonedDateTime == null ? null : toZonedDateTime.toOffsetDateTime();
 	}
 
-	public static Instant toInstant(String inputDateString) throws ParseException {
-		final ZonedDateTime toZonedDateTime = toZonedDateTime(inputDateString);
+	public static Instant toInstant(String inputDateString, String... expectedFormat) throws DateTimeParseException {
+		final ZonedDateTime toZonedDateTime = toZonedDateTime(inputDateString, Parser.ofPatterns(expectedFormat));
 		return toZonedDateTime == null ? null : toZonedDateTime.toInstant();
 	}
 
-	public static Date toDate(String inputDateString) throws ParseException {
-		final LocalDateTime toLocalDateTime = toLocalDateTime(inputDateString);
+	public static Date toDate(String inputDateString, String... expectedFormat) throws DateTimeParseException {
+		final LocalDateTime toLocalDateTime = toLocalDateTime(inputDateString, Parser.ofPatterns(expectedFormat));
 		if (toLocalDateTime == null) {
 			return null;
 		}
 		return Date.from(toLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	}
 
-	public static ZonedDateTime toZonedDateTime(String inputDateString) throws DateTimeParseException {
+	public static ZonedDateTime toZonedDateTime(String inputDateString, String... expectedFormat) throws DateTimeParseException {
+		final ZonedDateTime toZonedDateTime = toZonedDateTime(inputDateString, Parser.ofPatterns(expectedFormat));
+		return toZonedDateTime;
+	}
+
+	private static ZonedDateTime toZonedDateTime(String inputDateString, Parser... preferredFormats) throws DateTimeParseException {
 		if (inputDateString == null) {
 			return null;
 		}
@@ -90,10 +92,35 @@ public class TemporalStringParser {
 		str = str.replaceFirst("(.*)([-+])([0-9][:]?[0-9]{2})$", "$1$20$3").replace("+0:00", "+00:00");
 		Exception exception = new DateTimeParseException(str, str.subSequence(0, str.length()), 0);
 		final CharSequence sequence = str.subSequence(0, str.length());
+		for (Parser preferredFormat : preferredFormats) {
+			if (preferredFormat != null && preferredFormat.isNotEmpty()) {
+				try {
+					return preferredFormat.interpretAsZonedDateTime(str);
+				} catch (Exception ex1) {
+					printException(inputDateString, preferredFormat, exception);
+					if (ex1 instanceof DateTimeParseException) {
+						exception = ex1;
+					} else {
+						exception = new DateTimeParseException("FAILED TO PARSE GENERIC DATETIME", str, 0, ex1);
+					}
+				}
+				try {
+					return preferredFormat.interpretAsZonedDateTime(inputDateString);
+				} catch (Exception ex1) {
+					printException(inputDateString, preferredFormat, exception);
+					if (ex1 instanceof DateTimeParseException) {
+						exception = ex1;
+					} else {
+						exception = new DateTimeParseException("FAILED TO PARSE GENERIC DATETIME", inputDateString, 0, ex1);
+					}
+				}
+			}
+		}
 		for (Parser format : INSTANT_FORMATTERS) {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				zoneddatetime = ZonedDateTime.from(parsed);
+				System.out.println("PARSE SUCCEEDED: "+format.pattern);
 				return zoneddatetime;
 			} catch (Exception ex1) {
 				printException(inputDateString, format, exception);
@@ -108,6 +135,7 @@ public class TemporalStringParser {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
 				zoneddatetime = ZonedDateTime.of(LocalDateTime.from(parsed), ZoneId.of("Z"));
+				System.out.println("PARSE SUCCEEDED: "+format.pattern);
 				return zoneddatetime;
 			} catch (Exception ex1) {
 				printException(sequence, format, exception);
@@ -118,8 +146,9 @@ public class TemporalStringParser {
 		try {
 			Timestamp timestamp = Timestamp.valueOf(str);
 			zoneddatetime = ZonedDateTime.of(timestamp.toLocalDateTime(), ZoneId.of("Z"));
+				System.out.println("PARSE SUCCEEDED:  Timestamp.valueOf("+str+")");
 			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
-			LOG.debug("PARSED: " + str);
+			LOG.debug("PARSED STR: " + str);
 			LOG.debug("TO: " + zoneddatetime);
 			return zoneddatetime;
 		} catch (Exception ex1) {
@@ -131,8 +160,9 @@ public class TemporalStringParser {
 		try {
 			Timestamp timestamp = Timestamp.valueOf(str);
 			zoneddatetime = ZonedDateTime.of(timestamp.toLocalDateTime(), ZoneId.of("Z"));
+				System.out.println("PARSE SUCCEEDED:  Timestamp.valueOf("+str+")");
 			LOG.debug("PARSE SUCCEEDED: Timestamp.valueOf(str)");
-			LOG.debug("PARSED: " + str);
+			LOG.debug("PARSED inputDateString: " + str);
 			LOG.debug("TO: " + zoneddatetime);
 			return zoneddatetime;
 		} catch (Exception ex1) {
@@ -148,9 +178,9 @@ public class TemporalStringParser {
 		if (zoneddatetime != null) {
 			return zoneddatetime;
 		} else {
-			LOG.info("FAILED TO PARSE DATE");
-			LOG.info("INPUTSTRING: " + inputDateString);
-			LOG.info("TEST VERSION: " + str);
+			LOG.debug("FAILED TO PARSE DATE");
+			LOG.debug("INPUTSTRING: " + inputDateString);
+			LOG.debug("TEST VERSION: " + str);
 			throw new DateTimeParseException(inputDateString, sequence, 0, exception);
 		}
 	}
@@ -174,15 +204,36 @@ public class TemporalStringParser {
 		}
 	}
 
-	public static LocalDateTime toLocalDateTime(String inputFromResultSet) throws DateTimeParseException {
-		if (inputFromResultSet == null) {
+	public static LocalDate toLocalDate(String inputFromResultSet, String... expectedFormats) throws DateTimeParseException {
+		return toLocalDateTime(inputFromResultSet, Parser.ofPatterns(expectedFormats)).toLocalDate();
+	}
+
+	public static LocalDateTime toLocalDateTime(String inputFromResultSet, String... expectedFormats) throws DateTimeParseException {
+		return toLocalDateTime(inputFromResultSet, Parser.ofPatterns(expectedFormats));
+	}
+
+	private static LocalDateTime toLocalDateTime(String inputDateString, Parser... preferredFormats) throws DateTimeParseException {
+		if (inputDateString == null) {
 			return null;
 		}
 		LocalDateTime localdatetime = null;
-		String str = inputFromResultSet;
-		ParseException exception = new ParseException(str, 0);
-//		str = inputFromResultSet.replaceFirst(" ", "T");
+		String str = inputDateString;
+		Exception exception = new ParseException(str, 0);
 		final CharSequence sequence = str.subSequence(0, str.length());
+		for (Parser preferredFormat : preferredFormats) {
+			if (preferredFormat != null && preferredFormat.isNotEmpty()) {
+				try {
+					return preferredFormat.interpretAsLocalDateTime(str);
+				} catch (Exception ex1) {
+					printException(inputDateString, preferredFormat, exception);
+					if (ex1 instanceof DateTimeParseException) {
+						exception = ex1;
+					} else {
+						exception = new DateTimeParseException("FAILED TO PARSE GENERIC DATETIME", str, 0, ex1);
+					}
+				}
+			}
+		}
 		for (Parser format : INSTANT_FORMATTERS) {
 			try {
 				final TemporalAccessor parsed = format.parse(sequence);
@@ -226,7 +277,7 @@ public class TemporalStringParser {
 				exception = (ParseException) ex1;
 			}
 		}
-		str = inputFromResultSet;
+		str = inputDateString;
 		try {
 			Timestamp timestamp = Timestamp.valueOf(str);
 			localdatetime = timestamp.toLocalDateTime();
@@ -244,8 +295,8 @@ public class TemporalStringParser {
 			return localdatetime;
 		} else {
 			LOG.debug("PARSE FAILED:");
-			LOG.debug("PARSED: " + inputFromResultSet);
-			throw new DateTimeParseException(inputFromResultSet, sequence, 0, exception);
+			LOG.debug("PARSED: " + inputDateString);
+			throw new DateTimeParseException(inputDateString, sequence, 0, exception);
 		}
 	}
 
@@ -256,7 +307,7 @@ public class TemporalStringParser {
 
 		private Parser(String pattern) {
 			this.pattern = pattern;
-			this.formatter = DateTimeFormatter.ofPattern(pattern);
+			this.formatter = pattern == null ? null : DateTimeFormatter.ofPattern(pattern);
 		}
 
 		private Parser(DateTimeFormatter formatter) {
@@ -268,13 +319,69 @@ public class TemporalStringParser {
 			return new Parser(pattern);
 		}
 
+		public static Parser[] ofPatterns(String... pattern) {
+			List<Parser> list = List.of(pattern).stream().map(p -> new Parser(p)).collect(Collectors.toList());
+			Parser[] array = list.toArray(new Parser[]{});
+			return array;
+		}
+
 		public static Parser ofFormatter(DateTimeFormatter formatter) {
 			return new Parser(formatter);
+		}
+
+		public boolean isNotEmpty() {
+			return StringCheck.isNotEmptyNorNull(pattern);
 		}
 
 		@Override
 		public String toString() {
 			return pattern;
+		}
+
+		public ZonedDateTime interpretAsZonedDateTime(String dateString) throws DateTimeParseException {
+			final TemporalAccessor parsed = parse(dateString);
+			ZonedDateTime zoneddatetime;
+			try {
+				zoneddatetime = ZonedDateTime.from(parsed);
+				return zoneddatetime;
+			} catch (Exception ex) {
+				try {
+					zoneddatetime = ZonedDateTime.of(LocalDateTime.from(parsed), ZoneId.of("Z"));
+					return zoneddatetime;
+				} catch (Exception ex1) {
+					DateTimeParseException exception;
+					printException(dateString, this, ex1);
+					if (ex1 instanceof DateTimeParseException) {
+						exception = (DateTimeParseException) ex1;
+					} else {
+						exception = new DateTimeParseException("Failed to parse date string", dateString, 0, ex1);
+					}
+					throw exception;
+				}
+			}
+		}
+
+		public LocalDateTime interpretAsLocalDateTime(String dateString) throws DateTimeParseException {
+			final TemporalAccessor parsed = parse(dateString);
+			LocalDateTime localdatetime;
+			try {
+				localdatetime = ZonedDateTime.from(parsed).toLocalDateTime();
+				return localdatetime;
+			} catch (Exception ex) {
+				try {
+					localdatetime = LocalDateTime.from(parsed);
+					return localdatetime;
+				} catch (Exception ex1) {
+					DateTimeParseException exception;
+					printException(dateString, this, ex1);
+					if (ex1 instanceof DateTimeParseException) {
+						exception = (DateTimeParseException) ex1;
+					} else {
+						exception = new DateTimeParseException("Failed to parse date string", dateString, 0, ex1);
+					}
+					throw exception;
+				}
+			}
 		}
 
 		public TemporalAccessor parse(String dateString) {
