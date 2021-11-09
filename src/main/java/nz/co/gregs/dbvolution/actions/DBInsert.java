@@ -168,13 +168,13 @@ public class DBInsert extends DBAction {
 
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				StatementDetails statementDetails = new StatementDetails("INSERT ROW",QueryIntention.INSERT_ROW,sql);
+				StatementDetails statementDetails = new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW, sql);
 				if (defn.supportsGeneratedKeys()) {
 					try {
 						final List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
 						if (primaryKeys == null || primaryKeys.isEmpty()) {
 							// There are no primary keys so execute and move on.
-							statement.execute(new StatementDetails("INSERT_ROW", QueryIntention.INSERT_ROW,sql));
+							statement.execute(new StatementDetails("INSERT_ROW", QueryIntention.INSERT_ROW, sql));
 						} else {
 							boolean allPKsHaveBeenSet = true;
 							for (QueryableDatatype<?> primaryKey : primaryKeys) {
@@ -246,30 +246,32 @@ public class DBInsert extends DBAction {
 								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 								var dets = new StatementDetails("RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT, retrieveSQL);
 								try (ResultSet rs = statement.executeQuery(dets)) {
-									for (var primaryKeyWrapper : primaryKeyWrappers) {
-										var definition = primaryKeyWrapper.getPropertyWrapperDefinition();
-										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
-										QueryableDatatype<?> rowPK = definition.getQueryableDatatype(table);
+									if (rs != null) {
+										for (var primaryKeyWrapper : primaryKeyWrappers) {
+											var definition = primaryKeyWrapper.getPropertyWrapperDefinition();
+											QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
+											QueryableDatatype<?> rowPK = definition.getQueryableDatatype(table);
 
-										if (originalPK.hasBeenSet() == false) {
-											if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
-												final long generatedPK = rs.getLong(1);
-												setPrimaryKeyGenerated(generatedPK);
-												DBInteger inPK = (DBInteger) originalPK;
-												DBInteger inRowPK = (DBInteger) rowPK;
-												inPK.setValue(generatedPK);
-												inRowPK.setValue(generatedPK);
-											} else if ((originalPK instanceof DBNumber) && (rowPK instanceof DBInteger)) {
-												final long generatedPK = rs.getLong(1);
-												setPrimaryKeyGenerated(generatedPK);
-												DBNumber inPK = (DBNumber) originalPK;
-												inPK.setValue(rs.getBigDecimal(1));
-												((DBInteger) rowPK).setValue(generatedPK);
-											} else if ((originalPK instanceof DBString) && (rowPK instanceof DBString)) {
-												DBString inPK = (DBString) originalPK;
-												inPK.setValue(rs.getString(1));
-												inPK = (DBString) rowPK;
-												inPK.setValue(rs.getString(1));
+											if (originalPK.hasBeenSet() == false) {
+												if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
+													final long generatedPK = rs.getLong(1);
+													setPrimaryKeyGenerated(generatedPK);
+													DBInteger inPK = (DBInteger) originalPK;
+													DBInteger inRowPK = (DBInteger) rowPK;
+													inPK.setValue(generatedPK);
+													inRowPK.setValue(generatedPK);
+												} else if ((originalPK instanceof DBNumber) && (rowPK instanceof DBInteger)) {
+													final long generatedPK = rs.getLong(1);
+													setPrimaryKeyGenerated(generatedPK);
+													DBNumber inPK = (DBNumber) originalPK;
+													inPK.setValue(rs.getBigDecimal(1));
+													((DBInteger) rowPK).setValue(generatedPK);
+												} else if ((originalPK instanceof DBString) && (rowPK instanceof DBString)) {
+													DBString inPK = (DBString) originalPK;
+													inPK.setValue(rs.getString(1));
+													inPK = (DBString) rowPK;
+													inPK.setValue(rs.getString(1));
+												}
 											}
 										}
 									}
@@ -292,7 +294,7 @@ public class DBInsert extends DBAction {
 	private void updateSequenceIfNecessary(final DBDefinition defn, DBDatabase db, String sql, DBRow table, final DBStatement statement) throws SQLException {
 		if (primaryKeyWasGenerated && defn.requiresSequenceUpdateAfterManualInsert()) {
 			final String sequenceUpdateSQL = defn.getSequenceUpdateSQL(table.getTableName(), table.getPrimaryKeyColumnNames().get(0), primaryKeyGenerated);
-			statement.execute(new StatementDetails("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE,sequenceUpdateSQL));
+			statement.execute(new StatementDetails("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE, sequenceUpdateSQL));
 		}
 	}
 
