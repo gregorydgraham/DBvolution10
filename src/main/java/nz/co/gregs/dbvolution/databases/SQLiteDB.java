@@ -191,12 +191,16 @@ public class SQLiteDB extends DBDatabase {
 		return 5432;
 	}
 
-	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("\\[SQLITE_ERROR\\] SQL error or missing database \\(table [^ ]* already exists\\)");
-	private static final Regex TABLE_DOESNT_EXIST_REGEX = Regex.empty().literal("[SQLITE_ERROR] SQL error or missing database (no such table: ").toRegex();
+	private static final Regex TABLE_ALREADY_EXISTS = Regex.empty()
+			.literal("[SQLITE_ERROR] SQL error or missing database (table ").noneOfThisCharacter(' ').optionalMany()
+			.literal(" already exists)").toRegex();
+	private static final Regex TABLE_DOESNT_EXIST_REGEX = Regex.empty()
+			.literal("[SQLITE_ERROR] SQL error or missing database (no such table: ")
+			.toRegex();
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
-		if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()) {
+		if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_ALREADY_EXISTS.matchesWithinString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
 		}else if(intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOESNT_EXIST_REGEX.matchesWithinString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
