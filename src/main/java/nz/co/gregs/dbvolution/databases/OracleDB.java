@@ -209,11 +209,15 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		final String message = exp.getMessage();
-		if (TABLE_ALREADY_EXISTS.matcher(message).lookingAt()
-				|| TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()
-				|| (SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt() && (intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)))
-				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.CHECK_TABLE_EXISTS))
-				|| (TABLE_DOES_NOT_EXIST.matcher(message).lookingAt() && intent.is(QueryIntention.DROP_TABLE))) {
+		if ((intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOES_NOT_EXIST.matcher(message).lookingAt())) {
+			return ResponseToException.SKIPQUERY;
+		} else if ((intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)) && SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt()) {
+			return ResponseToException.SKIPQUERY;
+		} else if ((intent.is(QueryIntention.DROP_TABLE) && TABLE_DOES_NOT_EXIST.matcher(message).lookingAt())) {
+			return ResponseToException.SKIPQUERY;
+		} else if (TABLE_ALREADY_EXISTS.matcher(message).lookingAt()) {
+			return ResponseToException.SKIPQUERY;
+		} else if (TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()) {
 			return ResponseToException.SKIPQUERY;
 		} else if (LOOP_IN_RECURSIVE_QUERY.matcher(message).lookingAt()) {
 			return ResponseToException.EMULATE_RECURSIVE_QUERY;
