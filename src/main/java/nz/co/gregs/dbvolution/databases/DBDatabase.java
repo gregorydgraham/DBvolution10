@@ -2424,7 +2424,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		boolean tableExists = false;
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
-			tableExists = checkTableExistsViaMetaData(table, tableExists);
+			tableExists = checkTableExistsViaMetaData(table);
 			System.out.println("CHECKED TABLE EXISTENCE VIA METADATA: " + table.getTableName() + " -> " + tableExists);
 		} else {
 			tableExists = checkTableExistsViaQuery(table);
@@ -2456,7 +2456,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
-	private boolean checkTableExistsViaMetaData(DBRow table, boolean tableExists) throws SQLException {
+	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
+		boolean tableExists = false;
 		try (DBStatement dbStatement = getDBStatement()) {
 			DBConnection conn = dbStatement.getConnection();
 			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
