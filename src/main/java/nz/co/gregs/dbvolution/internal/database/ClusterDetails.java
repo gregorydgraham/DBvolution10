@@ -223,7 +223,6 @@ public class ClusterDetails implements Serializable {
 
 	private synchronized boolean removeDatabaseFromAllLists(DBDatabase databaseToRemove) {
 		DBDatabase database = databaseToRemove;
-		LOG.log(Level.INFO, "REMOVING: {0}", database.getLabel());
 		boolean result = removeDatabaseFromAllLists_Internal(database);
 		return result;
 	}
