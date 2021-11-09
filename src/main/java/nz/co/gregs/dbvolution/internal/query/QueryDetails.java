@@ -376,8 +376,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 				printSQLIfRequired(sql);
 				var dets = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
 				try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
-					while (resultSet.next()) {
-						result = resultSet.getLong(1);
+					if (resultSet != null) {
+						while (resultSet.next()) {
+							result = resultSet.getLong(1);
+						}
 					}
 					break;// we have successfully run the count so stop
 				}
@@ -1196,14 +1198,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 			try (DBStatement dbStatement = queryDatabase.getDBStatement()) {
 				printSQLIfRequired(sql);
 				try (ResultSet resultSet = getResultSetForSQL(dbStatement, sql)) {
-					DBQueryRow queryRow;
-					while (resultSet.next()) {
-						queryRow = new DBQueryRow(this);
+					if (resultSet != null) {
+						DBQueryRow queryRow;
+						while (resultSet.next()) {
+							queryRow = new DBQueryRow(this);
 
-						setExpressionColumns(defn, resultSet, queryRow);
+							setExpressionColumns(defn, resultSet, queryRow);
 
-						setQueryRowFromResultSet(defn, resultSet, this, queryRow, isGroupedQuery());
-						foundRows.add(queryRow);
+							setQueryRowFromResultSet(defn, resultSet, this, queryRow, isGroupedQuery());
+							foundRows.add(queryRow);
+						}
 					}
 				}
 				successfulQuery = true;
@@ -1372,7 +1376,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		statementDetails.setIgnoreExceptions(this.isQuietExceptions());
 		ResultSet queryResults;
 		try {
-			queryResults =  statement.executeQuery(statementDetails);
+			queryResults = statement.executeQuery(statementDetails);
 		} finally {
 			if (cancelHandle != null) {
 				cancelHandle.cancel(true);
