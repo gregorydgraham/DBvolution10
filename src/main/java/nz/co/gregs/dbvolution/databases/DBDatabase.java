@@ -2359,7 +2359,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		REPLACECONNECTION(),
 		REQUERY(),
 		SKIPQUERY(),
-		EMULATE_RECURSIVE_QUERY();
+		EMULATE_RECURSIVE_QUERY(),
+		NOT_HANDLED;
 
 		ResponseToException() {
 		}
@@ -2423,29 +2424,44 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		boolean tableExists = false;
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
-			try (DBStatement dbStatement = getDBStatement()) {
-				DBConnection conn = dbStatement.getConnection();
-				ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
-				if (rset.next()) {
-					tableExists = true;
-				}
-			}
+			tableExists = checkTableExistsViaMetaData(table, tableExists);
+			System.out.println("CHECKED TABLE EXISTENCE VIA METADATA: " + table.getTableName() + " -> " + tableExists);
 		} else {
-			String testQuery = getDefinition().getTableExistsSQL(table);
-			try (DBStatement dbStatement = getDBStatement()) {
-				var dets = new StatementDetails("CHECK FOR TABLE " + table.getTableName(), QueryIntention.CHECK_TABLE_EXISTS, testQuery);
-				ResultSet results = dbStatement.executeQuery(dets);
-				if (results != null) {
-					results.close();
-				}
+			tableExists = checkTableExistsViaQuery(table);
+			System.out.println("CHECKED TABLE EXISTENCE WITH QUERY: " + table.getTableName() + " -> " + tableExists);
+		}
+		return tableExists;
+	}
+
+	private boolean checkTableExistsViaQuery(DBRow table) throws NoAvailableDatabaseException {
+		boolean tableExists;
+		String testQuery = getDefinition().getTableExistsSQL(table);
+		try (DBStatement dbStatement = getDBStatement()) {
+			var dets = new StatementDetails("CHECK FOR TABLE " + table.getTableName(), QueryIntention.CHECK_TABLE_EXISTS, testQuery);
+			ResultSet results = dbStatement.executeQuery(dets);
+			if (results != null) {
+				results.close();
 				tableExists = true;
-			} catch (Exception ex) {
-				// An exception means we couldn't find the table for whatever reason
-				// so we can safely ignore the exception
-				// but just to be clear, lets ensure we return false
+			} else {
 				tableExists = false;
-				// Theoretically this should only need to catch an SQLException 
-				// but databases throw all sorts of weird exceptions
+			}
+		} catch (Exception ex) {
+			// An exception means we couldn't find the table for whatever reason
+			// so we can safely ignore the exception
+			// but just to be clear, lets ensure we return false
+			tableExists = false;
+			// Theoretically this should only need to catch an SQLException
+			// but databases throw all sorts of weird exceptions
+		}
+		return tableExists;
+	}
+
+	private boolean checkTableExistsViaMetaData(DBRow table, boolean tableExists) throws SQLException {
+		try (DBStatement dbStatement = getDBStatement()) {
+			DBConnection conn = dbStatement.getConnection();
+			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
+			if (rset.next()) {
+				tableExists = true;
 			}
 		}
 		return tableExists;
@@ -2487,24 +2503,26 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		try (DBStatement dbStatement = getDBStatement()) {
 			var dets = new StatementDetails("CHECK TABLE STRUCTURE FOR " + table.getTableName(), QueryIntention.CHECK_TABLE_STRUCTURE, testQuery);
 			try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
-				ResultSetMetaData metaData = resultSet.getMetaData();
-				var columnPropertyWrappers = table.getColumnPropertyWrappers();
-				for (var columnPropertyWrapper : columnPropertyWrappers) {
-					if (!columnPropertyWrapper.hasColumnExpression()) {
-						int columnCount = metaData.getColumnCount();
-						boolean foundColumn = false;
-						for (int i = 1; i <= columnCount && !foundColumn; i++) {
-							String columnName = definition.formatColumnName(metaData.getColumnName(i));
-							String formattedPropertyColumnName = definition.formatColumnName(columnPropertyWrapper.columnName());
+				if (resultSet != null) {
+					ResultSetMetaData metaData = resultSet.getMetaData();
+					var columnPropertyWrappers = table.getColumnPropertyWrappers();
+					for (var columnPropertyWrapper : columnPropertyWrappers) {
+						if (!columnPropertyWrapper.hasColumnExpression()) {
+							int columnCount = metaData.getColumnCount();
+							boolean foundColumn = false;
+							for (int i = 1; i <= columnCount && !foundColumn; i++) {
+								String columnName = definition.formatColumnName(metaData.getColumnName(i));
+								String formattedPropertyColumnName = definition.formatColumnName(columnPropertyWrapper.columnName());
 
-							/*Postgres returns a lowercase column name in the meta data so use case-insensitive check*/
-							if (columnName.equalsIgnoreCase(formattedPropertyColumnName)) {
-								foundColumn = true;
+								/*Postgres returns a lowercase column name in the meta data so use case-insensitive check*/
+								if (columnName.equalsIgnoreCase(formattedPropertyColumnName)) {
+									foundColumn = true;
+								}
 							}
-						}
-						if (!foundColumn) {
-							// We collect all the changes and process them later because SQLite doesn't like processing them imediately
-							newColumns.add(columnPropertyWrapper);
+							if (!foundColumn) {
+								// We collect all the changes and process them later because SQLite doesn't like processing them imediately
+								newColumns.add(columnPropertyWrapper);
+							}
 						}
 					}
 				}
@@ -2526,7 +2544,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		try (DBStatement dbStatement = getDBStatement()) {
 			try {
-				boolean execute = dbStatement.execute(new StatementDetails("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString));
+				dbStatement.execute(new StatementDetails("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString));
 			} catch (SQLException ex) {
 				Logger.getLogger(DBDatabase.class
 						.getName()).log(Level.SEVERE, null, ex);
