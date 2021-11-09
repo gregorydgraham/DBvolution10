@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
+import nz.co.gregs.regexi.Regex;
 
 /**
  * Creates a DBDatabase for an SQLite database.
@@ -191,10 +192,13 @@ public class SQLiteDB extends DBDatabase {
 	}
 
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("\\[SQLITE_ERROR\\] SQL error or missing database \\(table [^ ]* already exists\\)");
+	private static final Regex TABLE_DOESNT_EXIST_REGEX = Regex.empty().literal("[SQLITE_ERROR] SQL error or missing database (no such table: ").toRegex();
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()) {
+			return ResponseToException.SKIPQUERY;
+		}else if(intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOESNT_EXIST_REGEX.matchesWithinString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp, intent);
