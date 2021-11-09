@@ -167,13 +167,11 @@ public class DBStatementCluster extends DBStatement {
 	}
 
 	@Override
-	public boolean execute(StatementDetails details) throws SQLException {
-		boolean executed = true;
+	public void execute(StatementDetails details) throws SQLException {
 		ArrayList<DBStatement> dbStatements = databaseCluster.getDBStatements();
 		for (DBStatement next : dbStatements) {
-			executed &= next.execute(details);
+			next.execute(details);
 		}
-		return executed;
 	}
 
 	@Override
