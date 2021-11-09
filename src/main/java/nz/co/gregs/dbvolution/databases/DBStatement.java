@@ -455,8 +455,6 @@ public class DBStatement implements AutoCloseable {
 	 *
 	 * @param details the full details of the query including the SQL to be
 	 * executed
-	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
-	 * object; <code>FALSE</code> if it is an update count or there are no results
 	 *
 	 * @throws SQLException Database exceptions may be thrown
 	 */
