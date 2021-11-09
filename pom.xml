@@ -851,6 +851,7 @@
 								<testOpenSourceCluster>true</testOpenSourceCluster>
 								<testFullCluster>true</testFullCluster>
 								<testMSSQLServer>true</testMSSQLServer>
+								<testMSSQLServerLocal>true</testMSSQLServerLocal>
 								<testOracleXE>true</testOracleXE>
 							</systemPropertyVariables>
 						</configuration>
