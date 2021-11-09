@@ -28,7 +28,6 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
-import nz.co.gregs.regexi.Regex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -51,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Gregory Graham
  */
-public class DBStatement implements AutoCloseable/*implements Statement*/ {
+public class DBStatement implements AutoCloseable {
 
 	static final private Log LOG = LogFactory.getLog(DBStatement.class);
 
@@ -95,10 +94,13 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 				statementDetails.setIgnoreExceptions(details.isIgnoreExceptions());
 				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
 			} catch (LoopDetectedInRecursiveSQL loop) {
+				System.out.println("THROWING LOOP EXCEPTION");
 				throw loop;
 			} catch (SQLException ex) {
+				System.out.println("THROWING SQLEXCEPTION: " + ex.getLocalizedMessage());
 				throw ex;
 			} catch (Exception ex) {
+				System.out.println("THROWING EXCEPTION AS SQLEXCEPTION");
 				throw new SQLException(ex);
 			}
 		}
@@ -106,18 +108,29 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	}
 
 	private ResultSet addFeatureAndAttemptQueryAgain(StatementDetails details) throws Exception, LoopDetectedInRecursiveSQL {
+		System.out.println("ADD FEATURE AND ATTEMPT QUERY AGAIN: " + database.toString());
+		System.out.println("INTENT: " + details.getIntention().name());
+		System.out.println("QUERY: " + details.getSql());
+		System.out.println("MESSAGE: " + details.getException().getLocalizedMessage());
 		ResultSet executeQuery;
 		final Exception exp = details.getException();
 		final String sql = details.getSql();
 		final QueryIntention intent = details.getIntention();
 		checkForBrokenConnection(exp, sql);
 		try {
-			handleResponseFromFixingException(exp, intent);
+			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent);
+			System.out.println("HANDLED: " + response);
+			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+				System.out.println("SKIPPING QUERY: " + sql);
+				return null;
+			}
 		} catch (LoopDetectedInRecursiveSQL loop) {
+			System.out.println("LOOP DETECTED IN RECURSIVE SQL: throwing loop exception");
 			throw loop;
 		} catch (Exception ex) {
 			if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
-				// Checking the table will generate exceptions that we don'tneed to investigate
+				// Checking the table will generate exceptions that we don't need to investigate
+				System.out.println("SKIPPING QUERY: ");
 			} else if (details.isIgnoreExceptions()) {
 //				LOG.debug("REPEATED EXCEPTIONS FROM: " + sql, exp);
 			} else {
@@ -127,17 +140,29 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			}
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
-				handleResponseFromFixingException(exp, intent);
+				System.out.println("ATTEMPTING FIX FOR DIFFERENT PROBLEM: " + ex1.getLocalizedMessage());
+				DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent);
+				System.out.println("HANDLED: " + response);
+				if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+					System.out.println("SKIPPING QUERY: " + sql);
+					return null;
+				}
 			}
+			System.out.println("THROWING SQLException: " + ex.getLocalizedMessage());
 			throw new SQLException(ex);
 		}
 		try {
+			System.out.println("QUERYING AGAIN");
 			executeQuery = getInternalStatement().executeQuery(sql);
+			System.out.println("QUERIED SUCCESSFULLY");
 			return executeQuery;
 		} catch (SQLException exp2) {
+			System.out.print("QUERY FAILED AGAIN");
 			if (exp.getMessage().equals(exp2.getMessage())) {
+				System.out.println(" WITH THE SAME EXCEPTION");
 				throw exp;
 			} else {
+				System.out.println(" BUT DIFFERENTLY: " + exp2.getLocalizedMessage());
 				final StatementDetails statementDetails = details.copy().withLabel("RETRYING FAILED SQL").withException(exp2);
 				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
 				return executeQuery;
@@ -184,15 +209,20 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 			// with an exception during the close method????????
 			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
 		}
+		closeInternalStatement();
+	}
+
+	private synchronized void closeInternalStatement() {
 		try {
-			Statement statement = getInternalStatement();
-			statement.close();
+			if (internalStatement != null) {
+				internalStatement.close();
+			}
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
 			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
 		} finally {
-			setInternalStatement(null);
+			internalStatement = null;
 		}
 	}
 
@@ -430,33 +460,36 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	 *
 	 * @throws SQLException Database exceptions may be thrown
 	 */
-	public boolean execute(StatementDetails details) throws SQLException {
+	public void execute(StatementDetails details) throws SQLException {
 		String sql = details.getSql();
 		final String logSQL = "EXECUTING: " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
-		final boolean execute;
 		try {
 			final var stmt = getInternalStatement();
-			execute = details.execute(stmt);
+			details.execute(stmt);
 		} catch (SQLException exp) {
 			StatementDetails statementDetails
 					= details.copy()
 							.withLabel("RETRY EXECUTE")
 							.withException(exp);
-			return addFeatureAndAttemptExecuteAgain(statementDetails);
+			addFeatureAndAttemptExecuteAgain(statementDetails);
 		}
-		return execute;
 	}
 
 	private boolean addFeatureAndAttemptExecuteAgain(StatementDetails details) throws SQLException {
+		System.out.println("ADD FEATURE AND QUERY AGAIN: " + database.toString());
 		String sql = details.getSql();
 		Exception exp = details.getException();
+		System.out.println("MESSAGE: " + exp.getLocalizedMessage());
 		QueryIntention intent = details.getIntention();
 		boolean executeQuery;
 		checkForBrokenConnection(exp, sql);
 		try {
-			if (handleResponseFromFixingException(exp, intent)) {
+			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent);
+			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)
+					|| response.equals(DBDatabase.ResponseToException.REQUERY)) {
+				System.out.println("SKIPPING EXECUTION");
 				return true;
 			}
 		} catch (Exception ex) {
@@ -476,44 +509,53 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 		}
 	}
 
-	public boolean handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception {
-		DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent);
-		switch (response) {
-			case REPLACECONNECTION:
-				replaceBrokenConnection();
-				return true;
-			case SKIPQUERY:
-				return true;
-			case EMULATE_RECURSIVE_QUERY:
-				throw new LoopDetectedInRecursiveSQL();
-			default:
-				break;
+	public DBDatabase.ResponseToException handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception {
+		System.out.println("HANDLING RESPONSE FROM FIXING EXCEPTION: " + exp.getLocalizedMessage());
+		try {
+			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent);
+			switch (response) {
+				case REPLACECONNECTION:
+					System.out.println("REPLACING CONNECTION");
+					replaceBrokenConnection();
+					return DBDatabase.ResponseToException.REQUERY;
+				case SKIPQUERY:
+					System.out.println("SKIPPING QUERY");
+					return DBDatabase.ResponseToException.SKIPQUERY;
+				case EMULATE_RECURSIVE_QUERY:
+					System.out.println("EMULATING RECURSION");
+					throw new LoopDetectedInRecursiveSQL();
+				default:
+					System.out.println("CONTINUING");
+					break;
+			}
+		} catch (Exception exc) {
+			System.out.println("THROWING EXCEPTION: " + exc.getLocalizedMessage());
+			throw exc;
 		}
-		return false;
+		return DBDatabase.ResponseToException.NOT_HANDLED;
 	}
 
-	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string, String[] strings, QueryIntention intent) throws SQLException {
-		boolean executeQuery;
-		try {
-			if (handleResponseFromFixingException(exp, intent)) {
-				return true;
-			}
-		} catch (Exception ex) {
-			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + string, ex);
-		}
-		try {
-			executeQuery = getInternalStatement().execute(string, strings);
-			return executeQuery;
-		} catch (SQLException exp2) {
-			if (!exp.getMessage().equals(exp2.getMessage())) {
-				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string, strings, intent);
-				return executeQuery;
-			} else {
-				throw new SQLException(exp);
-			}
-		}
-	}
-
+//	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string, String[] strings, QueryIntention intent) throws SQLException {
+//		boolean executeQuery;
+//		try {
+//			if (handleResponseFromFixingException(exp, intent)) {
+//				return true;
+//			}
+//		} catch (Exception ex) {
+//			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + string, ex);
+//		}
+//		try {
+//			executeQuery = getInternalStatement().execute(string, strings);
+//			return executeQuery;
+//		} catch (SQLException exp2) {
+//			if (!exp.getMessage().equals(exp2.getMessage())) {
+//				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string, strings, intent);
+//				return executeQuery;
+//			} else {
+//				throw new SQLException(exp);
+//			}
+//		}
+//	}
 	/**
 	 * Retrieves the current result as a ResultSet object.
 	 *
@@ -1029,16 +1071,53 @@ public class DBStatement implements AutoCloseable/*implements Statement*/ {
 	}
 
 	private void checkForBrokenConnection(Exception exp, String sql) throws SQLException {
+		System.out.print("CHECK FOR BROKEN CONNECTION");
+//		if (exp != null) {
+//			if (StringCheck.isNotEmptyNorNull(exp.getMessage())) {
+//				final String message = exp.getMessage().toLowerCase();
+//				Regex regex = Regex.startingAnywhere().beginCaseInsensitiveSection()
+//						.beginOrGroup()
+//						.literal("Communications link failure") // MySQL specific(?) error
+//						.or()
+//						.literal("Closed Connection")
+//						.or()
+//						.anyOf("connection", "statement")
+//						.anyCharacter().optionalMany()
+//						.anyOf("broken", "closed", "reset")
+//						.endOrGroup()
+//						.endCaseInsensitiveSection().toRegex();
+//				if (regex.matchesWithinString(message)) {
+//					replaceBrokenConnection();
+//				}
 		if (exp != null) {
 			if (StringCheck.isNotEmptyNorNull(exp.getMessage())) {
 				final String message = exp.getMessage().toLowerCase();
-				if (message.matches(".*connection.*broken.*")
-						|| message.matches(".*connection.*closed.*")
-						|| message.matches(".*statement.*broken.*")
-						|| message.matches(".*statement.*closed.*")) {
+				if (message.matches(".*connection.*broken.*")) {
 					replaceBrokenConnection();
+					System.out.println(" - REPLACED BROKEN CONNECTION");
+				} else if (message.matches(".*connection.*closed.*")) {
+					replaceBrokenConnection();
+					System.out.println(" - REPLACED CLOSED CONNECTION");
+				} else if (message.matches(".*statement.*broken.*")) {
+					replaceBrokenConnection();
+					System.out.println(" - REPLACED BROKEN STATEMENT");
+				} else if (message.matches(".*statement.*closed.*")) {
+					replaceBrokenConnection();
+					System.out.println(" - REPLACED CLOSED STATEMENT");
+				} else if (message.matches(".*connection.*reset.*")) {
+					replaceBrokenConnection();
+					System.out.println(" - REPLACED RESET CONNECTION");
+				} else if (message.matches("There is insufficient system memory in resource pool 'default' to run this query.")) {
+					replaceBrokenConnection();
+					System.out.println(" - MSSQLServer INSUFFICIENT SYSTEM MEMORY ERROR");
+				} else {
+					System.out.println(" - NOT REQUIRED");
 				}
+			} else {
+				System.out.println(" - NO MESSAGE");
 			}
+		} else {
+			System.out.println(" - NO EXCEPTION");
 		}
 	}
 }
