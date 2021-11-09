@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
+import nz.co.gregs.regexi.Regex;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -200,26 +201,26 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		}
 	}
 
-	private final static Pattern SEQUENCE_DOES_NOT_EXIST = Pattern.compile("ORA-02289: sequence does not exist");
-	private final static Pattern TRIGGER_DOES_NOT_EXIST = Pattern.compile("ORA-04080: trigger .* does not exist");
-	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("ORA-00955: name is already used by an existing object");
-	private final static Pattern TABLE_DOES_NOT_EXIST = Pattern.compile("ORA-00942: table or view does not exist");
-	private final static Pattern LOOP_IN_RECURSIVE_QUERY = Pattern.compile("ORA-32044: cycle detected while executing recursive WITH query");
+	private final static Regex SEQUENCE_DOES_NOT_EXIST = Regex.empty().literal("ORA-02289: sequence does not exist").toRegex();
+	private final static Regex TRIGGER_DOES_NOT_EXIST = Regex.empty().literal("ORA-04080: trigger ").anyCharacter().optionalMany().literal(" does not exist").toRegex();
+	private final static Regex TABLE_ALREADY_EXISTS = Regex.empty().literal("ORA-00955: name is already used by an existing object").toRegex();
+	private final static Regex TABLE_DOES_NOT_EXIST = Regex.empty().literal("ORA-00942: table or view does not exist").toRegex();
+	private final static Regex LOOP_IN_RECURSIVE_QUERY = Regex.empty().literal("ORA-32044: cycle detected while executing recursive WITH query").toRegex();
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		final String message = exp.getMessage();
-		if ((intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOES_NOT_EXIST.matcher(message).lookingAt())) {
+		if ((intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOES_NOT_EXIST.matchesWithinString(message))) {
 			return ResponseToException.SKIPQUERY;
-		} else if ((intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)) && SEQUENCE_DOES_NOT_EXIST.matcher(message).lookingAt()) {
+		} else if ((intent.isOneOf(QueryIntention.DROP_SEQUENCE, QueryIntention.CREATE_TRIGGER_BASED_IDENTITY)) && SEQUENCE_DOES_NOT_EXIST.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
-		} else if ((intent.is(QueryIntention.DROP_TABLE) && TABLE_DOES_NOT_EXIST.matcher(message).lookingAt())) {
+		} else if ((intent.is(QueryIntention.DROP_TABLE) && TABLE_DOES_NOT_EXIST.matchesWithinString(message))) {
 			return ResponseToException.SKIPQUERY;
-		} else if (TABLE_ALREADY_EXISTS.matcher(message).lookingAt()) {
+		} else if (TABLE_ALREADY_EXISTS.matchesWithinString(message)){
 			return ResponseToException.SKIPQUERY;
-		} else if (TRIGGER_DOES_NOT_EXIST.matcher(message).lookingAt()) {
+		} else if (TRIGGER_DOES_NOT_EXIST.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
-		} else if (LOOP_IN_RECURSIVE_QUERY.matcher(message).lookingAt()) {
+		} else if (LOOP_IN_RECURSIVE_QUERY.matchesWithinString(message)) {
 			return ResponseToException.EMULATE_RECURSIVE_QUERY;
 		} else {
 		}
