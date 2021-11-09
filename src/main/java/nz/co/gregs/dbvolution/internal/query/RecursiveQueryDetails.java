@@ -200,17 +200,19 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 			query.setTimeoutInMilliseconds(recursiveDetails.getTimeoutInMilliseconds());
 			final QueryDetails queryDetails = query.getQueryDetails();
 			try (ResultSet resultSet = queryDetails.getResultSetForSQL(dbStatement, descendingQuery)) {
-				while (resultSet.next()) {
-					DBQueryRow queryRow = new DBQueryRow(queryDetails);
+				if (resultSet != null) {
+					while (resultSet.next()) {
+						DBQueryRow queryRow = new DBQueryRow(queryDetails);
 
-					query.setExpressionColumns(defn, resultSet, queryRow);
+						query.setExpressionColumns(defn, resultSet, queryRow);
 
-					queryDetails.setQueryRowFromResultSet(defn,
-							resultSet, queryDetails,
-							queryRow,
-							queryDetails.getDBReportGroupByColumns().size() > 0
-					);
-					returnList.add(queryRow);
+						queryDetails.setQueryRowFromResultSet(defn,
+								resultSet, queryDetails,
+								queryRow,
+								queryDetails.getDBReportGroupByColumns().size() > 0
+						);
+						returnList.add(queryRow);
+					}
 				}
 			}
 			return returnList;
@@ -381,13 +383,13 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		List<DBQueryRow> primingRows = query.getAllRows();
 
 		Map<String, List<String>> pkValues = new HashMap<>();
-		Map<String, PropertyWrapperDefinition<?,?>> pkDefs = new HashMap<>();
+		Map<String, PropertyWrapperDefinition<?, ?>> pkDefs = new HashMap<>();
 
 		for (DBQueryRow row : primingRows) {
 			final T tab = row.get(returnType);
 			List<QueryableDatatype<?>> qdts = tab.getPrimaryKeys();
 			for (QueryableDatatype<?> qdt : qdts) {
-				final PropertyWrapperDefinition<?,?> propDefn = tab.getPropertyWrapperOf(qdt).getPropertyWrapperDefinition();
+				final PropertyWrapperDefinition<?, ?> propDefn = tab.getPropertyWrapperOf(qdt).getPropertyWrapperDefinition();
 				if (!pkValues.containsKey(propDefn.toString())) {
 					pkValues.put(propDefn.toString(), new ArrayList<String>());
 					pkDefs.put(propDefn.toString(), propDefn);
