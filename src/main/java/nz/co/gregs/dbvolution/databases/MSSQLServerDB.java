@@ -338,9 +338,9 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			final String sql = "SET IDENTITY_INSERT " + table + " ON;";
 			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql));
 			return ResponseToException.REQUERY;
-		} else if (CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
+		} else if (intent.is(QueryIntention.CREATE_TABLE) && CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
-		} else if (NONEXISTANT_TABLE_PATTERN.matchesWithinString(message)) {
+		} else if (intent.is(QueryIntention.CHECK_TABLE_EXISTS) && NONEXISTANT_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
 		} else if (UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
