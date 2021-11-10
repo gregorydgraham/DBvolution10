@@ -141,8 +141,6 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 	 *
 	 */
 	DBInstant(String dateAsAString) {
-//		System.out.println("DATEASSTRING: "+dateAsAString);
-//		System.out.println("ISO_DATE FORMAT: 2011-12-03T10:15:30");
 		setLiteralValue(Instant.parse(dateAsAString.subSequence(0, dateAsAString.length())));
 	}
 
@@ -346,7 +344,6 @@ public class DBInstant extends QueryableDatatype<Instant> implements InstantResu
 		String string = null;
 		try {
 			string = resultSet.getString(fullColumnName);
-//			System.out.println("GETBYSTRING: " + string);
 		} catch (SQLException sqlex) {
 			throw new DBRuntimeException("Unable to get Instant from String:" + sqlex.getLocalizedMessage(), sqlex);
 		}
