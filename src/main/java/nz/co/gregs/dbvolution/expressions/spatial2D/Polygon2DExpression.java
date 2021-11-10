@@ -1381,9 +1381,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				ArrayList<Point2DExpression> list = new ArrayList<Point2DExpression>();
 				list.addAll(asList);
 				list.add(allCoordinates[0]);
-//				for (Point2DExpression num : list) {
-//					System.out.println(""+num.toSQLString(db));
-//				}
 				Point2DExpression[] toArray = list.toArray(new Point2DExpression[]{});
 				return (new CreatePolygon2DFromPoint2DArrayExpression(toArray)).toSQLString(db);
 			} else {
