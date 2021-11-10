@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
+import nz.co.gregs.regexi.Regex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -1018,23 +1019,35 @@ public class DBStatement implements AutoCloseable {
 		this.internalStatement = realStatement;
 	}
 
+	private static final Regex CONNECTION_BROKEN_REGEX = Regex.empty()
+			.literal("connection").anyCharacter().optionalMany().literal("broken").toRegex();
+	private static final Regex CONNECTION_CLOSED_REGEX = Regex.empty()
+			.literal("connection").anyCharacter().optionalMany().literal("closed").toRegex();
+	private static final Regex CONNECTION_RESET_REGEX = Regex.empty()
+			.literal("connection").anyCharacter().optionalMany().literal("reset").toRegex();
+	private static final Regex STATEMENT_BROKEN_REGEX = Regex.empty()
+			.literal("statement").anyCharacter().optionalMany().literal("broken").toRegex();
+	private static final Regex STATEMENT_CLOSED_REGEX = Regex.empty()
+			.literal("statement").anyCharacter().optionalMany().literal("closed").toRegex();
+	private static final Regex INSUFFICIENT_MEMORY_REGEX = Regex.empty()
+			.literal("There is insufficient system memory in resource pool ").charactersWrappedBy('\'').literal(" to run this query.").toRegex();
+
 	private void checkForBrokenConnection(Exception exp, String sql) throws SQLException {
 		if (exp != null) {
 			if (StringCheck.isNotEmptyNorNull(exp.getMessage())) {
 				final String message = exp.getMessage().toLowerCase();
-				if (message.matches(".*connection.*broken.*")) {
+				if (CONNECTION_BROKEN_REGEX.matchesWithinString(message)){
 					replaceBrokenConnection();
-				} else if (message.matches(".*connection.*closed.*")) {
+				} else if (CONNECTION_CLOSED_REGEX.matchesWithinString(message)){
 					replaceBrokenConnection();
-				} else if (message.matches(".*statement.*broken.*")) {
+				} else if (STATEMENT_BROKEN_REGEX.matchesWithinString(message)){
 					replaceBrokenConnection();
-				} else if (message.matches(".*statement.*closed.*")) {
+				} else if (STATEMENT_CLOSED_REGEX.matchesWithinString(message)){
 					replaceBrokenConnection();
-				} else if (message.matches(".*connection.*reset.*")) {
+				} else if (CONNECTION_RESET_REGEX.matchesWithinString(message)){
 					replaceBrokenConnection();
-				} else if (message.matches("There is insufficient system memory in resource pool 'default' to run this query.")) {
+				} else if (INSUFFICIENT_MEMORY_REGEX.matchesWithinString(message)){
 					replaceBrokenConnection();
-
 				}
 			}
 		}
