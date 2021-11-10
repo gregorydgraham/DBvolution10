@@ -41,7 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import nz.co.gregs.regexi.Regex;
-import nz.co.gregs.regexi.internal.RegexReplacement;
+import nz.co.gregs.regexi.RegexReplacement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
