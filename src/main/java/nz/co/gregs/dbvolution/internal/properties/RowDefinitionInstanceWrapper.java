@@ -383,9 +383,6 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	/**
 	 * Gets all foreign key properties.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return non-null list of PropertyWrappers, empty if no foreign key
 	 * properties
 	 */
@@ -395,9 +392,6 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 
 	/**
 	 * Gets all foreign key properties as property definitions.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a non-null list of PropertyWrapperDefinitions, empty if no foreign
 	 * key properties
@@ -409,9 +403,6 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	/**
 	 * Gets all foreign key properties.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return non-null list of PropertyWrappers, empty if no foreign key
 	 * properties
 	 */
@@ -422,14 +413,10 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	/**
 	 * Gets all foreign key properties as property definitions.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a non-null list of PropertyWrapperDefinitions, empty if no foreign
 	 * key properties
 	 */
 	public List<PropertyWrapperDefinition<ROW, ?>> getRecursiveForeignKeyPropertyWrapperDefinitions() {
-//		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper.getRecursiveForeignKeyPropertyWrapperDefinitions()");
 		return classWrapper.getRecursiveForeignKeyPropertyDefinitions();
 	}
 
@@ -437,9 +424,6 @@ public class RowDefinitionInstanceWrapper<ROW extends RowDefinition> implements 
 	 * Gets all property definitions that are annotated with {@code DBColumn}.
 	 * This method is intended for where you need to examine meta-information
 	 * about all properties in a class.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of PropertyWrapperDefinitions for the PropertyWrappers of
 	 * this RowDefinition
