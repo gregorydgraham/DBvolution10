@@ -821,7 +821,7 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<testMySQLContainer>true</testMySQLContainer>
+								<testMySQL>true</testMySQL>
 								<testPostgres>true</testPostgres>
 							</systemPropertyVariables>
 						</configuration>
@@ -930,9 +930,7 @@
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
 								<testPostgres>true</testPostgres>
-								<!--<testPostgresContainer>true</testPostgresContainer>-->
 								<testMySQL>true</testMySQL>
-								<!--<testMySQLContainer>true</testMySQLContainer>-->
 								<testOracleXE>true</testOracleXE>
 								<testMSSQLServer>true</testMSSQLServer>
 								<testMSSQLServerLocal>true</testMSSQLServerLocal>
