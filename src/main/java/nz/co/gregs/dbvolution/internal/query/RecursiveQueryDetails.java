@@ -69,6 +69,8 @@ import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.RegexReplacement;
 
 public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 
@@ -254,8 +256,13 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		return recursiveQuery;
 	}
 
+	private static final RegexReplacement REMOVE_TRAILING_SEMICOLON_REPLACER = Regex.empty()
+			.anyCharacterIn(" \t\r\n").optionalMany().literal(";").anyCharacterIn(" \t\r\n").optionalMany().endOfTheString()
+			.replaceWith().literal(System.getProperty("line.separator"));
+
 	private synchronized String removeTrailingSemicolon(String sql) {
-		return sql.replaceAll("[ \\t\\r\\n]*;[ \\t\\r\\n]*$", System.getProperty("line.separator"));
+		return REMOVE_TRAILING_SEMICOLON_REPLACER.replaceAll(sql);
+//		return sql.replaceAll("[ \\t\\r\\n]*;[ \\t\\r\\n]*$", System.getProperty("line.separator"));
 	}
 
 	private synchronized DBQuery getPrimingSubQueryForRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, ColumnProvider foreignKeyToFollow) {
