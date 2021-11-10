@@ -79,8 +79,6 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The SET clause of the UPDATE statement.
 	 */
 	protected String getSetClause(DBDatabase db, DBRow row) {
@@ -129,16 +127,9 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {
 		return getPrimaryKeySQL(db, row);
 	}
-
-//	@Override
-//	protected DBActionList getActions() {
-//		return new DBActionList(new DBUpdateSimpleTypes(getRow()));
-//	}
 }
