@@ -169,7 +169,6 @@ public class DataRepo {
 								rows.add(instance);
 								classes.put(instance.getClass().getCanonicalName(), instance.getClass());
 							} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | IOException ex) {
-//								System.out.println("ERR: " + ex.getLocalizedMessage());
 								LOGGER.log(Level.SEVERE, "ERR: " + ex.getLocalizedMessage(), ex);
 							}
 						}
