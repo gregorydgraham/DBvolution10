@@ -67,13 +67,6 @@ public class ImageCompare {
 		this.factorD = factorD;
 	}
 
-	// want to see some stuff in the console as the comparison is happening?
-//	public void setDebugMode(int m) {
-//		compared = false;
-//		imageDiff = null;
-//		this.debugMode = m;
-//	}
-
 	// compare the two images in this object.
 	public void compare() {
 		// setup change display image
