@@ -681,24 +681,10 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 	}
 
 	/**
-	 * The name of this property as it will appear in a SELECT and WHERE clauses.
-	 *
-	 * @param db db
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return A String of the property for use in SELECT and WHERE clauses.
-	 */
-//	private String[] getSelectableName(DBDatabase db) {
-//		final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-//		return getPropertyWrapperDefinition().getSelectableName(db, adapteeRowProvider);
-//	}
-	/**
 	 * The alias to the column for use in the select clause and during value
 	 * retrieval
 	 *
 	 * @param defn db
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the column alias for this property.
 	 */
 	public String[] getColumnAlias(DBDefinition defn) {
@@ -711,8 +697,6 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 	 * table supplied
 	 *
 	 * @param table	table
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the property wrapped is a foreign key reference to the
 	 * table supplied, otherwise FALSE.
 	 */
@@ -728,7 +712,6 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 	 * table supplied, otherwise FALSE.
 	 */
 	public boolean isRecursiveForeignKey() {
-//		System.out.println("nz.co.gregs.dbvolution.internal.properties.PropertyWrapper.isRecursiveForeignKey()");
 		return propertyDefinition.isRecursiveForeignKey();
 	}
 
@@ -738,9 +721,6 @@ public class PropertyWrapper<ROW extends RowDefinition, BASETYPE, QDT extends Qu
 	 * <p>
 	 * This generally means that the column is a primary key. and definitely means
 	 * you do not need to set the value of the column.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the value of this column is provided by the database's
 	 * auto-increment functionality, otherwise FALSE.
