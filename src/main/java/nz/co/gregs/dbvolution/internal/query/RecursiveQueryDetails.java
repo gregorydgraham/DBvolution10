@@ -62,9 +62,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
-import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.EqualComparable;
