@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import nz.co.gregs.regexi.Regex;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
@@ -26,6 +27,7 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
+import nz.co.gregs.regexi.Match;
 
 /**
  * A DBDatabase object tweaked to work with Microsoft SQL Server.
@@ -320,27 +322,29 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	//Invalid object name 'TableThatDoesntExistOnTheCluster'.
-//	private final static Pattern NONEXISTANT_TABLE_PATTERN = Pattern.compile("Invalid object name '[^\"]*\'.");
-	private final static Regex NONEXISTANT_TABLE_PATTERN = Regex.startingAnywhere().literal("Invalid object name '").noneOfTheseCharacters("'").optionalMany().literal("'.").toRegex();
+	private final static Regex NONEXISTENT_TABLE_PATTERN = Regex.empty().literal("Invalid object name '").noneOfTheseCharacters("'").optionalMany().literal("'.").toRegex();
 	//There is already an object named 'TableThatDoesExistOnTheCluster' in the database.
-//	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("There is already an object named '[^\"]*\' in the database.");
-	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.startingAnywhere().literal("There is already an object named '").noneOfTheseCharacters("'").optionalMany().literal("' in the database.").toRegex();
+	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.empty().literal("There is already an object named '").noneOfTheseCharacters("'").optionalMany().literal("' in the database.").toRegex();
 	//Cannot find the object "TableThatDoesntExistOnTheCluster" because it does not exist or you do not have permissions.
-//	private final static Pattern UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Pattern.compile("Cannot find the object \"[^\"]*\" because it does not exist or you do not have permissions.");
-	private final static Regex UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Regex.startingAnywhere().literal("Cannot find the object \"").noneOfTheseCharacters("\"").optionalMany().literal("\" because it does not exist or you do not have permissions.").toRegex();
+	private final static Regex UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Regex.empty().literal("Cannot find the object \"").noneOfTheseCharacters("\"").optionalMany().literal("\" because it does not exist or you do not have permissions.").toRegex();
+	//message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*"
+	private final static Regex CANNOT_PERFORM_SET_OPERATION = Regex.empty().literal("IDENTITY_INSERT is already ON for table '").namedCapture("table").noneOfThisCharacter('\'').optionalMany().endNamedCapture().literal("'. Cannot perform SET operation for table").toRegex();
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
 		final String message = exp.getMessage();
-		if (message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*")) {
-			String table = message.split("'")[1];
+		final List<Match> match = CANNOT_PERFORM_SET_OPERATION.getAllMatches(message);
+		if (match.size() > 0) {
+//		if (message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*")) {
+//			String table = message.split("'")[1];
+			String table = match.get(0).getNamedCapture("table");
 			DBStatement stmt = getConnection().createDBStatement();
 			final String sql = "SET IDENTITY_INSERT " + table + " ON;";
 			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql));
 			return ResponseToException.REQUERY;
 		} else if (intent.is(QueryIntention.CREATE_TABLE) && CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
-		} else if (intent.is(QueryIntention.CHECK_TABLE_EXISTS) && NONEXISTANT_TABLE_PATTERN.matchesWithinString(message)) {
+		} else if (intent.is(QueryIntention.CHECK_TABLE_EXISTS) && NONEXISTENT_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
 		} else if (UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
