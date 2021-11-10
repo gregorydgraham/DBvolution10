@@ -51,6 +51,8 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
+import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.RegexReplacement;
 import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
@@ -393,6 +395,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		if (!options.getQueryDefinition().supportsFullOuterJoinNatively()) {
 			final List<String> sqlForQueryInternal = getSQLForQueryInternal(new QueryState(details), QueryType.SELECT, options);
 			String endStatement = options.getQueryDefinition().endSQLStatement();
+			RegexReplacement replace = Regex.empty().literal(";").literal(" ").optionalMany().endOfTheString().toRegex().replaceWith().literal("");
 			return sqlForQueryInternal
 					.stream()
 					.map((sql) -> "SELECT COUNT(*) FROM (" + sql.replaceAll("; *$", "") + ") A" + endStatement)
@@ -640,7 +643,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					} else if (options.getPageIndex() > 0 || options.getRowLimit() > 0) {
 						orderByClauseFinal = defn.getDefaultOrderingClause();
 					}
-					havingClause = getHavingClause(options.getQueryDatabase(), options);
+					havingClause = getHavingClause(options);
 					List<String> groupByClauseFinal = new ArrayList<>();
 					if (isGroupedQuery() && groupByIsRequired) {
 						final DBDefinition.GroupByClauseMethod[] preferences = defn.preferredGroupByClauseMethod();
@@ -933,7 +936,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return clause;
 	}
 
-	private synchronized String getHavingClause(DBDatabase database, QueryOptions options) {
+	private synchronized String getHavingClause(QueryOptions options) {
 		BooleanExpression[] having = getHavingColumns();
 		final DBDefinition defn = options.getQueryDefinition();
 		String havingClauseStart = defn.getHavingClauseStart();
@@ -982,20 +985,37 @@ public class QueryDetails implements DBQueryable, Serializable {
 			unionOperator = defn.getUnionOperator();
 		}
 
-		if (defn.supportsRightOuterJoinNatively()) {
-			// Fake the outer join by revering the left outer joins to right outer joins
+		RegexReplacement removeTerminatingSemicolon = Regex.empty().literal(";").literal(" ").optionalMany().endOfTheString().replaceWith().literal(" ");
+		RegexReplacement replaceFullJoinWithLeftJoin = Regex.empty().literal(defn.beginFullOuterJoin()).replaceWith().literal(defn.beginLeftOuterJoin());
 
-			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
-			sqlForQuery += unionOperator + existingSQL.replaceAll(defn.beginFullOuterJoin(), defn.beginRightOuterJoin());
+		if (defn.supportsRightOuterJoinNatively()) {
+			// Fake the outer join by using 2 queries, one of left joins and one with right joins
+			// Remove the trailing semicolon for the first query
+			sqlForQuery = removeTerminatingSemicolon.replaceAll(existingSQL);
+			// Swap the full outer joins for left outer joins in the first query
+			sqlForQuery = replaceFullJoinWithLeftJoin.replaceAll(sqlForQuery);
+			
+			// Extend the query we have so far with a union
+			sqlForQuery += unionOperator ;
+			// Extend the query we have so far with the right join version of the original query
+			RegexReplacement replaceFullJoinWithRightJoin = Regex.empty().literal(defn.beginFullOuterJoin()).replaceWith().literal(defn.beginRightOuterJoin());
+			sqlForQuery += replaceFullJoinWithRightJoin.replaceAll(existingSQL);
 		} else {
+			// Fake the outer join by using 2 queries, one of left joins and a reversed one also with left joins
 			// Watch out for the infinite loop
+
+			// Remove the trailing semicolon for the first query
+			sqlForQuery = removeTerminatingSemicolon.replaceAll(existingSQL);
+			// Swap the full outer joins for left outer joins in the first query
+			sqlForQuery = replaceFullJoinWithLeftJoin.replaceAll(sqlForQuery);
+			// Extend the query we have so far with a union
+			sqlForQuery += unionOperator ;
+			// Extend the query we have so far with the right join version of the original query
 			options.setCreatingNativeQuery(false);
 			String reversedQuery = getSQLForQueryInternal(new QueryState(details), QueryType.REVERSESELECT, options).get(0);
 			options.setCreatingNativeQuery(true);
-
-			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
-			sqlForQuery += unionOperator;
-			sqlForQuery += reversedQuery.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
+			reversedQuery = removeTerminatingSemicolon.replaceAll(reversedQuery);
+			sqlForQuery += replaceFullJoinWithLeftJoin.replaceAll(reversedQuery);
 		}
 		return sqlForQuery;
 	}
@@ -1278,7 +1298,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 						try {
 							fieldInstance = DBRow.getDBRow((Class<? extends DBRow>) requiredClass);
 						} catch (IllegalArgumentException | SecurityException ex) {
-							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
+							throw new UnableToInstantiateDBRowSubclassException(requiredClass, ex);
 						}
 						List<DBRow> relatedInstancesFromQuery = getRelatedInstancesFromQueryResults(allRows, row, fieldInstance);
 						if (arrayRequired) {
