@@ -335,8 +335,6 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		final String message = exp.getMessage();
 		final List<Match> match = CANNOT_PERFORM_SET_OPERATION.getAllMatches(message);
 		if (match.size() > 0) {
-//		if (message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*")) {
-//			String table = message.split("'")[1];
 			String table = match.get(0).getNamedCapture("table");
 			DBStatement stmt = getConnection().createDBStatement();
 			final String sql = "SET IDENTITY_INSERT " + table + " ON;";
