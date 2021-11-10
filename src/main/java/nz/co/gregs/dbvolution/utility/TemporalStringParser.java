@@ -455,7 +455,6 @@ public class TemporalStringParser {
 												for (String secondPart : secondParts) {
 													for (String subsecondPart : subsecondParts) {
 														final String pattern = makeLocalDatePatternFromParts(yearPart, dayPartDividerPart, monthPart, dayPart, dayTimeDividerPart, hourPart, timePartDividerPart, minutePart, secondPart, secondPartDividerPart, subsecondPart);
-//														System.out.println("PATTERN: " + pattern);
 														parsers.add(Parser.ofPattern(pattern));
 													}
 												}
