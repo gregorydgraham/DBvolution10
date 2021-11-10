@@ -1626,7 +1626,7 @@
 		<dependency>
 			<groupId>nz.co.gregs</groupId>
 			<artifactId>separatedstring</artifactId>
-			<version>1.6</version>
+			<version>1.7</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
