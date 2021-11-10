@@ -18,14 +18,7 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.PrintStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -35,6 +28,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedExc
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.separatedstring.util.MapList;
 
 /**
  * DBTable provides features for making simple queries on the database.
@@ -893,25 +887,47 @@ public class DBTable<E extends DBRow> {
 	 * Compares 2 tables, presumably from different criteria or databases prints
 	 * the differences to System.out
 	 *
-	 * Should be updated to return the varying rows somehow
-	 *
 	 * @param secondTable : a comparable table
+	 * @return a collection of not found, and differing rows
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 *
 	 */
-	public void compare(DBTable<E> secondTable) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public DifferingRows<E> compare(DBTable<E> secondTable) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		HashMap<String, E> secondMap = new HashMap<>();
 		for (E row : secondTable.getAllRows()) {
 			secondMap.put(row.getPrimaryKeys().toString(), row);
 		}
+		DifferingRows<E> result = new DifferingRows<E>();
 		for (E row : this.getAllRows()) {
 			E foundRow = secondMap.get(row.getPrimaryKeys().toString());
 			if (foundRow == null) {
-				System.out.println("NOT FOUND: " + row);
+				result.addNotFoundRow(row);
 			} else if (!row.toString().equals(foundRow.toString())) {
-				System.out.println("DIFFERENT: " + row);
-				System.out.println("         : " + foundRow);
+				result.addDifferingRow(row, foundRow);
 			}
+		}
+		return result;
+	}
+
+	public static class DifferingRows<E> {
+
+		List<E> notFound = new ArrayList<>(0);
+		MapList<E, E> differing = new MapList<E, E>(0);
+
+		public void addNotFoundRow(E row) {
+			notFound.add(row);
+		}
+
+		public void addDifferingRow(E originalRow, E differingRow) {
+			differing.add(originalRow, differingRow);
+		}
+
+		public List<E> getNotFoundRows() {
+			return notFound;
+		}
+
+		public MapList<E, E> getDifferingRows() {
+			return differing;
 		}
 	}
 
