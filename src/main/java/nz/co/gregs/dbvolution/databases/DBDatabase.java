@@ -2425,10 +2425,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
 			tableExists = checkTableExistsViaMetaData(table);
-			System.out.println("CHECKED TABLE EXISTENCE VIA METADATA: " + table.getTableName() + " -> " + tableExists);
 		} else {
 			tableExists = checkTableExistsViaQuery(table);
-			System.out.println("CHECKED TABLE EXISTENCE WITH QUERY: " + table.getTableName() + " -> " + tableExists);
 		}
 		return tableExists;
 	}
