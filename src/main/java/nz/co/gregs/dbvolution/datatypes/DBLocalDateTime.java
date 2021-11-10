@@ -136,8 +136,6 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 */
 	DBLocalDateTime(String dateAsAString) {
-//		System.out.println("DATEASSTRING: "+dateAsAString);
-//		System.out.println("ISO_DATE FORMAT: 2011-12-03T10:15:30");
 		setLiteralValue(LocalDateTime.parse(dateAsAString, DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 	}
 
