@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.utility.Brake;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +67,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.eclipse.core.internal.utils.Policy;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -120,17 +122,20 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					.setDatabaseName("SlowSynchingDB")
 					.setUsername("who")
 					.setPassword("what");
-			SlowSynchingDatabase slowSynchingDB = new SlowSynchingDatabase(settings);
-			try (slowSynchingDB) {
-				slowSynchingDB.setSlownessRequired(false);
-				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
-				slowSynchingDB.setSlownessRequired(true);
+			Brake brake = Brake.withTimeoutInMilliseconds(100);
+			SlowSynchingDatabase slowSynchingDB = new SlowSynchingDatabase(settings, brake);
 
+			try (slowSynchingDB) {
+
+				brake.release();
+				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
+
+				brake.brake();
 				cluster.addDatabase(slowSynchingDB);
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), not(DBDatabaseCluster.Status.READY));
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
-				
-				slowSynchingDB.setSlownessRequired(false);
+
+				brake.release();
 
 				int i = 1;
 				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY) {
@@ -1218,51 +1223,38 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 	private class SlowSynchingDatabase extends H2MemoryDB {
 
-		private boolean slowness = true;
+		private final Brake controller;
 
-		public SlowSynchingDatabase(H2MemorySettingsBuilder hmsb) throws SQLException {
+		public SlowSynchingDatabase(H2MemorySettingsBuilder hmsb, Brake controller) throws SQLException {
 			super(hmsb);
+			this.controller = controller;
 		}
 		private static final long serialVersionUID = 1l;
 
 		@Override
 		public <R extends DBRow> DBTable<R> getDBTable(R example) {
-			return SlowSynchingDBTable.getInstance(this, example, slowness);
-		}
-		
-		public void setSlownessRequired(boolean slowPlease) {
-			slowness = slowPlease;
+			return SlowSynchingDBTable.getInstance(this, example, controller);
 		}
 	}
 
 	private static class SlowSynchingDBTable<E extends DBRow> extends DBTable<E> {
 
-		private boolean slowness;
+		private Brake brake;
 
-		public SlowSynchingDBTable(DBDatabase database, E exampleRow) {
+		private SlowSynchingDBTable(DBDatabase database, E exampleRow) {
 			super(database, exampleRow);
 		}
 
-		public static <R extends DBRow> DBTable<R> getInstance(DBDatabase database, R example, boolean slowness) {
+		public static <R extends DBRow> DBTable<R> getInstance(DBDatabase database, R example, Brake brake) {
 			SlowSynchingDBTable<R> dbTable = new SlowSynchingDBTable<>(database, example);
-			dbTable.setSlownessRequired(slowness);
+			dbTable.brake = brake;
 			return dbTable;
 		}
 
 		@Override
 		public DBActionList insert(Collection<E> newRows) throws SQLException {
-			try {
-				if (slowness) {
-					Thread.sleep(100);
-				}
-			} catch (InterruptedException ex) {
-				Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			brake.checkBrake();
 			return super.insert(newRows);
-		}
-
-		public void setSlownessRequired(boolean slowPlease) {
-			slowness = slowPlease;
 		}
 	}
 }
