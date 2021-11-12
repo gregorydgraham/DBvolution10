@@ -38,8 +38,6 @@ import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -174,7 +172,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(row.pk_uid.getValue(), is(1L));
 
 		TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-//		System.out.println(""+gotRow);
 
 		assertThat(gotRow.pk_uid.getValue(), is(1L));
 		assertThat(gotRow.name.getValue(), is("def"));
@@ -205,8 +202,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
 		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 
-		Thread.sleep(1000);
-
 		gotRow.name.setValue("blarg");
 		database.update(gotRow);
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
@@ -220,8 +215,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
 		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 		Date formerUpdateDate = gotRow.updateDate.getValue();
-
-		Thread.sleep(1000);
 
 		gotRow.name.setValue("blarg");
 		gotRow.creationDate.setValue(april2nd2011);
@@ -308,7 +301,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(row.pk_uid.getValue(), is(1L));
 
 		TestDefaultInsertWithLocalDateTimeValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-//		System.out.println(""+gotRow);
 
 		assertThat(gotRow.pk_uid.getValue(), is(1L));
 		assertThat(gotRow.name.getValue(), is("def"));
@@ -339,8 +331,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
 		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 
-		Thread.sleep(1000);
-
 		gotRow.name.setValue("blarg");
 		database.update(gotRow);
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
@@ -354,8 +344,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
 		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 		LocalDateTime formerUpdateDate = gotRow.updateDate.getValue();
-
-		Thread.sleep(1000);
 
 		gotRow.name.setValue("blarg");
 		gotRow.creationDate.setValue(april2nd2011);
@@ -429,7 +417,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(row.pk_uid.getValue(), is(1L));
 
 		TestDefaultInsertWithInstantValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-//		System.out.println(""+gotRow);
 
 		assertThat(gotRow.pk_uid.getValue(), is(1L));
 		assertThat(gotRow.name.getValue(), is("def"));
@@ -460,8 +447,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
 		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 
-		Thread.sleep(1000);
-
 		gotRow.name.setValue("blarg");
 		database.update(gotRow);
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
@@ -475,8 +460,6 @@ public class DBInsertTest extends AbstractTest {
 		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
 		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 		Instant formerUpdateDate = gotRow.updateDate.getValue();
-
-		Thread.sleep(1000);
 
 		gotRow.name.setValue("blarg");
 		final Instant april2nd2011Instant = april2nd2011.toInstant();
