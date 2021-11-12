@@ -84,6 +84,7 @@ public class ClusterDetails implements Serializable {
 	private final Lock synchronisingLock = new ReentrantLock();
 	private final Condition allDatabasesAreSynchronised = synchronisingLock.newCondition();
 	private final Condition someDatabasesNeedSynchronizing = synchronisingLock.newCondition();
+	private final Condition readyDatabaseIsAvailable = synchronisingLock.newCondition();
 	private DatabaseConnectionSettings clusterSettings;
 
 	public ClusterDetails(String label) {
@@ -320,6 +321,12 @@ public class ClusterDetails implements Serializable {
 		}
 		readyDatabases.add(secondary);
 		setAuthoritativeDatabase();
+		try {
+			synchronisingLock.lock();
+			readyDatabaseIsAvailable.signalAll();
+		} finally {
+			synchronisingLock.unlock();
+		}
 	}
 
 	protected boolean hasReadyDatabases() {
@@ -352,11 +359,13 @@ public class ClusterDetails implements Serializable {
 		DBDatabase[] dbs = getReadyDatabases();
 		int tries = 0;
 		while (dbs.length < 1 && pausedDatabases.size() > 0 && tries <= 1000) {
-			tries++;
+			synchronisingLock.lock();
 			try {
-				Thread.sleep(1);
+				readyDatabaseIsAvailable.await();
 			} catch (InterruptedException ex) {
-				LOG.log(Level.SEVERE, null, ex);
+				Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+			} finally {
+				synchronisingLock.unlock();
 			}
 			dbs = getReadyDatabases();
 		}
