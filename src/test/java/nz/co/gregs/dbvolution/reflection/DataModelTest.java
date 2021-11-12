@@ -100,7 +100,7 @@ public class DataModelTest extends AbstractTest {
 		List<String> knownStrings = new ArrayList<>();
 		knownStrings.add("public nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass() throws java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
-		knownStrings.add("public nz.co.gregs.dbvolution.DBDatabaseClusterTest$SlowSynchingDatabase(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.DBDatabaseClusterTest$SlowSynchingDatabase(nz.co.gregs.dbvolution.DBDatabaseClusterTest,nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder,nz.co.gregs.dbvolution.utility.Brake) throws java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
