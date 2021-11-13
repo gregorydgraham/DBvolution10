@@ -82,6 +82,7 @@ public class ClusterDetails implements Serializable {
 	private DBDatabaseCluster.Configuration configuration = DBDatabaseCluster.Configuration.fullyManual();
 
 	private final Lock synchronisingLock = new ReentrantLock();
+	private final Condition aDatabaseHasBeenSynchronised = synchronisingLock.newCondition();
 	private final Condition allDatabasesAreSynchronised = synchronisingLock.newCondition();
 	private final Condition someDatabasesNeedSynchronizing = synchronisingLock.newCondition();
 	private final Condition readyDatabaseIsAvailable = synchronisingLock.newCondition();
@@ -127,16 +128,20 @@ public class ClusterDetails implements Serializable {
 		return false;
 	}
 
-	private boolean addDatabaseAsUnsynchronized(DBDatabase database) {
-		boolean add = false;
+	private synchronized boolean addDatabaseAsUnsynchronized(DBDatabase database) {
+		boolean add;
+		add = unsynchronizedDatabases.add(database);
+		signalSomeDatabasesNeedSynchronising();
+		return add;
+	}
+
+	private void signalSomeDatabasesNeedSynchronising() {
+		synchronisingLock.lock();
 		try {
-			synchronisingLock.lock();
-			add = unsynchronizedDatabases.add(database);
 			someDatabasesNeedSynchronizing.signalAll();
 		} finally {
 			synchronisingLock.unlock();
 		}
-		return add;
 	}
 
 	public DBDatabase[] getAllDatabases() {
@@ -321,8 +326,12 @@ public class ClusterDetails implements Serializable {
 		}
 		readyDatabases.add(secondary);
 		setAuthoritativeDatabase();
+		signalReadyDatabaseIsAvailable();
+	}
+
+	private void signalReadyDatabaseIsAvailable() {
+		synchronisingLock.lock();
 		try {
-			synchronisingLock.lock();
 			readyDatabaseIsAvailable.signalAll();
 		} finally {
 			synchronisingLock.unlock();
@@ -358,15 +367,8 @@ public class ClusterDetails implements Serializable {
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
 		DBDatabase[] dbs = getReadyDatabases();
 		int tries = 0;
-		while (dbs.length < 1 && pausedDatabases.size() > 0 && tries <= 1000) {
-			synchronisingLock.lock();
-			try {
-				readyDatabaseIsAvailable.await();
-			} catch (InterruptedException ex) {
-				Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
-			} finally {
-				synchronisingLock.unlock();
-			}
+		while (dbs.length < 1 && pausedDatabases.size() > 0 && tries <= 10) {
+			awaitReadyDatabase();
 			dbs = getReadyDatabases();
 		}
 		Random rand = new Random();
@@ -376,6 +378,17 @@ public class ClusterDetails implements Serializable {
 			return randomElement;
 		}
 		throw new NoAvailableDatabaseException();
+	}
+
+	private void awaitReadyDatabase() {
+		synchronisingLock.lock();
+		try {
+			readyDatabaseIsAvailable.await();
+		} catch (InterruptedException ex) {
+			Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+		} finally {
+			synchronisingLock.unlock();
+		}
 	}
 
 	public synchronized void addAll(DBDatabase[] databases) throws SQLException {
@@ -703,6 +716,19 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
+	public void waitUntilDatabaseHasSynchronised(DBDatabase db) {
+		synchronisingLock.lock();
+		try {
+			while (isNotSynchronised()) {
+				aDatabaseHasBeenSynchronised.await();
+			}
+		} catch (InterruptedException ex) {
+			Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+		} finally {
+			synchronisingLock.unlock();
+		}
+	}
+
 	public boolean isSynchronised() {
 		return unsynchronizedDatabases.isEmpty() && synchronizingDatabases.isEmpty();
 	}
@@ -814,13 +840,27 @@ public class ClusterDetails implements Serializable {
 
 	private void removeDatabaseFromSynchronizing(DBDatabase database) {
 		synchronizingDatabases.remove(database);
+		signalThatADatabaseHasBeenSynchronised();
 		if (synchronizingDatabases.isEmpty() && unsynchronizedDatabases.isEmpty()) {
-			try {
-				synchronisingLock.lock();
-				allDatabasesAreSynchronised.signalAll();
-			} finally {
-				synchronisingLock.unlock();
-			}
+			signalThatAllDatabasesHaveBeenSynchronised();
+		}
+	}
+
+	private void signalThatAllDatabasesHaveBeenSynchronised() {
+		synchronisingLock.lock();
+		try {
+			allDatabasesAreSynchronised.signalAll();
+		} finally {
+			synchronisingLock.unlock();
+		}
+	}
+
+	private void signalThatADatabaseHasBeenSynchronised() {
+		synchronisingLock.lock();
+		try {
+			aDatabaseHasBeenSynchronised.signalAll();
+		} finally {
+			synchronisingLock.unlock();
 		}
 	}
 
