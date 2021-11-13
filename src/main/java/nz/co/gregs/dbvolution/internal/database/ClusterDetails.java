@@ -31,9 +31,12 @@ package nz.co.gregs.dbvolution.internal.database;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -719,8 +722,29 @@ public class ClusterDetails implements Serializable {
 	public void waitUntilDatabaseHasSynchronised(DBDatabase db) {
 		synchronisingLock.lock();
 		try {
-			while (isNotSynchronised()) {
-				aDatabaseHasBeenSynchronised.await();
+			aDatabaseHasBeenSynchronised.await();
+			DBDatabaseCluster.Status status = getStatusOf(db);
+			if (status.equals(DBDatabaseCluster.Status.SYNCHRONIZING)) {
+				return;
+			}
+		} catch (InterruptedException ex) {
+			Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+		} finally {
+			synchronisingLock.unlock();
+		}
+	}
+
+	public void waitUntilDatabaseHasSynchronised(DBDatabase database, long timeoutInMilliseconds) {
+		synchronisingLock.lock();
+		Instant stopTime = Instant.now();
+		stopTime.plus(Duration.ofMillis(timeoutInMilliseconds));
+		try {
+			while (Instant.now().isBefore(stopTime)) {
+				aDatabaseHasBeenSynchronised.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS);
+				DBDatabaseCluster.Status status = getStatusOf(database);
+				if (status.equals(DBDatabaseCluster.Status.SYNCHRONIZING)) {
+					return;
+				}
 			}
 		} catch (InterruptedException ex) {
 			Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);

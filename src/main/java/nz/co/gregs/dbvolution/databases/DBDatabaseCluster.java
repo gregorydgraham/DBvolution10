@@ -174,6 +174,13 @@ public class DBDatabaseCluster extends DBDatabase {
 	public void waitUntilSynchronised() {
 		getDetails().waitUntilSynchronised();
 	}
+	public void waitUntilDatabaseIsSynchronised(DBDatabase database) {
+		getDetails().waitUntilDatabaseHasSynchronised(database);
+	}
+
+	public void waitUntilDatabaseIsSynchronised(DBDatabase database,long timeoutInMilliseconds) {
+		getDetails().waitUntilDatabaseHasSynchronised(database, timeoutInMilliseconds);
+	}
 
 	public synchronized boolean requeryPermitted() {
 		return requeryPermitted;
