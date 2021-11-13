@@ -1296,7 +1296,7 @@
 						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
-								<testPostgresSQL>true</testPostgresSQL>
+								<testPostgres>true</testPostgres>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
