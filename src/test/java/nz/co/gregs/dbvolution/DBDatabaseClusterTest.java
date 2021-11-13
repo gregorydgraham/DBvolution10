@@ -67,6 +67,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.utility.LoopVariable;
 import org.eclipse.core.internal.utils.Policy;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
@@ -137,10 +138,11 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 				brake.release();
 
-				int i = 1;
-				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY) {
-					System.out.println("STILL NOT SYNCHRONISED: waiting... " + i++);
-					Thread.sleep(1000);
+				LoopVariable i = LoopVariable.factory();
+				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY && i.attempts()<100) {
+					i.attempt();
+					System.out.println("STILL NOT SYNCHRONISED: waiting... " + i.attempts());
+					Thread.sleep(100);
 				}
 
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(22l));
