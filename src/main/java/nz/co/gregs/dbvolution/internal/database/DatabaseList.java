@@ -32,6 +32,8 @@ package nz.co.gregs.dbvolution.internal.database;
 
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import static nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status.*;
 
 /**
  *
@@ -39,58 +41,60 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DatabaseList {
 
-	Map<String, DBDatabase> map = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, DBDatabase> databaseMap = Collections.synchronizedMap(new HashMap<String, DBDatabase>());
+	private final Map<String, DBDatabaseCluster.Status> statusMap = Collections.synchronizedMap(new HashMap<String, DBDatabaseCluster.Status>(0));
 
-	public int size() {
-		return map.size();
+	public synchronized int size() {
+		return databaseMap.size();
 	}
 
-	public boolean isEmpty() {
-		return map.isEmpty();
+	public synchronized boolean isEmpty() {
+		return databaseMap.isEmpty();
 	}
 
-	public boolean contains(Object o) {
+	public synchronized boolean contains(Object o) {
 		if (o instanceof DBDatabase) {
 			DBDatabase db = (DBDatabase) o;
-			return map.containsKey(getKey(db));
+			return databaseMap.containsKey(getKey(db));
 		} else {
 			return false;
 		}
 	}
 
-	public Iterator<DBDatabase> iterator() {
-		return map.values().iterator();
+	public synchronized Iterator<DBDatabase> iterator() {
+		return databaseMap.values().iterator();
 	}
 
-	public DBDatabase[] toArray() {
+	public synchronized DBDatabase[] toArray() {
 		return toArray(new DBDatabase[]{});
 	}
 
-	public DBDatabase[] toArray(DBDatabase[] a) {
-		return map.values().toArray(a);
+	public synchronized DBDatabase[] toArray(DBDatabase[] a) {
+		return databaseMap.values().toArray(a);
 	}
 
-	public boolean add(DBDatabase e) {
-		map.put(getKey(e), e);
+	public synchronized final boolean add(DBDatabase e) {
+		databaseMap.put(getKey(e), e);
+		statusMap.put(getKey(e), UNSYNCHRONISED);
 		return true;
 	}
 
-	public boolean remove(DBDatabase e) {
-		map.remove(getKey(e));
+	public synchronized boolean remove(DBDatabase e) {
+		databaseMap.remove(getKey(e));
+		statusMap.remove(getKey(e));
 		return true;
 	}
 
 	public boolean containsAll(Collection<DBDatabase> c) {
 		boolean allAreInTheMap = c
 				.stream()
-				.allMatch(
-						t -> map.containsKey(getKey(t))
+				.allMatch(t -> databaseMap.containsKey(getKey(t))
 				);
 		return allAreInTheMap;
 	}
 
-	public boolean addAll(Collection<? extends DBDatabase> c) {
-		for (DBDatabase dBDatabase : c) {
+	public boolean addAll(Collection<? extends DBDatabase> collectionOfDatabases) {
+		for (DBDatabase dBDatabase : collectionOfDatabases) {
 			this.add(dBDatabase);
 		}
 		return true;
@@ -100,14 +104,110 @@ public class DatabaseList {
 		return addAll(c);
 	}
 
-	public boolean removeAll(Collection<DBDatabase> c) {
-		for (var object : c) {
-			remove(object);
+	public boolean removeAll(Collection<DBDatabase> collectionOfDatabases) {
+		for (DBDatabase db : collectionOfDatabases) {
+			remove(db);
 		}
 		return true;
 	}
 
 	private String getKey(DBDatabase db) {
-			return db.getSettings().encode();
+		return db.getSettings().encode();
+	}
+
+	public DatabaseList() {
+	}
+
+	public DatabaseList(DBDatabase firstDB, DBDatabase... databases) {
+		add(firstDB);
+		for (var db : databases) {
+			add(db);
+		}
+	}
+
+	private synchronized void set(DBDatabase db, DBDatabaseCluster.Status status) {
+		if (statusMap.containsKey(getKey(db))) {
+			statusMap.put(getKey(db), status);
+		}
+	}
+
+	public void setReady(DBDatabase db) {
+		set(db, READY);
+	}
+
+	public void setUnsynchronised(DBDatabase db) {
+		set(db, UNSYNCHRONISED);
+	}
+
+	public void setPaused(DBDatabase db) {
+		set(db, PAUSED);
+	}
+
+	public void setDead(DBDatabase db) {
+		set(db, DEAD);
+	}
+
+	public void setQuarantined(DBDatabase db) {
+		set(db, QUARANTINED);
+	}
+
+	public void setUnknown(DBDatabase db) {
+		set(db, UNKNOWN);
+	}
+
+	public void setProcessing(DBDatabase db) {
+		set(db, PROCESSING);
+	}
+
+	public void setSynchronising(DBDatabase db) {
+		set(db, SYNCHRONIZING);
+	}
+
+	public synchronized DBDatabase[] getDatabases() {
+		return databaseMap.values().toArray(new DBDatabase[]{});
+	}
+
+	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase statusOfThisDatabase) {
+		return statusMap.getOrDefault(getKey(statusOfThisDatabase), UNKNOWN);
+	}
+
+	public synchronized boolean isReady(DBDatabase database) {
+		return statusMap.getOrDefault(getKey(database), UNKNOWN).equals(READY);
+	}
+
+	public synchronized DBDatabase[] getDatabases(DBDatabaseCluster.Status status) {
+		List<DBDatabase> found = new ArrayList<>(0);
+		for (Map.Entry<String, DBDatabaseCluster.Status> entry : statusMap.entrySet()) {
+			String key = entry.getKey();
+			DBDatabaseCluster.Status val = entry.getValue();
+			if (val.equals(status)) {
+				DBDatabase db = databaseMap.get(key);
+				found.add(db);
+			}
+		}
+		DBDatabase[] array = found.toArray(new DBDatabase[]{});
+		return array;
+	}
+
+	public synchronized long countReadyDatabases() {
+		return countDatabases(READY);
+	}
+
+	public synchronized long countPausedDatabases() {
+		return statusMap.values().stream().filter(t -> t.equals(PAUSED)).count();
+	}
+
+	public synchronized long countDatabases(DBDatabaseCluster.Status status) {
+		return statusMap.values().stream().filter(t -> t.equals(status)).count();
+	}
+
+	public synchronized void clear() {
+		statusMap.clear();
+		databaseMap.clear();
+	}
+
+	public synchronized boolean areAllSynchronised() {
+		return countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) == 0
+				&& countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) == 0;
 	}
 }
