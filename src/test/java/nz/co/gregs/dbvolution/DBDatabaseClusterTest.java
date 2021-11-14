@@ -38,6 +38,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -138,10 +139,10 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				brake.release();
 
 				LoopVariable i = LoopVariable.factory();
-				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY && i.attempts() < 100) {
+				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY && i.attempts() < 1000) {
+					System.out.println("STILL NOT SYNCHRONISED: " + i.elapsedTime());
 					i.attempt();
-					cluster.waitUntilDatabaseIsSynchronised(slowSynchingDB, 10);
-					System.out.println("STILL NOT SYNCHRONISED: waiting... " + i.attempts());
+					cluster.waitUntilDatabaseIsSynchronised(slowSynchingDB, 100);
 				}
 
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), is(DBDatabaseCluster.Status.READY));
