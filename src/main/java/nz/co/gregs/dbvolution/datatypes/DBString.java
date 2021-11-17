@@ -927,4 +927,9 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	public Comparator<String> getComparator() {
 		return ComparableComparator.forClass(String.class);
 	}
+
+	@Override
+	public boolean getCouldProduceEmptyStringForNull() {
+		return true;
+	}
 }
