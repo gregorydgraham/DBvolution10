@@ -56,7 +56,7 @@ public class DataRepoTest extends AbstractTest{
 		if (database instanceof H2SharedDB) {
 			// not supported in shared inastances of H2
 		} else {
-			var generateSchema = DBTableClassGenerator.generateClassesOfViewsAndTables(database, "nz.co.gregs.dbvolution.generation.compiling.dbtableclassgenerator");
+			var generateSchema = DBTableClassGenerator.generateClassesOfViewsAndTables(database, "nz.co.gregs.dbvolution.generation.compiling.deprecated.dbtableclassgenerator");
 			generateSchema.compileWithJavaX();
 			// Run separately we get 8 classes
 			// but run with other tests we get 50
@@ -70,12 +70,13 @@ public class DataRepoTest extends AbstractTest{
 		if (database instanceof H2SharedDB) {
 			// not supported in shared inastances of H2
 		} else {
-			var repo = DataRepo.getDataRepoFor(database, "nz.co.gregs.dbvolution.generation.compiling.datarepo");
+			final String packageName = "nz.co.gregs.dbvolution.generation.compiling.deprecated.datarepo";
+			var repo = DataRepo.getDataRepoFor(database, packageName);
 			// Run separately we get 8 classes
 			// but run with other tests we get 50
 			assertThat(repo.getRows().size(), Matchers.greaterThanOrEqualTo(8));
-			Class<? extends DBRow> rowClass = repo.loadClass("nz.co.gregs.dbvolution.generation.compiling.datarepo.Marque");
-			assertThat(rowClass.getCanonicalName(), is("nz.co.gregs.dbvolution.generation.compiling.datarepo.Marque"));
+			Class<? extends DBRow> rowClass = repo.loadClass(packageName+".Marque");
+			assertThat(rowClass.getCanonicalName(), is(packageName+".Marque"));
 		}
 	}
 }
