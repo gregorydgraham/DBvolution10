@@ -1456,7 +1456,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	@Override
-	public synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+	public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 
