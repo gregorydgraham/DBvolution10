@@ -107,22 +107,20 @@ public class StatementDetails {
 	}
 
 	/**
-	 * Calls the appropriate execute method on the Statement and returns the boolean result.
-	 * 
+	 * Calls the appropriate execute method on the Statement and returns the
+	 * boolean result.
+	 *
 	 * @param stmt the statement on which to excute this SQL command
-	 * @return the result of calling the appropriate execute method
 	 * @throws SQLException database errors are propogated
 	 */
-	public boolean execute(Statement stmt) throws SQLException {
-		boolean execute;
+	public void execute(Statement stmt) throws SQLException {
 		if (StringCheck.isNotEmptyNorNull(namedPKColumn)) {
-			execute = stmt.execute(sql, new String[]{namedPKColumn});
+			stmt.execute(sql, new String[]{namedPKColumn});
 		} else if (requiresGeneratedKeys()) {
-			execute = stmt.execute(sql, Statement.RETURN_GENERATED_KEYS);
+			stmt.execute(sql, Statement.RETURN_GENERATED_KEYS);
 		} else {
-			execute = stmt.execute(sql);
+			stmt.execute(sql);
 		}
-		return execute;
 	}
 
 	public StatementDetails withException(SQLException exp2) {
