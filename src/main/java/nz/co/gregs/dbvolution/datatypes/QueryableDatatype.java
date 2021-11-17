@@ -1522,4 +1522,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	public int compareTo(QueryableDatatype<T> o) {
 		return this.getComparator().compare(this.getValue(), o.getValue());
 	}
+
+	public boolean getCouldProduceEmptyStringForNull() {
+		return false;
+	}
 }
