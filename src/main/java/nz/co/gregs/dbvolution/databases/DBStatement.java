@@ -16,16 +16,15 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.*;
 import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
+import nz.co.gregs.dbvolution.internal.query.QueryCanceller;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
@@ -60,6 +59,7 @@ public class DBStatement implements AutoCloseable {
 	private DBConnection connection;
 	private boolean isClosed = false;
 	private final List<String> localBatchList = new ArrayList<String>();
+	private final Long TIMEOUT_IN_MILLISECONDS = 10000L;
 
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
@@ -446,13 +446,35 @@ public class DBStatement implements AutoCloseable {
 		LOG.debug(logSQL);
 		try {
 			final var stmt = getInternalStatement();
-			details.execute(stmt);
+			executeWithCanceller(details, stmt);
 		} catch (SQLException exp) {
 			StatementDetails statementDetails
 					= details.copy()
 							.withLabel("RETRY EXECUTE")
 							.withException(exp);
 			addFeatureAndAttemptExecuteAgain(statementDetails);
+		}
+	}
+
+	private void executeWithCanceller(StatementDetails details, final Statement stmt) throws SQLException {
+		final Long timeoutTime = this.getTIMEOUT_IN_MILLISECONDS();
+		ScheduledFuture<?> cancelHandle = null;
+		QueryCanceller canceller = null;
+		if (timeoutTime > 0) {
+			if (timeoutTime != null && timeoutTime > 0) {
+				canceller = new QueryCanceller(this, details.getSql());
+				cancelHandle = canceller.schedule(timeoutTime);
+			}
+		}
+		try {
+			details.execute(stmt);
+		} finally {
+			if (cancelHandle != null) {
+				cancelHandle.cancel(true);
+			}
+		}
+		if (canceller != null && canceller.queryWasCancelled()) {
+			throw new SQLTimeoutException("Execution Timed Out");
 		}
 	}
 
@@ -1051,5 +1073,9 @@ public class DBStatement implements AutoCloseable {
 				}
 			}
 		}
+	}
+
+	private Long getTIMEOUT_IN_MILLISECONDS() {
+		return TIMEOUT_IN_MILLISECONDS;
 	}
 }
