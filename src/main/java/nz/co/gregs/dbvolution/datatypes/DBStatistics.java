@@ -238,5 +238,9 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	public String toString() {
 		return ("count=" + countOfRows);
 	}
-
+	
+	@Override
+	public boolean getCouldProduceEmptyStringForNull() {
+		return false;
+	}
 }
