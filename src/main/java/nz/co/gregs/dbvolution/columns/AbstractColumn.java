@@ -103,7 +103,7 @@ public class AbstractColumn implements DBExpression, Serializable {
 			}
 			result = propertyWrapper.getPropertyWrapperDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
 		}
-		if ((field instanceof DBString) && (db.requiredToProduceEmptyStringsForNull() && db.supportsDifferenceBetweenNullAndEmptyStringNatively())) {
+		if (needsToConvertNullToEmptyString(db)) {
 			result = db.convertNullToEmptyString(result);
 		}
 		return result;
@@ -311,10 +311,21 @@ public class AbstractColumn implements DBExpression, Serializable {
 	public String createSQLForFromClause(DBDatabase database) {
 		DBDefinition defn = database.getDefinition();
 		String result = toSQLString(database.getDefinition());
-		if ((field instanceof DBString) && (defn.requiredToProduceEmptyStringsForNull() && defn.supportsDifferenceBetweenNullAndEmptyStringNatively())) {
+		if (needsToConvertNullToEmptyString(defn)) {
 			result = defn.convertNullToEmptyString(result);
 		}
 		return result;
+	}
+
+	private boolean needsToConvertNullToEmptyString(DBDefinition defn) {
+		if (field instanceof QueryableDatatype) {
+			var qdt = (QueryableDatatype) field;
+			return (qdt.getCouldProduceEmptyStringForNull()) 
+					&& (defn.requiredToProduceEmptyStringsForNull() 
+					&& defn.supportsDifferenceBetweenNullAndEmptyStringNatively());
+		} else {
+			return false;
+		}
 	}
 
 	@Override
