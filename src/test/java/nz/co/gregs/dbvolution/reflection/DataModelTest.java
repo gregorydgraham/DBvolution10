@@ -163,7 +163,12 @@ public class DataModelTest extends AbstractTest {
 
 		Map<String, Class<? extends DBRow>> foundMap = new HashMap<String, Class<? extends DBRow>>();
 		for (Class<? extends DBRow> clazz : result) {
-			foundMap.put(clazz.toString(), clazz);
+			final String clazzName = clazz.toString();
+			if (clazzName.startsWith("class nz.co.gregs.dbvolution.generation.compiling.")) {
+				// The compilation tests cause classes to pop into and out of existence so ignore them
+			} else {
+				foundMap.put(clazzName, clazz);
+			}
 		}
 		Set<String> foundKeys = foundMap.keySet();
 
@@ -483,28 +488,200 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.OracleCompatibilityTest$CountIfRow");
 		knownKeys.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$DBDatabaseClusterTestTrackedTable");
 
+		// Store the number found for use later
+		final int numberOfClassesFound = foundKeys.size();
+		
 		boolean allClassesKnown = true;
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {
 				allClassesKnown = false;
+				// Remove the classes we know of to help identify the unknown classes
 				System.out.println("NOT FOUND DBRow: ~" + knownString + "~");
 			}
 			foundKeys.remove(knownString);
 		}
+		// Print out the remain classes as unknown to help with debugging
 		for (String foundString : foundKeys) {
+			// Double check that we don't know of this class
 			if (!knownKeys.contains(foundString)) {
 				allClassesKnown = false;
 				System.out.println("UNKNOWN DBRow: " + foundString + "");
 			}
 		}
+		// Check that all classes are known and found
 		assertThat(allClassesKnown, is(true));
-		assertThat(result.size(), is(knownKeys.size()));
+		assertThat(numberOfClassesFound, is(knownKeys.size()));
 	}
 
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		assertThat(result.size(), is(131));
+
+		List<String> foundClasses = new ArrayList<String>();
+		for (Class<? extends DBRow> clazz : result) {
+			final String canonicalName = clazz.getCanonicalName();
+			if (canonicalName.startsWith("nz.co.gregs.dbvolution.generation.compiling.")) {
+				// The compilation tests cause classes to pop into and out of existence so ignore them
+			} else {
+				foundClasses.add(canonicalName);
+			}
+		}
+
+		Set<String> knownKeys = new HashSet<String>();
+		knownKeys.add("nz.co.gregs.dbvolution.example.CarCompany");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.TestDefaultValueIncorrectDatatype");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBDeleteTest.TestDeleteAll");
+		knownKeys.add("nz.co.gregs.dbvolution.DBMigrationTest.Fight");
+		knownKeys.add("nz.co.gregs.dbvolution.DBRowMiscTests.WithoutPrimaryKey");
+		knownKeys.add("nz.co.gregs.dbvolution.DBScriptTest.ScriptTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.CreateTableTestClassWithNewColumns");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLargeBinaryTest.BinaryObjectWithAutoIncrement");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.TableHandlerTest.MyNonAnnotatedDBRow");
+		knownKeys.add("nz.co.gregs.dbvolution.DBValidationTest.Villain");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.CarCompany");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.LocalDateExpressionTest.MarqueWithLocalDate");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.TestDefaultInsertValue");
+		knownKeys.add("nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKeyTest.TableE");
+		knownKeys.add("nz.co.gregs.dbvolution.example.CompanyLogo");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.CreateTableTestClassWithOriginalColumns");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.MarqueWithLocalDateTime");
+		knownKeys.add("nz.co.gregs.dbvolution.OuterJoinTest.Encounter");
+		knownKeys.add("nz.co.gregs.dbvolution.query.QueryGraphDepthFirstTest.TableD");
+		knownKeys.add("nz.co.gregs.dbvolution.ExpressionsInDBRowFields.ExpressionRow");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.TestDefaultInsertWithLocalDateTimeValue");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpressionTest.PointTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBNumberTest.NumberTest");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBBooleanTest.BooleanTest");
+		knownKeys.add("nz.co.gregs.dbvolution.JoinTest.CompanyWithFkToNonPk");
+		knownKeys.add("nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKeyTest.TableA");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.JavaObjectExpressionTest.JavaObjectExpressionTable");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.DataRepoGeneratorTest.CreateTableForeignKey");
+		knownKeys.add("nz.co.gregs.dbvolution.DBQueryInsertTest.Hero");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBInstantTest.DBInstantTable");
+		knownKeys.add("nz.co.gregs.dbvolution.query.QueryGraphDepthFirstTest.TableE");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.CreateTableWithForeignKeyTestClass2");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.TypeAdaptorTest.CustomerWithStringIntegerTypeAdaptor");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerEnumWithDefinedValuesTable");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.TypeAdaptorTest.CustomerWithDBStringIntegerTypeAdaptor");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.LtCarcoLogo");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable");
+		knownKeys.add("nz.co.gregs.dbvolution.example.MarqueSelectQuery");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.Marque");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest.TableThatDoesntExistOnTheCluster");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.Spatialgen");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBBooleanArrayTest.BooleanArrayTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBDurationTest.DurationTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLargeTextTest.CompanyTextForRetreivingString");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLargeBinaryTest.CompanyLogoForRetreivingString");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.StringExpressionTest.FindFirstNumberTable");
+		knownKeys.add("nz.co.gregs.dbvolution.DBValidationTest.Hero");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest.TableThatDoesExistOnTheCluster");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpressionTest.LineTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBJavaObjectTest.DBJavaObjectTable");
+		knownKeys.add("nz.co.gregs.dbvolution.JoinTest.CompanyWithFkToPk");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.CreateTableWithForeignKeyTestClass");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapperTest.MyTable1");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBEnumTest.GenericEnumTable");
+		knownKeys.add("nz.co.gregs.dbvolution.DBRecursiveQueryTest.Parts");
+		knownKeys.add("nz.co.gregs.dbvolution.DBQueryInsertTest.Professional");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest.DBDatabaseClusterTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.DBRowMiscTests.SpecifiedColumnName");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBEncryptedTextTest.EncryptedTextTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpressionTest.LineSegmentTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBPasswordHashTest.PasswordTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBDateRepeatTest.DateRepeatTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBDateOnlyTest.DateOnlyTest");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.Marque");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.StringExpressionTest.FindFirstIntegerTable");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.LtCarcoLogo");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.GeneratedMarqueTest.TestAutoIncrementDetection");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.InstantExpressionTest.MarqueWithInstant");
+		knownKeys.add("nz.co.gregs.dbvolution.DoubleJoinTest.DoubleLinkedWithClass");
+		knownKeys.add("nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKeyTest.TableAString");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapperTest.MyTable2");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBBulkInsertTest.BulkInsertTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.DBMigrationTest.Hero");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLocalDateTest.DBLocalDateTable");
+		knownKeys.add("nz.co.gregs.dbvolution.DBRecursiveQueryTest.PartsWithoutTableName");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.CreateTableTestClass2");
+		knownKeys.add("nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogoWithPreviousLink");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.TableHandlerTest.MyAnnotatedDBRow");
+		knownKeys.add("nz.co.gregs.dbvolution.DBMigrationTest.Villain");
+		knownKeys.add("nz.co.gregs.dbvolution.DBRecursiveQueryTest.PartsStringKey");
+		knownKeys.add("nz.co.gregs.dbvolution.MultiplePrimaryKeyTests.User");
+		knownKeys.add("nz.co.gregs.dbvolution.DBMigrationTest.Professional");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.TestDefaultValueRetrieval");
+		knownKeys.add("nz.co.gregs.dbvolution.example.Marque");
+		knownKeys.add("nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKeyTest.TableB");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.TestInsertDoesNotUpdateExpressionColumns");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLargeTextTest.CompanyTextForRetreivingBinaryObject");
+		knownKeys.add("nz.co.gregs.dbvolution.example.CompanyText");
+		knownKeys.add("nz.co.gregs.dbvolution.JoinTest.Statistic");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.DataRepoGeneratorTest.TestAutoIncrementDetection");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.LargeTextExpressionTest.ExampleTableForLargeText");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.DropTableTestClass");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.Companylogo");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBDeleteTest.TestDeleteThrowsExceptionOnBlankRow");
+		knownKeys.add("nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBUUIDTest.UUIDTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerEnumTable");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.Spatialgen");
+		knownKeys.add("nz.co.gregs.dbvolution.MultiplePrimaryKeyTests.Colleagues");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBActionListCreationTest.CarCompanyWithAutoIncrement");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2DTest.BasicSpatialTable");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.GeneratedMarqueTest.CreateTableForeignKeyy");
+		knownKeys.add("nz.co.gregs.dbvolution.DBQueryInsertTest.Fight");
+		knownKeys.add("nz.co.gregs.dbvolution.DBRowMiscTests.UnspecifiedColumnName");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.TypeAdaptorTest.CustomerWithDBInteger");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpressionTest.MultiPoint2DTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLargeTextTest.TextObjectWithAutoIncrement");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.CreateTableTestClass");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.GeneratedMarqueTest.CreateTableForeignKey");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest.DBDatabaseClusterTestTable2");
+		knownKeys.add("nz.co.gregs.dbvolution.DBQueryInsertTest.Villain");
+		knownKeys.add("nz.co.gregs.dbvolution.OuterJoinTest.Antagonist");
+		knownKeys.add("nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapperUsabilityTest.MyExampleTableClass");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.DropTable2TestClass");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpressionTest.PolygonTestTable");
+		knownKeys.add("nz.co.gregs.dbvolution.query.QueryGraphDepthFirstTest.TableC");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.TestDefaultInsertWithInstantValue");
+		knownKeys.add("nz.co.gregs.dbvolution.DBRecursiveQueryTest.CompletePart");
+		knownKeys.add("nz.co.gregs.dbvolution.expressions.BooleanArrayExpressionTest.BooleanArrayExpressionTable");
+		knownKeys.add("nz.co.gregs.dbvolution.query.QueryGraphDepthFirstTest.TableB");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.DataRepoGeneratorTest.CreateTableForeignKeyy");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.TestValueRetrievalWith2PKs");
+		knownKeys.add("nz.co.gregs.dbvolution.DBValidationTest.Fight");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLargeBinaryTest.CompanyLogoForRetreivingBinaryObject");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.CarCompany");
+		knownKeys.add("nz.co.gregs.dbvolution.datatypes.DBLocalDateTimeTest.DBLocalDateTimeTable");
+		knownKeys.add("nz.co.gregs.dbvolution.generation.deprecated.Companylogo");
+		knownKeys.add("nz.co.gregs.dbvolution.DoubleJoinTest.DoubleLinkedWithSubclasses");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest.DBDatabaseClusterTestTrackedTable");
+		knownKeys.add("nz.co.gregs.dbvolution.query.QueryGraphDepthFirstTest.TableA");
+		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.RequiredTableShouldBeCreatedAutomatically");
+
+		// Store the number found for use later
+		final int numberOfFoundClasses = foundClasses.size();
+		boolean allClassesKnown = true;
+		for (String knownString : knownKeys) {
+			if (!foundClasses.contains(knownString)) {
+				allClassesKnown = false;
+				System.out.println("NOT FOUND DBRow: " + knownString);
+			}
+			// Remove the classes we know of to help identify the unknown classes
+			foundClasses.remove(knownString);
+		}
+		// Print out the remaining classes to help with debugging
+		for (String foundString : foundClasses) {
+			// Double check that we don't know of this class
+			if (!knownKeys.contains(foundString)) {
+				allClassesKnown = false;
+				System.out.println("UNKNOWN DBRow: " + foundString);
+			}
+		}
+		// Check that all classes are known and found
+		assertThat(allClassesKnown, is(true));
+		assertThat(numberOfFoundClasses, is(knownKeys.size()));
 	}
 
 	@Test
