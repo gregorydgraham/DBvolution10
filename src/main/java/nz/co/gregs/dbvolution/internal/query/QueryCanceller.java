@@ -42,25 +42,29 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
  *
  * @author gregorygraham
  */
-class QueryCanceller implements Runnable {
+public class QueryCanceller implements Runnable {
 
 	private final DBStatement statement;
 	private final Date timestamp;
 	private final String sql;
 	private boolean queryWasCancelled = false;
-	private final QueryDetails query;
+	private QueryDetails query = null;
 
 	QueryCanceller(DBStatement statement, String sql, QueryDetails query) {
+		this(statement,sql);
+		this.query = query;
+	}
+
+	public QueryCanceller(DBStatement statement, String sql) {
 		this.statement = statement;
 		this.sql = sql;
 		this.timestamp = new Date();
-		this.query = query;
 	}
 
 	@Override
 	public void run() {
 		try {
-			if (!query.isQuietExceptions()) {
+			if (query!=null&&!query.isQuietExceptions()) {
 				LOGGER.log(
 						Level.WARNING,
 						"CANCELLER: Cancelling query after {0} seconds {1} => {2}",
