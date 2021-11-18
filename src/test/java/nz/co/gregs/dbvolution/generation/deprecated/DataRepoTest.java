@@ -44,39 +44,40 @@ import org.junit.*;
  *
  * @author gregorygraham
  */
-public class DataRepoTest extends AbstractTest{
-	
+public class DataRepoTest extends AbstractTest {
+
+	final String packageName = "nz.co.gregs.dbvolution.generation.compiling.deprecated";
+
 	public DataRepoTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
 
 	@Test
 	public void testEasyCompiling() throws SQLException, IOException, Exception {
 		if (database instanceof H2SharedDB) {
 			// not supported in shared inastances of H2
 		} else {
-			var generateSchema = DBTableClassGenerator.generateClassesOfViewsAndTables(database, "nz.co.gregs.dbvolution.generation.compiling.deprecated.dbtableclassgenerator");
+			final String dbTableClassGeneratorPackageName = packageName + ".dbtableclassgenerator";
+			var generateSchema = DBTableClassGenerator.generateClassesOfViewsAndTables(database, dbTableClassGeneratorPackageName);
 			generateSchema.compileWithJavaX();
 			// Run separately we get 8 classes
 			// but run with other tests we get 50
 			assertThat(generateSchema.getRows().size(), Matchers.greaterThanOrEqualTo(8));
 		}
 	}
-	
 
 	@Test
 	public void testDataRepoCreation() throws SQLException, IOException, Exception {
 		if (database instanceof H2SharedDB) {
 			// not supported in shared inastances of H2
 		} else {
-			final String packageName = "nz.co.gregs.dbvolution.generation.compiling.deprecated.datarepo";
-			var repo = DataRepo.getDataRepoFor(database, packageName);
+			final String datarepoPackageName = packageName + ".datarepo";
+			var repo = DataRepo.getDataRepoFor(database, datarepoPackageName);
 			// Run separately we get 8 classes
 			// but run with other tests we get 50
 			assertThat(repo.getRows().size(), Matchers.greaterThanOrEqualTo(8));
-			Class<? extends DBRow> rowClass = repo.loadClass(packageName+".Marque");
-			assertThat(rowClass.getCanonicalName(), is(packageName+".Marque"));
+			Class<? extends DBRow> rowClass = repo.loadClass(datarepoPackageName + ".Marque");
+			assertThat(rowClass.getCanonicalName(), is(datarepoPackageName + ".Marque"));
 		}
 	}
 }
