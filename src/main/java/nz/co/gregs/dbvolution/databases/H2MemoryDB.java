@@ -123,7 +123,7 @@ public class H2MemoryDB extends H2DB {
 	}
 
 	/**
-	 * Creates a new database with random (UUID based name).
+	 * Creates a new database with random (UUID based) name and label.
 	 *
 	 * <p>
 	 * Great for we you just need to make a database and don't need to keep
@@ -132,7 +132,24 @@ public class H2MemoryDB extends H2DB {
 	 * @return @throws SQLException
 	 */
 	public static H2MemoryDB createANewRandomDatabase() throws SQLException {
-		return new H2MemoryDB(new H2MemorySettingsBuilder().withUniqueDatabaseName());
+		return createANewRandomDatabase("", "");
+	}
+	/**
+	 * Creates a new database with random (UUID based) name and label.
+	 *
+	 * <p>
+	 * Great for we you just need to make a database and don't need to keep
+	 * it.</p>
+	 *
+	 * @param prefix the string to add before the database name and label
+	 * @param postfix the string to add after the database name and label
+	 * @return @throws SQLException
+	 */
+	public static H2MemoryDB createANewRandomDatabase(String prefix, String postfix) throws SQLException {
+		final H2MemorySettingsBuilder settings = new H2MemorySettingsBuilder().withUniqueDatabaseName();
+		settings.setDatabaseName(prefix+settings.getDatabaseName()+postfix);
+		settings.setLabel(settings.getDatabaseName());
+		return new H2MemoryDB(settings);
 	}
 
 	/**
