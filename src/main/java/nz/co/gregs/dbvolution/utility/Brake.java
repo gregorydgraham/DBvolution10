@@ -110,4 +110,13 @@ public class Brake {
 		}
 	}
 
+	/**
+	 * @param timeout the timeout to set
+	 */
+	public void setTimeout(long timeout) {
+		synchronized (monitor) {
+			this.timeout = timeout;
+		}
+	}
+
 }
