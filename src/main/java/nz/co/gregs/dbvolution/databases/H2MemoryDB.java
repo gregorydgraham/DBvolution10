@@ -142,12 +142,12 @@ public class H2MemoryDB extends H2DB {
 	 * it.</p>
 	 *
 	 * @param prefix the string to add before the database name and label
-	 * @param postfix the string to add after the database name and label
+	 * @param suffix the string to add after the database name and label
 	 * @return @throws SQLException
 	 */
-	public static H2MemoryDB createANewRandomDatabase(String prefix, String postfix) throws SQLException {
+	public static H2MemoryDB createANewRandomDatabase(String prefix, String suffix) throws SQLException {
 		final H2MemorySettingsBuilder settings = new H2MemorySettingsBuilder().withUniqueDatabaseName();
-		settings.setDatabaseName(prefix+settings.getDatabaseName()+postfix);
+		settings.setDatabaseName(prefix+settings.getDatabaseName()+suffix);
 		settings.setLabel(settings.getDatabaseName());
 		return new H2MemoryDB(settings);
 	}
