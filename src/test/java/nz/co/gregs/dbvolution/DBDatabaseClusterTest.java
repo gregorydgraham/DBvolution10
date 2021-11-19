@@ -118,13 +118,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			assertThat(cluster.getDBTable(testTable).count(), is(22l));
 			assertThat(soloDB.getDBTable(testTable).count(), is(22l));
 
-			final H2MemorySettingsBuilder settings = new H2MemorySettingsBuilder()
-					.setLabel("SlowSynchingDB")
-					.setDatabaseName("SlowSynchingDB")
-					.setUsername("who")
-					.setPassword("what");
-			Brake brake = Brake.withTimeoutInMilliseconds(100);
-			SlowSynchingDatabase slowSynchingDB = new SlowSynchingDatabase(settings, brake);
+			SlowSynchingDatabase slowSynchingDB = SlowSynchingDatabase.createANewRandomDatabase("SlowSynchingDatabase-", "-H2");
+			Brake brake = slowSynchingDB.getBrake();
+			brake.setTimeout(10000);
 
 			try (slowSynchingDB) {
 
@@ -1222,42 +1218,5 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBAutoIncrement
 		public DBInteger pkid = new DBInteger();
-	}
-
-	private class SlowSynchingDatabase extends H2MemoryDB {
-
-		private final Brake controller;
-
-		public SlowSynchingDatabase(H2MemorySettingsBuilder hmsb, Brake controller) throws SQLException {
-			super(hmsb);
-			this.controller = controller;
-		}
-		private static final long serialVersionUID = 1l;
-
-		@Override
-		public <R extends DBRow> DBTable<R> getDBTable(R example) {
-			return SlowSynchingDBTable.getInstance(this, example, controller);
-		}
-	}
-
-	private static class SlowSynchingDBTable<E extends DBRow> extends DBTable<E> {
-
-		private Brake brake;
-
-		private SlowSynchingDBTable(DBDatabase database, E exampleRow) {
-			super(database, exampleRow);
-		}
-
-		public static <R extends DBRow> DBTable<R> getInstance(DBDatabase database, R example, Brake brake) {
-			SlowSynchingDBTable<R> dbTable = new SlowSynchingDBTable<>(database, example);
-			dbTable.brake = brake;
-			return dbTable;
-		}
-
-		@Override
-		public DBActionList insert(Collection<E> newRows) throws SQLException {
-			brake.checkBrake();
-			return super.insert(newRows);
-		}
 	}
 }
