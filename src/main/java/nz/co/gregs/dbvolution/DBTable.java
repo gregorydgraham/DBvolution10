@@ -562,7 +562,7 @@ public class DBTable<E extends DBRow> {
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public final DBActionList insert(E row) throws SQLException {
+	public DBActionList insert(E row) throws SQLException {
 		return DBInsert.save(database, row);
 	}
 
