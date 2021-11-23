@@ -18,12 +18,16 @@ package nz.co.gregs.dbvolution.actions;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.SlowSynchingDatabase;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.InstantColumn;
 import nz.co.gregs.dbvolution.columns.LocalDateTimeColumn;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
@@ -32,6 +36,7 @@ import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.utility.Brake;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
@@ -477,6 +482,85 @@ public class DBInsertTest extends AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
+	}
+
+	@Test
+	public void testDefaultValuesAreConsistentInCluster1() throws Exception {
+		for (int i = 0; i < 1; i++) {
+			try ( DBDatabaseCluster cluster = new DBDatabaseCluster(
+					"testDefaultValuesAreConsistentInCluster",
+					DBDatabaseCluster.Configuration.autoStart(),
+					database)) {
+//				cluster.getDetails().setPreferredDatabase(database);
+				SlowSynchingDatabase slowDatabase2 = SlowSynchingDatabase.createANewRandomDatabase("testDefaultValuesAreConsistentInCluster-", "-2");
+				Brake brake = slowDatabase2.getBrake();
+				brake.setTimeout(10000);
+				brake.release();
+				cluster.addDatabaseAndWait(slowDatabase2);
+
+				cluster.getDetails().setPreferredDatabase(slowDatabase2);
+
+				brake.apply();
+				SlowSynchingDatabase slowDatabase3 = SlowSynchingDatabase.createANewRandomDatabase("testDefaultValuesAreConsistentInCluster-", "-3");
+				brake = slowDatabase3.getBrake();
+				brake.setTimeout(10000);
+				brake.release();
+				cluster.addDatabaseAndWait(slowDatabase3);
+				brake.apply();
+
+				TestDefaultInsertWithInstantValue row = new TestDefaultInsertWithInstantValue();
+				cluster.preventDroppingOfTables(false);
+				cluster.dropTableNoExceptions(row);
+				cluster.createTable(row);
+
+//				System.out.println("TIME: " + Instant.now());
+
+				/* Check that row can be inserted successfully*/
+				cluster.insert(row);
+				assertThat(row.pk_uid.getValue(), is(1L));
+
+				cluster.waitUntilSynchronised();
+//				System.out.println("TIME: " + Instant.now());
+
+				final List<TestDefaultInsertWithInstantValue> rows1 = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
+				final List<TestDefaultInsertWithInstantValue> rows2 = slowDatabase2.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
+				final List<TestDefaultInsertWithInstantValue> rows3 = slowDatabase3.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
+
+				TestDefaultInsertWithInstantValue gotRow1 = rows1.get(0);
+				TestDefaultInsertWithInstantValue gotRow2 = rows2.get(0);
+				TestDefaultInsertWithInstantValue gotRow3 = rows3.get(0);
+
+				ChronoUnit precision = ChronoUnit.MILLIS;
+				if (database.supportsNanosecondPrecision() && slowDatabase2.supportsNanosecondPrecision() && slowDatabase3.supportsNanosecondPrecision()) {
+					precision = ChronoUnit.NANOS;
+				} else if (database.supportsMicrosecondPrecision() && slowDatabase2.supportsMicrosecondPrecision() && slowDatabase3.supportsMicrosecondPrecision()) {
+					precision = ChronoUnit.MICROS;
+				}
+
+				final Instant db1CreationValue = gotRow1.creationDate.getValue().truncatedTo(precision);
+				final Instant db1UpdateValue = gotRow1.updateDate.getValue()!=null?gotRow1.updateDate.getValue().truncatedTo(precision):null;
+				final Instant db1CreationOrUpdateValue = gotRow1.creationOrUpdateDate.getValue().truncatedTo(precision);
+//				System.out.println("CREATORUPDATE 1: " + db1CreationOrUpdateValue);
+
+				final Instant db2CreationValue = gotRow2.creationDate.getValue().truncatedTo(precision);
+				final Instant db2UpdateValue = gotRow2.updateDate.getValue()!=null?gotRow2.updateDate.getValue().truncatedTo(precision):null;
+				final Instant db2CreationOrUpdateValue = gotRow2.creationOrUpdateDate.getValue().truncatedTo(precision);
+//				System.out.println("CREATORUPDATE 2: " + db2CreationOrUpdateValue);
+
+				final Instant db3CreationValue = gotRow3.creationDate.getValue().truncatedTo(precision);
+				final Instant db3UpdateValue = gotRow3.updateDate.getValue()!=null?gotRow3.updateDate.getValue().truncatedTo(precision):null;
+				final Instant db3CreationOrUpdateValue = gotRow3.creationOrUpdateDate.getValue().truncatedTo(precision);
+//				System.out.println("CREATORUPDATE 3: " + db3CreationOrUpdateValue);
+
+				assertThat(db2CreationValue, is(db1CreationValue));
+				assertThat(db2UpdateValue, is(db1UpdateValue));
+				assertThat(db2CreationOrUpdateValue, is(db1CreationOrUpdateValue));
+
+				assertThat(db3CreationValue, is(db1CreationValue));
+				assertThat(db3UpdateValue, is(db1UpdateValue));
+				assertThat(db3CreationOrUpdateValue, is(db1CreationOrUpdateValue));
+			}
+		}
 	}
 
 	public static class TestDefaultInsertWithInstantValue extends DBRow {

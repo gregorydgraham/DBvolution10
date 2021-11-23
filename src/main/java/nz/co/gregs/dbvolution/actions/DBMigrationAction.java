@@ -92,13 +92,13 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBActionList actions = new DBActionList(new DBMigrationAction<>(sourceMigration, getRow(), extraExamples));
 
-		try (DBStatement statement = db.getDBStatement()) {
+		try ( DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				try {
-					statement.execute(new StatementDetails("MIGRATION INSERT", QueryIntention.BULK_INSERT, sql));
+					statement.execute("MIGRATION INSERT", QueryIntention.BULK_INSERT, sql);
 				} catch (SQLException sqlex) {
 					try {
-						statement.execute(new StatementDetails("MIGRATION INSERT", QueryIntention.BULK_INSERT, sql));
+						statement.execute("MIGRATION INSERT", QueryIntention.BULK_INSERT, sql);
 					} catch (SQLException ex) {
 						throw new SQLException(ex.getLocalizedMessage() + ":" + sql, ex);
 					}

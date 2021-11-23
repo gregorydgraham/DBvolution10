@@ -102,10 +102,10 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				try {
-					statement.execute(new StatementDetails("BULK INSERT", QueryIntention.BULK_INSERT,sql));
+					statement.execute("BULK INSERT", QueryIntention.BULK_INSERT,sql);
 				} catch (SQLException sqlex) {
 					try {
-						statement.execute(new StatementDetails("BULK INSERT",QueryIntention.BULK_INSERT,sql));
+						statement.execute("BULK INSERT",QueryIntention.BULK_INSERT,sql);
 					} catch (SQLException ex) {
 						throw new FailedToExecuteDBQueryInsertException(sql, sqlex);
 					}

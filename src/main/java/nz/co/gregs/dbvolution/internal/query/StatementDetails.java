@@ -32,6 +32,7 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 
@@ -49,16 +50,17 @@ public class StatementDetails {
 	private boolean ignoreExceptions = false;
 	private boolean withGeneratedKeys = false;
 	private String namedPKColumn;
+	private DBStatement activeStatement;
 
-	public StatementDetails(String label, QueryIntention intent, String sql) {
-		this(label, intent, sql, null, false, false, "");
+	public StatementDetails(String label, QueryIntention intent, String sql, DBStatement statement) {
+		this(label, intent, sql, null, false, false, "", statement);
 	}
 
 	public StatementDetails copy() {
-		return new StatementDetails(label, intention, sql, exception, withGeneratedKeys, ignoreExceptions, namedPKColumn);
+		return new StatementDetails(label, intention, sql, exception, withGeneratedKeys, ignoreExceptions, namedPKColumn, activeStatement);
 	}
 
-	public StatementDetails(String label, QueryIntention intent, String sql, Exception except, boolean generatedKeys, boolean ignoreExceptions, String pkColumn) {
+	public StatementDetails(String label, QueryIntention intent, String sql, Exception except, boolean generatedKeys, boolean ignoreExceptions, String pkColumn, DBStatement statement) {
 		this.label = label;
 		this.sql = sql;
 		this.intention = intent;
@@ -66,6 +68,7 @@ public class StatementDetails {
 		this.withGeneratedKeys = generatedKeys;
 		this.ignoreExceptions = ignoreExceptions;
 		this.namedPKColumn = pkColumn;
+		this.activeStatement = statement;
 	}
 
 	public String getSql() {
@@ -136,6 +139,14 @@ public class StatementDetails {
 	public StatementDetails withIntention(QueryIntention queryIntention) {
 		this.intention = queryIntention;
 		return this;
+	}
+
+	public DBStatement getDBStatement() {
+		return activeStatement;
+	}
+
+	public void setDBStatement(DBStatement statement) {
+		this.activeStatement = statement;
 	}
 
 }

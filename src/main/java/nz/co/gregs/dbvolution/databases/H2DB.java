@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuild
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.h2.*;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.regexi.Regex;
 import org.h2.jdbc.JdbcException;
 
@@ -228,7 +229,7 @@ public class H2DB extends DBDatabase {
 	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.startingAnywhere().literal("Table \"").anythingButThis("\"").oneOrMore().literal("\" already exists; SQL statement:").toRegex();
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		boolean handledException = false;
 		if ((exp instanceof JdbcException)) {
 			String message = exp.getMessage();

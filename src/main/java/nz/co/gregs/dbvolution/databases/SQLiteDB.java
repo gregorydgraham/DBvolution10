@@ -21,11 +21,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
 import nz.co.gregs.regexi.Regex;
 
@@ -41,31 +41,6 @@ public class SQLiteDB extends DBDatabase {
 	public static final long serialVersionUID = 1l;
 
 	/**
-	 *
-	 * Provides a convenient constructor for DBDatabases that have configuration
-	 * details hardwired or are able to automatically retrieve the details.
-	 *
-	 * <p>
-	 * This constructor creates an empty DBDatabase with only the default
-	 * settings, in particular with no driver, URL, username, password, or
-	 * {@link DBDefinition}
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Instead you
-	 * should define a no-parameter constructor that supplies the details for
-	 * creating an instance using a more complete constructor.
-	 *
-	 * <p>
-	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
-	 *
-	 * @see DBDefinition
-	 */
-//	protected SQLiteDB() {
-//	}
-
-	/**
 	 * Creates a DBDatabase tweaked for a SQLite database on the DataSource
 	 * provided.
 	 *
@@ -76,8 +51,6 @@ public class SQLiteDB extends DBDatabase {
 		super(
 				new SQLiteSettingsBuilder().setDataSource(ds)
 		);
-
-//		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
 	}
 
 	/**
@@ -199,13 +172,13 @@ public class SQLiteDB extends DBDatabase {
 			.toRegex();
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_ALREADY_EXISTS.matchesWithinString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
 		}else if(intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOESNT_EXIST_REGEX.matchesWithinString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
 		}
-		return super.addFeatureToFixException(exp, intent);
+		return super.addFeatureToFixException(exp, intent,details);
 	}
 
 	@Override

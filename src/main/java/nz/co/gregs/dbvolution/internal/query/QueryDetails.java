@@ -372,12 +372,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private synchronized void getResultSetCount(DBDatabase db) throws SQLException {
 		long result = 0L;
-		try (DBStatement dbStatement = db.getDBStatement()) {
+		try ( DBStatement dbStatement = db.getDBStatement()) {
 			final List<String> sqlForCount = getSQLForCountInternal(this, options);
 			for (String sql : sqlForCount) {
 				printSQLIfRequired(sql);
-				var dets = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
-				try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
+				var dets = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, dbStatement);
+				try ( ResultSet resultSet = dbStatement.executeQuery(dets)) {
 					if (resultSet != null) {
 						while (resultSet.next()) {
 							result = resultSet.getLong(1);
@@ -994,9 +994,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 			sqlForQuery = removeTerminatingSemicolon.replaceAll(existingSQL);
 			// Swap the full outer joins for left outer joins in the first query
 			sqlForQuery = replaceFullJoinWithLeftJoin.replaceAll(sqlForQuery);
-			
+
 			// Extend the query we have so far with a union
-			sqlForQuery += unionOperator ;
+			sqlForQuery += unionOperator;
 			// Extend the query we have so far with the right join version of the original query
 			RegexReplacement replaceFullJoinWithRightJoin = Regex.empty().literal(defn.beginFullOuterJoin()).replaceWith().literal(defn.beginRightOuterJoin());
 			sqlForQuery += replaceFullJoinWithRightJoin.replaceAll(existingSQL);
@@ -1009,7 +1009,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			// Swap the full outer joins for left outer joins in the first query
 			sqlForQuery = replaceFullJoinWithLeftJoin.replaceAll(sqlForQuery);
 			// Extend the query we have so far with a union
-			sqlForQuery += unionOperator ;
+			sqlForQuery += unionOperator;
 			// Extend the query we have so far with the right join version of the original query
 			options.setCreatingNativeQuery(false);
 			String reversedQuery = getSQLForQueryInternal(new QueryState(details), QueryType.REVERSESELECT, options).get(0);
@@ -1215,9 +1215,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 		boolean successfulQuery = false;
 		for (String sql : getSQLQueries()) {
 			final DBDatabase queryDatabase = options.getQueryDatabase();
-			try (DBStatement dbStatement = queryDatabase.getDBStatement()) {
+			try ( DBStatement dbStatement = queryDatabase.getDBStatement()) {
 				printSQLIfRequired(sql);
-				try (ResultSet resultSet = getResultSetForSQL(dbStatement, sql)) {
+				try ( ResultSet resultSet = getResultSetForSQL(dbStatement, sql)) {
 					if (resultSet != null) {
 						DBQueryRow queryRow;
 						while (resultSet.next()) {
@@ -1392,7 +1392,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				cancelHandle = canceller.schedule(timeoutTime);
 			}
 		}
-		final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql);
+		final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, statement);
 		statementDetails.setIgnoreExceptions(this.isQuietExceptions());
 		ResultSet queryResults;
 		try {

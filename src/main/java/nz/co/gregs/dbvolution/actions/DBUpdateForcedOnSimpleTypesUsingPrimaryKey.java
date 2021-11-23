@@ -182,7 +182,7 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 		DBActionList actions = new DBActionList(new DBUpdateForcedOnSimpleTypesUsingPrimaryKey(table));
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				statement.execute(new StatementDetails("Update row", QueryIntention.UPDATE_ROW, sql));
+				statement.execute("Update row", QueryIntention.UPDATE_ROW, sql);
 			}
 		}
 		return actions;

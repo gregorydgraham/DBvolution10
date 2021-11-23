@@ -329,16 +329,25 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	private final static Regex UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Regex.empty().literal("Cannot find the object \"").noneOfTheseCharacters("\"").optionalMany().literal("\" because it does not exist or you do not have permissions.").toRegex();
 	//message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*"
 	private final static Regex CANNOT_PERFORM_SET_OPERATION = Regex.empty().literal("IDENTITY_INSERT is already ON for table '").namedCapture("table").noneOfThisCharacter('\'').optionalMany().endNamedCapture().literal("'. Cannot perform SET operation for table").toRegex();
+	// Cannot insert explicit value for identity column in table 'TestDefaultInsertWithInstantValue' when IDENTITY_INSERT is set to OFF. : Original Query: 
+	private final static Regex IDENTITY_INSERT_IS_OFF = Regex.empty().literal("Cannot insert explicit value for identity column in table '").namedCapture("table").noneOfThisCharacter('\'').optionalMany().endNamedCapture().literal("' when IDENTITY_INSERT is set to OFF").toRegex();
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		final String message = exp.getMessage();
 		final List<Match> match = CANNOT_PERFORM_SET_OPERATION.getAllMatches(message);
 		if (match.size() > 0) {
 			String table = match.get(0).getNamedCapture("table");
-			DBStatement stmt = getConnection().createDBStatement();
+			DBStatement stmt = details.getDBStatement();//getConnection().createDBStatement();
 			final String sql = "SET IDENTITY_INSERT " + table + " ON;";
-			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql));
+			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql, stmt));
+			return ResponseToException.REQUERY;
+		} else if (IDENTITY_INSERT_IS_OFF.matchesWithinString(message)) {
+			List<Match> allMatches = IDENTITY_INSERT_IS_OFF.getAllMatches(message);
+			String table = allMatches.get(0).getNamedCapture("table");
+			DBStatement stmt = details.getDBStatement();//getConnection().createDBStatement();
+			final String sql = "SET IDENTITY_INSERT [" + table + "] ON;";
+			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql, stmt));
 			return ResponseToException.REQUERY;
 		} else if (intent.is(QueryIntention.CREATE_TABLE) && CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
@@ -347,7 +356,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		} else if (UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
 		}
-		return super.addFeatureToFixException(exp, intent);
+		return super.addFeatureToFixException(exp, intent, details);
 	}
 
 	@Override

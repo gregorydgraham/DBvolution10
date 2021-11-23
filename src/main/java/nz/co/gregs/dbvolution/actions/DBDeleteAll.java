@@ -74,7 +74,7 @@ public class DBDeleteAll extends DBDelete {
 		}
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				statement.execute(new StatementDetails("BULK DELETE", QueryIntention.BULK_DELETE,sql));
+				statement.execute("BULK DELETE", QueryIntention.BULK_DELETE,sql);
 			}
 		}
 		return actions;

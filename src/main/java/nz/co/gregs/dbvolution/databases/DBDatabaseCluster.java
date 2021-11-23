@@ -46,9 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
-import nz.co.gregs.dbvolution.actions.DBAction;
-import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBQueryable;
+import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.DBDatabaseClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -67,6 +65,7 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.utility.LoopVariable;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -595,7 +594,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		throw new UnsupportedOperationException("DBDatabaseCluster.addFeatureToFixException(Exception) should not be called");
 	}
 
@@ -1100,6 +1099,10 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
+		return executeDBActionOnClusterMembers(action);
+	}
+
+	private DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, DBRuntimeException, SQLException {
 		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
@@ -1141,6 +1144,16 @@ public class DBDatabaseCluster extends DBDatabase {
 			actionsPerformed = tasks.get(0).getActionList();
 		}
 		return actionsPerformed;
+	}
+
+	@Override
+	public DBActionList executeDBAction(DBInsert action) throws SQLException, NoAvailableDatabaseException {
+		return executeDBActionOnClusterMembers(action);
+	}
+
+	@Override
+	public DBActionList executeDBAction(DBUpdate action) throws SQLException, NoAvailableDatabaseException {
+		return executeDBActionOnClusterMembers(action);
 	}
 
 	@Override

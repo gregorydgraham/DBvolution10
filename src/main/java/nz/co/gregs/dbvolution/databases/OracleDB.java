@@ -197,7 +197,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 			}
 		}
 		for (String sql : triggerBasedIdentitySQL) {
-			dbStatement.execute(new StatementDetails("Remove identity trigger", QueryIntention.CREATE_TRIGGER_BASED_IDENTITY, sql));
+			dbStatement.execute("Remove identity trigger", QueryIntention.CREATE_TRIGGER_BASED_IDENTITY, sql);
 		}
 	}
 
@@ -208,7 +208,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	private final static Regex LOOP_IN_RECURSIVE_QUERY = Regex.empty().literal("ORA-32044: cycle detected while executing recursive WITH query").toRegex();
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		final String message = exp.getMessage();
 		if ((intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOES_NOT_EXIST.matchesWithinString(message))) {
 			return ResponseToException.SKIPQUERY;
@@ -225,7 +225,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		} else {
 		}
 
-		return super.addFeatureToFixException(exp, intent);
+		return super.addFeatureToFixException(exp, intent,details);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
 		final String sql = "DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'";
-		statement.execute(new StatementDetails("Delete user", QueryIntention.DELETE_ROW, sql));
+		statement.execute("Delete user", QueryIntention.DELETE_ROW, sql);
 	}
 
 	@Override

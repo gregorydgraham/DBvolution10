@@ -178,7 +178,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 			for (String primaryKeyColumnName : primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
 				final String sql = "DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName);
-				dbStatement.execute(new StatementDetails("Drop sequence", QueryIntention.CREATE_SEQUENCE, sql));
+				dbStatement.execute("Drop sequence", QueryIntention.CREATE_SEQUENCE, sql);
 			}
 		}
 		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);

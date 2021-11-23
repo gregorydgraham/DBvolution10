@@ -207,7 +207,8 @@ public class DatabaseList {
 	}
 
 	public synchronized boolean areAllSynchronised() {
-		return countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) == 0
-				&& countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) == 0;
+		return countDatabases(DBDatabaseCluster.Status.READY)==databaseMap.size();
+//		return countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) == 0
+//				&& countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) == 0;
 	}
 }

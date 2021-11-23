@@ -52,7 +52,7 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	}
 
 	/**
-	 * Creates a new database with designated label
+	 * Creates a new database with designated name and label.
 	 *
 	 * <p>
 	 * Great for we you just need to make a database and don't need to keep
@@ -63,7 +63,7 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	 * @return @throws SQLException
 	 */
 	public static SlowSynchingDatabase createDatabase(String label) throws SQLException {
-		return new SlowSynchingDatabase(new H2MemorySettingsBuilder().setLabel(label));
+		return new SlowSynchingDatabase(new H2MemorySettingsBuilder().setDatabaseName(label).setLabel(label));
 	}
 
 	/**
@@ -121,9 +121,27 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 		}
 
 		@Override
-		public DBActionList insert(Collection<E> newRows) throws SQLException {
+		public DBActionList insert(E newRow) throws SQLException {
 			brake.checkBrake();
-			return super.insert(newRows);
+			return super.insert(newRow);
+		}
+
+		@Override
+		public DBActionList update(E newRow) throws SQLException {
+			brake.checkBrake();
+			return super.update(newRow);
+		}
+
+		@Override
+		protected DBActionList updateAnyway(E row) throws SQLException {
+			brake.checkBrake();
+			return super.updateAnyway(row);
+		}
+
+		@Override
+		public DBActionList delete(Collection<E> oldRows) throws SQLException {
+			brake.checkBrake();
+			return super.delete(oldRows);
 		}
 	}
 }

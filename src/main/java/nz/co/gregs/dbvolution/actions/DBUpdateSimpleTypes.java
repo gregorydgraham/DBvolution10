@@ -51,7 +51,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(table));
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				statement.execute(new StatementDetails("Update row", QueryIntention.UPDATE_ROW, sql));
+				statement.execute("Update row", QueryIntention.UPDATE_ROW, sql);
 			}
 		}
 		return actions;

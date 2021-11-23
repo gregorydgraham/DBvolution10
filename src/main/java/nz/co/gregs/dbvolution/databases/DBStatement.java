@@ -112,7 +112,7 @@ public class DBStatement implements AutoCloseable {
 		final QueryIntention intent = details.getIntention();
 		checkForBrokenConnection(exp, sql);
 		try {
-			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent);
+			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
 			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
 				return null;
 			}
@@ -125,12 +125,14 @@ public class DBStatement implements AutoCloseable {
 				// do nothing
 			} else {
 				LOG.info("REPEATED EXCEPTIONS FROM: " + sql, exp);
+//				System.out.println("REPEATED EXCEPTIONS FROM: " + sql);
 				exp.printStackTrace();
+//				System.out.println("SECONDLY");
 				ex.printStackTrace();
 			}
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
-				DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent);
+				DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
 				if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
 					return null;
 				}
@@ -434,19 +436,44 @@ public class DBStatement implements AutoCloseable {
 	 * to retrieve the result, and getMoreResults to move to any subsequent
 	 * result(s).
 	 *
+	 *
+	 * @param label the display name for this execution
+	 * @param queryIntention the expected outcome of this execution
+	 * @param sql the actual SQL to execute
+	 * @throws SQLException Database exceptions may be thrown
+	 */
+	public void execute(String label, QueryIntention queryIntention, String sql) throws SQLException {
+		execute(new StatementDetails(label, queryIntention, sql, this));
+	}
+
+	/**
+	 * Executes the given SQL statement, which may return multiple results.
+	 *
+	 * <p>
+	 * In some (uncommon) situations, a single SQL statement may return multiple
+	 * result sets and/or update counts. Normally you can ignore this unless you
+	 * are (1) executing a stored procedure that you know may return multiple
+	 * results or (2) you are dynamically executing an unknown SQL string.
+	 *
+	 * <p>
+	 * The execute method executes an SQL statement and indicates the form of the
+	 * first result. You must then use the methods getResultSet or getUpdateCount
+	 * to retrieve the result, and getMoreResults to move to any subsequent
+	 * result(s).
+	 *
 	 * @param details the full details of the query including the SQL to be
 	 * executed
 	 *
 	 * @throws SQLException Database exceptions may be thrown
 	 */
 	public void execute(StatementDetails details) throws SQLException {
+		details.setDBStatement(this);
 		String sql = details.getSql();
 		final String logSQL = "EXECUTING: " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		try {
-			final var stmt = getInternalStatement();
-			executeWithCanceller(details, stmt);
+			executeWithCanceller(details);
 		} catch (SQLException exp) {
 			StatementDetails statementDetails
 					= details.copy()
@@ -456,7 +483,8 @@ public class DBStatement implements AutoCloseable {
 		}
 	}
 
-	private void executeWithCanceller(StatementDetails details, final Statement stmt) throws SQLException {
+	private void executeWithCanceller(StatementDetails details) throws SQLException {
+		final var stmt = getInternalStatement();
 		final Long timeoutTime = this.getTIMEOUT_IN_MILLISECONDS();
 		ScheduledFuture<?> cancelHandle = null;
 		QueryCanceller canceller = null;
@@ -478,38 +506,35 @@ public class DBStatement implements AutoCloseable {
 		}
 	}
 
-	private boolean addFeatureAndAttemptExecuteAgain(StatementDetails details) throws SQLException {
+	private void addFeatureAndAttemptExecuteAgain(StatementDetails details) throws SQLException {
+		details.setDBStatement(this);
 		String sql = details.getSql();
 		Exception exp = details.getException();
 		QueryIntention intent = details.getIntention();
-		boolean executeQuery;
 		checkForBrokenConnection(exp, sql);
 		try {
-			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent);
-			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)
-					|| response.equals(DBDatabase.ResponseToException.REQUERY)) {
-				return true;
+			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
+			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+				return;
 			}
 		} catch (Exception ex) {
 			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
 		}
 		try {
-			executeQuery = getInternalStatement().execute(sql);
-			return executeQuery;
+			executeWithCanceller(details);
 		} catch (SQLException exp2) {
 			if (!exp.getMessage().equals(exp2.getMessage())) {
-				var dets = details.copy().withLabel("RETRY EXECUTE");
-				executeQuery = addFeatureAndAttemptExecuteAgain(dets);
-				return executeQuery;
+				addFeatureAndAttemptExecuteAgain(details);
 			} else {
 				throw new SQLException(exp);
 			}
 		}
 	}
 
-	public DBDatabase.ResponseToException handleResponseFromFixingException(Exception exp, QueryIntention intent) throws Exception {
+	public DBDatabase.ResponseToException handleResponseFromFixingException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
+		details.setDBStatement(this);
 		try {
-			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent);
+			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent, details);
 			switch (response) {
 				case REPLACECONNECTION:
 					replaceBrokenConnection();
@@ -518,10 +543,13 @@ public class DBStatement implements AutoCloseable {
 					return DBDatabase.ResponseToException.SKIPQUERY;
 				case EMULATE_RECURSIVE_QUERY:
 					throw new LoopDetectedInRecursiveSQL();
+				case REQUERY:
+					return DBDatabase.ResponseToException.REQUERY;
 				default:
 					break;
 			}
 		} catch (Exception exc) {
+//			exc.printStackTrace();
 			throw exc;
 		}
 		return DBDatabase.ResponseToException.NOT_HANDLED;
@@ -1058,17 +1086,17 @@ public class DBStatement implements AutoCloseable {
 		if (exp != null) {
 			if (StringCheck.isNotEmptyNorNull(exp.getMessage())) {
 				final String message = exp.getMessage().toLowerCase();
-				if (CONNECTION_BROKEN_REGEX.matchesWithinString(message)){
+				if (CONNECTION_BROKEN_REGEX.matchesWithinString(message)) {
 					replaceBrokenConnection();
-				} else if (CONNECTION_CLOSED_REGEX.matchesWithinString(message)){
+				} else if (CONNECTION_CLOSED_REGEX.matchesWithinString(message)) {
 					replaceBrokenConnection();
-				} else if (STATEMENT_BROKEN_REGEX.matchesWithinString(message)){
+				} else if (STATEMENT_BROKEN_REGEX.matchesWithinString(message)) {
 					replaceBrokenConnection();
-				} else if (STATEMENT_CLOSED_REGEX.matchesWithinString(message)){
+				} else if (STATEMENT_CLOSED_REGEX.matchesWithinString(message)) {
 					replaceBrokenConnection();
-				} else if (CONNECTION_RESET_REGEX.matchesWithinString(message)){
+				} else if (CONNECTION_RESET_REGEX.matchesWithinString(message)) {
 					replaceBrokenConnection();
-				} else if (INSUFFICIENT_MEMORY_REGEX.matchesWithinString(message)){
+				} else if (INSUFFICIENT_MEMORY_REGEX.matchesWithinString(message)) {
 					replaceBrokenConnection();
 				}
 			}

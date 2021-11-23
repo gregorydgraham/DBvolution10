@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractMySQLSettingsBu
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * A DBDatabase tweaked for MySQL databases
@@ -148,13 +149,13 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	private final static Regex TABLE_ALREADY_EXISTS = Regex.startingAnywhere().literal("Table ").charactersWrappedBy('\'').literal(" already exists").toRegex();
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		if (TABLE_ALREADY_EXISTS.matchesEntireString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
 		} else if (intent.is(QueryIntention.DROP_FUNCTION) && FUNCTION_DOES_NOT_EXISTS.matchesEntireString(exp.getMessage())) {
 			return ResponseToException.SKIPQUERY;
 		}
-		return super.addFeatureToFixException(exp, intent);
+		return super.addFeatureToFixException(exp, intent, details);
 	}
 
 	@Override

@@ -181,7 +181,7 @@ public class Oracle11XEDB extends OracleDB {
 			for (String primaryKeyColumnName : primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
 				final String sql = "DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName);
-				dbStatement.execute(new StatementDetails("Drop sequence", QueryIntention.DROP_SEQUENCE, sql));
+				dbStatement.execute("Drop sequence", QueryIntention.DROP_SEQUENCE, sql);
 			}
 		}
 		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);

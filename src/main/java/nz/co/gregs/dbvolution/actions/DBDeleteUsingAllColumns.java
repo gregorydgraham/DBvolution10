@@ -72,7 +72,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 		}
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				statement.execute(new StatementDetails("DELETE ROW", QueryIntention.DELETE_ROW,sql));
+				statement.execute("DELETE ROW", QueryIntention.DELETE_ROW,sql);
 			}
 		}
 		return actions;

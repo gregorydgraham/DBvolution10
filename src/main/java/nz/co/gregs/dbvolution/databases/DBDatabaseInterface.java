@@ -47,6 +47,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  *
@@ -98,7 +99,7 @@ interface DBDatabaseInterface {
 	 * @return the preferred response to the exception
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
-	DBDatabase.ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception;
+	DBDatabase.ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception;
 
 	boolean isMemoryDatabase();
 

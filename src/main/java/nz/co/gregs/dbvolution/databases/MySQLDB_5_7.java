@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQL_5_7SettingsBuilde
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * A DBDatabase tweaked for MySQL databases
@@ -129,13 +130,13 @@ new MySQL_5_7SettingsBuilder()
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("Table '[^']*' already exists");
 
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		if (intent.is(QueryIntention.DROP_TABLE) && TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()) {
 			return ResponseToException.SKIPQUERY;
 		} else if (FUNCTION_DOES_NOT_EXISTS.matcher(exp.getMessage()).matches()) {
 
 		}
-		return super.addFeatureToFixException(exp, intent);
+		return super.addFeatureToFixException(exp, intent, details);
 	}
 
 	@Override

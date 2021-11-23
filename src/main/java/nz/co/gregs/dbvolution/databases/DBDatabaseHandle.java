@@ -44,6 +44,7 @@ import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * A DBDatabaseHandle makes it easy to switch between databases.
@@ -96,8 +97,8 @@ public class DBDatabaseHandle extends DBDatabase {
 	/**
 	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
 	 *
-	 * @param stmt the statement to use when adding features, DO NOT CLOSE
-	 * THIS STATEMENT .
+	 * @param stmt the statement to use when adding features, DO NOT CLOSE THIS
+	 * STATEMENT .
 	 * @throws ExceptionDuringDatabaseFeatureSetup database exceptions may occur
 	 * @see PostgresDB
 	 * @see H2DB
@@ -143,8 +144,8 @@ public class DBDatabaseHandle extends DBDatabase {
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
 	@Override
-	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent) throws Exception {
-		return wrappedDatabase.addFeatureToFixException(exp, intent);
+	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
+		return wrappedDatabase.addFeatureToFixException(exp, intent, details);
 	}
 
 	@Override

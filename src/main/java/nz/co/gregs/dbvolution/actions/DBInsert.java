@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -33,7 +32,10 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.DBSQLException;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,9 +48,6 @@ import org.apache.commons.logging.LogFactory;
  * any DBRow with an
  * {@link DBAutoIncrement autoincrementing} {@link DBPrimaryKey primary key}
  * field.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -96,31 +95,40 @@ public class DBInsert extends DBAction {
 	 * @param database the target database
 	 * @param row the row to be inserted
 	 * @throws SQLException Database actions can throw SQLException
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of the actions performed on the database.
 	 */
 	public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
 		DBInsert dbInsert = new DBInsert(row);
 		final DBActionList executedActions = database.executeDBAction(dbInsert);
-		final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
-		boolean pksHaveBeenSet = true;
-		for (QueryableDatatype<?> pk : primaryKeys) {
-			pksHaveBeenSet = pksHaveBeenSet && pk.hasBeenSet();
-		}
-		if (!dbInsert.generatedKeys.isEmpty() && !pksHaveBeenSet) {
-			final QueryableDatatype<?> pkQDT = primaryKeys.get(0);
-			new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(dbInsert.generatedKeys.get(0));
-		}
-		row.setSimpleTypesToUnchanged();
 		return executedActions;
+	}
+
+	private void refetch(DBDatabase db, DBRow originalRow) {
+		try {
+			if (originalRow.hasAutomaticValueFields()) {
+				if (originalRow.getPrimaryKeys().size() > 0) {
+					var example = DBRow.getPrimaryKeyExample(originalRow);
+					List<DBRow> got = db.get(1L, example);
+					var newRow = got.get(0);
+					var props = originalRow.getColumnPropertyWrappers();
+					props.stream()
+							.filter(p -> p != null)
+							.forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
+				}
+			}
+		} catch (SQLException ex) {
+			LOG.fatal(null, ex);
+		} catch (UnexpectedNumberOfRowsException ex) {
+			LOG.fatal(null, ex);
+		} catch (AccidentalBlankQueryException ex) {
+			LOG.fatal(null, ex);
+		} catch (NoAvailableDatabaseException ex) {
+			LOG.fatal(null, ex);
+		}
 	}
 
 	/**
 	 * Returns a copy of the row supplied during creation.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the row
 	 */
@@ -166,9 +174,9 @@ public class DBInsert extends DBAction {
 		final DBInsert newInsert = new DBInsert(table);
 		DBActionList actions = new DBActionList(newInsert);
 
-		try (DBStatement statement = db.getDBStatement()) {
+		try ( DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
-				StatementDetails statementDetails = new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW, sql);
+				StatementDetails statementDetails = new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW, sql, statement);
 				if (defn.supportsGeneratedKeys()) {
 					try {
 						final List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
@@ -205,7 +213,7 @@ public class DBInsert extends DBAction {
 											pkIndex = 1;
 										}
 										if (primaryKey.hasBeenSet() == false) {
-											try (ResultSet generatedKeysResultSet = statement.getGeneratedKeys()) {
+											try ( ResultSet generatedKeysResultSet = statement.getGeneratedKeys()) {
 												while (generatedKeysResultSet.next()) {
 													final Long pkValue = generatedKeysResultSet.getLong(pkIndex);
 													if (pkValue > 0) {
@@ -246,6 +254,20 @@ public class DBInsert extends DBAction {
 		DBInsertLargeObjects blobSave = new DBInsertLargeObjects(this.originalRow);
 		actions.addAll(db.executeDBAction(blobSave));
 		table.setDefined();
+
+		final List<QueryableDatatype<?>> primaryKeys = originalRow.getPrimaryKeys();
+		boolean pksHaveBeenSet = true;
+		for (QueryableDatatype<?> pk : primaryKeys) {
+			pksHaveBeenSet = pksHaveBeenSet && pk.hasBeenSet();
+		}
+		if (!generatedKeys.isEmpty() && !pksHaveBeenSet) {
+			final QueryableDatatype<?> pkQDT = primaryKeys.get(0);
+			new InternalQueryableDatatypeProxy<>(pkQDT).setValueFromDatabase(generatedKeys.get(0));
+		}
+		originalRow.setSimpleTypesToUnchanged();
+
+		refetch(db, originalRow);
+
 		return actions;
 	}
 
@@ -254,14 +276,14 @@ public class DBInsert extends DBAction {
 		if (primaryKeyWrappers.size() > 0) {
 			if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 				String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
-				var dets = new StatementDetails("RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT, retrieveSQL);
-				try (ResultSet rs = statement.executeQuery(dets)) {
+				var dets = new StatementDetails("RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT, retrieveSQL, statement);
+				try ( ResultSet rs = statement.executeQuery(dets)) {
 					if (rs != null) {
 						for (var primaryKeyWrapper : primaryKeyWrappers) {
 							var definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 							QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
 							QueryableDatatype<?> rowPK = definition.getQueryableDatatype(table);
-							
+
 							if (originalPK.hasBeenSet() == false) {
 								if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
 									final long generatedPK = rs.getLong(1);
@@ -302,7 +324,7 @@ public class DBInsert extends DBAction {
 	private void updateSequenceIfNecessary(final DBDefinition defn, DBDatabase db, String sql, DBRow table, final DBStatement statement) throws SQLException {
 		if (primaryKeyWasGenerated && defn.requiresSequenceUpdateAfterManualInsert()) {
 			final String sequenceUpdateSQL = defn.getSequenceUpdateSQL(table.getTableName(), table.getPrimaryKeyColumnNames().get(0), primaryKeyGenerated);
-			statement.execute(new StatementDetails("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE, sequenceUpdateSQL));
+			statement.execute("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE, sequenceUpdateSQL);
 		}
 	}
 
@@ -346,7 +368,11 @@ public class DBInsert extends DBAction {
 							allColumnSeparator = defn.getValuesClauseColumnSeparator();
 							// add the value
 							allValues.append(allValuesSeparator);
-							if (!qdt.hasBeenSet() && qdt.hasDefaultInsertValue()) {
+							if (qdt.getValue() != null) {
+								allValues.append(
+										qdt.toSQLString(database.getDefinition())
+								);
+							} else if (!qdt.hasBeenSet() && qdt.hasDefaultInsertValue()) {
 								allValues.append(
 										qdt.getDefaultInsertValueSQLString(database.getDefinition())
 								);
@@ -357,7 +383,7 @@ public class DBInsert extends DBAction {
 							}
 							allValuesSeparator = defn.getValuesClauseValueSeparator();
 						}
-						if (qdt.hasBeenSet() || qdt.hasDefaultInsertValue()) {
+						if (qdt.getValue() != null || qdt.hasBeenSet() || qdt.hasDefaultInsertValue()) {
 							// nice normal columns
 							// Add the column
 							allChangedColumns
@@ -367,7 +393,7 @@ public class DBInsert extends DBAction {
 							columnSeparator = defn.getValuesClauseColumnSeparator();
 							allSetValues.append(valuesSeparator);
 							// add the value
-							if (qdt.hasBeenSet()) {
+							if (qdt.getValue() != null || qdt.hasBeenSet()) {
 								allSetValues.append(
 										qdt.toSQLString(database.getDefinition())
 								);
@@ -408,8 +434,6 @@ public class DBInsert extends DBAction {
 	 *
 	 * @param rows the rows to be inserted
 	 * @throws SQLException Database actions can throw SQLException
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of inserts.
 	 */
 	public static DBActionList getInserts(DBRow... rows) throws SQLException {
@@ -422,9 +446,6 @@ public class DBInsert extends DBAction {
 
 	/**
 	 * Returns all generated values created during the insert actions.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the generatedKeys
 	 */
