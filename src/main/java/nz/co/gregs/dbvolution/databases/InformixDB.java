@@ -27,9 +27,6 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class InformixDB extends DBDatabase {
@@ -55,7 +52,6 @@ public class InformixDB extends DBDatabase {
 						.setDataSource(ds)
 						.setDefinition(definition)
 		);
-//		super(definition, INFORMIXDRIVERNAME, ds);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
 	}
@@ -80,7 +76,6 @@ public class InformixDB extends DBDatabase {
 						.setUsername(username)
 						.setPassword(password)
 						.toSettings()
-		//				jdbcURL, username, password
 		);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
@@ -122,10 +117,6 @@ public class InformixDB extends DBDatabase {
 	 *
 	 * <p>
 	 * Remember to include the Informix JDBC driver in your classpath.
-	 *
-	 *
-	 *
-	 *
 	 *
 	 * - Database exceptions may be thrown
 	 *
@@ -171,7 +162,7 @@ public class InformixDB extends DBDatabase {
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone(); 
 	}
 
 	@Override
@@ -180,77 +171,11 @@ public class InformixDB extends DBDatabase {
 		;
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : "jdbc:informix-sqli://"
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getDatabaseName() + ":INFORMIXSERVER="
-//				+ settings.getInstance()
-//				+ settings.formatExtras(":", "=", ";", "");
-//	}
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
-//		return noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0];
-//
-//	}
-//	@Override
-//	protected String getDatabaseInstance() {
-//		return getExtras().get("INFORMIXSERVER");
-//	}
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
-//		return noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:", "");
-//	}
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
-//		set.setPort(noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:", ""));
-//		set.setHost(noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0]);
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
-//		}
-//		set.setInstance(getExtras().get("INFORMIXSERVER"));
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 1526;
 	}
 
-//	@Override
-//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return InformixDB.class;
-//	}
 	@Override
 	public AbstractInformixSettingsBuilder<?, ?> getURLInterpreter() {
 		return new InformixSettingsBuilder();
