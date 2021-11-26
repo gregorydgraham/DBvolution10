@@ -124,7 +124,6 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 */
 	public MSSQLServerDB(MSSQLServerSettingsBuilder builder) throws SQLException {
 		this((AbstractMSSQLServerSettingsBuilder<?, ?>) builder);
-//		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, builder.toSettings());
 	}
 
 	/**
@@ -168,7 +167,6 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 						.setDataSource(ds)
 						.setDefinition(defn)
 		);
-//		super(defn, SQLSERVERDRIVERNAME, ds);
 	}
 
 	/**
@@ -338,14 +336,14 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		final List<Match> match = CANNOT_PERFORM_SET_OPERATION.getAllMatches(message);
 		if (match.size() > 0) {
 			String table = match.get(0).getNamedCapture("table");
-			DBStatement stmt = details.getDBStatement();//getConnection().createDBStatement();
+			DBStatement stmt = details.getDBStatement();
 			final String sql = "SET IDENTITY_INSERT " + table + " ON;";
 			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql, stmt));
 			return ResponseToException.REQUERY;
 		} else if (IDENTITY_INSERT_IS_OFF.matchesWithinString(message)) {
 			List<Match> allMatches = IDENTITY_INSERT_IS_OFF.getAllMatches(message);
 			String table = allMatches.get(0).getNamedCapture("table");
-			DBStatement stmt = details.getDBStatement();//getConnection().createDBStatement();
+			DBStatement stmt = details.getDBStatement();
 			final String sql = "SET IDENTITY_INSERT [" + table + "] ON;";
 			stmt.execute(new StatementDetails("Allow identity insertion", QueryIntention.ALLOW_IDENTITY_INSERT, sql, stmt));
 			return ResponseToException.REQUERY;
