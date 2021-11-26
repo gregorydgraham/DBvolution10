@@ -494,9 +494,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public final DBActionList save(DBRow row) throws SQLException {
 		DBActionList changes = new DBActionList();
-		final DBTable<DBRow> table = this.getDBTable(row);
-		changes.addAll(table.save(row));
-		refetch(row);
+		changes.addAll(insertOrUpdate(row));
 		return changes;
 	}
 
@@ -510,7 +508,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public final DBActionList save(DBRow... rows) throws SQLException {
 		final DBActionList save = save(Arrays.asList(rows));
-		refetch(rows);
 		return save;
 	}
 
@@ -527,7 +524,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		for (DBRow row : rows) {
 			actions.addAll(save(row));
 		}
-		refetch(rows);
 		return actions;
 	}
 
@@ -542,8 +538,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	public final DBActionList insert(DBRow row) throws SQLException {
 		DBActionList changes = new DBActionList();
 		changes.addAll(DBInsert.save(this, row));
-//		changes.addAll(this.getDBTable(row).insert(row));
-//		refetch(row);
 		return changes;
 	}
 
@@ -557,11 +551,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public final DBActionList insert(DBRow... listOfRowsToInsert) throws SQLException {
 		if (listOfRowsToInsert.length > 0) {
-			DBBulkInsert insert = new DBBulkInsert(listOfRowsToInsert[0]);
+			DBBulkInsert insert = new DBBulkInsert();
 			insert.addAll(listOfRowsToInsert);
 			return insert.insert(this);
 		}
-		refetch(listOfRowsToInsert);
 		return new DBActionList();
 	}
 
@@ -574,14 +567,12 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList insert(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
-		DBActionList changes = new DBActionList();
 		if (listOfRowsToInsert.size() > 0) {
-			for (DBRow row : listOfRowsToInsert) {
-				changes.addAll(this.getDBTable(row).insert(row));
-			}
+			DBBulkInsert dbBulkInsert = new DBBulkInsert();
+			listOfRowsToInsert.forEach(row -> dbBulkInsert.addRow(row));
+			return dbBulkInsert.insert(this);
 		}
-		refetch(listOfRowsToInsert);
-		return changes;
+		return new DBActionList();
 	}
 
 	/**
@@ -596,19 +587,38 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		DBActionList changes = new DBActionList();
 		if (listOfRowsToInsert.size() > 0) {
 			for (DBRow row : listOfRowsToInsert) {
-				changes.addAll(this.getDBTable(row).insertOrUpdate(row));
+				changes.addAll(insertOrUpdate(row));
 			}
 		}
-		refetch(listOfRowsToInsert);
+		return changes;
+	}
+
+	public DBActionList insertOrUpdate(DBRow row) throws SQLException {
+		DBActionList changes = new DBActionList();
+		try {
+			changes.addAll(insert(row));
+		} catch (SQLException exc1) {
+			try {
+				changes.addAll(update(row));
+			} catch (SQLException exc2) {
+				throw exc1;
+			}
+		}
 		return changes;
 	}
 
 	protected DBActionList updateAnyway(List<DBRow> rows) throws SQLException {
 		DBActionList actions = new DBActionList();
 		for (DBRow row : rows) {
-			actions.addAll(this.getDBTable(row).updateAnyway(row));
+			actions.addAll(updateAnyway(row));
 		}
 		refetch(rows);
+		return actions;
+	}
+
+	protected DBActionList updateAnyway(DBRow row) throws SQLException {
+		DBActionList actions = new DBActionList();
+		actions.addAll(DBUpdateForcedOnSimpleTypesUsingPrimaryKey.updateAnyway(this, row));
 		return actions;
 	}
 
