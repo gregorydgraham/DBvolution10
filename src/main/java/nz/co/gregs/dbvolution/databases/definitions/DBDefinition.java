@@ -67,8 +67,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.datatypes.DBDuration;
-import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.generation.DataRepo;
+import nz.co.gregs.dbvolution.generation.deprecated.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import nz.co.gregs.regexi.Match;
@@ -1909,7 +1910,8 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * <p>
 	 * Returns only the integer part of the second. Use {@link #doSecondAndSubsecondTransform(java.lang.String)
-	 * } or {@link #doSubsecondTransform(java.lang.String) to get the whole second value or the subsecond part
+	 * } or {@link #doSubsecondTransform(java.lang.String)} to get the whole
+	 * second value or the sub-second part
 	 *
 	 * @param dateExpression	dateExpression
 	 *
@@ -6203,10 +6205,10 @@ public abstract class DBDefinition implements Serializable {
 	 * database specific datatype.
 	 *
 	 * <p>
-	 * This method is called during {@link DBTableClassGenerator} to resolve data
-	 * types that JDBC doesn't recognize into a QDT. In particular anything that
-	 * JDBC reports as {@link java.sql.Types#OTHER} will be resolved using this
-	 * method.
+	 * This method is called during {@link DataRepo#getDataRepoFor(nz.co.gregs.dbvolution.databases.DBDatabase, java.lang.String)
+	 * } to resolve data types that JDBC doesn't recognize into a QDT. In
+	 * particular anything that JDBC reports as {@link java.sql.Types#OTHER} will
+	 * be resolved using this method.
 	 *
 	 * <p>
 	 * The default method returns NULL which causes the generator to use a
@@ -6436,10 +6438,10 @@ public abstract class DBDefinition implements Serializable {
 	 * <p>
 	 * By default this method returns <b>log10(sql)</b>
 	 *
-	 * @param sql
+	 * @param sql input SQL expression that produces a number
 	 *
 	 *
-	 * @return the name of the function to use when rounding numbers up
+	 * @return the input SQL transformed to produce the log base 10 of the SQL's value.
 	 */
 	public String doLogBase10NumberTransform(String sql) {
 		return "log10(" + sql + ")";
@@ -6451,7 +6453,7 @@ public abstract class DBDefinition implements Serializable {
 	 * <p>
 	 * By default this method returns <b>log10(sql)</b>
 	 *
-	 * @param sql
+	 * @param sql input SQL expression that produces a number
 	 *
 	 *
 	 * @return the name of the function to use when rounding numbers up
