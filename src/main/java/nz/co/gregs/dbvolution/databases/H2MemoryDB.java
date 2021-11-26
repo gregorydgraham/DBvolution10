@@ -129,11 +129,13 @@ public class H2MemoryDB extends H2DB {
 	 * Great for we you just need to make a database and don't need to keep
 	 * it.</p>
 	 *
-	 * @return @throws SQLException
+	 * @return a new unique H2 Memory database
+	 * @throws SQLException may throw database errors during initialization.
 	 */
 	public static H2MemoryDB createANewRandomDatabase() throws SQLException {
 		return createANewRandomDatabase("", "");
 	}
+
 	/**
 	 * Creates a new database with random (UUID based) name and label.
 	 *
@@ -143,11 +145,12 @@ public class H2MemoryDB extends H2DB {
 	 *
 	 * @param prefix the string to add before the database name and label
 	 * @param suffix the string to add after the database name and label
-	 * @return @throws SQLException
+	 * @return a new unique H2 Memory database
+	 * @throws SQLException may throw database errors during initialization.
 	 */
 	public static H2MemoryDB createANewRandomDatabase(String prefix, String suffix) throws SQLException {
 		final H2MemorySettingsBuilder settings = new H2MemorySettingsBuilder().withUniqueDatabaseName();
-		settings.setDatabaseName(prefix+settings.getDatabaseName()+suffix);
+		settings.setDatabaseName(prefix + settings.getDatabaseName() + suffix);
 		settings.setLabel(settings.getDatabaseName());
 		return new H2MemoryDB(settings);
 	}
@@ -161,7 +164,8 @@ public class H2MemoryDB extends H2DB {
 	 *
 	 * @param label the database label to be used internally to identify the
 	 * database (not related to the database name)
-	 * @return @throws SQLException
+	 * @return a new unique H2 Memory database
+	 * @throws SQLException may throw database errors during initialization.
 	 */
 	public static H2MemoryDB createDatabase(String label) throws SQLException {
 		return new H2MemoryDB(new H2MemorySettingsBuilder().setLabel(label));
@@ -182,7 +186,7 @@ public class H2MemoryDB extends H2DB {
 
 	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {
-		return (H2MemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return (H2MemoryDB) super.clone();
 	}
 
 	private void jamDatabaseConnectionOpen() {
