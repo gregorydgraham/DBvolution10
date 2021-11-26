@@ -25,34 +25,28 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 /**
  * DBDatabase tweaked to work best with NuoDB.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class NuoDB extends DBDatabase {
 
-//	private static final int NUODB_DEFAULT_PORT = 48004;
 	public static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
-//	private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
 	public static final long serialVersionUID = 1l;
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone(); 
 	}
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	ds
+	 * @param ds	a NuoDB data source
 	 * @throws java.sql.SQLException database errors
 	 */
 	public NuoDB(DataSource ds) throws SQLException {
 		super(
 				new NuoDBSettingsBuilder().setDataSource(ds)
 		);
-//		super(new NuoDBDefinition(), NUODB_DRIVER, ds);
 	}
 
 	/**
@@ -64,7 +58,7 @@ public class NuoDB extends DBDatabase {
 	 * @param databaseName databaseName
 	 * @param password password
 	 * @param username username
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public NuoDB(List<String> brokers, String databaseName, String schema, String username, String password) throws SQLException {
 		super(
@@ -75,24 +69,6 @@ public class NuoDB extends DBDatabase {
 						.setPassword(password)
 						.addBrokers(brokers)
 		);
-//		StringBuilder hosts = new StringBuilder();
-//		String sep = "";
-//
-//		for (String server : brokers) {
-//			int port = NUODB_DEFAULT_PORT;
-//			hosts.append(sep)
-//					.append(server)
-//					.append(":")
-//					.append(port);
-//			sep = ",";
-//		}
-//
-//		setDriverName(NUODB_DRIVER);
-//		setDefinition(new NuoDBDefinition());
-//		setJdbcURL(NUODB_URL_PREFIX + hosts + "/" + databaseName + "?schema=" + schema);
-//		setUsername(username);
-//		setPassword(password);
-//		setDatabaseName(databaseName);
 	}
 
 	/**
@@ -105,7 +81,7 @@ public class NuoDB extends DBDatabase {
 	 * @param schema the schema on the database to be used.
 	 * @param username the user to login as.
 	 * @param password the user's password.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public NuoDB(String broker, Long port, String databaseName, String schema, String username, String password) throws SQLException {
 			super(
@@ -117,11 +93,6 @@ public class NuoDB extends DBDatabase {
 						.setUsername(username)
 						.setPassword(password)
 		);
-//		List<String> brokers = new ArrayList<String>();
-//		List<Long> ports = new ArrayList<Long>();
-//		brokers.add(broker);
-//		ports.add(port);
-//		initNuoDB(brokers, ports, databaseName, schema, username, password);
 	}
 
 	/**
@@ -134,7 +105,7 @@ public class NuoDB extends DBDatabase {
 	 * @param schema the schema on the database to be used.
 	 * @param username the user to login as.
 	 * @param password the user's password.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public NuoDB(List<String> brokers, List<Long> ports, String databaseName, String schema, String username, String password) throws SQLException {
 			super(
@@ -145,106 +116,18 @@ public class NuoDB extends DBDatabase {
 						.setPassword(password)
 						.addBrokers(brokers, ports)
 		);
-//		initNuoDB(brokers, ports, databaseName, schema, username, password);
 	}
 
-//	private void initNuoDB(List<String> brokers, List<Long> ports, String databaseName, String schema, String username, String password) {
-//		StringBuilder hosts = new StringBuilder();
-//		String sep = "";
-//		if (brokers.size() == ports.size()) {
-//			for (int i = 0; i < brokers.size(); i++) {
-//				String server = brokers.get(i);
-//				Long port = ports.get(i);
-//				hosts.append(sep)
-//						.append(server)
-//						.append(":")
-//						.append(port);
-//				sep = ",";
-//			}
-//		}
-//		setDriverName(NUODB_DRIVER);
-//		setDefinition(new NuoDBDefinition());
-//		setJdbcURL(NUODB_URL_PREFIX + hosts + "/" + databaseName + "?schema=" + schema);
-//		setUsername(username);
-//		setPassword(password);
-//		setDatabaseName(databaseName);
-//	}
-
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty() ? url : NUODB_URL_PREFIX
-//				+ settings.getHost() + "/"
-//				+ settings.getDatabaseName() + "?schema=" + getSettings().getSchema();
-//	}
 	@Override
 	public void addDatabaseSpecificFeatures(Statement statement) throws ExceptionDuringDatabaseFeatureSetup {
 		;
 	}
 
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("?", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0];
-//		
-//	}
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		return getExtras().get("instance");
-//	}
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
-//			return noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:+", "");
-//	}
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:com.nuodb://", "");
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("?", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
-//		}
-//		set.setPort(noPrefix
-//					.split("/",2)[0]
-//					.replaceAll("^[^:]*:+", ""));
-//		set.setHost(noPrefix
-//					.split("/",2)[0]
-//					.split(":")[0]);
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 8888;
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return NuoDB.class;
-//	}
 	@Override
 	public NuoDBSettingsBuilder getURLInterpreter() {
 		return new NuoDBSettingsBuilder();
