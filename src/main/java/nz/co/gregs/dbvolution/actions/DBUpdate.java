@@ -25,9 +25,6 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException
 /**
  * Provides support for the abstract concept of updating rows.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public abstract class DBUpdate extends DBAction {
@@ -54,8 +51,6 @@ public abstract class DBUpdate extends DBAction {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of updates that have been executed.
 	 * @throws SQLException database exceptions
 	 */
@@ -64,6 +59,7 @@ public abstract class DBUpdate extends DBAction {
 		for (DBAction act : updates) {
 			db.executeDBAction(act);
 		}
+		row.setSimpleTypesToUnchanged();
 		return updates;
 	}
 
@@ -74,29 +70,7 @@ public abstract class DBUpdate extends DBAction {
 	 * The actions created can be applied on a particular database using
 	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)}
 	 *
-	 * <p>
-	 * Synonym for {@link #getUpdates(nz.co.gregs.dbvolution.DBRow...) }
-	 *
 	 * @param rows the rows to be updated
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBActionList of updates.
-	 * @throws SQLException database exceptions
-	 */
-	public static DBActionList update(DBRow... rows) throws SQLException {
-		return getUpdates(rows);
-	}
-
-	/**
-	 * Creates a DBActionList of update actions for the rows.
-	 *
-	 * <p>
-	 * The actions created can be applied on a particular database using
-	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)}
-	 *
-	 * @param rows the rows to be updated
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of updates.
 	 * @throws SQLException database exceptions
 	 */
