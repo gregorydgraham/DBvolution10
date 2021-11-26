@@ -23,9 +23,6 @@ import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 /**
  * A version of DBDatabase tweaked for Informix 11 and higher.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class Informix11DB extends InformixDB {
@@ -39,10 +36,6 @@ public class Informix11DB extends InformixDB {
 	 *
 	 * <p>
 	 * Remember to include the Informix JDBC driver in your classpath.
-	 *
-	 *
-	 *
-	 *
 	 *
 	 * 1 Database exceptions may be thrown
 	 *
@@ -59,7 +52,6 @@ public class Informix11DB extends InformixDB {
 						.setUsername(username)
 						.setPassword(password)
 						.toSettings()
-		//				jdbcURL, username, password
 		);
 	}
 
@@ -69,18 +61,13 @@ public class Informix11DB extends InformixDB {
 	 *
 	 * <p>
 	 * Remember to include the Informix JDBC driver in your classpath.
-	 *
-	 *
-	 *
-	 *
-	 *
+	 * 
 	 * 1 Database exceptions may be thrown
 	 *
-	 * @param dcs
-	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
+	 * @param dcs the database connection settings
 	 * @throws java.sql.SQLException database errors
 	 */
-	public Informix11DB(DatabaseConnectionSettings dcs) throws ClassNotFoundException, SQLException {
+	public Informix11DB(DatabaseConnectionSettings dcs) throws SQLException {
 		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, dcs);
 	}
 
@@ -101,7 +88,13 @@ public class Informix11DB extends InformixDB {
 		super(new Informix11DBDefinition(), dataSource);
 	}
 
-	public Informix11DB(Informix11SettingsBuilder builder) throws ClassNotFoundException, SQLException {
+	/**
+	 * Creates a new DBDatabase for Informix11.
+	 *
+	 * @param builder the settings required to connect to the Informix server.
+	 * @throws SQLException database errors
+	 */
+	public Informix11DB(Informix11SettingsBuilder builder) throws SQLException {
 		super(builder);
 	}
 
@@ -110,10 +103,6 @@ public class Informix11DB extends InformixDB {
 		return super.clone();
 	}
 
-//	@Override
-//	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return Informix11DB.class;
-//	}
 	@Override
 	public Informix11SettingsBuilder getURLInterpreter() {
 		return new Informix11SettingsBuilder();
