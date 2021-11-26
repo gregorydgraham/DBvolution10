@@ -192,7 +192,8 @@ public class H2DB extends DBDatabase {
 	 * <p>
 	 * Database exceptions may be thrown</p>
 	 *
-	 * @param settings
+	 * @param settings the settings that specify everything necessary to connect
+	 * to the H2 database
 	 * @throws java.sql.SQLException database errors
 	 */
 	public H2DB(H2SettingsBuilder settings) throws SQLException {
@@ -242,7 +243,7 @@ public class H2DB extends DBDatabase {
 				} else if (CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
 					return ResponseToException.SKIPQUERY;
 				} else {
-					try (DBStatement statement = getConnection().createDBStatement()) {
+					try ( DBStatement statement = getConnection().createDBStatement()) {
 						if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
 								|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
 							String[] split = message.split("[\" ]+");
