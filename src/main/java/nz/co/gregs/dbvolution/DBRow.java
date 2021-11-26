@@ -206,6 +206,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * original.
 	 */
 	public static <T extends DBRow> T copyDBRow(T originalRow) {
+		if (originalRow == null) {
+			return null;
+		}
 		@SuppressWarnings("unchecked")
 		T newRow = (T) DBRow.getDBRow(originalRow.getClass());
 		newRow.setTableVariantIdentifier(originalRow.getTableVariantIdentifier());
