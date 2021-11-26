@@ -29,9 +29,6 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
  * You should probably be using {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)
  * }
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class MariaClusterDB extends DBDatabase {
@@ -50,7 +47,6 @@ public class MariaClusterDB extends DBDatabase {
 				new MariaClusterDBSettingsBuilder()
 						.setDataSource(ds)
 		);
-//		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
 
 	/**
@@ -103,15 +99,13 @@ public class MariaClusterDB extends DBDatabase {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(String server, long port, String databaseName, String username, String password) throws SQLException {
-		this(//new MariaDBDefinition(), 
-				//MARIADBDRIVERNAME, 
+		this(
 				new MariaClusterDBSettingsBuilder()
 						.setHost(server)
 						.setPort(port)
 						.setDatabaseName(databaseName)
 						.setUsername(username)
 						.setPassword(password)
-		//				.toSettings()
 		);
 	}
 
@@ -127,6 +121,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param databaseName databaseName
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaClusterDB(List<String> servers, List<Long> ports, String databaseName, String username, String password) throws SQLException {
 		super(
@@ -136,30 +131,11 @@ public class MariaClusterDB extends DBDatabase {
 						.setPassword(password)
 						.addHosts(servers, ports)
 		);
-//		StringBuilder hosts = new StringBuilder();
-//		String sep = "";
-//		if (servers.size() == ports.size()) {
-//			for (int i = 0; i < servers.size(); i++) {
-//				String server = servers.get(i);
-//				Long port = ports.get(i);
-//				hosts.append(sep)
-//						.append(server)
-//						.append(":")
-//						.append(port);
-//				sep = ",";
-//			}
-//		}
-//		setDriverName(MARIADBDRIVERNAME);
-//		setDefinition(new MariaDBDefinition());
-//		setJdbcURL("jdbc:mariadb://" + hosts + "/" + databaseName);
-//		setUsername(username);
-//		setPassword(password);
-//		setDatabaseName(databaseName);
 	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone();
 	}
 
 	@Override
