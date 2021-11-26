@@ -41,7 +41,6 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  *
@@ -53,8 +52,12 @@ public class DBBulkInsert extends DBAction {
 
 	List<DBRow> rows = new ArrayList<>();
 
-	public <R extends DBRow> DBBulkInsert(R row) {
+	private <R extends DBRow> DBBulkInsert(R row) {
 		super(row);
+	}
+
+	public <R extends DBRow> DBBulkInsert() {
+		super(null);
 	}
 
 	public void addRow(DBRow row) {
@@ -71,7 +74,7 @@ public class DBBulkInsert extends DBAction {
 			return database.executeDBAction(this);
 		} else {
 			for (DBRow rowToInsert : rows) {
-				changes.addAll(database.getDBTable(rowToInsert).insert(rowToInsert));
+				changes.addAll(database.insert(rowToInsert));
 			}
 		}
 		return changes;
