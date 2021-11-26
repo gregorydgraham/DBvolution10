@@ -139,7 +139,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
-	 * @param defn
+	 * @param defn the DBDDefinition class to use
 	 * @param ds	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -151,8 +151,8 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
-	 * @param defn
-	 * @param driverName
+	 * @param defn the definition class to use
+	 * @param driverName the driver to load
 	 * @param ds	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException database errors
 	 */
