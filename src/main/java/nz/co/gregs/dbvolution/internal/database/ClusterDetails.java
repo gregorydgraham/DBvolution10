@@ -617,6 +617,10 @@ public class ClusterDetails implements Serializable {
 		return databases;
 	}
 
+	public boolean isSynchronized() {
+		return !isNotSynchronized();
+	}
+
 	public boolean isNotSynchronized() {
 		return members.countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) > 0
 				|| members.countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) > 0
@@ -626,8 +630,8 @@ public class ClusterDetails implements Serializable {
 	public void waitUntilSynchronised() {
 		synchronisingLock.lock();
 		try {
-			while (isNotSynchronised()) {
-				allDatabasesAreSynchronised.await();
+			while (isNotSynchronized()) {
+				allDatabasesAreSynchronised.await(1, TimeUnit.HOURS);
 			}
 		} catch (InterruptedException ex) {
 			Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
@@ -643,11 +647,13 @@ public class ClusterDetails implements Serializable {
 	public void waitUntilDatabaseHasSynchronised(DBDatabase database, long timeoutInMilliseconds) {
 		synchronisingLock.lock();
 		try {
-			if (getStatusOf(database) != DBDatabaseCluster.Status.READY) {
+			if (clusterContainsDatabase(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY) {
 				if (timeoutInMilliseconds > 0) {
 					aDatabaseHasBeenSynchronised.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS);
 				} else {
-					aDatabaseHasBeenSynchronised.await();
+					while (clusterContainsDatabase(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY) {
+						aDatabaseHasBeenSynchronised.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS);
+					}
 				}
 				DBDatabaseCluster.Status status = getStatusOf(database);
 				if (status.equals(DBDatabaseCluster.Status.READY)) {
@@ -659,16 +665,6 @@ public class ClusterDetails implements Serializable {
 		} finally {
 			synchronisingLock.unlock();
 		}
-	}
-
-	public boolean isSynchronised() {
-		return members.areAllSynchronised();
-//		return members.countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) == 0
-//				&& members.countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) == 0;
-	}
-
-	public boolean isNotSynchronised() {
-		return !isSynchronised();
 	}
 
 	public void synchronizeSecondaryDatabases() {
@@ -785,7 +781,7 @@ public class ClusterDetails implements Serializable {
 		synchronisingLock.lock();
 		try {
 			aDatabaseHasBeenSynchronised.signalAll();
-			if (members.areAllSynchronised()) {
+			if (isSynchronized()) {
 				signalThatAllDatabasesHaveBeenSynchronised();
 			}
 		} finally {

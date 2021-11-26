@@ -206,9 +206,7 @@ public class DatabaseList {
 		databaseMap.clear();
 	}
 
-	public synchronized boolean areAllSynchronised() {
+	public synchronized boolean areAllReady() {
 		return countDatabases(DBDatabaseCluster.Status.READY)==databaseMap.size();
-//		return countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) == 0
-//				&& countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) == 0;
 	}
 }
