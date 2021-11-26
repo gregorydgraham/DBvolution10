@@ -491,7 +491,7 @@ public class DBInsertTest extends AbstractTest {
 					"testDefaultValuesAreConsistentInCluster",
 					DBDatabaseCluster.Configuration.autoStart(),
 					database)) {
-//				cluster.getDetails().setPreferredDatabase(database);
+
 				SlowSynchingDatabase slowDatabase2 = SlowSynchingDatabase.createANewRandomDatabase("testDefaultValuesAreConsistentInCluster-", "-2");
 				Brake brake = slowDatabase2.getBrake();
 				brake.setTimeout(10000);
@@ -513,14 +513,11 @@ public class DBInsertTest extends AbstractTest {
 				cluster.dropTableNoExceptions(row);
 				cluster.createTable(row);
 
-//				System.out.println("TIME: " + Instant.now());
-
 				/* Check that row can be inserted successfully*/
 				cluster.insert(row);
 				assertThat(row.pk_uid.getValue(), is(1L));
 
 				cluster.waitUntilSynchronised();
-//				System.out.println("TIME: " + Instant.now());
 
 				final List<TestDefaultInsertWithInstantValue> rows1 = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
 				final List<TestDefaultInsertWithInstantValue> rows2 = slowDatabase2.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
@@ -540,17 +537,14 @@ public class DBInsertTest extends AbstractTest {
 				final Instant db1CreationValue = gotRow1.creationDate.getValue().truncatedTo(precision);
 				final Instant db1UpdateValue = gotRow1.updateDate.getValue()!=null?gotRow1.updateDate.getValue().truncatedTo(precision):null;
 				final Instant db1CreationOrUpdateValue = gotRow1.creationOrUpdateDate.getValue().truncatedTo(precision);
-//				System.out.println("CREATORUPDATE 1: " + db1CreationOrUpdateValue);
 
 				final Instant db2CreationValue = gotRow2.creationDate.getValue().truncatedTo(precision);
 				final Instant db2UpdateValue = gotRow2.updateDate.getValue()!=null?gotRow2.updateDate.getValue().truncatedTo(precision):null;
 				final Instant db2CreationOrUpdateValue = gotRow2.creationOrUpdateDate.getValue().truncatedTo(precision);
-//				System.out.println("CREATORUPDATE 2: " + db2CreationOrUpdateValue);
 
 				final Instant db3CreationValue = gotRow3.creationDate.getValue().truncatedTo(precision);
 				final Instant db3UpdateValue = gotRow3.updateDate.getValue()!=null?gotRow3.updateDate.getValue().truncatedTo(precision):null;
 				final Instant db3CreationOrUpdateValue = gotRow3.creationOrUpdateDate.getValue().truncatedTo(precision);
-//				System.out.println("CREATORUPDATE 3: " + db3CreationOrUpdateValue);
 
 				assertThat(db2CreationValue, is(db1CreationValue));
 				assertThat(db2UpdateValue, is(db1UpdateValue));
