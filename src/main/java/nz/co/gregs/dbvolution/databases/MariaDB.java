@@ -24,9 +24,6 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 /**
  * DBDatabase tweaked for a MariaDB Database.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class MariaDB extends DBDatabase {
@@ -37,7 +34,7 @@ public class MariaDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	ds
+	 * @param ds	a Maria DB data source
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(DataSource ds) throws SQLException {
@@ -45,13 +42,12 @@ public class MariaDB extends DBDatabase {
 				new MariaDBSettingsBuilder()
 						.setDataSource(ds)
 		);
-//		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param dcs
+	 * @param dcs settings for connecting to the Maria DB
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(DatabaseConnectionSettings dcs) throws SQLException {
@@ -61,7 +57,7 @@ public class MariaDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	ds
+	 * @param ds	settings for connecting to the Maria DB
 	 * @throws java.sql.SQLException database errors
 	 */
 	public MariaDB(MariaDBSettingsBuilder ds) throws SQLException {
@@ -83,7 +79,6 @@ public class MariaDB extends DBDatabase {
 						.setUsername(username)
 						.setPassword(password)
 		);
-//		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -109,7 +104,7 @@ public class MariaDB extends DBDatabase {
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone();
 	}
 
 	@Override
@@ -126,5 +121,4 @@ public class MariaDB extends DBDatabase {
 	public MariaDBSettingsBuilder getURLInterpreter() {
 		return new MariaDBSettingsBuilder();
 	}
-
 }
