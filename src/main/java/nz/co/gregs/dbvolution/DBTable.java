@@ -808,7 +808,6 @@ public class DBTable<E extends DBRow> {
 	 */
 	public DBActionList update(E oldRow) throws SQLException {
 		DBActionList updates = DBUpdate.update(database, oldRow);
-		oldRow.setSimpleTypesToUnchanged();
 		return updates;
 	}
 
@@ -826,7 +825,6 @@ public class DBTable<E extends DBRow> {
 		for (E row : oldRows) {
 			if (row.hasChangedSimpleTypes()) {
 				changes.addAll(DBUpdate.update(database, row));
-				row.setSimpleTypesToUnchanged();
 			}
 		}
 		return changes;
