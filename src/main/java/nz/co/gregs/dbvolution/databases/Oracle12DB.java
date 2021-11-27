@@ -23,9 +23,6 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 /**
  * Implements support for version 12 of the Oracle database.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  * @see OracleAWSDB
  * @see Oracle11XEDB
@@ -39,19 +36,6 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 */
-//	protected Oracle12DB() {
-//		super();
-//	}
-
-	/**
-	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
-	 *
 	 * @param dataSource a datasource to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -59,13 +43,12 @@ public class Oracle12DB extends OracleDB {
 		super(
 				new Oracle12SettingsBuilder().setDataSource(dataSource)
 		);
-//		super(new Oracle12DBDefinition(), dataSource);
 	}
 
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
-	 * @param settings
+	 * @param settings settings required to connect to the database server
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(Oracle12SettingsBuilder settings) throws SQLException {
@@ -75,7 +58,7 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
-	 * @param dcs	dcs
+	 * @param dcs settings required to connect to the database server
 	 * @throws java.sql.SQLException database errors
 	 */
 	public Oracle12DB(DatabaseConnectionSettings dcs) throws SQLException {
@@ -85,7 +68,7 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
-	 * @param dcs	dcs
+	 * @param dcs	settings required to connect to the database server
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -137,7 +120,7 @@ public class Oracle12DB extends OracleDB {
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone();
 	}
 
 	@Override
