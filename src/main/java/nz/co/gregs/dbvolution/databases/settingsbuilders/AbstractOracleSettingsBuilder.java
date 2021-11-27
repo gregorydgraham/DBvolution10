@@ -41,7 +41,8 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 /**
  *
  * @author gregorygraham
- * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
+ * @param <SELF> the class of the object returned by most methods, this should
+ * be the Class of "this"
  * @param <DATABASE> the class returned by {@link #getDBDatabase}
  */
 public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase>
@@ -119,10 +120,10 @@ public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleS
 	 * (ADDRESS=(PROTOCOL=TCP)(HOST=host2) (PORT=1521))
 	 * (CONNECT_DATA=(SERVICE_NAME=service)))
 	 *
-	 * I have too much self-respect to do so worth being paid.
+	 * I have too much self-respect to do so (without being paid).
 	 *
-	 * @param settings
-	 * @return
+	 * @param settings the database connections setting to use
+	 * @return a string encoding the host part of the JDBC URL
 	 */
 	@Override
 	public String encodeHost(DatabaseConnectionSettings settings) {
@@ -134,13 +135,18 @@ public abstract class AbstractOracleSettingsBuilder<SELF extends AbstractOracleS
 	/**
 	 * Synonym for setInstance.
 	 *
-	 * @param sid
-	 * @return
+	 * @param sid the server identifier to use
+	 * @return this settings builder object
 	 */
 	public SELF setSID(String sid) {
 		return this.setInstance(sid);
 	}
 
+	/**
+	 * synonym for getInstance()
+	 *
+	 * @return the SID
+	 */
 	public String getSID() {
 		return this.getInstance();
 	}
