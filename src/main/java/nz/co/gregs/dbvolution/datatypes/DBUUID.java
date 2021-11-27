@@ -160,8 +160,8 @@ public class DBUUID extends QueryableDatatype<UUID> implements UUIDResult {
 	 * <p>
 	 * Please consult {@link UUID} for more details.</p>
 	 *
-	 * @param most
-	 * @param least
+	 * @param most The most significant bits of the {@code UUID}
+	 * @param least The least significant bits of the {@code UUID}
 	 */
 	public void setValueToNewUUID(Long most, Long least) {
 		this.setValue(new UUID(most, least));
@@ -171,7 +171,7 @@ public class DBUUID extends QueryableDatatype<UUID> implements UUIDResult {
 	 * Sets the value to a named UUID using
 	 * {@link UUID#nameUUIDFromBytes(byte[]) the standard UUID factory method}.
 	 *
-	 * @param name
+	 * @param name A byte array to be used to construct a UUID
 	 * @see UUID
 	 *
 	 */
@@ -184,7 +184,7 @@ public class DBUUID extends QueryableDatatype<UUID> implements UUIDResult {
 	 * {@link UUID#nameUUIDFromBytes(byte[]) the standard UUID factory method} and
 	 * name.getBytes(StandardCharsets.UTF_8).
 	 *
-	 * @param name
+	 * @param name A string to be used to construct a UUID
 	 * @see UUID
 	 *
 	 */
@@ -197,7 +197,7 @@ public class DBUUID extends QueryableDatatype<UUID> implements UUIDResult {
 	 * {@link UUID#nameUUIDFromBytes(byte[]) the standard UUID factory method} and
 	 * name.getBytes(StandardCharsets.UTF_8).
 	 *
-	 * @param name
+	 * @param name A string to be used to construct a UUID
 	 * @return the UUID for the given name
 	 * @see UUID
 	 *
