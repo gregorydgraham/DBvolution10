@@ -76,7 +76,7 @@ public class DBTableClass {
 	 * After all available information has been set for this DBTableClass, this
 	 * method is called to generate the required Java source.
 	 *
-	 * @param options
+	 * @param options the options to use
 	 * @return a String of the source code of the new DBRow class.
 	 */
 	public String generateJavaSource(DBTableClassGenerator.Options options) {
