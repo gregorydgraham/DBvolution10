@@ -44,12 +44,15 @@ import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.generation.DataRepo;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.RegexReplacement;
 
 /**
  * Defines the features of the Oracle database that differ from the standard
@@ -99,24 +102,32 @@ public class OracleDBDefinition extends DBDefinition {
 		return true;
 	}
 
+	private final RegexReplacement REMOVE_ILLEGAL_STARTING_CHARS = Regex.startingFromTheBeginning().anyOf("_", "-").once().replaceWith().literal("O");
+	private final RegexReplacement REMOVE_HYPHENS = Regex.empty().literal("-").once().replaceWith().literal("_");
+	private final RegexReplacement REMOVE_DOTS = Regex.empty().literal(".").once().replaceWith().literal("__");
+
 	@Override
 	protected String formatNameForDatabase(final String sqlObjectName) {
-		if (sqlObjectName.length() < 30 && !(RESERVED_WORDS_LIST.contains(sqlObjectName.toUpperCase()))) {
-			return sqlObjectName.replaceAll("^[_-]", "O").replaceAll("-", "_");
-		} else {
-			return ("O" + sqlObjectName.hashCode()).replaceAll("^[_-]", "O").replaceAll("-", "_");
-		}
+
+		final boolean shorterThan30 = sqlObjectName.length() < 30;
+		final boolean hasNoReservedWords = !(RESERVED_WORDS_LIST.contains(sqlObjectName.toUpperCase()));
+		boolean simple = (shorterThan30 && hasNoReservedWords);
+		String name = simple ? sqlObjectName : "" + sqlObjectName.hashCode();
+		String replaced = REMOVE_ILLEGAL_STARTING_CHARS.replaceFirst(name);
+		replaced = REMOVE_HYPHENS.replaceAll(replaced);
+		replaced = simple ? replaced : "O" + replaced;
+		return replaced;
 	}
 
 	@Override
 	public String formatTableAlias(String suggestedTableAlias) {
-		return "\"" + suggestedTableAlias.replaceAll("-", "_") + "\"";
+		return "\"" + REMOVE_HYPHENS.replaceAll(suggestedTableAlias) + "\"";
 	}
 
 	@Override
 	public String formatForColumnAlias(final String actualName) {
-		String formattedName = actualName.replaceAll("\\.", "__");
-		return ("DB" + formattedName.hashCode()).replaceAll("-", "_") + "";
+		String formattedName = REMOVE_DOTS.replaceAll(actualName);
+		return "DB" +REMOVE_HYPHENS.replaceAll(""+formattedName.hashCode()) + "";
 	}
 
 	@Override
@@ -158,10 +169,6 @@ public class OracleDBDefinition extends DBDefinition {
 		return false;
 	}
 
-//    @Override
-//    public boolean prefersIndexBasedGroupByClause() {
-//        return true;
-//    }
 	@Override
 	public String endSQLStatement() {
 		return "";
@@ -211,7 +218,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String getIfNullFunctionName() {
-		return "NVL"; //To change body of generated methods, choose Tools | Templates.
+		return "NVL"; 
 	}
 
 	@Override
@@ -417,7 +424,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	/**
 	 * Creates a pattern that will exclude system tables during DBRow class
-	 * generation i.e. {@link DBTableClassGenerator}.
+	 * generation i.e. {@link DataRepo}.
 	 *
 	 * <p>
 	 * By default this method returns null as system tables are not a problem for
@@ -427,7 +434,7 @@ public class OracleDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String getSystemTableExclusionPattern() {
-		return "^[^$]*$"; //"^(.*(?!\\$)\\b)*$";
+		return "^[^$]*$";
 	}
 
 	@Override
