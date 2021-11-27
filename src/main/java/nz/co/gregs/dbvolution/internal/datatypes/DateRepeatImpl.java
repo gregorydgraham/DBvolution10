@@ -255,7 +255,8 @@ public class DateRepeatImpl {
 	 * @param intervalStr the DateRepeat
 	 *
 	 * @return get the fractional seconds to millisecond precision
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException parsing is used to interpret the seconds so a
+	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getMillisecondPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
@@ -273,7 +274,8 @@ public class DateRepeatImpl {
 	 * @param intervalStr the DateRepeat
 	 *
 	 * @return get the integer and fractional seconds part of the DateRepeat
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException parsing is used to interpret the seconds so a
+	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getSecondPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0 || !intervalStr.matches(".*n([-0-9.]+)s.*")) {
@@ -288,7 +290,8 @@ public class DateRepeatImpl {
 	 * @param intervalStr the DateRepeat
 	 *
 	 * @return get the minutes part of the DateRepeat
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException parsing is used to interpret the minutes so a
+	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getMinutePart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
@@ -302,7 +305,8 @@ public class DateRepeatImpl {
 	 * @param intervalStr the DateRepeat
 	 *
 	 * @return get the hour part of the DateRepeat value
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException parsing is used to interpret the numbers so a
+	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getHourPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
@@ -316,7 +320,8 @@ public class DateRepeatImpl {
 	 * @param intervalStr the DateRepeat
 	 *
 	 * @return get the day part of the DateRepeat value
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException parsing is used to interpret the numbers so a
+	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getDayPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
@@ -330,7 +335,8 @@ public class DateRepeatImpl {
 	 * @param intervalStr the DateRepeat
 	 *
 	 * @return get the month part of the DateRepeat value
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException parsing is used to interpret the numbers so a
+	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getMonthPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
@@ -344,7 +350,8 @@ public class DateRepeatImpl {
 	 * @param intervalStr the DateRepeat
 	 *
 	 * @return get the year part of the DateRepeat value
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException parsing is used to interpret the numbers so a
+	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getYearPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
