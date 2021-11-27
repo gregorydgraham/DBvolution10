@@ -18,12 +18,12 @@ package nz.co.gregs.dbvolution.internal.datatypes;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Optional;
+import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.RegexValueFinder;
 import org.joda.time.Period;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -40,8 +40,6 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the DateRepeat version of Zero
 	 */
@@ -81,8 +79,6 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param interval
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the DateRepeat equivalent of the Period value
 	 */
 	public static String getDateRepeatString(Period interval) {
@@ -262,7 +258,7 @@ public class DateRepeatImpl {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		final Double secondsDouble = Double.parseDouble(intervalStr.replaceAll(".*n([-0-9.]+)s.*", "$1"));
+		Double secondsDouble = parseValueDouble(FIND_SECOND_VALUE, intervalStr);
 		final int secondsInt = secondsDouble.intValue();
 		final Double millisDouble = secondsDouble * 1000.0 - secondsInt * 1000;
 		final int millis = millisDouble.intValue();
@@ -278,10 +274,10 @@ public class DateRepeatImpl {
 	 * NumberFormatException maybe thrown if the intervalStr is malformed
 	 */
 	public static Integer getSecondPart(String intervalStr) throws NumberFormatException {
-		if (intervalStr == null || intervalStr.length() == 0 || !intervalStr.matches(".*n([-0-9.]+)s.*")) {
+		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		final Double valueOf = Double.valueOf(intervalStr.replaceAll(".*n([-0-9.]+)s.*", "$1"));
+		Double valueOf = parseValueDouble(FIND_SECOND_VALUE, intervalStr);
 		return valueOf.intValue();
 	}
 
@@ -297,7 +293,7 @@ public class DateRepeatImpl {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		return Integer.parseInt(intervalStr.replaceAll(".*h([-0-9.]+)n.*", "$1"));
+		return parseValue(FIND_MINUTE_VALUE, intervalStr);
 	}
 
 	/**
@@ -312,7 +308,7 @@ public class DateRepeatImpl {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		return Integer.parseInt(intervalStr.replaceAll(".*D([-0-9.]+)h.*", "$1"));
+		return parseValue(FIND_HOUR_VALUE, intervalStr);
 	}
 
 	/**
@@ -327,7 +323,7 @@ public class DateRepeatImpl {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		return Integer.parseInt(intervalStr.replaceAll(".*M([-0-9.]+)D.*", "$1"));
+		return parseValue(FIND_DAY_VALUE, intervalStr);
 	}
 
 	/**
@@ -342,7 +338,7 @@ public class DateRepeatImpl {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		return Integer.parseInt(intervalStr.replaceAll(".*Y([-0-9.]+)M.*", "$1"));
+		return parseValue(FIND_MONTH_VALUE, intervalStr);
 	}
 
 	/**
@@ -357,6 +353,64 @@ public class DateRepeatImpl {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		return Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1"));
+		return parseValue(FIND_YEAR_VALUE, intervalStr);
 	}
+
+	private static Integer parseValue(RegexValueFinder finder, String intervalStr) throws NumberFormatException {
+		Optional<String> value = finder.getValueFrom(intervalStr);
+		return value.isPresent() ? Integer.parseInt(value.get()) : null;
+	}
+
+	private static Double parseValueDouble(RegexValueFinder finder, String intervalStr) throws NumberFormatException {
+		Optional<String> value = finder.getValueFrom(intervalStr);
+		return value.isPresent() ? Double.parseDouble(value.get()) : null;
+	}
+
+	private static final RegexValueFinder FIND_YEAR_VALUE = Regex.startingAnywhere()
+			.literal("P")
+			.beginNamedCapture("value")
+			.numberLike()
+			.oneOrMore()
+			.endNamedCapture()
+			.literal("Y").returnValueFor("value");
+
+	private static final RegexValueFinder FIND_MONTH_VALUE = Regex.startingAnywhere()
+			.literal("Y")
+			.beginNamedCapture("value")
+			.numberLike()
+			.oneOrMore()
+			.endNamedCapture()
+			.literal("M").returnValueFor("value");
+
+	private static final RegexValueFinder FIND_DAY_VALUE = Regex.startingAnywhere()
+			.literal("M")
+			.beginNamedCapture("value")
+			.numberLike()
+			.oneOrMore()
+			.endNamedCapture()
+			.literal("D").returnValueFor("value");
+
+	private static final RegexValueFinder FIND_HOUR_VALUE = Regex.startingAnywhere()
+			.literal("D")
+			.beginNamedCapture("value")
+			.numberLike()
+			.oneOrMore()
+			.endNamedCapture()
+			.literal("h").returnValueFor("value");
+
+	private static final RegexValueFinder FIND_MINUTE_VALUE = Regex.startingAnywhere()
+			.literal("h")
+			.beginNamedCapture("value")
+			.numberLike()
+			.oneOrMore()
+			.endNamedCapture()
+			.literal("n").returnValueFor("value");
+
+	private static final RegexValueFinder FIND_SECOND_VALUE = Regex.startingAnywhere()
+			.literal("n")
+			.beginNamedCapture("value")
+			.numberLike()
+			.oneOrMore()
+			.endNamedCapture()
+			.literal("s").returnValueFor("value");
 }
