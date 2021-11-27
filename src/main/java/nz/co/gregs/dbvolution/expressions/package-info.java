@@ -8,7 +8,7 @@
  * <p>
  * The primary mechanism for creating expressions is chaining, so create an
  * expression from a DBRow field/column or a variable using the standard
- * constructor like {@link nz.co.gregs.dbvolution.expressions.StringExpression#StringExpression(java.lang.String)
+ * constructor like {@link nz.co.gregs.dbvolution.expressions.StringExpression#value(java.lang.String)
  * } and then use the IDE's code completion to extend the chain and your
  * expression.
  * <p>
