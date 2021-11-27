@@ -43,9 +43,9 @@ public class DBEncryptedText extends DBLargeText implements EncryptedTextResult 
 	}
 
 	/**
-	 * Returns the ciphertext value of this as an {@link Encrypted} object.
+	 * Returns the cipher text value of this as an {@link Encrypted} object.
 	 *
-	 * @return
+	 * @return the cipher text value of this as an {@link Encrypted} object.
 	 */
 	public final Encrypted getEncryptedValue() {
 		return Encrypted.fromCipherText(getValue());
@@ -58,9 +58,9 @@ public class DBEncryptedText extends DBLargeText implements EncryptedTextResult 
 	 * <p>
 	 * The passphrase is never stored during any DBvolution processing.</p>
 	 *
-	 * @param passPhrase
-	 * @return
-	 * @throws UnableToDecryptInput
+	 * @param passPhrase the pass phrase to use to decrypt the cipher text
+	 * @return the unencrypted cipher text (assuming the pass phrase is correct)
+	 * @throws UnableToDecryptInput if the text cannot be deciphered
 	 */
 	public final String getDecryptedValue(String passPhrase) throws UnableToDecryptInput {
 		return getEncryptedValue().decrypt(passPhrase);
@@ -72,9 +72,9 @@ public class DBEncryptedText extends DBLargeText implements EncryptedTextResult 
 	 * <p>
 	 * The passphrase is never stored during any DBvolution processing.</p>
 	 *
-	 * @param passPhrase
-	 * @return
-	 * @throws UnableToDecryptInput
+	 * @param passPhrase the pass phrase to use to decrypt the cipher text
+	 * @return the unencrypted cipher text (assuming the pass phrase is correct)
+	 * @throws UnableToDecryptInput if the text cannot be deciphered
 	 */
 	public final String decryptWith(String passPhrase) throws UnableToDecryptInput {
 		return getEncryptedValue().decrypt(passPhrase);
@@ -87,9 +87,9 @@ public class DBEncryptedText extends DBLargeText implements EncryptedTextResult 
 	 * <p>
 	 * The passphrase is never stored during any DBvolution processing.</p>
 	 *
-	 * @param passPhrase
-	 * @param plainText
-	 * @throws nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException
+	 * @param passPhrase the pass phrase to use when encrypting
+	 * @param plainText the text that needs to be encrypted
+	 * @throws CannotEncryptInputException if the text cannot be encrypted
 	 */
 	public void setValue(String passPhrase, String plainText) throws CannotEncryptInputException {
 		this.setValue(Encrypted.encrypt(passPhrase, plainText).toString());
@@ -102,10 +102,9 @@ public class DBEncryptedText extends DBLargeText implements EncryptedTextResult 
 	 * <p>
 	 * The passphrase is never stored during any DBvolution processing.</p>
 	 *
-	 * @param encryptedText
-	 * @throws nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException
+	 * @param encryptedText encrypted text that should be stored as it currently is
 	 */
-	public void setValue(Encrypted encryptedText) throws CannotEncryptInputException {
+	public void setValue(Encrypted encryptedText) {
 		this.setValue(encryptedText.toString());
 	}
 
