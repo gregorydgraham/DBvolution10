@@ -89,7 +89,7 @@ public class InformixDB extends DBDatabase {
 	 * Usually this will be a {@link InformixDBDefinition} but other definitions
 	 * can be supplied.
 	 * @param driverName the name of the driver class to use with this database.
-	 * @param settings
+	 * @param settings settings required to connect to the Informix server
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected InformixDB(DBDefinition definition, String driverName, DatabaseConnectionSettings settings) throws SQLException {
@@ -102,7 +102,7 @@ public class InformixDB extends DBDatabase {
 	 * Create a database object for a Informix 7+ database using the supplied
 	 * definition and connection details.
 	 *
-	 * @param settings
+	 * @param settings settings required to connect to the Informix server
 	 * @throws java.sql.SQLException database errors
 	 */
 	public InformixDB(DatabaseConnectionSettings settings) throws SQLException {
@@ -148,14 +148,23 @@ public class InformixDB extends DBDatabase {
 	}
 
 	/**
+	 * Creates a DBDatabase configured for Informix for the given data source.
 	 *
-	 * @param builder
-	 * @throws SQLException
+	 * @param builder settings required to connect to the Informix server
+	 * @throws SQLException the database may throw exceptions during initialization
 	 */
 	protected InformixDB(AbstractInformixSettingsBuilder<?, ?> builder) throws SQLException {
 		super(builder);
 	}
 
+	/**
+	 * 
+	 * Creates a DBDatabase configured for Informix for the given data source.
+	 *
+	 *
+	 * @param builder settings required to connect to the Informix server
+	 * @throws SQLException 
+	 */
 	public InformixDB(InformixSettingsBuilder builder) throws SQLException {
 		super(builder);
 	}
