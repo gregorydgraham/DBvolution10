@@ -170,10 +170,10 @@ public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostg
 
 	/**
 	 * Class name of the SSL password provider. Defaults to
-	 * org.postgresql.ssl.jdbc4.LibPQFactory.ConsoleCallbackHandler
+	 * org.postgresql.ssl.jdbc4.LibPQFactory.ConsoleCallbackHandler if none is specified.
 	 *
-	 * @param callback
-	 * @return
+	 * @param callback the class that should be used by Postgres to provide the SSL password.
+	 * @return this settings builder object
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF setSSLPasswordCallback(String callback) {
@@ -232,8 +232,8 @@ public abstract class AbstractPostgresSettingsBuilder<SELF extends AbstractPostg
 	 * the java.util.logging.ConsoleHandler will be used instead. This parameter
 	 * should be use together with loggerLevel.</p>
 	 *
-	 * @param loggerFilename
-	 * @return
+	 * @param loggerFilename the filename of the log file
+	 * @return this settings builder object
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF setLoggerFile(String loggerFilename) {
