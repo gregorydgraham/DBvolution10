@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.RegexReplacement;
+import nz.co.gregs.regexi.RegexSplitter;
 import nz.co.gregs.regexi.RegexValueFinder;
 import org.joda.time.Period;
 
@@ -132,6 +134,8 @@ public class DateRepeatImpl {
 		return compareDateRepeatStrings(original, compareTo) == -1;
 	}
 
+	static final private RegexSplitter DATE_REPEAT_SPLITTER = Regex.empty().beginRange().addRange('A', 'Z').addRange('a', 'z').endRange().toSplitter();
+
 	/**
 	 *
 	 * @param original the first date
@@ -144,8 +148,8 @@ public class DateRepeatImpl {
 		if (original == null || compareTo == null) {
 			return null;
 		}
-		String[] splitOriginal = original.split("[A-Za-z]");
-		String[] splitCompareTo = compareTo.split("[A-Za-z]");
+		String[] splitOriginal = DATE_REPEAT_SPLITTER.split(original);
+		String[] splitCompareTo = DATE_REPEAT_SPLITTER.split(compareTo);
 		for (int i = 1; i < splitCompareTo.length; i++) { // Start at 1 because the first split is empty
 			double intOriginal = Double.parseDouble(splitOriginal[i]);
 			double intCompareTo = Double.parseDouble(splitCompareTo[i]);
@@ -191,6 +195,8 @@ public class DateRepeatImpl {
 		return cal.getTime();
 	}
 
+	private static final RegexReplacement NORMALISE_DATEREPEAT = Regex.empty().beginRange().addLiterals(".PYMDhns").addRange('0', '9').includeMinus().negated().endRange().oneOrMore().replaceWith().literal("");
+
 	/**
 	 *
 	 * @param original the first date.
@@ -203,7 +209,7 @@ public class DateRepeatImpl {
 		if (original == null || intervalInput == null || intervalInput.length() == 0) {
 			return null;
 		}
-		String intervalStr = intervalInput.replaceAll("[^-.PYMDhns0-9]+", "");
+		String intervalStr = NORMALISE_DATEREPEAT.replaceAll(intervalInput);
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(original);
 		int years = getYearPart(intervalStr);
