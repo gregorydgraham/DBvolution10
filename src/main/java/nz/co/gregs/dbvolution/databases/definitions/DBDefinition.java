@@ -3645,7 +3645,7 @@ public abstract class DBDefinition implements Serializable {
 	/**
 	 * Produce SQL that will provide return the empty string if the value is NULL.
 	 *
-	 * @param possiblyNullValue
+	 * @param possiblyNullValue the SQL expression to transform
 	 * @return SQL
 	 */
 	public String doStringIfNullUseEmptyStringTransform(String possiblyNullValue) {
