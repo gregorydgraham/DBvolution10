@@ -48,7 +48,7 @@ public interface UniqueDatabaseCapableSettingsBuilder<SELF extends NamedDatabase
 	 * 
 	 * <p>Because the UUID provides a unique, random, name the database will not clash with any other database on the host.</p>
 	 *
-	 * @return
+	 * @return this settings builder object
 	 */
 	@SuppressWarnings("unchecked")
 	default SELF withUniqueDatabaseName() {
