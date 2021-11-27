@@ -24,14 +24,10 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWS11DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Implements support for version 11 and prior of the Oracle database as provide
  * by Amazon's AWS relational database service (RDS).
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  * @see OracleAWSDB
@@ -43,31 +39,6 @@ import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 public class OracleAWS11DB extends OracleAWSDB {
 
 	public static final long serialVersionUID = 1l;
-
-	/**
-	 *
-	 * Provides a convenient constructor for DBDatabases that have configuration
-	 * details hardwired or are able to automatically retrieve the details.
-	 *
-	 * <p>
-	 * This constructor creates an empty DBDatabase with only the default
-	 * settings, in particular with no driver, URL, username, password, or
-	 * {@link DBDefinition}
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Instead you
-	 * should define a no-parameter constructor that supplies the details for
-	 * creating an instance using a more complete constructor.
-	 *
-	 * <p>
-	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
-	 *
-	 * @see DBDefinition
-	 */
-//	protected OracleAWS11DB() {
-//	}
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.
@@ -82,7 +53,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
-	 * @param dcs	dcs
+	 * @param dcs	stored settings for connecting to the database server
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWS11DB(DatabaseConnectionSettings dcs) throws SQLException {
@@ -92,7 +63,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
-	 * @param settings
+	 * @param settings settings required to connect to the database server
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleAWS11DB(OracleAWS11SettingsBuilder settings) throws SQLException {
@@ -102,7 +73,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
-	 * @param dcs	dcs
+	 * @param dcs	stored settings for connecting to the database server
 	 * @param defn the oracle database definition
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -150,7 +121,6 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 */
 	public OracleAWS11DB(String jdbcURL, String username, String password) throws SQLException {
 		this(new OracleAWS11SettingsBuilder().fromJDBCURL(jdbcURL, username, password));
-//		super(new OracleAWS11DBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
 	}
 
 	/**
@@ -186,18 +156,9 @@ public class OracleAWS11DB extends OracleAWSDB {
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone();
 	}
 
-//	@Override
-//	protected Connection getConnectionFromDriverManager() throws SQLException {
-//		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
-//	}
-
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return OracleAWS11DB.class;
-//	}
 	@Override
 	public OracleAWS11SettingsBuilder getURLInterpreter() {
 		return new OracleAWS11SettingsBuilder();
