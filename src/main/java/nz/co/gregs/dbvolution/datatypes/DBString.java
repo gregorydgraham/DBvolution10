@@ -75,7 +75,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * Utility function to return the values of a list of Strings in a list of
 	 * DBStrings.
 	 *
-	 * @param strings
+	 * @param strings the strings to transformed into DBStrings
 	 * @return the defined values of all the DBStrings.
 	 */
 	public static ArrayList<DBString> toDBStringList(List<String> strings) {
