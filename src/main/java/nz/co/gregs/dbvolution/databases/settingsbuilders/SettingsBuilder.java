@@ -65,10 +65,10 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF, DATABASE>, D
 	 *
 	 * @see #toSettings()
 	 * @see #toJDBCURL()
-	 * @see AbstractURLInterpreter#setUsername(java.lang.String)
-	 * @see AbstractURLInterpreter#setPassword(java.lang.String)
-	 * @param jdbcURL
-	 * @return
+	 * @see AbstractSettingsBuilder#setUsername(java.lang.String)
+	 * @see AbstractSettingsBuilder#setPassword(java.lang.String)
+	 * @param jdbcURL the JDBC URL to be parsed
+	 * @return this settings builder object
 	 */
 	public SELF fromJDBCURL(String jdbcURL);
 
@@ -76,14 +76,14 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF, DATABASE>, D
 	 * Part of the fluent API, this provides a quick why to parse a URL and alter
 	 * it.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL the JDBC URL to be interpreted
+	 * @param username the username to use when connect to the database server
+	 * @param password the password to use when connecting to the database server
 	 * @see #toSettings()
 	 * @see #toJDBCURL()
-	 * @see AbstractURLInterpreter#setUsername(java.lang.String)
-	 * @see AbstractURLInterpreter#setPassword(java.lang.String)
-	 * @return
+	 * @see AbstractSettingsBuilder#setUsername(java.lang.String)
+	 * @see AbstractSettingsBuilder#setPassword(java.lang.String)
+	 * @return this settings builder object
 	 */
 	public SELF fromJDBCURL(String jdbcURL, String username, String password);
 
