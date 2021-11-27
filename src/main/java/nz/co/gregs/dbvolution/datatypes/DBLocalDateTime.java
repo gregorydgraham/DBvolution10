@@ -222,9 +222,9 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link LocalDateTime#parse(java.lang.String)
+	 * The date String will be parsed by {@link DateTimeFormatter#ISO_LOCAL_DATE_TIME
 	 * }
-	 * so please confirms to the requirements of that method.
+	 * so please conform to the requirements of that pattern.
 	 *
 	 * @param dateStr	dateStr
 	 */
@@ -236,7 +236,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link LocalDateTime#parse(java.lang.String)
+	 * The date String will be parsed by {@link LocalDateTime#parse(java.lang.CharSequence, java.time.format.DateTimeFormatter)
 	 * }
 	 * so please confirms to the requirements of that method.
 	 *
