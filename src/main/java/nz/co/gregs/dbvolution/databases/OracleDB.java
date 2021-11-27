@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -50,38 +49,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	public static final int DEFAULT_PORT = 1521;
 
 	/**
-	 *
-	 * Provides a convenient constructor for DBDatabases that have configuration
-	 * details hardwired or are able to automatically retrieve the details.
-	 *
-	 * <p>
-	 * This constructor creates an empty DBDatabase with only the default
-	 * settings, in particular with no driver, URL, username, password, or
-	 * {@link DBDefinition}
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
-	 * database.
-	 *
-	 * <p>
-	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
-	 *
-	 * @see DBDefinition
-	 * @see Oracle12DB
-	 * @see Oracle11XEDB
-	 * @see OracleAWS11DB
-	 * @see OracleAWSDB
-	 */
-//	protected OracleDB() {
-//
-//	}
-	/**
 	 * Creates an Oracle connection for the DatabaseConnectionSettings.
 	 *
-	 * @param builder
+	 * @param builder settings required to connect to the database server
 	 * @throws java.sql.SQLException database errors
 	 */
 	public OracleDB(AbstractOracleSettingsBuilder<?, ?> builder) throws SQLException {
@@ -120,7 +90,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)}
 	 *
 	 * @param definition definition
-	 * @param driverName
+	 * @param driverName the database driver class name
 	 * @param password password
 	 * @param jdbcURL jdbcURL
 	 * @param username username
@@ -147,7 +117,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * Creates a DBDatabase instance.
 	 *
 	 * @param dbDefinition an oracle database definition instance
-	 * @param driverName
+	 * @param driverName the database driver class name
 	 * @param dataSource a data source to an Oracle database
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -216,7 +186,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 			return ResponseToException.SKIPQUERY;
 		} else if ((intent.is(QueryIntention.DROP_TABLE) && TABLE_DOES_NOT_EXIST.matchesWithinString(message))) {
 			return ResponseToException.SKIPQUERY;
-		} else if (TABLE_ALREADY_EXISTS.matchesWithinString(message)){
+		} else if (TABLE_ALREADY_EXISTS.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
 		} else if (TRIGGER_DOES_NOT_EXIST.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
@@ -225,7 +195,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		} else {
 		}
 
-		return super.addFeatureToFixException(exp, intent,details);
+		return super.addFeatureToFixException(exp, intent, details);
 	}
 
 	/**
