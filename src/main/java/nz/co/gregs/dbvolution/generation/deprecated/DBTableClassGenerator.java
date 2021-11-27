@@ -70,7 +70,7 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
-	 * @return 
+	 * @return a data repo
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -99,7 +99,7 @@ public class DBTableClassGenerator {
 	 * 1 Database exceptions may be thrown
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
-	 * @return 
+	 * @return a datarepo
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -132,7 +132,7 @@ public class DBTableClassGenerator {
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
 	 * @param options preferences for the class generation
-	 * @return 
+	 * @return a data repo
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -220,7 +220,7 @@ public class DBTableClassGenerator {
 	 *
 	 * @param database database
 	 * @param packageName packageName
-	 * @param options
+	 * @param options a collection of options
 	 *
 	 *
 	 * @return a List of DBTableClass instances representing the tables found on
@@ -245,7 +245,7 @@ public class DBTableClassGenerator {
 	 *
 	 * @param database database
 	 * @param packageName packageName
-	 * @param options
+	 * @param options a collection of options
 	 *
 	 * @return a List of DBTableClass instances representing the views found on
 	 * the database 1 Database exceptions may be thrown
@@ -427,11 +427,11 @@ public class DBTableClassGenerator {
 	 * Investigate the database schema and generate appropriate classes and return
 	 * DataRepo containing the database and the new source code.
 	 *
-	 * @param database
-	 * @param namespace
+	 * @param database the database to generate a DataRepo for
+	 * @param namespace the package name to use for the resulting classes
 	 * @return a DataRepo containing the DBDatabase and the associated classes
-	 * @throws java.sql.SQLException
-	 * @throws java.io.IOException
+	 * @throws java.sql.SQLException database errors
+	 * @throws java.io.IOException IO exceptions may occur will creating the DataRepo classes
 	 */
 	public static DataRepo generateClassesOfViewsAndTables(DBDatabase database, final String namespace) throws SQLException, IOException {
 		var generateSchema = generateClassesOfObjectTypes(database, namespace, new Options(), "VIEW", "TABLE");
