@@ -79,8 +79,9 @@ public class DateRepeatImpl {
 	}
 
 	/**
+	 * Convenience method to convert Period objects into the string representation of a DateRepeat.
 	 *
-	 * @param interval
+	 * @param interval the Period object to convert to DateRepeat format
 	 * @return the DateRepeat equivalent of the Period value
 	 */
 	public static String getDateRepeatString(Period interval) {
