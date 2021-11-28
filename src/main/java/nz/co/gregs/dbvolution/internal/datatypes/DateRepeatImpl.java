@@ -134,7 +134,7 @@ public class DateRepeatImpl {
 		return compareDateRepeatStrings(original, compareTo) == -1;
 	}
 
-	static final private RegexSplitter DATE_REPEAT_SPLITTER = Regex.empty().beginRange().addRange('A', 'Z').addRange('a', 'z').endRange().toSplitter();
+	static final private RegexSplitter DATE_REPEAT_SPLITTER = Regex.empty().beginSetIncluding().includeLetters().endSet().toSplitter();
 
 	/**
 	 *
@@ -195,7 +195,7 @@ public class DateRepeatImpl {
 		return cal.getTime();
 	}
 
-	private static final RegexReplacement NORMALISE_DATEREPEAT = Regex.empty().beginRange().addLiterals(".PYMDhns").addRange('0', '9').includeMinus().negated().endRange().oneOrMore().replaceWith().literal("");
+	private static final RegexReplacement NORMALISE_DATEREPEAT = Regex.empty().beginSetExcluding().excludeLiterals(".PYMDhns").excludeRange('0', '9').excludeMinus().endSet().oneOrMore().remove();
 
 	/**
 	 *
