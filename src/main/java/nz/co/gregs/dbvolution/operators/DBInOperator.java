@@ -36,8 +36,6 @@ import nz.co.gregs.dbvolution.results.StringResult;
  * Creates an operator that compares a column to a list of values using the IN
  * operator or similar.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -54,7 +52,8 @@ public class DBInOperator extends DBOperator {
 	 * Creates an operator that compares a column to a list of values using the IN
 	 * operator or similar.
 	 *
-	 * @param listOfPossibleValues
+	 * @param listOfPossibleValues the values to compare the database values
+	 * against
 	 */
 	public DBInOperator(Collection<DBExpression> listOfPossibleValues) {
 		super();
