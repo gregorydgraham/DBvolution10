@@ -1378,9 +1378,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 *
 	 * @return the ResultSet returned from the actual database. Database
 	 * exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.sql.SQLException Database errors
 	 * @throws java.sql.SQLTimeoutException time out exception
-	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
+	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL Recursive queries may cause loops
 	 */
 	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException, LoopDetectedInRecursiveSQL {
 		final Long timeoutTime = this.getTimeoutInMilliseconds();
