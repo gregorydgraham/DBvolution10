@@ -26,9 +26,6 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 /**
  * Implements LIKE for all types that support it.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBLikeOperator extends DBOperator {
@@ -38,7 +35,7 @@ public class DBLikeOperator extends DBOperator {
 	/**
 	 * Implements LIKE for all types that support it.
 	 *
-	 * @param likeableValue
+	 * @param likeableValue the value to compare the database entries with
 	 */
 	public DBLikeOperator(String likeableValue) {
 		super(likeableValue == null ? null : value(likeableValue));
@@ -47,7 +44,7 @@ public class DBLikeOperator extends DBOperator {
 	/**
 	 * Implements LIKE for all types that support it.
 	 *
-	 * @param likeableValue
+	 * @param likeableValue the value to compare the database entries with
 	 */
 	@SuppressFBWarnings(
 			value = "NP_LOAD_OF_KNOWN_NULL_VALUE",
@@ -89,9 +86,6 @@ public class DBLikeOperator extends DBOperator {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the likeableValue
 	 */
 	protected StringExpression getLikeableValue() {
