@@ -41,7 +41,7 @@ public class DBLikeCaseInsensitiveOperator extends DBLikeOperator {
 	/**
 	 * Implements LIKE for all types that support it, but with case-insensitivity.
 	 *
-	 * @param likeableValue
+	 * @param likeableValue the value to compare the database values with
 	 */
 	public DBLikeCaseInsensitiveOperator(StringExpression likeableValue) {
 		super(likeableValue);
