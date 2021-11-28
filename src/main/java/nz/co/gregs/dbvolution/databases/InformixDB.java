@@ -163,7 +163,7 @@ public class InformixDB extends DBDatabase {
 	 *
 	 *
 	 * @param builder settings required to connect to the Informix server
-	 * @throws SQLException 
+	 * @throws SQLException database errors during initialization
 	 */
 	public InformixDB(InformixSettingsBuilder builder) throws SQLException {
 		super(builder);
