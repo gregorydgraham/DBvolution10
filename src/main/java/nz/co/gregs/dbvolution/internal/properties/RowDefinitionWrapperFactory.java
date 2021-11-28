@@ -17,9 +17,6 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <p>
  * This class is <i>thread-safe</i>.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Malcolm Lett
  */
 public class RowDefinitionWrapperFactory {
@@ -30,13 +27,12 @@ public class RowDefinitionWrapperFactory {
 	private final Map<Class<?>, RowDefinitionClassWrapper<?>> classWrappersByClass = new HashMap<Class<?>, RowDefinitionClassWrapper<?>>();
 
 	/**
-	 * Gets the class adaptor for the given class. If an adaptor for the given
+	 * Gets the class adaptor for the given class.If an adaptor for the given
 	 * class has not yet been created, one will be created and added to the
 	 * internal cache.
 	 *
+	 * @param <ROW> the type of DBRow this object applies to.
 	 * @param clazz clazz
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the class adaptor
 	 */
 	public <ROW extends RowDefinition> RowDefinitionClassWrapper<ROW> classWrapperFor(Class<ROW> clazz) {
@@ -52,13 +48,12 @@ public class RowDefinitionWrapperFactory {
 	}
 
 	/**
-	 * Gets the object adaptor for the given object. If an adaptor for the
-	 * object's class has not yet been created, one will be created and added to
-	 * the internal cache.
+	 * Gets the object adaptor for the given object.If an adaptor for the
+ object's class has not yet been created, one will be created and added to
+ the internal cache.
 	 *
+	 * @param <ROW> the type of DBRow this object applies to.
 	 * @param object the DBRow instance to wrap
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object adaptor for the given object
 	 */
 	public <ROW extends RowDefinition> RowDefinitionInstanceWrapper<ROW> instanceWrapperFor(ROW object) {
