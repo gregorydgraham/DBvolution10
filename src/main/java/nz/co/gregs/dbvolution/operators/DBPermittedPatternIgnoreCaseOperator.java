@@ -20,10 +20,6 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 /**
  * Implements a case-insensitive version of the LIKE operator for Strings
  *
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBPermittedPatternIgnoreCaseOperator extends DBLikeCaseInsensitiveOperator {
@@ -34,7 +30,7 @@ public class DBPermittedPatternIgnoreCaseOperator extends DBLikeCaseInsensitiveO
 	 * Implements a case-insensitive version of the LIKE operator for Strings
 	 *
 	 *
-	 * @param likeableValue
+	 * @param likeableValue the value to compare the database values with
 	 */
 	public DBPermittedPatternIgnoreCaseOperator(String likeableValue) {
 		super(StringExpression.value(likeableValue));
@@ -44,7 +40,7 @@ public class DBPermittedPatternIgnoreCaseOperator extends DBLikeCaseInsensitiveO
 	 * Implements a case-insensitive version of the LIKE operator for Strings
 	 *
 	 *
-	 * @param likeableValue
+	 * @param likeableValue the value to compare the database values with
 	 */
 	public DBPermittedPatternIgnoreCaseOperator(StringExpression likeableValue) {
 		super(likeableValue);
