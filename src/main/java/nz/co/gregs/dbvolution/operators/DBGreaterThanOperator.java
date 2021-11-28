@@ -45,7 +45,7 @@ public class DBGreaterThanOperator extends DBOperator {
 	/**
 	 * Implements GREATERTHAN for all types that support it.
 	 *
-	 * @param greaterThanThis
+	 * @param greaterThanThis the value to compare all other values against
 	 */
 	@SuppressFBWarnings(
 			value = "NP_LOAD_OF_KNOWN_NULL_VALUE",
