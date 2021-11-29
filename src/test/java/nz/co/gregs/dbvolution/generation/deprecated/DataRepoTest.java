@@ -66,7 +66,7 @@ public class DataRepoTest extends AbstractTest {
 		}
 	}
 
-	@Test
+//	@Test
 	public void testDataRepoCreation() throws SQLException, IOException, Exception {
 		if (database instanceof H2SharedDB) {
 			// not supported in shared inastances of H2
