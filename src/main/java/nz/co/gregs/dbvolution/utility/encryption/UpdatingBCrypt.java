@@ -55,9 +55,12 @@ public class UpdatingBCrypt {
 	}
 
 	/**
-	 * Minimum of 4 rounds
+	 * Minimum of 4 rounds.
 	 *
-	 * @param logRounds
+	 * <p>
+	 * There is a minimum number of rounds.</p>
+	 *
+	 * @param logRounds the number of rounds of encoding to perform
 	 */
 	public UpdatingBCrypt(int logRounds) {
 		this.logRounds = logRounds >= 4 ? logRounds : DEFAULT_ROUNDS;
@@ -93,10 +96,12 @@ public class UpdatingBCrypt {
 	 * Alternatively if the "quick" hash takes more than a second, the work
 	 * requirement is reduced and a new hash is returned.</p>
 	 *
-	 * @param password
-	 * @param hash
+	 * @param password the password supplied during authentication
+	 * @param hash the password hash stored during user creation or password
+	 * update
 	 * @return the original hash or a more appropriate hash for your CPU.
-	 * @throws IncorrectPasswordException
+	 * @throws IncorrectPasswordException if the password and hash cannot be
+	 * reconciled
 	 */
 	public String checkPasswordAndCreateSecureHash(String password, String hash) throws IncorrectPasswordException {
 		if (looksLikeABCryptHash(hash)) {
