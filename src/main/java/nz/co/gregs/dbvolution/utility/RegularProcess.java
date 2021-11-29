@@ -31,9 +31,10 @@
 package nz.co.gregs.dbvolution.utility;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,12 +71,12 @@ public abstract class RegularProcess implements Serializable {
 
 	final Log LOG = LogFactory.getLog(RegularProcess.class);
 
-	private Date nextRun = new Date();
-	private int timeField = GregorianCalendar.MINUTE;
+	private Instant nextRun = Instant.now();
+	TemporalUnit timeField = ChronoUnit.MINUTES;
 	private int timeOffset = 5;
 	private DBDatabase dbDatabase;
 	private String lastResult = "Not Processed Yet";
-	private Date lastRunTime = new Date();
+	private Instant lastRunTime = Instant.now();
 	private String simpleName = null;
 	private boolean stopped = false;
 
@@ -93,12 +94,12 @@ public abstract class RegularProcess implements Serializable {
 	 * overloaded if exceptions during processing need to be handled.
 	 *
 	 * @return the output from processing
-	 * @throws Exception
+	 * @throws Exception any exception can thrown
 	 */
 	public abstract String process() throws Exception;
 
 	public final boolean hasExceededTimeLimit() {
-		return nextRun.before(new Date());
+		return nextRun.isBefore(Instant.now());
 	}
 
 	/**
@@ -108,10 +109,10 @@ public abstract class RegularProcess implements Serializable {
 	 * <p>
 	 * Note that {@link DBDatabase} regular processes are checked once a minute.
 	 *
-	 * @param calendarTimeField
-	 * @param offset
+	 * @param calendarTimeField the time unit to offset the regular process by
+	 * @param offset the number time units to offset by
 	 */
-	public final void setTimeOffset(int calendarTimeField, int offset) {
+	public final void setTimeOffset(ChronoUnit calendarTimeField, int offset) {
 		timeField = calendarTimeField;
 		timeOffset = offset;
 	}
@@ -145,7 +146,7 @@ public abstract class RegularProcess implements Serializable {
 	 * <p>
 	 * By default, this method logs the exception as a warning.
 	 *
-	 * @param ex
+	 * @param ex the exception that has occurred
 	 */
 	public void handleExceptionDuringProcessing(Exception ex) {
 		LOG.warn(this, ex);
@@ -156,10 +157,10 @@ public abstract class RegularProcess implements Serializable {
 	 *
 	 */
 	public final void offsetTime() {
-		lastRunTime = new Date();
-		Calendar cal = GregorianCalendar.getInstance();
-		cal.add(timeField, timeOffset);
-		nextRun = cal.getTime();
+		lastRunTime = Instant.now();
+		var duration = Duration.ZERO.plus(timeOffset, timeField);
+		Instant instant = Instant.now().plus(duration);
+		nextRun = instant;
 	}
 
 	/**
@@ -179,7 +180,7 @@ public abstract class RegularProcess implements Serializable {
 	 * <p>
 	 * You probably don't need this method.
 	 *
-	 * @param db
+	 * @param db the database this process interacts with
 	 */
 	public final void setDatabase(DBDatabase db) {
 		this.dbDatabase = db;
@@ -201,11 +202,11 @@ public abstract class RegularProcess implements Serializable {
 		return lastResult;
 	}
 
-	public Date getLastRuntime() {
+	public Instant getLastRuntime() {
 		return lastRunTime;
 	}
 
-	public Date getNextRuntime() {
+	public Instant getNextRuntime() {
 		return nextRun;
 	}
 
