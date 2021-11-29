@@ -20,9 +20,6 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  * @param <V> The return type of the transaction
  *
@@ -33,11 +30,9 @@ public interface DBTransaction<V> {
 	 * Perform the transaction on the database, returning TRUE if the transaction
 	 * succeeded, or FALSE if it did not.
 	 *
-	 * @param dbDatabase	dbDatabase
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param dbDatabase	the database the transaction is to be performed on.
 	 * @return TRUE if the transaction completed without errors, FALSE otherwise.
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * @throws ExceptionThrownDuringTransaction if the transaction throws an exception
 	 *
 	 */
 	V doTransaction(DBDatabase dbDatabase) throws ExceptionThrownDuringTransaction;
