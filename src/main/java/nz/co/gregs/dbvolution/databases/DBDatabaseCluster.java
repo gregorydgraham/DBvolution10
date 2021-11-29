@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.sql.Statement;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -229,7 +230,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private void addReconnectionProcessor() {
 		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
-		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
+		reconnectionProcessor.setTimeOffset(ChronoUnit.MINUTES, 1);
 		addRegularProcess(reconnectionProcessor);
 	}
 
