@@ -42,8 +42,8 @@ public class StringCheck {
 	 * empty.
 	 *
 	 *
-	 * @param initialValue
-	 * @param defaultValue
+	 * @param initialValue the expected value
+	 * @param defaultValue the value to use if the expected value is null or empty
 	 * @return the intialValue or the default if the initialValue is null or empty
 	 */
 	public static String check(String initialValue, String defaultValue) {
@@ -56,8 +56,8 @@ public class StringCheck {
 	 * <p>
 	 * Returns the empty string if no value is non-null and non-empty.<p>
 	 *
-	 * @param initialValue
-	 * @param defaultValues
+	 * @param initialValue the expected value
+	 * @param defaultValues  the values to use if the expected value is null or empty
 	 * @return the empty string or the first non-null non-empty value
 	 */
 	public static String check(String initialValue, String... defaultValues) {
@@ -76,8 +76,8 @@ public class StringCheck {
 	 * Returns the supplied value or the default if the supplied value is null.
 	 *
 	 *
-	 * @param initialValue
-	 * @param nullValue
+	 * @param initialValue the expected value
+	 * @param nullValue the value to use if the expected value is null
 	 * @return the intialValue or the default if the initialValue is null
 	 */
 	public static String checkNotNull(String initialValue, String nullValue) {
@@ -90,8 +90,8 @@ public class StringCheck {
 	 * <p>
 	 * Returns the empty string if no value is non-null.<p>
 	 *
-	 * @param initialValue
-	 * @param defaultValues
+	 * @param initialValue the source text
+	 * @param defaultValues the values to use if the source text is null
 	 * @return the empty string or the first non-null non-empty value
 	 */
 	public static String checkNotNull(String initialValue, String... defaultValues) {
@@ -111,9 +111,9 @@ public class StringCheck {
 	 * and the empty value if the supplied value is the empty string.
 	 *
 	 *
-	 * @param initialValue
-	 * @param nullValue
-	 * @param emptyValue
+	 * @param initialValue the source text
+	 * @param nullValue the value to use if the source text is null
+	 * @param emptyValue the value to use if the source text is empty
 	 * @return the intialValue if it is non-null and non-empty, nullValue if it is
 	 * null, or emptyValue if it is empty
 	 */
@@ -124,8 +124,8 @@ public class StringCheck {
 	/**
 	 * Synonym for intialValue == null
 	 *
-	 * @param initialValue
-	 * @return
+	 * @param initialValue the source text
+	 * @return true if the source text is null
 	 */
 	public static boolean isNull(String initialValue) {
 		return initialValue == null;
@@ -134,8 +134,8 @@ public class StringCheck {
 	/**
 	 * Synonym for intialValue != null
 	 *
-	 * @param initialValue
-	 * @return
+	 * @param initialValue the source text
+	 * @return TRUE if the source text is NOT null
 	 */
 	public static boolean isNotNull(String initialValue) {
 		return initialValue != null;
@@ -144,8 +144,8 @@ public class StringCheck {
 	/**
 	 * Synonym for value != null && !value.isEmpty() but a lot more concise.
 	 *
-	 * @param value
-	 * @return
+	 * @param value the source text
+	 * @return TRUE if the source text is neither null nor empty
 	 */
 	public static boolean isNotEmptyNorNull(String value) {
 		return value != null && !value.isEmpty();
@@ -154,8 +154,8 @@ public class StringCheck {
 	/**
 	 * Synonym for value == null || value.isEmpty() but a lot more concise.
 	 *
-	 * @param value
-	 * @return
+	 * @param value the source text
+	 * @return TRUE is the source text is either null or empty
 	 */
 	public static boolean isEmptyOrNull(String value) {
 		return value == null || value.isEmpty();
