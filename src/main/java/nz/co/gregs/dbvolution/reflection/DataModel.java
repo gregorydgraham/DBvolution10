@@ -437,7 +437,7 @@ public class DataModel {
 	 * Using the classes supplied creates an instance of as many classes as
 	 * possible.
 	 *
-	 * @param dbRowClasses
+	 * @param dbRowClasses the classes to instantiate
 	 * @return an instance of every DBRow class that can be found and created
 	 * easily.
 	 */
@@ -463,14 +463,14 @@ public class DataModel {
 	 * The greater intent is an extensible mechanism for parsing web links and
 	 * creating queries from them.
 	 *
-	 * @param db
-	 * @param encodedTablesPropertiesAndValues
-	 * @param interpreter
+	 * @param db the database to query
+	 * @param encodedTablesPropertiesAndValues a string encoding of a query
+	 * @param interpreter the interpreter to use to understand the encoded query
 	 * 
 	 * @return a DBQuery.
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException if Class.forName() cannot find the table provided by the interpreter
+	 * @throws InstantiationException if the class cannot be instantiated
+	 * @throws IllegalAccessException if the class cannot be accessed
 	 */
 	public static DBQuery createDBQueryFromEncodedTablesPropertiesAndValues(DBDatabase db, String encodedTablesPropertiesAndValues, EncodingInterpreter interpreter) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		final RowDefinitionWrapperFactory rowDefinitionWrapperFactory = new RowDefinitionWrapperFactory();
