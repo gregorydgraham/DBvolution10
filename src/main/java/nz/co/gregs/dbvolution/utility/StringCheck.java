@@ -142,7 +142,7 @@ public class StringCheck {
 	}
 
 	/**
-	 * Synonym for value != null && !value.isEmpty() but a lot more concise.
+	 * Synonym for value != null &amp;&amp; !value.isEmpty() but a lot more concise.
 	 *
 	 * @param value the source text
 	 * @return TRUE if the source text is neither null nor empty
