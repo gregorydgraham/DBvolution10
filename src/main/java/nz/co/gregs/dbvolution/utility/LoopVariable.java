@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 
 /**
  * Implements a while/for loop combination.
- * 
+ *
  * @author gregorygraham
  */
 public class LoopVariable {
@@ -133,8 +133,8 @@ public class LoopVariable {
 	public int attempts() {
 		return tries;
 	}
-	
-	public Duration elapsedTime(){
+
+	public Duration elapsedTime() {
 		Duration duration = Duration.between(startTime, Instant.now());
 		return duration;
 	}
@@ -150,7 +150,8 @@ public class LoopVariable {
 	 * Attempts are registered by calling {@link #attempt() } at the start of each
 	 * loop.</p>
 	 *
-	 * @param maxAttemptsAllowed
+	 * @param maxAttemptsAllowed the number of attempts after which the loop will
+	 * abort.
 	 */
 	public void setMaxAttemptsAllowed(int maxAttemptsAllowed) {
 		if (maxAttemptsAllowed > 0) {
@@ -186,9 +187,9 @@ public class LoopVariable {
 	 * <pre>
 	 *		// Decide on a maximum number of loops
 	 *		final int intendedAttempts = 10;
-	 *		
+	 *
 	 *		// Create the method to loop over
-	 *		final Supplier&lt;Void&gt; action = () -> {
+	 *		final Supplier&lt;Void&gt; action = () -&gt; {
 	 *			// do your processing
 	 *			// here
 	 *
@@ -200,18 +201,18 @@ public class LoopVariable {
 	 *			// return null as required by the Java spec
 	 *			return null;
 	 *		};
-	 * 
+	 *
 	 *		// Create the LoopVariable
 	 *		LoopVariable looper = new LoopVariable();
-	 * 
+	 *
 	 *		// set the maximum number of loops (this is optional, but will default to 1000 anyway)
 	 *		looper.setMaxAttemptsAllowed(intendedAttempts);
-	 * 
+	 *
 	 *		// loop over the action
 	 *		looper.loop(action);
 	 * </pre>
 	 *
-	 * @param action
+	 * @param action the action to perform within the loop
 	 */
 	public void loop(Supplier<Void> action) {
 		while (isNeeded()) {
@@ -233,12 +234,12 @@ public class LoopVariable {
 	 *		LoopVariable looper = new LoopVariable();
 	 *
 	 *		// Call loop() with maximum number of attempts to try
-	 *		looper.loop(100, () -> {
+	 *		looper.loop(100, () -&gt; {
 	 *
 	 *			// Perform your actions here
 	 *
 	 *			// check for the termination conditions
-	 *			if (looper.attempts() >= 10) {
+	 *			if (looper.attempts() &gt;= 10) {
 	 *				// call done() to terminate the loop
 	 *				looper.done();
 	 *			}
@@ -248,9 +249,10 @@ public class LoopVariable {
 	 *		});
 	 * </pre>
 	 *
-	 * @param maxAttempts
-	 * @param action
-	 * @deprecated this is superfluous and, very slightly, slower. Just use {@link #loop(java.util.function.Supplier) }
+	 * @param maxAttempts the number of attempts before the loop will abort
+	 * @param action the action to be performed within the loop
+	 * @deprecated this is superfluous and, very slightly, slower. Just use {@link #loop(java.util.function.Supplier)
+	 * }
 	 */
 	@Deprecated
 	public void loop(int maxAttempts, Supplier<Void> action) {
@@ -271,21 +273,22 @@ public class LoopVariable {
 	 *		LoopVariable looper = new LoopVariable();
 	 *		final int intendedAttempts = 10;
 	 *		looper.loop(
-	 *				() -> {
+	 *				() -&gt; {
 	 *					// do your processing here
 	 *
 	 *					// return null as required by Java
 	 *					return null;
 	 *				},
-	 *				() -> {
+	 *				() -&gt; {
 	 *					// Check for termination conditions here
 	 *					return trueIfTaskCompletedOtherwiseFalse();
 	 *				}
 	 *		);
 	 * </pre>
 	 *
-	 * @param action
-	 * @param test
+	 * @param action the action to perform with a loop
+	 * @param test the test to check, if TRUE the loop will be terminated, if
+	 * FALSE the loop will continue
 	 */
 	public void loop(Supplier<Void> action, Supplier<Boolean> test) {
 		while (isNeeded()) {
