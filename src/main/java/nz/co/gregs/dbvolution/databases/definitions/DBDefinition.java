@@ -2777,13 +2777,16 @@ public abstract class DBDefinition implements Serializable {
 	 */
 	public Date parseDateFromGetString(String getStringDate) throws DateTimeParseException {
 		try {
-			return SIMPLE_DATE_FORMAT.parse(getStringDate);
+			return getSimpleDateFormat().parse(getStringDate);
 		} catch (ParseException parse) {
 			return TemporalStringParser.toDate(getStringDate, STANDARD_DATETIME_PARSER_FORMATS);
 		}
 	}
 	private static final String[] STANDARD_DATETIME_PARSER_FORMATS = new String[]{"uuuu-MM-dd[ ]['T'][HH:mm:ss][.][S][S][S][S][S][S][S][S][S][ ][VV]", "uuuu-MM-dd HH:mm:ss.SSSSSS[ ]VV", "uuuu-MM-dd HH:mm:ss.SSSSSSX"};
-	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	private static SimpleDateFormat getSimpleDateFormat(){
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	}
 
 	/**
 	 * returns the date format used when reading dates as strings.
