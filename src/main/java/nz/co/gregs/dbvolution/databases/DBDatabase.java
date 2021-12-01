@@ -2771,7 +2771,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
-	private class StopDatabase extends Thread {
+	private static class StopDatabase extends Thread {
 
 		DBDatabase db;
 
