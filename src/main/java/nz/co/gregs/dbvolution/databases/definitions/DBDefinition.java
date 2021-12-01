@@ -6929,7 +6929,7 @@ public abstract class DBDefinition implements Serializable {
 				minutes = numberValue;
 			} else {
 				//seconds only
-				Double realSeconds = Math.abs(Double.valueOf(number));
+				Double realSeconds = Math.abs(Double.parseDouble(number));
 				seconds = realSeconds.longValue();
 				// check for nanos
 				Double realNanos = realSeconds - seconds;
@@ -6949,25 +6949,25 @@ public abstract class DBDefinition implements Serializable {
 			if (optional.isPresent()) {
 				Match firstMatch = optional.get();
 
-				String number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_DAYS);
-				if (number != null && !number.isEmpty()) {
-					negated = negated || number.startsWith("-");
-					days = Math.abs(Long.valueOf(number));
+				String numberStr = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_DAYS);
+				if (numberStr != null && !numberStr.isEmpty()) {
+					negated = negated || numberStr.startsWith("-");
+					days = Math.abs(Long.parseLong(numberStr));
 				}
-				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_HOURS);
-				if (number != null && !number.isEmpty()) {
-					negated = negated || number.startsWith("-");
-					hours = Math.abs(Long.valueOf(number));
+				numberStr = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_HOURS);
+				if (numberStr != null && !numberStr.isEmpty()) {
+					negated = negated || numberStr.startsWith("-");
+					hours = Math.abs(Long.parseLong(numberStr));
 				}
-				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_MINUTES);
-				if (number != null && !number.isEmpty()) {
-					negated = negated || number.startsWith("-");
-					minutes = Math.abs(Long.valueOf(number));
+				numberStr = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_MINUTES);
+				if (numberStr != null && !numberStr.isEmpty()) {
+					negated = negated || numberStr.startsWith("-");
+					minutes = Math.abs(Long.parseLong(numberStr));
 				}
-				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_SECONDS);
-				if (number != null && !number.isEmpty()) {
-					negated = negated || number.startsWith("-");
-					Double realSeconds = Math.abs(Double.valueOf(number));
+				numberStr = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_SECONDS);
+				if (numberStr != null && !numberStr.isEmpty()) {
+					negated = negated || numberStr.startsWith("-");
+					Double realSeconds = Math.abs(Double.parseDouble(numberStr));
 					seconds = realSeconds.longValue();
 					// check for nanos
 					Double realNanos = realSeconds - seconds;
@@ -6975,10 +6975,10 @@ public abstract class DBDefinition implements Serializable {
 						nanos = Math.abs(Math.round(realNanos * (Math.pow(10, 9))));
 					}
 				}
-				number = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_NANOS);
-				if (number != null && !number.isEmpty()) {
-					negated = negated || number.startsWith("-");
-					nanos = Math.abs(Long.valueOf(number));
+				numberStr = firstMatch.getNamedCapture(INTERVAL_MULTIUNIT_NANOS);
+				if (numberStr != null && !numberStr.isEmpty()) {
+					negated = negated || numberStr.startsWith("-");
+					nanos = Math.abs(Long.parseLong(numberStr));
 				}
 			}
 		}
