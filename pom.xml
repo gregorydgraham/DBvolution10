@@ -1639,7 +1639,7 @@
 	<distributionManagement>
 		<site>
 			<id>dbv-website-reports</id>
-			<url>ftp://www.gregs.co.nz/httpdocs/dbvolution/reports/</url>
+			<url>ftp://www.gregs.co.nz/public_html/dbvolution/reports/</url>
 		</site>
 		<snapshotRepository>
 			<id>ossrh</id>
