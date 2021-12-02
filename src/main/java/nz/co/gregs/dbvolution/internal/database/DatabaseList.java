@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.internal.database;
 
+import java.io.Serializable;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
@@ -39,7 +40,9 @@ import static nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status.*;
  *
  * @author gregorygraham
  */
-public class DatabaseList {
+public class DatabaseList implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private final Map<String, DBDatabase> databaseMap = Collections.synchronizedMap(new HashMap<String, DBDatabase>());
 	private final Map<String, DBDatabaseCluster.Status> statusMap = Collections.synchronizedMap(new HashMap<String, DBDatabaseCluster.Status>(0));
@@ -207,6 +210,6 @@ public class DatabaseList {
 	}
 
 	public synchronized boolean areAllReady() {
-		return countDatabases(DBDatabaseCluster.Status.READY)==databaseMap.size();
+		return countDatabases(DBDatabaseCluster.Status.READY) == databaseMap.size();
 	}
 }

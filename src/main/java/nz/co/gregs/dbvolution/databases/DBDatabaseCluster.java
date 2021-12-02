@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.io.Serializable;
 import java.lang.ref.Cleaner;
 import nz.co.gregs.dbvolution.utility.ReconnectionProcess;
 import java.lang.reflect.InvocationTargetException;
@@ -1651,7 +1652,9 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	}
 
-	public static class Configuration {
+	public static class Configuration implements Serializable{
+
+		private static final long serialVersionUID = 1L;
 
 		/**
 		 * Auto-rebuild will automatically reload the tracked table, connect to the

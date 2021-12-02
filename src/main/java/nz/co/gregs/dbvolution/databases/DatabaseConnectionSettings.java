@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -109,7 +110,9 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
  *
  * @author Gregory Graham
  */
-public class DatabaseConnectionSettings {
+public class DatabaseConnectionSettings implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private String url = "";
 	private String host = "";

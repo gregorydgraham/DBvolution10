@@ -68,20 +68,20 @@ public class ClusterDetails implements Serializable {
 
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
 	private final Set<DBRow> trackedTables = Collections.synchronizedSet(new HashSet<DBRow>());
-	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
+	private final Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
-	private final PreferencesImproved prefs = PreferencesImproved.userNodeForPackage(this.getClass());
+	private transient final PreferencesImproved prefs = PreferencesImproved.userNodeForPackage(this.getClass());
 	private String clusterLabel = "NotDefined";
 	private boolean supportsDifferenceBetweenNullAndEmptyString = true;
 	private final ArrayList<String> allAddedDatabases = new ArrayList<String>();
 	private boolean quietExceptions = false;
 	private DBDatabaseCluster.Configuration configuration = DBDatabaseCluster.Configuration.fullyManual();
 
-	private final Lock synchronisingLock = new ReentrantLock();
-	private final Condition aDatabaseHasBeenSynchronised = synchronisingLock.newCondition();
-	private final Condition allDatabasesAreSynchronised = synchronisingLock.newCondition();
-	private final Condition someDatabasesNeedSynchronizing = synchronisingLock.newCondition();
-	private final Condition readyDatabaseIsAvailable = synchronisingLock.newCondition();
+	private transient final Lock synchronisingLock = new ReentrantLock();
+	private transient final Condition aDatabaseHasBeenSynchronised = synchronisingLock.newCondition();
+	private transient final Condition allDatabasesAreSynchronised = synchronisingLock.newCondition();
+	private transient final Condition someDatabasesNeedSynchronizing = synchronisingLock.newCondition();
+	private transient final Condition readyDatabaseIsAvailable = synchronisingLock.newCondition();
 	private DatabaseConnectionSettings clusterSettings;
 	private DBDatabase preferredDatabase;
 
