@@ -35,14 +35,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.NodeChangeListener;
 import java.util.prefs.PreferenceChangeListener;
-import nz.co.gregs.dbvolution.utility.LoopVariable;
-import nz.co.gregs.dbvolution.utility.StringInBlocks;
 
 /**
  *
