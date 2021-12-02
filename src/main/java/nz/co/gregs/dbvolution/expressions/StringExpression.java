@@ -3759,7 +3759,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringAggregateExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+	public static class StringAggregateExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		public StringAggregateExpression(StringExpression columnToAccumulate, String separator) {
 			this.column = columnToAccumulate;
@@ -3818,7 +3818,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+	public static class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		private final static long serialVersionUID = 1l;
 		
@@ -3830,7 +3830,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			super();
 			this.columnToAccumulate = columnToAccumulate;
 			this.separator = separator;
-			this.orderBy = orderBy;
+			this.orderBy = orderBy.copy();
 			orderBy
 					.getTablesInvolved()
 					.forEach(table -> table.setSortedSubselectRequired(orderBy));
@@ -3848,7 +3848,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public StringAggregateWithOrderByExpression copy() {
 			return new StringAggregateWithOrderByExpression(
-					columnToAccumulate == null ? null : columnToAccumulate.copy(),
+					columnToAccumulate == null ? StringExpression.nullString() : columnToAccumulate.copy(),
 					separator == null ? null : separator,
 					orderBy == null ? null : orderBy.copy()
 			);
@@ -3865,7 +3865,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringReplaceExpression extends DBTrinaryStringFunction {
+	protected static class StringReplaceExpression extends DBTrinaryStringFunction {
 
 		public StringReplaceExpression(StringExpression first, StringExpression second, StringExpression third) {
 			super(first, second, third);
@@ -3929,7 +3929,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringSubstringAfterExpression extends DBBinaryStringFunction {
+	protected static class StringSubstringAfterExpression extends DBBinaryStringFunction {
 
 		public StringSubstringAfterExpression(StringExpression first, StringExpression second) {
 			super(first, second);
@@ -3957,7 +3957,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringTrimExpression extends StringExpression {
+	protected static class StringTrimExpression extends StringExpression {
 
 		public StringTrimExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -3977,7 +3977,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringFirstNumberAsSubstringExpression extends StringExpression {
+	protected static class StringFirstNumberAsSubstringExpression extends StringExpression {
 
 		public StringFirstNumberAsSubstringExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -3997,7 +3997,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringFirstIntegerAsSubstringExpression extends StringExpression {
+	protected static class StringFirstIntegerAsSubstringExpression extends StringExpression {
 
 		public StringFirstIntegerAsSubstringExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4017,7 +4017,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringLeftTrimExpression extends StringExpression {
+	protected static class StringLeftTrimExpression extends StringExpression {
 
 		public StringLeftTrimExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4035,7 +4035,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringRightTrimExpression extends StringExpression {
+	protected static class StringRightTrimExpression extends StringExpression {
 
 		public StringRightTrimExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4053,7 +4053,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringLowercaseExpression extends StringExpression {
+	protected static class StringLowercaseExpression extends StringExpression {
 
 		public StringLowercaseExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4071,7 +4071,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringUppercaseExpression extends StringExpression {
+	protected static class StringUppercaseExpression extends StringExpression {
 
 		public StringUppercaseExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4089,7 +4089,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class IntegerLengthExpression extends IntegerExpression {
+	protected static class IntegerLengthExpression extends IntegerExpression {
 
 		public IntegerLengthExpression(AnyResult<?> only) {
 			super(only);
@@ -4134,7 +4134,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringLocationOfExpression extends BinaryComplicatedNumberFunction {
+	protected static class StringLocationOfExpression extends BinaryComplicatedNumberFunction {
 
 		public StringLocationOfExpression(StringExpression first, StringResult second) {
 			super(first, second);
@@ -4155,7 +4155,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringMaxExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+	public static class StringMaxExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		public StringMaxExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4183,7 +4183,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringMinExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+	public static class StringMinExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		public StringMinExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4211,7 +4211,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringBracketExpression extends StringExpression {
+	protected static class StringBracketExpression extends StringExpression {
 
 		public StringBracketExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4229,7 +4229,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringNumberResultExpression extends NumberExpression {
+	protected static class StringNumberResultExpression extends NumberExpression {
 
 		public StringNumberResultExpression(AnyResult<?> value) {
 			super(value);
@@ -4565,14 +4565,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class LagLeadWindow extends WindowFunctionRequiresOrderBy<StringExpression> {
+	public static class LagLeadWindow extends WindowFunctionRequiresOrderBy<StringExpression> {
 
 		public LagLeadWindow(StringExpression expression) {
 			super(expression);
 		}
 	}
 
-	public class LagExpression extends LagLeadExpression {
+	public static class LagExpression extends LagLeadExpression {
 
 		private static final long serialVersionUID = 1L;
 
@@ -4591,7 +4591,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class LeadExpression extends LagLeadExpression {
+	public static class LeadExpression extends LagLeadExpression {
 
 		private static final long serialVersionUID = 1L;
 
