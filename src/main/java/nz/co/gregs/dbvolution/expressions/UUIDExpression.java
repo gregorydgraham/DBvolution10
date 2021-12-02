@@ -30,7 +30,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -70,10 +69,6 @@ public class UUIDExpression extends InExpression<UUID, UUIDResult, DBUUID> imple
 
 	public UUIDExpression(DBString stringVariable) {
 		super(stringVariable);
-		if (stringVariable == null) {
-		} else {
-			final String value = stringVariable.getValue();
-		}
 	}
 
 	public UUIDExpression(DBUUID stringVariable) {
