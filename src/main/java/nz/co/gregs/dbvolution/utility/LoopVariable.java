@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.function.Supplier;
@@ -39,13 +40,15 @@ import java.util.function.Supplier;
  *
  * @author gregorygraham
  */
-public class LoopVariable {
+public class LoopVariable implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private boolean needed = true;
 	private int tries = 0;
 	private int maxAttemptsAllowed = 1000;
 	private boolean limitMaxAttempts = true;
-	private Instant startTime = Instant.now();
+	private final Instant startTime = Instant.now();
 
 	public static LoopVariable factory() {
 		return new LoopVariable();

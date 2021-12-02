@@ -1474,7 +1474,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private static final Cleaner cleaner = Cleaner.create();
 
 	private ClusterCleanupActions clusterCleanupActions;
-	private Cleaner.Cleanable cleanable;
+	private transient Cleaner.Cleanable cleanable;
 
 	private void addCleaner() {
 		clusterCleanupActions = new ClusterCleanupActions(getDetails(), LOG, ACTION_THREAD_POOL);

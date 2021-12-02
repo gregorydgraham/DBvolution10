@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.internal.database;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
@@ -41,22 +42,24 @@ import org.apache.commons.logging.Log;
  * Cleans up the cluster's databases after the cluster exits scope.
  *
  * <p>
- * Removes all databases from the cluster without terminating them and
- * shutdown all cluster processes.
+ * Removes all databases from the cluster without terminating them and shutdown
+ * all cluster processes.
  *
  * <p>
- * Dismantling the cluster is only needed in a small number of scenarios,
- * mostly testing.
+ * Dismantling the cluster is only needed in a small number of scenarios, mostly
+ * testing.
  *
  * <p>
- * Dismantling the cluster ends all threads, removes all databases, and
- * removes the authoritative database configuration.
+ * Dismantling the cluster ends all threads, removes all databases, and removes
+ * the authoritative database configuration.
  *
  * <p>
  * This process is similar to {@link DBDatabaseCluster#stop()
  * } but does not stop or dismantle the individual databases.
  */
-public class ClusterCleanupActions implements Runnable {
+public class ClusterCleanupActions implements Runnable, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private final ClusterDetails details;
 	private final Log log;
@@ -78,5 +81,5 @@ public class ClusterCleanupActions implements Runnable {
 			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 }
