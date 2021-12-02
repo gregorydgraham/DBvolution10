@@ -1633,14 +1633,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	@Override
-	public BooleanExpression isIn(Date... possibleValues) {
-		List<DateExpression> possVals = new ArrayList<DateExpression>();
-		for (Date num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return isIn(possVals.toArray(new DateExpression[]{}));
-	}
+//	@Override
+//	public BooleanExpression isIn(Date... possibleValues) {
+//		List<DateExpression> possVals = new ArrayList<DateExpression>();
+//		for (Date num : possibleValues) {
+//			possVals.add(value(num));
+//		}
+//		return isIn(possVals.toArray(new DateExpression[]{}));
+//	}
 
 	/**
 	 * Creates an SQL expression that test whether this date expression is
@@ -1656,10 +1656,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isIn(Collection<? extends DateResult> possibleValues) {
-		//List<DateExpression> possVals = new ArrayList<DateExpression>();
-		//for (Date num : possibleValues) {
-		//	possVals.add(value(num));
-		//}
 		return isIn(possibleValues.toArray(new DateResult[]{}));
 	}
 
@@ -1672,12 +1668,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * is easy to miss a similar date.
 	 *
 	 * @param possibleValues allowed values
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isIn(DateResult... possibleValues) {
+	public BooleanExpression isInCollection(Collection<DateResult> possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new DateIsInExpression(this, possibleValues));
 		if (isInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
@@ -1695,12 +1689,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * is easy to miss a similar date.
 	 *
 	 * @param possibleValues allowed values
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isNotIn(DateResult... possibleValues) {
+	public BooleanExpression isNotInCollection(Collection<DateResult> possibleValues) {
 		BooleanExpression isNotInExpr = new BooleanExpression(new DateIsNotInExpression(this, possibleValues));
 		if (isNotInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isNotInExpr);
@@ -1716,24 +1708,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * This is a way of handling dates that should have a value but don't.
 	 *
 	 * @param alternative use this value if the expression evaluates to NULL
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public DateExpression ifDBNull(Date alternative) {
 		return ifDBNull(value(alternative));
-//		return new DateExpression(
-//				new DateExpression.DateDateFunctionWithDateResult(this, new DateExpression(alternative)) {
-//			@Override
-//			protected String getFunctionName(DBDefinition db) {
-//				return db.getIfNullFunctionName();
-//			}
-//
-//			@Override
-//			public boolean getIncludesNull() {
-//				return false;
-//			}
-//		});
 	}
 
 	/**
@@ -3289,7 +3267,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		DateDateResultFunctionWithBooleanResult() {
 		}
 
-		DateDateResultFunctionWithBooleanResult(DateExpression leftHandSide, DateResult[] rightHandSide) {
+		DateDateResultFunctionWithBooleanResult(DateExpression leftHandSide, Collection<DateResult> rightHandSide) {
 			this.column = leftHandSide;
 			for (DateResult dateResult : rightHandSide) {
 				if (dateResult == null) {
@@ -4301,7 +4279,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected class DateIsInExpression extends DateDateResultFunctionWithBooleanResult {
 
-		public DateIsInExpression(DateExpression leftHandSide, DateResult[] rightHandSide) {
+		public DateIsInExpression(DateExpression leftHandSide, Collection<DateResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4324,14 +4302,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			}
 			return new DateIsInExpression(
 					getColumn().copy(),
-					newValues.toArray(new DateResult[]{}));
+					newValues);
 		}
 
 	}
 
 	protected class DateIsNotInExpression extends DateDateResultFunctionWithBooleanResult {
 
-		public DateIsNotInExpression(DateExpression leftHandSide, DateResult[] rightHandSide) {
+		public DateIsNotInExpression(DateExpression leftHandSide, Collection<DateResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4354,7 +4332,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			}
 			return new DateIsNotInExpression(
 					getColumn().copy(),
-					newValues.toArray(new DateResult[]{}));
+					newValues);
 		}
 
 	}

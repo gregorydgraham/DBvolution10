@@ -16,8 +16,11 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -528,25 +531,15 @@ public class DurationExpression extends RangeExpression<Duration, DurationResult
 	}
 
 	@Override
-	public BooleanExpression isIn(DurationResult... otherInstances) {
-		StringResult[] strs = new StringResult[otherInstances.length];
-		int i = 0;
-		for (DurationResult otherInstance : otherInstances) {
-			strs[i] = otherInstance.stringResult();
-			i++;
-		}
-		return this.stringResult().isIn(strs);
+	public BooleanExpression isInCollection(Collection<DurationResult> otherInstances) {
+		List<StringResult> values = otherInstances.stream().map(v->v.stringResult()).collect(Collectors.toList());
+		return this.stringResult().isInCollection(values);
 	}
 
 	@Override
-	public BooleanExpression isNotIn(DurationResult... otherInstances) {
-		StringResult[] strs = new StringResult[otherInstances.length];
-		int i = 0;
-		for (DurationResult otherInstance : otherInstances) {
-			strs[i] = otherInstance.stringResult();
-			i++;
-		}
-		return this.stringResult().isNotIn(strs);
+	public BooleanExpression isNotInCollection(Collection<DurationResult> otherInstances) {
+		List<StringResult> collect = otherInstances.stream().map(v-> v.stringResult()).collect(Collectors.toList());
+		return this.stringResult().isNotInCollection(collect);
 	}
 
 	@Override

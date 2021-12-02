@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
@@ -1532,70 +1533,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
 	@Override
-	public BooleanExpression isIn(Number... possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<>();
-		for (Number num : possibleValues) {
-			if (num == null) {
-				possVals.add(null);
-			} else {
-				possVals.add(value(num));
-			}
-		}
-		return isIn(possVals.toArray(new NumberExpression[]{}));
-	}
-
-	/**
-	 * Compares the NumberExpression against the list of possible values and
-	 * returns true if the NumberExpression is represented in the list.
-	 *
-	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression for use in
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
-	 */
-	public BooleanExpression isIn(IntegerResult... possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<>();
-		for (IntegerResult num : possibleValues) {
-			if (num == null) {
-				possVals.add(null);
-			} else {
-				possVals.add(expression(num));
-			}
-		}
-		return isIn(possVals.toArray(new NumberExpression[]{}));
-	}
-
-	/**
-	 * Compares the NumberExpression against the list of possible values and
-	 * returns true if the NumberExpression is represented in the list.
-	 *
-	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression for use in
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
-	 */
-	public BooleanExpression isIn(Collection<? extends Number> possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<>();
-		for (Number num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return isIn(possVals.toArray(new NumberExpression[]{}));
-	}
-
-	/**
-	 * Compares the NumberExpression against the list of possible values and
-	 * returns true if the NumberExpression is represented in the list.
-	 *
-	 * @param possibleValues needs to be one of these
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression for use in
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
-	 */
-	@Override
-	public BooleanExpression isIn(NumberResult... possibleValues) {
+	public BooleanExpression isInCollection(Collection<NumberResult> possibleValues) {
 		BooleanExpression isinExpr
 				= new IsInFunction(this, possibleValues);
 		if (isinExpr.getIncludesNull()) {
@@ -1603,6 +1541,38 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		} else {
 			return isinExpr;
 		}
+	}
+
+	public final BooleanExpression isIn(Collection<Integer> values) {
+		List<NumberResult> list = values
+				.stream()
+				.map(v -> new NumberExpression(v))
+				.collect(Collectors.toList());
+		return isInCollection(list);
+	}
+
+	public final BooleanExpression isIn(Integer... values) {
+		ArrayList<NumberResult> list = new ArrayList<>(values.length);
+		for (Integer value : values) {
+			list.add(new NumberExpression(value));
+		}
+		return isInCollection(list);
+	}
+
+	public final BooleanExpression isIn(IntegerResult... values) {
+		ArrayList<NumberResult> list = new ArrayList<>(values.length);
+		for (IntegerResult value : values) {
+			list.add(new NumberExpression(value));
+		}
+		return isInCollection(list);
+	}
+
+	public final BooleanExpression isIn(DBInteger... values) {
+		ArrayList<NumberResult> list = new ArrayList<>(values.length);
+		for (DBInteger value : values) {
+			list.add(new NumberExpression(value));
+		}
+		return isInCollection(list);
 	}
 
 	/**
@@ -1616,7 +1586,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
 	@Override
-	public BooleanExpression isNotIn(NumberResult... possibleValues) {
+	public BooleanExpression isNotInCollection(Collection<NumberResult> possibleValues) {
 		BooleanExpression isnotinExpr
 				= new IsNotInFunction(this, possibleValues);
 		if (isnotinExpr.getIncludesNull()) {
@@ -3763,7 +3733,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		DBNnaryBooleanFunction() {
 		}
 
-		DBNnaryBooleanFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
+		DBNnaryBooleanFunction(NumberExpression leftHandSide, Collection<NumberResult> rightHandSide) {
 			this.column = leftHandSide;
 			for (NumberResult numberResult : rightHandSide) {
 				if (numberResult == null) {
@@ -4289,7 +4259,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 		private final static long serialVersionUID = 1l;
 
-		public IsInFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
+		public IsInFunction(NumberExpression leftHandSide, Collection<NumberResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 
@@ -4309,13 +4279,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 		@Override
 		public IsInFunction copy() {
-			List<NumberResult> newValues = new ArrayList<>();
-			for (NumberResult value : getValues()) {
-				newValues.add(value == null ? null : value.copy());
-			}
 			return new IsInFunction(
 					getColumn() == null ? null : getColumn().copy(),
-					newValues.toArray(new NumberResult[]{}));
+					getValues()
+			);
 		}
 	}
 
@@ -4323,7 +4290,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 		private final static long serialVersionUID = 1l;
 
-		public IsNotInFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
+		public IsNotInFunction(NumberExpression leftHandSide, Collection<NumberResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 
@@ -4349,7 +4316,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			}
 			return new IsNotInFunction(
 					getColumn() == null ? null : getColumn().copy(),
-					newValues.toArray(new NumberResult[]{}));
+					getValues()
+			);
 		}
 	}
 

@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -84,9 +85,9 @@ public class UUIDExpression extends InExpression<UUID, UUIDResult, DBUUID> imple
 	}
 
 	@Override
-	public BooleanExpression isIn(UUIDResult... values) {
+	public BooleanExpression isInCollection(Collection<UUIDResult> values) {
 		List<StringExpression> collected
-				= Arrays.asList(values)
+				= values
 						.stream()
 						.map((t) -> t.stringResult())
 						.collect(Collectors.toList());
@@ -94,9 +95,9 @@ public class UUIDExpression extends InExpression<UUID, UUIDResult, DBUUID> imple
 	}
 
 	@Override
-	public BooleanExpression isNotIn(UUIDResult... values) {
+	public BooleanExpression isNotInCollection(Collection<UUIDResult> values) {
 		List<StringExpression> collected
-				= Arrays.asList(values)
+				= values
 						.stream()
 						.map((t) -> t.stringResult())
 						.collect(Collectors.toList());

@@ -1323,15 +1323,14 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	@Override
-	public BooleanExpression isIn(LocalDate... possibleValues) {
-		List<LocalDateExpression> possVals = new ArrayList<LocalDateExpression>();
-		for (LocalDate num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return isIn(possVals.toArray(new LocalDateExpression[]{}));
-	}
-
+//	@Override
+//	public BooleanExpression isIn(LocalDate... possibleValues) {
+//		List<LocalDateExpression> possVals = new ArrayList<LocalDateExpression>();
+//		for (LocalDate num : possibleValues) {
+//			possVals.add(value(num));
+//		}
+//		return isIn(possVals.toArray(new LocalDateExpression[]{}));
+//	}
 	/**
 	 * Creates an SQL expression that test whether this date expression is
 	 * included in the list of Dates.
@@ -1367,7 +1366,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isIn(LocalDateResult... possibleValues) {
+	public BooleanExpression isInCollection(Collection<LocalDateResult> possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new DateIsInExpression(this, possibleValues));
 		if (isInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
@@ -1390,7 +1389,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isNotIn(LocalDateResult... possibleValues) {
+	public BooleanExpression isNotInCollection(Collection<LocalDateResult> possibleValues) {
 		BooleanExpression isNotInExpr = new BooleanExpression(new DateIsNotInExpression(this, possibleValues));
 		if (isNotInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isNotInExpr);
@@ -2640,7 +2639,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 		DateDateResultFunctionWithBooleanResult() {
 		}
 
-		DateDateResultFunctionWithBooleanResult(LocalDateExpression leftHandSide, LocalDateResult[] rightHandSide) {
+		DateDateResultFunctionWithBooleanResult(LocalDateExpression leftHandSide, Collection<LocalDateResult> rightHandSide) {
 			this.column = leftHandSide;
 			for (LocalDateResult dateResult : rightHandSide) {
 				if (dateResult == null) {
@@ -3562,7 +3561,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 	protected class DateIsInExpression extends DateDateResultFunctionWithBooleanResult {
 
-		public DateIsInExpression(LocalDateExpression leftHandSide, LocalDateResult[] rightHandSide) {
+		public DateIsInExpression(LocalDateExpression leftHandSide, Collection<LocalDateResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3585,14 +3584,15 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 			}
 			return new DateIsInExpression(
 					getColumn().copy(),
-					newValues.toArray(new LocalDateResult[]{}));
+					getValues()
+			);
 		}
 
 	}
 
 	protected class DateIsNotInExpression extends DateDateResultFunctionWithBooleanResult {
 
-		public DateIsNotInExpression(LocalDateExpression leftHandSide, LocalDateResult[] rightHandSide) {
+		public DateIsNotInExpression(LocalDateExpression leftHandSide, Collection<LocalDateResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3608,14 +3608,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 		@Override
 		public DateIsNotInExpression copy() {
-			final List<LocalDateResult> values = getValues();
-			final List<LocalDateResult> newValues = new ArrayList<>();
-			for (LocalDateResult value : values) {
-				newValues.add(value.copy());
-			}
-			return new DateIsNotInExpression(
-					getColumn().copy(),
-					newValues.toArray(new LocalDateResult[]{}));
+			return new DateIsNotInExpression(getColumn().copy(), getValues());
 		}
 
 	}
@@ -4375,7 +4368,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 
 	/**
 	 * Synonym for lead.
-	 * 
+	 *
 	 * <p>
 	 * LEAD() is a window function that provides access to a row at a specified
 	 * physical offset which comes after the current row.</p>

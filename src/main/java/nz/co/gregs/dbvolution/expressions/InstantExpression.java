@@ -1540,15 +1540,14 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	@Override
-	public BooleanExpression isIn(Instant... possibleValues) {
-		List<InstantExpression> possVals = new ArrayList<InstantExpression>();
-		for (Instant num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return isIn(possVals.toArray(new InstantExpression[]{}));
-	}
-
+//	@Override
+//	public BooleanExpression isIn(Instant... possibleValues) {
+//		List<InstantExpression> possVals = new ArrayList<InstantExpression>();
+//		for (Instant num : possibleValues) {
+//			possVals.add(value(num));
+//		}
+//		return isIn(possVals.toArray(new InstantExpression[]{}));
+//	}
 	/**
 	 * Creates an SQL expression that test whether this date expression is
 	 * included in the list of Instants.
@@ -1580,7 +1579,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isIn(InstantResult... possibleValues) {
+	public BooleanExpression isInCollection(Collection<InstantResult> possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new InstantIsInExpression(this, possibleValues));
 		if (isInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
@@ -1603,7 +1602,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isNotIn(InstantResult... possibleValues) {
+	public BooleanExpression isNotInCollection(Collection<InstantResult> possibleValues) {
 		BooleanExpression isNotInExpr = new BooleanExpression(new InstantIsNotInExpression(this, possibleValues));
 		if (isNotInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isNotInExpr);
@@ -2683,13 +2682,14 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	public InstantExpression setSecond(int i) {
 		return this.addSeconds(IntegerExpression.value(i).minus(this.second().integerResult()));
 	}
-/**
-	 * Creates an SQL expression that returns the second and subsecond parts of this date
-	 * expression.
+
+	/**
+	 * Creates an SQL expression that returns the second and subsecond parts of
+	 * this date expression.
 	 *
 	 * <p>
-	 * Contains both the integer seconds and fractional seconds, use {@link #subsecond()} to retrieve the
-	 * fractional part.
+	 * Contains both the integer seconds and fractional seconds, use
+	 * {@link #subsecond()} to retrieve the fractional part.
 	 *
 	 * @return the second of this date expression as a number.
 	 */
@@ -3146,7 +3146,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 		InstantInstantResultFunctionWithBooleanResult() {
 		}
 
-		InstantInstantResultFunctionWithBooleanResult(InstantExpression leftHandSide, InstantResult[] rightHandSide) {
+		InstantInstantResultFunctionWithBooleanResult(InstantExpression leftHandSide, Collection<InstantResult> rightHandSide) {
 			this.column = leftHandSide;
 			for (InstantResult dateResult : rightHandSide) {
 				if (dateResult == null) {
@@ -4019,7 +4019,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 	protected class InstantIsInExpression extends InstantInstantResultFunctionWithBooleanResult {
 
-		public InstantIsInExpression(InstantExpression leftHandSide, InstantResult[] rightHandSide) {
+		public InstantIsInExpression(InstantExpression leftHandSide, Collection<InstantResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4035,21 +4035,14 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 		@Override
 		public InstantIsInExpression copy() {
-			final List<InstantResult> values = getValues();
-			final List<InstantResult> newValues = new ArrayList<>();
-			for (InstantResult value : values) {
-				newValues.add(value.copy());
-			}
-			return new InstantIsInExpression(
-					getColumn().copy(),
-					newValues.toArray(new InstantResult[]{}));
+			return new InstantIsInExpression(getColumn().copy(), getValues());
 		}
 
 	}
 
 	protected class InstantIsNotInExpression extends InstantInstantResultFunctionWithBooleanResult {
 
-		public InstantIsNotInExpression(InstantExpression leftHandSide, InstantResult[] rightHandSide) {
+		public InstantIsNotInExpression(InstantExpression leftHandSide, Collection<InstantResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4065,14 +4058,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 		@Override
 		public InstantIsNotInExpression copy() {
-			final List<InstantResult> values = getValues();
-			final List<InstantResult> newValues = new ArrayList<>();
-			for (InstantResult value : values) {
-				newValues.add(value.copy());
-			}
-			return new InstantIsNotInExpression(
-					getColumn().copy(),
-					newValues.toArray(new InstantResult[]{}));
+			return new InstantIsNotInExpression(getColumn().copy(), getValues());
 		}
 
 	}
@@ -4834,7 +4820,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 
 	/**
 	 * Synonym for lead().
-	 * 
+	 *
 	 * <p>
 	 * LEAD() is a window function that provides access to a row at a specified
 	 * physical offset which comes after the current row.</p>

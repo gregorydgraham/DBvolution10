@@ -1774,10 +1774,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-	@Override
-	public BooleanExpression isIn(String... possibleValues) {
-		return isIn(expressions(possibleValues));
-	}
+//	@Override
+//	public BooleanExpression isIn(String... possibleValues) {
+//		return isIn(expressions(possibleValues));
+//	}
 
 	/**
 	 * Creates a query comparison using the IN operator.
@@ -1808,7 +1808,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
-	public BooleanExpression isIn(StringResult... possibleValues) {
+	public BooleanExpression isInCollection(Collection<StringResult> possibleValues) {
 		final BooleanExpression isInExpression
 				= new BooleanExpression(new StringIsInExpression(this, possibleValues));
 		if (isInExpression.getIncludesNull()) {
@@ -1831,7 +1831,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
-	public BooleanExpression isNotIn(StringResult... possibleValues) {
+	public BooleanExpression isNotInCollection(Collection<StringResult> possibleValues) {
 		final BooleanExpression isNotInExpression
 				= new BooleanExpression(new StringIsNotInExpression(this, possibleValues));
 		if (isNotInExpression.getIncludesNull()) {
@@ -3336,7 +3336,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			includesNulls = false;
 		}
 
-		DBNnaryBooleanFunction(StringExpression leftHandSide, StringResult[] rightHandSide) {
+		DBNnaryBooleanFunction(StringExpression leftHandSide, Collection<StringResult> rightHandSide) {
 			this.column = leftHandSide;
 			boolean nulls = false;
 			for (StringResult stringResult : rightHandSide) {
@@ -3675,7 +3675,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	protected class StringIsInExpression extends DBNnaryBooleanFunction {
 
-		public StringIsInExpression(StringExpression leftHandSide, StringResult[] rightHandSide) {
+		public StringIsInExpression(StringExpression leftHandSide, Collection<StringResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3696,20 +3696,16 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		@Override
 		public StringIsInExpression copy() {
-			StringResult[] newValues = new StringResult[values.size()];
-			for (int i = 0; i < newValues.length; i++) {
-				newValues[i] = values.get(i) == null ? null : values.get(i).copy();
-			}
 			return new StringIsInExpression(
 					column == null ? null : column.copy(),
-					newValues
+					values
 			);
 		}
 	}
 
 	protected class StringIsNotInExpression extends DBNnaryBooleanFunction {
 
-		public StringIsNotInExpression(StringExpression leftHandSide, StringResult[] rightHandSide) {
+		public StringIsNotInExpression(StringExpression leftHandSide, Collection<StringResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3730,13 +3726,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		@Override
 		public StringIsNotInExpression copy() {
-			StringResult[] newValues = new StringResult[values.size()];
-			for (int i = 0; i < newValues.length; i++) {
-				newValues[i] = values.get(i) == null ? null : values.get(i).copy();
-			}
 			return new StringIsNotInExpression(
 					column == null ? null : column.copy(),
-					newValues
+					values
 			);
 		}
 	}

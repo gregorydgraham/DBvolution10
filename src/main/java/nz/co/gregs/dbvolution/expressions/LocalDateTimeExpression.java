@@ -651,12 +651,12 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	}
 
 	/**
-	 * Creates an SQL expression that returns the second and subsecond parts of this date
-	 * expression.
+	 * Creates an SQL expression that returns the second and subsecond parts of
+	 * this date expression.
 	 *
 	 * <p>
-	 * Contains both the integer seconds and fractional seconds, use {@link #subsecond()} to retrieve the
-	 * fractional part.
+	 * Contains both the integer seconds and fractional seconds, use
+	 * {@link #subsecond()} to retrieve the fractional part.
 	 *
 	 * @return the second of this date expression as a number.
 	 */
@@ -1562,15 +1562,14 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	@Override
-	public BooleanExpression isIn(LocalDateTime... possibleValues) {
-		List<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
-		for (LocalDateTime num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return isIn(possVals.toArray(new LocalDateTimeExpression[]{}));
-	}
-
+//	@Override
+//	public BooleanExpression isIn(LocalDateTime... possibleValues) {
+//		List<LocalDateTimeExpression> possVals = new ArrayList<LocalDateTimeExpression>();
+//		for (LocalDateTime num : possibleValues) {
+//			possVals.add(value(num));
+//		}
+//		return isIn(possVals.toArray(new LocalDateTimeExpression[]{}));
+//	}
 	/**
 	 * Creates an SQL expression that test whether this date expression is
 	 * included in the list of LocalDateTimes.
@@ -1606,7 +1605,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isIn(LocalDateTimeResult... possibleValues) {
+	public BooleanExpression isInCollection(Collection<LocalDateTimeResult> possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new LocalDateTimeIsInExpression(this, possibleValues));
 		if (isInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
@@ -1629,7 +1628,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isNotIn(LocalDateTimeResult... possibleValues) {
+	public BooleanExpression isNotInCollection(Collection<LocalDateTimeResult> possibleValues) {
 		BooleanExpression isNotInExpr = new BooleanExpression(new LocalDateTimeIsNotInExpression(this, possibleValues));
 		if (isNotInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isNotInExpr);
@@ -3191,7 +3190,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 		LocalDateTimeLocalDateTimeResultFunctionWithBooleanResult() {
 		}
 
-		LocalDateTimeLocalDateTimeResultFunctionWithBooleanResult(LocalDateTimeExpression leftHandSide, LocalDateTimeResult[] rightHandSide) {
+		LocalDateTimeLocalDateTimeResultFunctionWithBooleanResult(LocalDateTimeExpression leftHandSide, Collection<LocalDateTimeResult> rightHandSide) {
 			this.column = leftHandSide;
 			for (LocalDateTimeResult dateResult : rightHandSide) {
 				if (dateResult == null) {
@@ -4088,7 +4087,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 	protected class LocalDateTimeIsInExpression extends LocalDateTimeLocalDateTimeResultFunctionWithBooleanResult {
 
-		public LocalDateTimeIsInExpression(LocalDateTimeExpression leftHandSide, LocalDateTimeResult[] rightHandSide) {
+		public LocalDateTimeIsInExpression(LocalDateTimeExpression leftHandSide, Collection<LocalDateTimeResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4104,21 +4103,14 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public LocalDateTimeIsInExpression copy() {
-			final List<LocalDateTimeResult> values = getValues();
-			final List<LocalDateTimeResult> newValues = new ArrayList<>();
-			for (LocalDateTimeResult value : values) {
-				newValues.add(value.copy());
-			}
-			return new LocalDateTimeIsInExpression(
-					getColumn().copy(),
-					newValues.toArray(new LocalDateTimeResult[]{}));
+			return new LocalDateTimeIsInExpression(getColumn().copy(), getValues());
 		}
 
 	}
 
 	protected class LocalDateTimeIsNotInExpression extends LocalDateTimeLocalDateTimeResultFunctionWithBooleanResult {
 
-		public LocalDateTimeIsNotInExpression(LocalDateTimeExpression leftHandSide, LocalDateTimeResult[] rightHandSide) {
+		public LocalDateTimeIsNotInExpression(LocalDateTimeExpression leftHandSide, Collection<LocalDateTimeResult> rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4134,14 +4126,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public LocalDateTimeIsNotInExpression copy() {
-			final List<LocalDateTimeResult> values = getValues();
-			final List<LocalDateTimeResult> newValues = new ArrayList<>();
-			for (LocalDateTimeResult value : values) {
-				newValues.add(value.copy());
-			}
-			return new LocalDateTimeIsNotInExpression(
-					getColumn().copy(),
-					newValues.toArray(new LocalDateTimeResult[]{}));
+			return new LocalDateTimeIsNotInExpression(getColumn().copy(), getValues());
 		}
 
 	}

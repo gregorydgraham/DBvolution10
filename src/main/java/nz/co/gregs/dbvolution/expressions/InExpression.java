@@ -29,6 +29,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.results.AnyResult;
@@ -70,47 +71,63 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 		super(only);
 	}
 
-	abstract public BooleanExpression isIn(R... value);
+	public final BooleanExpression isIn(R... values){
+		ArrayList<R> list = new ArrayList<>(values.length);
+		for (R value : values) {
+			list.add(value);
+		}
+		return isInCollection(list);
+	}
+
+	abstract public BooleanExpression isInCollection(Collection<R> value);
 
 	@SuppressWarnings("unchecked")
-	public BooleanExpression isIn(B... possibleValues) {
+	public final BooleanExpression isIn(B... possibleValues) {
 		List<R> exps = new ArrayList<R>(0);
 		for (B possibleValue : possibleValues) {
 			final R expression = this.expression(possibleValue);
 			exps.add(expression);
 		}
-		return this.isIn((R[]) exps.toArray());
+		return this.isInCollection(exps);
 	}
 
 	@SuppressWarnings("unchecked")
-	public BooleanExpression isIn(D... possibleValues) {
+	public final BooleanExpression isIn(D... possibleValues) {
 		List<R> exps = new ArrayList<R>(0);
 		for (D possibleValue : possibleValues) {
 			final R expression = this.expression(possibleValue);
 			exps.add(expression);
 		}
-		return this.isIn((R[]) exps.toArray());
+		return this.isInCollection(exps);
+	}
+	
+	public final BooleanExpression isNotIn(R... values){
+		ArrayList<R> list = new ArrayList<>(values.length);
+		for (R value : values) {
+			list.add(value);
+		}
+		return isNotInCollection(list);
 	}
 
-	abstract public BooleanExpression isNotIn(R... value);
+	abstract public BooleanExpression isNotInCollection(Collection<R> value);
 
 	@SuppressWarnings("unchecked")
-	public BooleanExpression isNotIn(B... possibleValues) {
+	public final BooleanExpression isNotIn(B... possibleValues) {
 		List<R> exps = new ArrayList<R>(0);
 		for (B possibleValue : possibleValues) {
 			final R expression = this.expression(possibleValue);
 			exps.add(expression);
 		}
-		return this.isNotIn((R[]) exps.toArray());
+		return this.isNotInCollection(exps);
 	}
 
 	@SuppressWarnings("unchecked")
-	public BooleanExpression isNotIn(D... possibleValues) {
+	public final BooleanExpression isNotIn(D... possibleValues) {
 		List<R> exps = new ArrayList<R>(0);
 		for (D possibleValue : possibleValues) {
 			final R expression = this.expression(possibleValue);
 			exps.add(expression);
 		}
-		return this.isNotIn((R[]) exps.toArray());
+		return this.isNotInCollection(exps);
 	}
 }

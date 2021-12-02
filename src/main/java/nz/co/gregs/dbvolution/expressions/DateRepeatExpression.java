@@ -15,9 +15,12 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.Collection;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -570,25 +573,29 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	}
 
 	@Override
-	public BooleanExpression isIn(DateRepeatResult... otherInstances) {
-		StringResult[] strs = new StringResult[otherInstances.length];
-		int i = 0;
-		for (DateRepeatResult otherInstance : otherInstances) {
-			strs[i] = otherInstance.stringResult();
-			i++;
-		}
-		return this.stringResult().isIn(strs);
+	public BooleanExpression isInCollection(Collection<DateRepeatResult> otherInstances) {
+		List<StringResult> collect = otherInstances.stream().map(v->v.stringResult()).collect(Collectors.toList());
+		return this.stringResult().isInCollection(collect);
+//		StringResult[] strs = new StringResult[otherInstances.length];
+//		int i = 0;
+//		for (DateRepeatResult otherInstance : otherInstances) {
+//			strs[i] = otherInstance.stringResult();
+//			i++;
+//		}
+//		return this.stringResult().isIn(strs);
 	}
 
 	@Override
-	public BooleanExpression isNotIn(DateRepeatResult... otherInstances) {
-		StringResult[] strs = new StringResult[otherInstances.length];
-		int i = 0;
-		for (DateRepeatResult otherInstance : otherInstances) {
-			strs[i] = otherInstance.stringResult();
-			i++;
-		}
-		return this.stringResult().isNotIn(strs);
+	public BooleanExpression isNotInCollection(Collection<DateRepeatResult> otherInstances) {
+		List<StringResult> collect = otherInstances.stream().map(v->v.stringResult()).collect(Collectors.toList());
+		return this.stringResult().isNotInCollection(collect);
+//		StringResult[] strs = new StringResult[otherInstances.length];
+//		int i = 0;
+//		for (DateRepeatResult otherInstance : otherInstances) {
+//			strs[i] = otherInstance.stringResult();
+//			i++;
+//		}
+//		return this.stringResult().isNotIn(strs);
 	}
 
 	@Override
