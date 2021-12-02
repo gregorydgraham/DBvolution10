@@ -608,7 +608,7 @@ public class DBLargeText extends DBLargeObject<byte[]> implements LargeTextResul
 	@Override
 	protected synchronized void setLiteralValue(byte[] newLiteralValue) {
 		if ((!hasBeenSet() && newLiteralValue != null)
-				|| (hasBeenSet() && getLiteralValue() != null && !(new String(getLiteralValue())).equals(new String(newLiteralValue)))
+				|| (hasBeenSet() && getLiteralValue() != null && !(new String(getLiteralValue())).equals(new String(newLiteralValue, UTF_8)))
 				|| (hasBeenSet() && getLiteralValue() == null && newLiteralValue != null && newLiteralValue.length > 0)) {
 			super.setLiteralValue(newLiteralValue);
 		}
