@@ -1366,7 +1366,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				pointCopies.add(pointExpr.copy());
 			}
 			return new Polygon2DExpression.CreatePolygon2DFromPoint2DArrayExpression(
-					pointCopies.isEmpty() ? null : pointCopies.toArray(new Point2DExpression[]{})
+					pointCopies.isEmpty() ? new Point2DExpression[]{} : pointCopies.toArray(new Point2DExpression[]{})
 			);
 		}
 
@@ -1411,7 +1411,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				pointCopies.add(pointExpr.copy());
 			}
 			return new Polygon2DExpression.CreatePolygon2DFromCoordinateArrayExpression(
-					pointCopies.isEmpty() ? null : pointCopies.toArray(new NumberExpression[]{})
+					pointCopies.isEmpty() ? new NumberExpression[]{} : pointCopies.toArray(new NumberExpression[]{})
 			);
 		}
 
@@ -1443,7 +1443,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			final String secondCoord = allCoordinates[1].toSQLString(db);
 			final String secondLastCoord = allCoordinates[allCoordinates.length - 2].toSQLString(db);
 			final String lastCoord = allCoordinates[allCoordinates.length - 1].toSQLString(db);
-			return firstCoord.equals(secondLastCoord)&&secondCoord.equals(lastCoord);
+			return firstCoord.equals(secondLastCoord) && secondCoord.equals(lastCoord);
 		}
 
 		@Override
