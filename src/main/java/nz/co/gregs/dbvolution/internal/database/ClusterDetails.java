@@ -85,6 +85,8 @@ public class ClusterDetails implements Serializable {
 	private DatabaseConnectionSettings clusterSettings;
 	private DBDatabase preferredDatabase;
 
+	private final static Random RANDOM = new Random();
+
 	public ClusterDetails(String label) {
 		this.clusterLabel = label;
 	}
@@ -293,9 +295,8 @@ public class ClusterDetails implements Serializable {
 				awaitReadyDatabase();
 				dbs = getReadyDatabases();
 			}
-			Random rand = new Random();
 			if (dbs.length > 0) {
-				final int randNumber = rand.nextInt(dbs.length);
+				final int randNumber = RANDOM.nextInt(dbs.length);
 				DBDatabase randomElement = dbs[randNumber];
 				return randomElement;
 			}
