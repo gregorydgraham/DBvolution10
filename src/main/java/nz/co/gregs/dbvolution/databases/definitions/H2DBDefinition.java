@@ -49,16 +49,18 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	public static final long serialVersionUID = 1L;
 
 	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSSSSSSSS Z";
-	private static final String H2_DATE_FORMAT_WITHOUT_TZ = "yyyy-M-d HH:mm:ss.SSSSSSSSS";
 	private static final String H2_DATE_FORMAT_INCLUDING_TIMEZONE = "yyyy-M-d HH:mm:ss.SSSSSSSSS Z";//2017-02-18 18:59:59.000 +10:00
-	private static final SimpleDateFormat STRING_TO_DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STR);
 
+	private static SimpleDateFormat getStringToDateFormat() {
+		return new SimpleDateFormat(DATE_FORMAT_STR);
+	}
+	
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		if (date == null) {
 			return getNull();
 		}
-		return "PARSEDATETIME('" + STRING_TO_DATE_FORMAT.format(date) + "','" + H2_DATE_FORMAT_INCLUDING_TIMEZONE + "')";
+		return "PARSEDATETIME('" + getStringToDateFormat().format(date) + "','" + H2_DATE_FORMAT_INCLUDING_TIMEZONE + "')";
 	}
 
 	@Override
@@ -743,5 +745,5 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
 		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION,GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
 	}
-	
+
 }
