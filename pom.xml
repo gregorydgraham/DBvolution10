@@ -900,7 +900,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
-					<artifactId>ojdbc8</artifactId>
+					<artifactId>ojdbc10</artifactId>
 					<version>19.3.0.0</version>
 				</dependency>
 				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
