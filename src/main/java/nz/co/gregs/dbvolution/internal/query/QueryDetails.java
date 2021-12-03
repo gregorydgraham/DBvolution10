@@ -205,7 +205,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the dbReportGroupByColumns
 	 */
 	public Map<Object, DBExpression> getDBReportGroupByColumns() {
-		final HashMap<Object, DBExpression> newMap = new HashMap<Object,DBExpression>();
+		final HashMap<Object, DBExpression> newMap = new HashMap<Object, DBExpression>();
 		newMap.putAll(dbReportGroupByColumns);
 		return newMap;
 	}
@@ -1579,7 +1579,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	public synchronized void setTimeoutInMilliseconds(Long milliseconds) {
-		this.timeoutInMilliseconds = (milliseconds == null ? 0L : milliseconds);
+		if (milliseconds == null) {
+			this.timeoutInMilliseconds = 0L;
+		} else {
+			this.timeoutInMilliseconds = milliseconds;
+		}
 	}
 
 	public synchronized void setTimeoutInMilliseconds(Integer milliseconds) {
