@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +59,9 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  *
  * @author gregorygraham
  */
-public class SortProvider implements DBExpression {
+public class SortProvider implements DBExpression, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public static SortProvider[] getSortProviders(ColumnProvider[] columns) {
 		SortProvider[] sorts = new SortProvider[columns.length];
