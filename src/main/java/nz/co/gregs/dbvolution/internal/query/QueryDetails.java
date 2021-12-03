@@ -102,7 +102,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the allQueryTables
 	 */
 	public List<DBRow> getAllQueryTables() {
-		return allQueryTables;
+		return allQueryTables.subList(0, allQueryTables.size());
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the requiredQueryTables
 	 */
 	public List<DBRow> getRequiredQueryTables() {
-		return requiredQueryTables;
+		return requiredQueryTables.subList(0, requiredQueryTables.size());
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the optionalQueryTables
 	 */
 	public List<DBRow> getOptionalQueryTables() {
-		return optionalQueryTables;
+		return optionalQueryTables.subList(0, optionalQueryTables.size());
 	}
 
 	/**
@@ -1380,7 +1380,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException Database errors
 	 * @throws java.sql.SQLTimeoutException time out exception
-	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL Recursive queries may cause loops
+	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
+	 * Recursive queries may cause loops
 	 */
 	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException, LoopDetectedInRecursiveSQL {
 		final Long timeoutTime = this.getTimeoutInMilliseconds();
@@ -1647,6 +1648,21 @@ public class QueryDetails implements DBQueryable, Serializable {
 	@Override
 	public boolean getDatabaseQuietExceptionsPreference() {
 		return databaseQuietExceptionsPreference;
+	}
+
+	public void addRequiredTable(DBRow table) {
+		getRequiredQueryTables().add(table);
+		getAllQueryTables().add(table);
+	}
+
+	public void addOptionalTable(DBRow table) {
+		getOptionalQueryTables().add(table);
+		getAllQueryTables().add(table);
+	}
+
+	public void addAssumedQueryTable(DBRow table) {
+		getAssumedQueryTables().add(table);
+		getAllQueryTables().add(table);
 	}
 
 	private static class OrderByClause {

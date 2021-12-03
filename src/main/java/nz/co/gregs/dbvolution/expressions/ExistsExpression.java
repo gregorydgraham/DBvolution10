@@ -89,20 +89,17 @@ public class ExistsExpression extends BooleanExpression {
 		for (DBRow outerTable : outerQuery.getAllTables()) {
 			final DBRow newOuter = DBRow.copyDBRow(outerTable);
 			newOuter.setReturnFieldsToNone();
-			this.outerQuery.getRequiredQueryTables().add(newOuter);
-			this.outerQuery.getAllQueryTables().add(newOuter);
+			this.outerQuery.addRequiredTable(newOuter);
 		}
 		for (DBRow innerTable : innerQuery.getRequiredTables()) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
 			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
-			this.innerQuery.getRequiredQueryTables().add(newInner);
-			this.innerQuery.getAllQueryTables().add(newInner);
+			this.innerQuery.addRequiredTable(newInner);
 		}
 		for (DBRow innerTable : innerQuery.getOptionalTables()) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
 			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
-			this.innerQuery.getOptionalQueryTables().add(newInner);
-			this.innerQuery.getAllQueryTables().add(newInner);
+			this.innerQuery.addOptionalTable(newInner);
 		}
 	}
 
