@@ -827,7 +827,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public void ignoreForeignKey(PropertyWrapper<?, ?, ?> fkProp) throws IncorrectRowProviderInstanceSuppliedException {
 		if (fkProp == null) {
-			throw new IncorrectRowProviderInstanceSuppliedException(this, fkProp);
+			throw new IncorrectRowProviderInstanceSuppliedException(this);
 		}
 		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
 	}
@@ -1922,7 +1922,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	public SortProvider getSortedSubSelectRequired() {
-		return sortedSubselectRequired.copy();
+		return sortedSubselectRequired==null?null:sortedSubselectRequired.copy();
 	}
 
 	public boolean hasAutomaticValueFields() {
