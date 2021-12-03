@@ -26,5 +26,11 @@ jobs:
       uses: s4u/maven-settings-action@v2.4.1
       with:
         oracleRepo: true
+        servers: |
+          [{
+            "id": "maven.oracle.com",
+            "username": "${{ secrets.ORACLE_USERNAME }}",
+            "password": "${{ secrets.ORACLE_PASSWORD }}"
+          }]
     - name: Build with Maven
       run: mvn -B test -P H2DBTest --file pom.xml
