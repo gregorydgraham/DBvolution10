@@ -378,6 +378,23 @@ public class SortProvider implements DBExpression {
 		}
 	}
 
+	public static class DefaultSort extends SortProvider {
+
+		public DefaultSort(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp) {
+			super(exp, Ordering.UNDEFINED);
+		}
+
+		@Override
+		public String getSortDirectionSQL(DBDefinition defn) {
+			return defn.getOrderByDirectionClause(QueryableDatatype.SORT_UNSORTED);
+		}
+
+		@Override
+		public DefaultSort copy() {
+			return new DefaultSort(getInnerExpression());
+		}
+	}
+
 	public static class Descending extends SortProvider {
 
 		public Descending(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp) {
