@@ -395,10 +395,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 		if (!options.getQueryDefinition().supportsFullOuterJoinNatively()) {
 			final List<String> sqlForQueryInternal = getSQLForQueryInternal(new QueryState(details), QueryType.SELECT, options);
 			String endStatement = options.getQueryDefinition().endSQLStatement();
-			RegexReplacement replace = Regex.empty().literal(";").literal(" ").optionalMany().endOfTheString().toRegex().replaceWith().literal("");
+			RegexReplacement removeTrailingSemiColons = Regex.empty().literal(";").literal(" ").optionalMany().endOfTheString().toRegex().replaceWith().literal("");
 			return sqlForQueryInternal
 					.stream()
-					.map((sql) -> "SELECT COUNT(*) FROM (" + sql.replaceAll("; *$", "") + ") A" + endStatement)
+					.map((sql) -> "SELECT COUNT(*) FROM (" + removeTrailingSemiColons.replaceAll(sql) + ") A" + endStatement)
 					.collect(Collectors.toList());
 		} else {
 			return getSQLForQueryInternal(new QueryState(details), QueryType.COUNT, options);
@@ -1573,7 +1573,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	public synchronized void setTimeoutInMilliseconds(Long milliseconds) {
-		this.timeoutInMilliseconds = milliseconds == null ? 0l : milliseconds;
+		this.timeoutInMilliseconds = (milliseconds == null ? 0L : milliseconds);
 	}
 
 	public synchronized void setTimeoutInMilliseconds(Integer milliseconds) {
