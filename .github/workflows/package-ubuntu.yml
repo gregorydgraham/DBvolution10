@@ -27,7 +27,7 @@ jobs:
       with:
         servers: |
           [{
-            "id": "maven.oracle.com",
+            "id": "maven-oracle-com",
             "username": "${{ secrets.ORACLE_USERNAME }}",
             "password": "${{ secrets.ORACLE_PASSWORD }}"
           }]
