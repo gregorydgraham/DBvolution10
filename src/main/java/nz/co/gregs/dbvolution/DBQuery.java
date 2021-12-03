@@ -261,16 +261,12 @@ public class DBQuery implements Serializable {
 	 * @param examples a list of DBRow instances to remove from the query
 	 * @return this DBQuery instance
 	 */
-	public DBQuery remove(DBRow... examples) {
+	public synchronized DBQuery remove(DBRow... examples) {
 		for (DBRow table : examples) {
-			Iterator<DBRow> iterator = details.getAllQueryTables().iterator();
-			while (iterator.hasNext()) {
-				DBRow qtab = iterator.next();
-				if (qtab.isPeerOf(table)) {
-					details.getRequiredQueryTables().remove(qtab);
-					details.getOptionalQueryTables().remove(qtab);
-					details.getAssumedQueryTables().remove(qtab);
-					iterator.remove();
+			List<DBRow> list = details.getAllQueryTables();
+			for (DBRow dBRow : list) {
+				if (dBRow.isPeerOf(table)) {
+					details.removeTable(dBRow);
 				}
 			}
 		}
@@ -1858,8 +1854,8 @@ public class DBQuery implements Serializable {
 	 * Adds Extra Examples to the Query.
 	 *
 	 * <p>
-	 * The included DBRow instances will be used to add extra criteria as
-	 * though they were an added table.
+	 * The included DBRow instances will be used to add extra criteria as though
+	 * they were an added table.
 	 *
 	 * <p>
 	 * Only useful for DBReports or queries that have been
@@ -2252,7 +2248,8 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * Use this method If you require a longer running query.
 	 *
-	 * @param milliseconds the maximum time, in milliseconds, that this query is allowed to run
+	 * @param milliseconds the maximum time, in milliseconds, that this query is
+	 * allowed to run
 	 *
 	 * @return this query.
 	 */
@@ -2275,7 +2272,8 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * Use this method If you require a longer running query.
 	 *
-	 * @param milliseconds the maximum time, in milliseconds, that this query is allowed to run
+	 * @param milliseconds the maximum time, in milliseconds, that this query is
+	 * allowed to run
 	 *
 	 * @return this query.
 	 */

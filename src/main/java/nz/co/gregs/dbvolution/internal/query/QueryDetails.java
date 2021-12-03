@@ -35,7 +35,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -69,19 +68,19 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private Long timeoutInMilliseconds = 0l;//DEFAULT_TIMEOUT_MILLISECONDS;
 
-	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
+	private final Map<Class<? extends DBRow>, DBRow> emptyRows = Collections.synchronizedMap( new HashMap<>());
 
-	private final List<DBRow> allQueryTables = new ArrayList<>();
-	private final List<DBRow> requiredQueryTables = new ArrayList<>();
-	private final List<DBRow> optionalQueryTables = new ArrayList<>();
-	private final List<DBRow> assumedQueryTables = new ArrayList<>();
+	private final List<DBRow> allQueryTables = Collections.synchronizedList(new ArrayList<>());
+	private final List<DBRow> requiredQueryTables =Collections.synchronizedList( new ArrayList<>());
+	private final List<DBRow> optionalQueryTables = Collections.synchronizedList(new ArrayList<>());
+	private final List<DBRow> assumedQueryTables =Collections.synchronizedList( new ArrayList<>());
 
 	private QueryOptions options = new QueryOptions();
-	private final List<DBRow> extraExamples = new ArrayList<>();
-	private final List<BooleanExpression> conditions = new ArrayList<>();
-	private final Map<Object, QueryableDatatype<?>> expressionColumns = new LinkedHashMap<>();
-	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<>();
-	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
+	private final List<DBRow> extraExamples =Collections.synchronizedList( new ArrayList<>());
+	private final List<BooleanExpression> conditions = Collections.synchronizedList(new ArrayList<>());
+	private final Map<Object, QueryableDatatype<?>> expressionColumns =Collections.synchronizedMap( new LinkedHashMap<>());
+	private final Map<Object, DBExpression> dbReportGroupByColumns = Collections.synchronizedMap( new LinkedHashMap<>());
+	private final Map<Class<?>, Map<String, DBRow>> existingInstances = Collections.synchronizedMap( new HashMap<>());
 	private boolean groupByRequiredByAggregator = false;
 	private String selectSQLClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
@@ -413,7 +412,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	protected synchronized List<String> getSQLForQueryInternal(QueryState queryState, QueryType queryType, QueryOptions options) {
 		try {
 			List<String> sqlList = new ArrayList<>();
-			final List<DBRow> allQueryTablesList = getAllQueryTables();
+			final List<DBRow> allQueryTablesList = allQueryTables;
 			final int allQueryTablesListSize = allQueryTablesList.size();
 
 			if (allQueryTablesListSize >= 0) {
@@ -1660,30 +1659,37 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	public void addRequiredTable(DBRow table) {
-		getRequiredQueryTables().add(table);
-		getAllQueryTables().add(table);
+		requiredQueryTables.add(table);
+		allQueryTables.add(table);
 	}
 
 	public void addOptionalTable(DBRow table) {
-		getOptionalQueryTables().add(table);
-		getAllQueryTables().add(table);
+		optionalQueryTables.add(table);
+		allQueryTables.add(table);
 	}
 
 	public void addAssumedQueryTable(DBRow table) {
-		getAssumedQueryTables().add(table);
-		getAllQueryTables().add(table);
+		assumedQueryTables.add(table);
+		allQueryTables.add(table);
 	}
 
 	public void addCondition(BooleanExpression condition) {
-		getConditions().add(condition);
+		conditions.add(condition);
 	}
 
 	public void clearConditions() {
-		getConditions().clear();
+		conditions.clear();
 	}
 
 	public void addDBReportGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
 		dbReportGroupByColumns.put(identifyingObject, expressionToAdd);
+	}
+
+	public synchronized void removeTable(DBRow qtab) {
+		requiredQueryTables.remove(qtab);
+		optionalQueryTables.remove(qtab);
+		assumedQueryTables.remove(qtab);
+		allQueryTables.remove(qtab);
 	}
 
 	private static class OrderByClause {
