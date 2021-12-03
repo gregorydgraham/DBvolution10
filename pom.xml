@@ -898,17 +898,10 @@
 				</plugins>
 			</build>
 			<dependencies>
-				<dependency>
+<!--				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
 					<artifactId>ojdbc10</artifactId>
 					<version>19.3.0.0</version>
-				</dependency>
-				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
-				<!--				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc6</artifactId>
-					<version>12.1.0.1-atlassian-hosted</version>
-					<scope>test</scope>
 				</dependency>-->
 			</dependencies>
 		</profile>
@@ -940,17 +933,10 @@
 				</plugins>
 			</build>
 			<dependencies>
-				<dependency>
+<!--				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
-					<artifactId>ojdbc8</artifactId>
+					<artifactId>ojdbc10</artifactId>
 					<version>19.3.0.0</version>
-				</dependency>
-				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
-				<!--				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc6</artifactId>
-					<version>12.1.0.1-atlassian-hosted</version>
-					<scope>test</scope>
 				</dependency>-->
 			</dependencies>
 		</profile>
@@ -979,14 +965,9 @@
 		<profile>
 			<id>OracleXETest</id>
 			<dependencies>
-				<dependency>
-					<groupId>com.oracle.jdbc</groupId>
-					<artifactId>ojdbc8</artifactId>
-					<version>19.3.0.0</version>
-				</dependency>
 <!--				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
-					<artifactId>ojdbc8</artifactId>
+					<artifactId>ojdbc10</artifactId>
 					<version>19.3.0.0</version>
 				</dependency>-->
 			</dependencies>
@@ -1013,14 +994,9 @@
 		<profile>
 			<id>OracleXEContainerTest</id>
 			<dependencies>
-				<dependency>
+<!--				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
-					<artifactId>ojdbc8</artifactId>
-					<version>19.3.0.0</version>
-				</dependency>
-				<!--				<dependency>
-					<groupId>com.oracle.jdbc</groupId>
-					<artifactId>ojdbc8</artifactId>
+					<artifactId>ojdbc10</artifactId>
 					<version>19.3.0.0</version>
 				</dependency>-->
 			</dependencies>
@@ -1573,7 +1549,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.oracle.jdbc</groupId>
-			<artifactId>ojdbc8</artifactId>
+			<artifactId>ojdbc10</artifactId>
 			<version>19.3.0.0</version>
 		</dependency>
 		<dependency>
