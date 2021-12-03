@@ -122,7 +122,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private boolean isDefined = false;
 	private final List<PropertyWrapperDefinition<?, ?>> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition<?, ?>>());
 	private transient Boolean hasBlobs;
-	private transient final List<PropertyWrapper<?, ?, ?>> fkFields = new ArrayList<>();
 	private transient final List<PropertyWrapper<?, ?, ?>> blobColumns = new ArrayList<>();
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<>(new DBRow.ClassNameComparator());
 	private Boolean emptyRow = true;
@@ -561,18 +560,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		StringBuilder whereClause = new StringBuilder();
 		DBOperator op = qdt.getOperator();
 		if (op != null) {
-			if (column instanceof DBExpression) {
-				DBExpression requiredExpression = column;
-				if (qdt.hasColumnExpression()) {
-					DBExpression[] columnExpression = qdt.getColumnExpression();
-					String sep = "";
-					for (DBExpression dBExpression : columnExpression) {
-						whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
-						sep = db.beginAndLine();
-					}
-				} else {
-					whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
+			DBExpression requiredExpression = column;
+			if (qdt.hasColumnExpression()) {
+				DBExpression[] columnExpression = qdt.getColumnExpression();
+				String sep = "";
+				for (DBExpression dBExpression : columnExpression) {
+					whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
+					sep = db.beginAndLine();
 				}
+			} else {
+				whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
 			}
 		}
 		return whereClause.toString();
@@ -617,20 +614,18 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		BooleanExpression whereClause = null;
 		DBOperator op = qdt.getOperator();
 		if (op != null) {
-			if (column instanceof DBExpression) {
-				DBExpression requiredExpression = column;
-				if (qdt.hasColumnExpression()) {
-					DBExpression[] columnExpression = qdt.getColumnExpression();
-					for (DBExpression dBExpression : columnExpression) {
-						if (whereClause == null) {
-							whereClause = op.generateWhereExpression(db, dBExpression);
-						} else {
-							whereClause = whereClause.and(op.generateWhereExpression(db, dBExpression));
-						}
+			DBExpression requiredExpression = column;
+			if (qdt.hasColumnExpression()) {
+				DBExpression[] columnExpression = qdt.getColumnExpression();
+				for (DBExpression dBExpression : columnExpression) {
+					if (whereClause == null) {
+						whereClause = op.generateWhereExpression(db, dBExpression);
+					} else {
+						whereClause = whereClause.and(op.generateWhereExpression(db, dBExpression));
 					}
-				} else {
-					whereClause = op.generateWhereExpression(db, requiredExpression);
 				}
+			} else {
+				whereClause = op.generateWhereExpression(db, requiredExpression);
 			}
 		}
 		return whereClause;
@@ -718,22 +713,19 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
 	public List<PropertyWrapper<?, ?, ?>> getForeignKeyPropertyWrappers() {
-		synchronized (fkFields) {
-			if (fkFields.isEmpty()) {
-				var props = getWrapper().getForeignKeyPropertyWrappers();
+		var results = new ArrayList<PropertyWrapper<?, ?, ?>>(0);
+		var props = getWrapper().getForeignKeyPropertyWrappers();
 
-				for (var prop : props) {
-					if (prop.isColumn()) {
-						if (prop.isForeignKey()) {
-							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
-								fkFields.add(prop);
-							}
-						}
+		for (var prop : props) {
+			if (prop.isColumn()) {
+				if (prop.isForeignKey()) {
+					if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
+						results.add(prop);
 					}
 				}
 			}
-			return fkFields;
 		}
+		return results;
 	}
 
 	/**
@@ -741,63 +733,54 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
 	public List<PropertyWrapper<?, ?, ?>> getNonPrimaryKeyPropertyWrappers() {
-		synchronized (fkFields) {
-			if (fkFields.isEmpty()) {
-				var props = getWrapper().getForeignKeyPropertyWrappers();
+		var results = new ArrayList<PropertyWrapper<?, ?, ?>>(0);
+		var props = getWrapper().getForeignKeyPropertyWrappers();
 
-				for (var prop : props) {
-					if (prop.isColumn()) {
-						if (!prop.isPrimaryKey()) {
-							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
-								fkFields.add(prop);
-							}
-						}
+		for (var prop : props) {
+			if (prop.isColumn()) {
+				if (!prop.isPrimaryKey()) {
+					if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
+						results.add(prop);
 					}
 				}
 			}
-			return fkFields;
 		}
+		return results;
 	}
 
 	public List<PropertyWrapper<?, ?, ?>> getNonPrimaryKeyNonDynamicPropertyWrappers() {
-		synchronized (fkFields) {
-			if (fkFields.isEmpty()) {
-				var props = getWrapper().getColumnPropertyWrappers();
+		var results = new ArrayList<PropertyWrapper<?, ?, ?>>(0);
+		var props = getWrapper().getColumnPropertyWrappers();
 
-				for (var prop : props) {
-					if (prop.isColumn()) {
-						if (!prop.isPrimaryKey()) {
-							if (!prop.hasColumnExpression()) {
-								fkFields.add(prop);
-							}
-						}
+		for (var prop : props) {
+			if (prop.isColumn()) {
+				if (!prop.isPrimaryKey()) {
+					if (!prop.hasColumnExpression()) {
+						results.add(prop);
 					}
 				}
 			}
-			return fkFields;
 		}
+		return results;
 	}
 
 	/**
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
 	public List<PropertyWrapper<?, ?, ?>> getRecursiveForeignKeyPropertyWrappers() {
-		synchronized (fkFields) {
-			if (fkFields.isEmpty()) {
-				var props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
+		var results = new ArrayList<PropertyWrapper<?, ?, ?>>(0);
+		var props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
 
-				for (var prop : props) {
-					if (prop.isColumn()) {
-						if (prop.isForeignKey() && prop.isRecursiveForeignKey()) {
-							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
-								fkFields.add(prop);
-							}
-						}
+		for (var prop : props) {
+			if (prop.isColumn()) {
+				if (prop.isForeignKey() && prop.isRecursiveForeignKey()) {
+					if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
+						results.add(prop);
 					}
 				}
 			}
-			return fkFields;
 		}
+		return results;
 	}
 
 	/**
@@ -823,7 +806,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, qdt);
 		}
 		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
-		fkFields.clear();
 	}
 
 	/**
@@ -848,7 +830,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fkProp);
 		}
 		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
-		fkFields.clear();
 	}
 
 	/**
@@ -917,7 +898,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public void ignoreForeignKey(ColumnProvider column) {
 		var fkProp = column.getColumn().getPropertyWrapper();
 		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
-		fkFields.clear();
 	}
 
 	/**
@@ -931,7 +911,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public void useAllForeignKeys() {
 		getIgnoredForeignKeys().clear();
-		fkFields.clear();
 	}
 
 	/**
@@ -947,7 +926,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (var prop : props) {
 			getIgnoredForeignKeys().add(prop.getPropertyWrapperDefinition());
 		}
-		fkFields.clear();
 	}
 
 	/**
@@ -978,7 +956,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				getIgnoredForeignKeys().add(propDefn);
 			}
 		}
-		fkFields.clear();
 	}
 
 	/**
@@ -1869,8 +1846,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 							field.setRawJavaValue(relatedInstancesFromQuery);
 						} else if (relatedInstancesFromQuery.isEmpty()) {
 							field.setRawJavaValue(null);
-						} else if (relatedInstancesFromQuery.size() == 1) {
-							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						} else {
 							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						}
