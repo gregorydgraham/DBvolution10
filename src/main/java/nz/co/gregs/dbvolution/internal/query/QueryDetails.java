@@ -35,6 +35,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -184,7 +185,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the conditions
 	 */
 	public List<BooleanExpression> getConditions() {
-		return conditions;
+		return conditions.subList(0, conditions.size());
 	}
 
 	/**
@@ -204,7 +205,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the dbReportGroupByColumns
 	 */
 	public Map<Object, DBExpression> getDBReportGroupByColumns() {
-		return dbReportGroupByColumns;
+		final HashMap<Object, DBExpression> newMap = new HashMap<Object,DBExpression>();
+		newMap.putAll(dbReportGroupByColumns);
+		return newMap;
 	}
 
 	/**
@@ -239,7 +242,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return TRUE if the GROUP BY clause is required, otherwise FALSE.
 	 */
 	public boolean isGroupedQuery() {
-		return getDBReportGroupByColumns().size() > 0 || getGroupByRequiredByAggregator();
+		return dbReportGroupByColumns.size() > 0 || getGroupByRequiredByAggregator();
 	}
 
 	/**
@@ -609,7 +612,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					}
 				}
 
-				for (Map.Entry<Object, DBExpression> entry : getDBReportGroupByColumns().entrySet()) {
+				for (Map.Entry<Object, DBExpression> entry : dbReportGroupByColumns.entrySet()) {
 					final DBExpression expression = entry.getValue();
 					if (!expression.isWindowingFunction()
 							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
@@ -1561,7 +1564,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	public synchronized List<DBQueryRow> getCurrentPage() {
-		return currentPage;
+		return currentPage.subList(0, currentPage.size());
 	}
 
 	public synchronized void clear() {
@@ -1663,6 +1666,18 @@ public class QueryDetails implements DBQueryable, Serializable {
 	public void addAssumedQueryTable(DBRow table) {
 		getAssumedQueryTables().add(table);
 		getAllQueryTables().add(table);
+	}
+
+	public void addCondition(BooleanExpression condition) {
+		getConditions().add(condition);
+	}
+
+	public void clearConditions() {
+		getConditions().clear();
+	}
+
+	public void addDBReportGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
+		dbReportGroupByColumns.put(identifyingObject, expressionToAdd);
 	}
 
 	private static class OrderByClause {

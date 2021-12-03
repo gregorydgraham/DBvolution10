@@ -1557,7 +1557,7 @@ public class DBQuery implements Serializable {
 			details.setHavingColumns(condition);
 			details.setGroupByRequiredByAggregator(true);
 		} else {
-			details.getConditions().add(condition);
+			details.addCondition(condition);
 		}
 		blankResults();
 		return this;
@@ -1671,7 +1671,7 @@ public class DBQuery implements Serializable {
 	 * @return this DBQuery object
 	 */
 	public DBQuery clearConditions() {
-		details.getConditions().clear();
+		details.clearConditions();
 		blankResults();
 		return this;
 	}
@@ -1833,7 +1833,7 @@ public class DBQuery implements Serializable {
 	 * @return this DBQuery instance
 	 */
 	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
-		details.getDBReportGroupByColumns().put(identifyingObject, expressionToAdd);
+		details.addDBReportGroupByColumn(identifyingObject, expressionToAdd);
 		return this;
 	}
 
