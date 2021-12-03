@@ -25,7 +25,6 @@ jobs:
     - name: Create Settings File with Oracle Repo
       uses: s4u/maven-settings-action@v2.4.1
       with:
-        oracleRepo: true
         servers: |
           [{
             "id": "maven.oracle.com",
