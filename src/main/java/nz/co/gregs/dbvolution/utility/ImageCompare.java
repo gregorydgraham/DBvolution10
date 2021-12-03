@@ -22,32 +22,23 @@ public class ImageCompare {
 	protected int factorA = 0;
 	protected int factorD = 10;
 	protected boolean match = false;
-	protected int debugMode = 0; // 1: textual indication of change, 2: difference of factors
+	protected int debugMode = 0; 
 	private boolean compared = false;
 
-	// constructor 1. use filenames
-//	public ImageCompare(String file1, String file2) throws IOException {
-//		this(loadJPG(file1), loadJPG(file2));
-//	}
-
-	// constructor 1b. use files
 	public ImageCompare(File file1, File file2) throws IOException {
 		this(loadJPG(file1.getAbsolutePath()), loadJPG(file2.getAbsolutePath()));
 	}
 
-	// constructor 2. use awt images.
 	public ImageCompare(Image img1, Image img2) {
 		this(imageToBufferedImage(img1), imageToBufferedImage(img2));
 	}
 
-	// constructor 3. use buffered images. all roads lead to the same place. this place.
-	public ImageCompare(BufferedImage img1, BufferedImage img2) {
+	protected ImageCompare(BufferedImage img1, BufferedImage img2) {
 		this.original1 = img1;
 		this.original2 = img2;
 		autoSetParameters();
 	}
 
-	// like this to perhaps be upgraded to something more heuristic in the future.
 	protected synchronized final void autoSetParameters() {
 		compared = false;
 		imageDiff = null;
@@ -57,7 +48,6 @@ public class ImageCompare {
 		factorD = 10;
 	}
 
-	// set the parameters for use during change detection.
 	public synchronized void setParameters(int x, int y, int factorA, int factorD) {
 		compared = false;
 		imageDiff = null;
@@ -68,7 +58,7 @@ public class ImageCompare {
 	}
 
 	// compare the two images in this object.
-	public void compare() {
+	public synchronized void compare() {
 		// setup change display image
 		imageDiff = imageToBufferedImage(original2);
 		Graphics2D gc = imageDiff.createGraphics();
@@ -109,11 +99,6 @@ public class ImageCompare {
 		compared = true;
 	}
 
-	// return the image that indicates the regions where changes where detected.
-//	public BufferedImage getChangeIndicator() {
-//		return imageDiff;
-//	}
-
 	// returns a value specifying some kind of average brightness in the image.
 	protected int getAverageBrightness(BufferedImage img) {
 		Raster r = img.getData();
@@ -127,7 +112,7 @@ public class ImageCompare {
 	}
 
 	// returns true if image pair is considered a match
-	public boolean match() {
+	public synchronized boolean match() {
 		if (!compared) {
 			compare();
 		}
@@ -142,17 +127,8 @@ public class ImageCompare {
 		return bi;
 	}
 
-	// write a buffered image to a jpeg file.
-//	protected static void saveJPG(Image img, String filename) throws FileNotFoundException, IOException {
-//		BufferedImage bi = imageToBufferedImage(img);
-//		FileOutputStream out = new FileOutputStream(filename);
-//		ImageIO.write(bi, "jpg", out);
-//	}
-
 	// read a jpeg file into a buffered image
 	protected static Image loadJPG(String filename) throws IOException {
-		FileInputStream in = null;
-		in = new FileInputStream(filename);
 		BufferedImage bi = ImageIO.read(new File(filename));
 		return bi;
 	}
