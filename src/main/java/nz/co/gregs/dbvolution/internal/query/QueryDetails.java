@@ -217,7 +217,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the existingInstances
 	 */
 	public Map<Class<?>, Map<String, DBRow>> getExistingInstances() {
-		return existingInstances;
+		HashMap<Class<?>, Map<String, DBRow>> hashMap = new HashMap<Class<?>, Map<String, DBRow>>();
+		hashMap.putAll(existingInstances);
+		return hashMap;
 	}
 
 	/**
@@ -1515,7 +1517,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		if (hashMap == null) {
 			hashMap = new HashMap<>();
 		}
-		getExistingInstances().put(newInstance.getClass(), hashMap);
+		existingInstances.put(newInstance.getClass(), hashMap);
 		return hashMap;
 	}
 
