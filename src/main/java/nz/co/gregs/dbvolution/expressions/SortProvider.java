@@ -366,6 +366,8 @@ public class SortProvider implements DBExpression, Serializable {
 
 	public static class Ascending extends SortProvider {
 
+		private static final long serialVersionUID = 1L;
+
 		public Ascending(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp) {
 			super(exp, Ordering.ASCENDING);
 		}
@@ -382,6 +384,8 @@ public class SortProvider implements DBExpression, Serializable {
 	}
 
 	public static class DefaultSort extends SortProvider {
+
+		private static final long serialVersionUID = 1L;
 
 		public DefaultSort(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp) {
 			super(exp, Ordering.UNDEFINED);
@@ -400,6 +404,8 @@ public class SortProvider implements DBExpression, Serializable {
 
 	public static class Descending extends SortProvider {
 
+		private static final long serialVersionUID = 1L;
+
 		public Descending(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp) {
 			super(exp, Ordering.DESCENDING);
 		}
@@ -416,6 +422,8 @@ public class SortProvider implements DBExpression, Serializable {
 	}
 
 	public static class Column extends SortProvider {
+
+		private static final long serialVersionUID = 1L;
 
 		public Column(AbstractColumn column) {
 			super(column);
@@ -460,6 +468,8 @@ public class SortProvider implements DBExpression, Serializable {
 	}
 
 	public static abstract class NullsOrderer extends SortProvider {
+
+		private static final long serialVersionUID = 1L;
 
 		protected NullsOrderer(SortProvider sort, OrderOfNulls nullsOrdering) {
 			super(sort);
@@ -545,6 +555,8 @@ public class SortProvider implements DBExpression, Serializable {
 
 	public static class NullsLast extends NullsOrderer {
 
+		private static final long serialVersionUID = 1L;
+
 		public NullsLast(SortProvider sort) {
 			super(sort, OrderOfNulls.LAST);
 		}
@@ -567,6 +579,8 @@ public class SortProvider implements DBExpression, Serializable {
 
 	private static class NullsFirst extends NullsOrderer {
 
+		private static final long serialVersionUID = 1L;
+
 		public NullsFirst(SortProvider sort) {
 			super(sort, OrderOfNulls.FIRST);
 		}
@@ -588,6 +602,8 @@ public class SortProvider implements DBExpression, Serializable {
 	}
 
 	private static class NullsHighest extends NullsOrderer {
+
+		private static final long serialVersionUID = 1L;
 
 		public NullsHighest(SortProvider sort) {
 			super(sort, OrderOfNulls.HIGHEST);
@@ -632,6 +648,8 @@ public class SortProvider implements DBExpression, Serializable {
 	}
 
 	private static class NullsLowest extends NullsOrderer {
+
+		private static final long serialVersionUID = 1L;
 
 		public NullsLowest(SortProvider sort) {
 			super(sort, OrderOfNulls.LOWEST);
