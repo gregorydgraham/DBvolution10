@@ -53,6 +53,20 @@ public class IncorrectRowProviderInstanceSuppliedException extends DBRuntimeExce
 	 * Thrown when the current object needs the supplied variable to be a field of
 	 * the object, but it isn't.
 	 *
+	 * <p>
+	 * This method helps construct the exception when the incorrect value supplied
+	 * is null.</p>
+	 *
+	 * @param row row
+	 */
+	public IncorrectRowProviderInstanceSuppliedException(RowDefinition row) {
+		super(constructMessage(row, null));
+	}
+
+	/**
+	 * Thrown when the current object needs the supplied variable to be a field of
+	 * the object, but it isn't.
+	 *
 	 * @param row row
 	 * @param qdt qdt
 	 */
