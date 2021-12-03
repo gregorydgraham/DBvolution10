@@ -1918,11 +1918,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	public void setSortedSubselectRequired(SortProvider value) {
-		sortedSubselectRequired = value;
+		sortedSubselectRequired = value.copy();
 	}
 
 	public SortProvider getSortedSubSelectRequired() {
-		return sortedSubselectRequired;
+		return sortedSubselectRequired.copy();
 	}
 
 	public boolean hasAutomaticValueFields() {
