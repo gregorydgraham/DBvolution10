@@ -35,8 +35,8 @@ public class TreeNode<T extends DBRow> {
 
 	private final List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
 	private final List<String> childrenKeys = new ArrayList<String>();
-	private TreeNode<T> parent = null;
-	private T data = null;
+	private TreeNode<T> parent;
+	private final T data;
 
 	/**
 	 * Create a new node for the DBRow
@@ -44,7 +44,7 @@ public class TreeNode<T extends DBRow> {
 	 * @param data the data to store in the node
 	 */
 	public TreeNode(T data) {
-		this.data = data;
+		this(data, null);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class TreeNode<T extends DBRow> {
 	 * @param parent the parent node of the data
 	 */
 	public TreeNode(T data, TreeNode<T> parent) {
-		this.data = data;
+		this.data = DBRow.copyDBRow(data);
 		this.parent = parent;
 	}
 
@@ -66,7 +66,7 @@ public class TreeNode<T extends DBRow> {
 	 * @return a list of TreeNodes
 	 */
 	public List<TreeNode<T>> getChildren() {
-		return children;
+		return children.subList(0, children.size());
 	}
 
 	private void setParent(TreeNode<T> parent) {
@@ -117,15 +117,6 @@ public class TreeNode<T extends DBRow> {
 	}
 
 	/**
-	 * Set the DBRow within this node.
-	 *
-	 * @param data the data to store in this node
-	 */
-	public void setData(T data) {
-		this.data = data;
-	}
-
-	/**
 	 * Indicates whether or not this node is a root node, that is it has no known
 	 * parent.
 	 *
@@ -146,14 +137,6 @@ public class TreeNode<T extends DBRow> {
 	}
 
 	/**
-	 * Remove the link to this node's parent, if any.
-	 *
-	 */
-	public void removeParent() {
-		this.parent = null;
-	}
-
-	/**
 	 * Retrieves the node that is the parent of this node.
 	 *
 	 * <p>
@@ -167,12 +150,12 @@ public class TreeNode<T extends DBRow> {
 
 	@Override
 	public String toString() {
-		return this.getData().toString();
+		return this.data.toString();
 	}
 
 	private String getKey() {
 		StringBuilder returnString = new StringBuilder("");
-		final List<QueryableDatatype<?>> pks = this.getData().getPrimaryKeys();
+		final List<QueryableDatatype<?>> pks = this.data.getPrimaryKeys();
 		for (QueryableDatatype<?> pk : pks) {
 			returnString.append("&&").append(pk.stringValue());
 		}
