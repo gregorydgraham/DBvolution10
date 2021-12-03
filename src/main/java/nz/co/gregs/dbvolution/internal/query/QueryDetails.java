@@ -130,7 +130,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the assumedQueryTables
 	 */
 	public List<DBRow> getAssumedQueryTables() {
-		return assumedQueryTables;
+		return assumedQueryTables.subList(0, assumedQueryTables.size());
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the extraExamples
 	 */
 	public List<DBRow> getExtraExamples() {
-		return extraExamples;
+		return extraExamples.subList(0, extraExamples.size());
 	}
 
 	/**
@@ -193,8 +193,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 *
 	 * @return the expressionColumns
 	 */
-	public Map<Object, QueryableDatatype<?>> getExpressionColumns() {
-		return expressionColumns;
+	public Map<Object, QueryableDatatype<?>> getExpressionColumnsCopy() {
+		final var newMap = new HashMap<Object, QueryableDatatype<?>>();
+		newMap.putAll(expressionColumns);
+		return newMap;
+//		return expressionColumns;
 	}
 
 	/**
@@ -316,7 +319,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	/**
 	 * @param results the results to set
 	 */
-	public synchronized void setResults(List<DBQueryRow> results) {
+	protected synchronized void setResults(List<DBQueryRow> results) {
 		this.results = results;
 	}
 
@@ -324,7 +327,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @return the resultSQL
 	 */
 	public synchronized List<String> getSQLQueries() {
-		return resultSQL;
+		return resultSQL.subList(0, resultSQL.size());
 	}
 
 	/**
@@ -551,7 +554,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					whereClause.append(defn.beginConditionClauseLine(options)).append(conditionsAsSQLClause);
 				}
 
-				for (DBRow extra : getExtraExamples()) {
+				for (DBRow extra : extraExamples) {
 					List<String> extraCriteria = extra.getWhereClausesWithAliases(defn);
 					if (extraCriteria != null && !extraCriteria.isEmpty()) {
 						for (String clause : extraCriteria) {
@@ -565,7 +568,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					queryState.consumeExpression(expression);
 				}
 
-				for (Map.Entry<Object, QueryableDatatype<?>> entry : getExpressionColumns().entrySet()) {
+				for (Map.Entry<Object, QueryableDatatype<?>> entry : expressionColumns.entrySet()) {
 					final Object key = entry.getKey();
 					final QueryableDatatype<?> qdt = entry.getValue();
 					DBExpression[] expressions = qdt.getColumnExpression();
@@ -748,7 +751,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		List<DBRow> previousTables = queryState.getJoinedTables();
 		final ArrayList<DBRow> preExistingTables = new ArrayList<>();
 		preExistingTables.addAll(previousTables);
-		preExistingTables.addAll(getAssumedQueryTables());
+		preExistingTables.addAll(assumedQueryTables);
 
 		List<DBRow> requiredTables = getRequiredQueryTables();
 
@@ -1074,13 +1077,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	public synchronized boolean needsResults(QueryOptions options) {
 		final DBDatabase queryDatabase = options.getQueryDatabase();
-		return getResults() == null
+		return results == null
 				|| queryDatabase == null
-				|| getSQLQueries() == null
-				|| getResults().isEmpty()
+				|| resultSQL == null
+				|| results.isEmpty()
 				|| !getResultsPageIndex().equals(options.getPageIndex())
 				|| !getResultsRowLimit().equals(options.getRowLimit())
-				|| !getSQLQueries().equals(getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options));
+				|| !resultSQL.equals(getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options));
 	}
 
 	@Override
@@ -1094,12 +1097,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 				Logger.getLogger(QueryDetails.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		if (opts.getRowLimit() > 0 && getResults().size() > opts.getRowLimit()) {
+		if (opts.getRowLimit() > 0 && results.size() > opts.getRowLimit()) {
 			final int firstItemOfPage = opts.getPageIndex() * opts.getRowLimit();
 			final int firstItemOfNextPage = (opts.getPageIndex() + 1) * opts.getRowLimit();
-			return getResults().subList(firstItemOfPage, firstItemOfNextPage);
+			return results.subList(firstItemOfPage, firstItemOfNextPage);
 		} else {
-			return getResults();
+			return results.subList(0, results.size());
 		}
 	}
 
@@ -1157,13 +1160,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 			if (needsResults(opts)) {
 				fillResultSetInternal(options);
 			}
-			setCurrentPage(getResults());
+			setCurrentPage(results);
 		} else {
 			if (defn.supportsRowLimitsNatively(opts)) {
 				QueryOptions tempOptions = new QueryOptions(opts);
 				tempOptions.setQueryType(QueryType.SELECT);
 				tempOptions.setRowLimit((pageNumber + 1) * opts.getRowLimit());
-				if (needsResults(tempOptions) || tempOptions.getRowLimit() > getResults().size()) {
+				if (needsResults(tempOptions) || tempOptions.getRowLimit() > results.size()) {
 					setOptions(tempOptions);
 					opts.getQueryDatabase().executeDBQuery(this);
 					setOptions(opts);
@@ -1184,11 +1187,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 			int startIndex = rowLimit * pageNumber;
 			startIndex = (startIndex < 0 ? 0 : startIndex);
 			int stopIndex = rowLimit * (pageNumber + 1);
-			stopIndex = (stopIndex >= getResults().size() ? getResults().size() : stopIndex);
+			stopIndex = (stopIndex >= results.size() ? results.size() : stopIndex);
 			if (stopIndex - startIndex < 1) {
 				setCurrentPage(new ArrayList<DBQueryRow>());
 			} else {
-				setCurrentPage(getResults().subList(startIndex, stopIndex));
+				setCurrentPage(results.subList(startIndex, stopIndex));
 			}
 		}
 	}
@@ -1217,7 +1220,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		ArrayList<DBQueryRow> foundRows = new ArrayList<DBQueryRow>();
 		SQLException firstException = null;
 		boolean successfulQuery = false;
-		for (String sql : getSQLQueries()) {
+		for (String sql : resultSQL) {
 			final DBDatabase queryDatabase = options.getQueryDatabase();
 			try ( DBStatement dbStatement = queryDatabase.getDBStatement()) {
 				printSQLIfRequired(sql);
@@ -1366,7 +1369,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		for (DBRow table : getAllQueryTables()) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(options.getQueryDefinition());
 		}
-		for (DBRow table : getExtraExamples()) {
+		for (DBRow table : extraExamples) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(options.getQueryDefinition());
 		}
 		willCreateBlankQuery = willCreateBlankQuery && getHavingColumns().length == 0;
@@ -1414,7 +1417,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	private void setExpressionColumns(DBDefinition defn, ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
-		for (Map.Entry<Object, QueryableDatatype<?>> entry : getExpressionColumns().entrySet()) {
+		for (Map.Entry<Object, QueryableDatatype<?>> entry : expressionColumns.entrySet()) {
 			final Object key = entry.getKey();
 			final QueryableDatatype<?> value = entry.getValue();
 			String expressionAlias = defn.formatExpressionAlias(key);
@@ -1690,6 +1693,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 		optionalQueryTables.remove(qtab);
 		assumedQueryTables.remove(qtab);
 		allQueryTables.remove(qtab);
+	}
+
+	public void addExtraExamples(DBRow[] newExamples) {
+		this.extraExamples.addAll(Arrays.asList(newExamples));
+	}
+
+	public void addExpressionColumn(Object identifyingObject, QueryableDatatype<?> expressionToAdd) {
+		expressionColumns.put(identifyingObject, expressionToAdd);
 	}
 
 	private static class OrderByClause {

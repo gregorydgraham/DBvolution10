@@ -414,7 +414,7 @@ public class DBQuery implements Serializable {
 	 * @throws java.sql.SQLException database errors
 	 */
 	public void setExpressionColumns(DBDefinition defn, ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
-		for (Map.Entry<Object, QueryableDatatype<?>> entry : details.getExpressionColumns().entrySet()) {
+		for (Map.Entry<Object, QueryableDatatype<?>> entry : details.getExpressionColumnsCopy().entrySet()) {
 			final Object key = entry.getKey();
 			final QueryableDatatype<?> value = entry.getValue();
 			String expressionAlias = defn.formatExpressionAlias(key);
@@ -1815,7 +1815,7 @@ public class DBQuery implements Serializable {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addExpressionColumn(Object identifyingObject, QueryableDatatype<?> expressionToAdd) {
-		details.getExpressionColumns().put(identifyingObject, expressionToAdd);
+		details.addExpressionColumn(identifyingObject, expressionToAdd);
 		blankResults();
 		return this;
 	}
@@ -1870,18 +1870,19 @@ public class DBQuery implements Serializable {
 	 * @return this DBQuery with the extra examples added
 	 */
 	public DBQuery addExtraExamples(DBRow... extraExamples) {
-		final List<DBRow> extras = this.details.getExtraExamples();
-		for (DBRow extraExample : extraExamples) {
-			if (extraExample != null) {
-				extras.add(extraExample);
-			}
-		}
+		details.addExtraExamples(extraExamples);
+//		final List<DBRow> extras = this.details.getExtraExamples();
+//		for (DBRow extraExample : extraExamples) {
+//			if (extraExample != null) {
+//				extras.add(extraExample);
+//			}
+//		}
 		blankResults();
 		return this;
 	}
 
 	private void blankResults() {
-		details.setResults(null);
+		details.blankResults();
 		details.setResultSQL(null);
 		queryGraph = null;
 	}
@@ -2377,8 +2378,7 @@ public class DBQuery implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public ColumnProvider column(QueryableDatatype<?> qdt) {
-		Map<Object, QueryableDatatype<?>> expressionColumns = details.getExpressionColumns();
-		for (QueryableDatatype<?> entry : expressionColumns.values()) {
+		for (QueryableDatatype<?> entry : details.getExpressionColumnsCopy().values()) {
 			if (entry.equals(qdt)) {
 				return new QueryColumn<>(this, entry);
 			}

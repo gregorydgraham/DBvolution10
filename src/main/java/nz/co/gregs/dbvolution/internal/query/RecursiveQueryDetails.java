@@ -287,8 +287,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 			}
 			newQuery.addOptional(copied);
 		}
-		tables = details.getAssumedQueryTables();
-		for (DBRow table : tables) {
+		for (DBRow table : details.getAssumedQueryTables()) {
 			DBRow copied = DBRow.copyDBRow(table);
 			if (!originatingClass.equals(table.getClass())) {
 				copied.setReturnFieldsToNone();
