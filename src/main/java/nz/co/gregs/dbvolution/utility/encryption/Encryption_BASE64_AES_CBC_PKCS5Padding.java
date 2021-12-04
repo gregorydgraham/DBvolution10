@@ -72,12 +72,12 @@ public class Encryption_BASE64_AES_CBC_PKCS5Padding {
 		//Creates a CryptoCipher instance with the transformation and properties.
 		final int updateBytes;
 		final int finalBytes;
-		try (CryptoCipher encipher = Utils.getCipherInstance(TRANSFORM, properties)) {
+		try ( CryptoCipher encipher = Utils.getCipherInstance(TRANSFORM, properties)) {
 
 			final byte[] utF8Bytes = getUTF8Bytes(inputString);
 			int bufferSize = utF8Bytes.length;
 			ByteBuffer inBuffer = ByteBuffer.allocateDirect(bufferSize);
-			ByteBuffer outBuffer = ByteBuffer.allocateDirect(bufferSize*2);
+			ByteBuffer outBuffer = ByteBuffer.allocateDirect(bufferSize * 2);
 			inBuffer.put(utF8Bytes);
 
 			inBuffer.flip(); // ready for the cipher to read it
@@ -97,7 +97,7 @@ public class Encryption_BASE64_AES_CBC_PKCS5Padding {
 			byte[] encoded = new byte[updateBytes + finalBytes];
 			outBuffer.duplicate().get(encoded);
 
-			final String base64Encoded = new String(Base64.encodeBase64(encoded));
+			final String base64Encoded = new String(Base64.encodeBase64(encoded), StandardCharsets.UTF_8);
 			final String base64Salt = new String(Base64.encodeBase64(salt));
 			final String base64IV = new String(Base64.encodeBase64(iv.getIV()));
 
@@ -148,11 +148,11 @@ public class Encryption_BASE64_AES_CBC_PKCS5Padding {
 			// reverse the buffer to output mode for processing
 			outBuffer.flip();
 
-			try (CryptoCipher decipher = Utils.getCipherInstance(TRANSFORM, properties)) {
+			try ( CryptoCipher decipher = Utils.getCipherInstance(TRANSFORM, properties)) {
 				final SecretKey secretKeySpec = getSecretKeySpec(passphrase, interpreted.getSalt());
 				final IvParameterSpec iv = getIV(interpreted.getIV());
 				decipher.init(Cipher.DECRYPT_MODE, secretKeySpec, iv);
-				ByteBuffer decoded = ByteBuffer.allocateDirect(bufferSize*2);
+				ByteBuffer decoded = ByteBuffer.allocateDirect(bufferSize * 2);
 				decipher.update(outBuffer, decoded);
 				decipher.doFinal(outBuffer, decoded);
 				decoded.flip(); // ready for use
