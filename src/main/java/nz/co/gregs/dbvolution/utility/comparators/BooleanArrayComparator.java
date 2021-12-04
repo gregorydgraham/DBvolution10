@@ -30,14 +30,17 @@
  */
 package nz.co.gregs.dbvolution.utility.comparators;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  *
  * @author gregorygraham
  */
-public class BooleanArrayComparator implements Comparator<Boolean[]> {
-	
+public class BooleanArrayComparator implements Comparator<Boolean[]>, Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	public BooleanArrayComparator() {
 	}
 
@@ -57,5 +60,5 @@ public class BooleanArrayComparator implements Comparator<Boolean[]> {
 			return 0;
 		}
 	}
-	
+
 }
