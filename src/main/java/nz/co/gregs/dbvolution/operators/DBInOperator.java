@@ -42,11 +42,11 @@ import nz.co.gregs.dbvolution.results.StringResult;
 public class DBInOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
-	private final List<DBExpression> listOfPossibleValues = new ArrayList<>();
-	private final List<StringResult> listOfPossibleStrings = new ArrayList<>();
-	private final List<NumberResult> listOfPossibleNumbers = new ArrayList<>();
-	private final ArrayList<IntegerResult> listOfPossibleIntegers = new ArrayList<>();
-	private final List<DateResult> listOfPossibleDates = new ArrayList<>();
+	protected final List<DBExpression> listOfPossibleValues = new ArrayList<>();
+	protected final List<StringResult> listOfPossibleStrings = new ArrayList<>();
+	protected final List<NumberResult> listOfPossibleNumbers = new ArrayList<>();
+	protected final ArrayList<IntegerResult> listOfPossibleIntegers = new ArrayList<>();
+	protected final List<DateResult> listOfPossibleDates = new ArrayList<>();
 
 	/**
 	 * Creates an operator that compares a column to a list of values using the IN
