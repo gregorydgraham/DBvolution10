@@ -72,7 +72,7 @@ public class PreferencesImproved {
 		try {
 			prefs.put(key, value);
 		} catch (IllegalArgumentException tooLong) {
-			List<String> blocks = StringInBlocks.withBlockSize(java.util.prefs.Preferences.MAX_VALUE_LENGTH).withString(value).getBlocks();
+			List<String> blocks = StringInBlocks.ofSize(java.util.prefs.Preferences.MAX_VALUE_LENGTH).from(value);
 			for (int i = 0; i < blocks.size(); i++) {
 				prefs.put(key + "[" + i + "]", blocks.get(i));
 			}
