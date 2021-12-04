@@ -30,13 +30,16 @@
  */
 package nz.co.gregs.dbvolution.utility.comparators;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  *
  * @author gregorygraham
  */
-public class ByteArrayComparator implements Comparator<byte[]> {
+public class ByteArrayComparator implements Comparator<byte[]>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public ByteArrayComparator() {
 	}
@@ -49,7 +52,7 @@ public class ByteArrayComparator implements Comparator<byte[]> {
 			return 1;
 		} else {
 			for (int i = 0; i < o1.length; i++) {
-				final int compareTo = ((Byte) o1[i]).compareTo((Byte) o2[i]);
+				final int compareTo = Byte.compare(o1[i], o2[i]);
 				if (compareTo != 0) {
 					return compareTo;
 				}
