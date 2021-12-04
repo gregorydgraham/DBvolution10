@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility.comparators;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,9 @@ import java.util.Map;
  * @author gregorygraham
  * @param <T> The class for which this comparator works
  */
-public class ComparableComparator<T extends Comparable<? super T>> implements Comparator<T> {
+public class ComparableComparator<T extends Comparable<? super T>> implements Comparator<T>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private static final Map<Class<?>, ComparableComparator<?>> map = new HashMap<>(0);
 
