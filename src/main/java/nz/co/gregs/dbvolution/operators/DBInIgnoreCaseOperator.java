@@ -56,7 +56,7 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
 	@Override
 	public DBInIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
 		ArrayList<DBExpression> list = new ArrayList<DBExpression>();
-		for (DBExpression item : getListOfPossibleValues()) {
+		for (DBExpression item : listOfPossibleValues) {
 			list.add(typeAdaptor.convert(item));
 		}
 		DBInIgnoreCaseOperator op = new DBInIgnoreCaseOperator(list);
@@ -71,7 +71,7 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			op = stringExpression.bracket().isInIgnoreCase(getListOfPossibleStrings().toArray(new StringResult[]{}));
+			op = stringExpression.bracket().isInIgnoreCase(listOfPossibleStrings.toArray(new StringResult[]{}));
 		} else if (genericExpression instanceof InExpression) {
 			InExpression expr = (InExpression) genericExpression;
 			op = expr.isIn(getFirstValue());
