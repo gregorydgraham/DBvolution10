@@ -102,7 +102,7 @@ public class Encryption_BASE64_AES_GCM_NoPadding {
 	}
 
 	public static String getBase64String(byte[] bytes) {
-		return new String(Base64.getEncoder().encode(bytes));
+		return new String(Base64.getEncoder().encode(bytes), StandardCharsets.UTF_8);
 	}
 
 	public static byte[] getBytesFromBase64String(String base64String) {
