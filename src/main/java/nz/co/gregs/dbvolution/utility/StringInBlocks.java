@@ -41,24 +41,23 @@ public class StringInBlocks {
 
 	private String originalString;
 	private int blockSize;
-	private List<String> blocks;
 
 	private StringInBlocks() {
 	}
 
-	public static StringInBlocks withBlockSize(int blockSize) {
+	public static StringInBlocks ofSize(int blockSize) {
 		StringInBlocks newone = new StringInBlocks();
 		newone.blockSize = blockSize;
 		return newone;
 	}
 
-	public StringInBlocks withString(String input) {
+	public List<String> from(String input) {
 		this.originalString = input;
-		return this;
+		return getBlocks();
 	}
 
-	public List<String> getBlocks() {
-		blocks = new ArrayList<>(0);
+	public synchronized List<String> getBlocks() {
+		List<String> blocks = new ArrayList<>(0);
 		String input = originalString;
 		while (input.length() > blockSize) {
 			blocks.add(input.substring(0, blockSize));
