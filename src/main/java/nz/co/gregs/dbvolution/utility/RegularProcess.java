@@ -35,6 +35,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,7 +74,7 @@ public abstract class RegularProcess implements Serializable {
 	final Log LOG = LogFactory.getLog(RegularProcess.class);
 
 	private Instant nextRun = Instant.now();
-	TemporalUnit timeField = ChronoUnit.MINUTES;
+	ChronoUnit timeField = ChronoUnit.MINUTES;
 	private int timeOffset = 5;
 	private DBDatabase dbDatabase;
 	private String lastResult = "Not Processed Yet";
@@ -169,7 +171,7 @@ public abstract class RegularProcess implements Serializable {
 	 *
 	 * @return the database that this process should work upon.
 	 */
-	public final DBDatabase getDatabase() {
+	protected final DBDatabase getDatabase() {
 		return dbDatabase;
 	}
 
@@ -183,7 +185,11 @@ public abstract class RegularProcess implements Serializable {
 	 * @param db the database this process interacts with
 	 */
 	public final void setDatabase(DBDatabase db) {
-		this.dbDatabase = db;
+		try {
+			this.dbDatabase = db.clone();
+		} catch (CloneNotSupportedException ex) {
+			Logger.getLogger(RegularProcess.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 
 	public final void stop() {
