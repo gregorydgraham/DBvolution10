@@ -46,7 +46,7 @@ public class NumberComparator implements Comparator<Number>, Serializable {
 
 	@Override
 	public int compare(Number o1, Number o2) {
-		return ((Double) o1.doubleValue()).compareTo(o2.doubleValue());
+		return Double.compare(o1.doubleValue(), o2.doubleValue());
 	}
 	
 }
