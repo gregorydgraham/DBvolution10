@@ -104,7 +104,7 @@ public class Encryption_Internal {
 					byte[] encoded = new byte[updateBytes + finalBytes];
 					outBuffer.duplicate().get(encoded);
 
-					final String base64Encoded = new String(Base64.encodeBase64(encoded));
+					final String base64Encoded = new String(Base64.encodeBase64(encoded), StandardCharsets.UTF_8);
 
 					return ENCYPTED_PREAMPLE + base64Encoded;
 				} catch (javax.crypto.ShortBufferException exp) {
