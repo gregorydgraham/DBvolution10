@@ -95,10 +95,10 @@ public class DBInOperator extends DBOperator {
 		} else {
 			if (other instanceof DBInOperator) {
 				DBInOperator otherIn = (DBInOperator) other;
-				if (getListOfPossibleValues().size() != otherIn.getListOfPossibleValues().size()) {
+				if (listOfPossibleValues.size() != otherIn.listOfPossibleValues.size()) {
 					return false;
 				} else {
-					for (DBExpression qdt : getListOfPossibleValues()) {
+					for (DBExpression qdt : listOfPossibleValues) {
 						if (!otherIn.listOfPossibleValues.contains(qdt)) {
 							return false;
 						}
@@ -114,7 +114,7 @@ public class DBInOperator extends DBOperator {
 	@Override
 	public DBInOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
 		ArrayList<DBExpression> list = new ArrayList<>();
-		for (DBExpression item : getListOfPossibleValues()) {
+		for (DBExpression item : listOfPossibleValues) {
 			list.add(typeAdaptor.convert(item));
 		}
 		DBInOperator op = new DBInOperator(list);
@@ -124,32 +124,33 @@ public class DBInOperator extends DBOperator {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public BooleanExpression generateWhereExpression(DBDefinition db, DBExpression column) {
 		DBExpression genericExpression = column;
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
-			ArrayList<StringResult> listString = new ArrayList<>(getListOfPossibleStrings());
+			ArrayList<StringResult> listString = new ArrayList<>(listOfPossibleStrings);
 			if (this.includeNulls) {
 				listString.add(null);
 			}
 			StringExpression stringExpression = (StringExpression) genericExpression;
 			op = stringExpression.bracket().isIn(listString.toArray(new StringResult[]{}));
 		} else if (genericExpression instanceof NumberExpression) {
-			ArrayList<NumberResult> listNumbers = new ArrayList<>(getListOfPossibleNumbers());
+			ArrayList<NumberResult> listNumbers = new ArrayList<>(listOfPossibleNumbers);
 			if (this.includeNulls) {
 				listNumbers.add(null);
 			}
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			op = numberExpression.isIn(listNumbers.toArray(new NumberResult[]{}));
 		} else if (genericExpression instanceof IntegerExpression) {
-			ArrayList<IntegerResult> listIntegers = new ArrayList<>(getListOfPossibleIntegers());
+			ArrayList<IntegerResult> listIntegers = new ArrayList<>(listOfPossibleIntegers);
 			if (this.includeNulls) {
 				listIntegers.add(null);
 			}
 			IntegerExpression numberExpression = (IntegerExpression) genericExpression;
 			op = numberExpression.isIn(listIntegers.toArray(new IntegerResult[]{}));
 		} else if (genericExpression instanceof DateExpression) {
-			ArrayList<DateResult> listDate = new ArrayList<>(getListOfPossibleDates());
+			ArrayList<DateResult> listDate = new ArrayList<>(listOfPossibleDates);
 			if (this.includeNulls) {
 				listDate.add(null);
 			}
@@ -157,66 +158,8 @@ public class DBInOperator extends DBOperator {
 			op = dateExpression.isIn(listDate.toArray(new DateResult[]{}));
 		} else if (genericExpression instanceof InExpression) {
 			InExpression expr = (InExpression) genericExpression;
-			op = expr.isIn(getListOfPossibleValues());
+			op = expr.isIn(listOfPossibleValues);
 		}
 		return this.invertOperator ? op.not() : op;
-	}
-
-	/**
-	 * List of supplied values.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the listOfPossibleValues
-	 */
-	public List<DBExpression> getListOfPossibleValues() {
-		return listOfPossibleValues;
-	}
-
-	/**
-	 * List of strings derived, if any, from the supplied values.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the listOfPossibleStrings
-	 */
-	public List<StringResult> getListOfPossibleStrings() {
-		return listOfPossibleStrings;
-	}
-
-	/**
-	 * List of numbers derived, if any, from the supplied values.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the listOfPossibleNumbers
-	 */
-	public List<NumberResult> getListOfPossibleNumbers() {
-		return listOfPossibleNumbers;
-	}
-
-	/**
-	 * List of numbers derived, if any, from the supplied values.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the listOfPossibleNumbers
-	 */
-	public List<IntegerResult> getListOfPossibleIntegers() {
-		return listOfPossibleIntegers;
-	}
-
-	/**
-	 * List of dates derived, if any, from the supplied values.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the listOfPossibleDates
-	 */
-	public List<DateResult> getListOfPossibleDates() {
-		return listOfPossibleDates;
 	}
 }
