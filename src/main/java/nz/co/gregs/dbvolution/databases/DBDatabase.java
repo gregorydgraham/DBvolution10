@@ -2737,7 +2737,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	public final void removeRegularProcess(RegularProcess processor) {
-		processor.setDatabase(null);
+		processor.stop();
 		getRegularProcessors().remove(processor);
 	}
 
