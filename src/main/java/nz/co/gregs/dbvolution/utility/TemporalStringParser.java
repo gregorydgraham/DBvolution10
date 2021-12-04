@@ -179,10 +179,6 @@ public class TemporalStringParser {
 		}
 	}
 
-	private static void printException(CharSequence input, Parser format, Exception exception) {
-		printException(input.toString(), format, exception);
-	}
-
 	private static void printException(String input, Parser format, Exception exception) {
 		printException(input, format.toString(), exception);
 	}
