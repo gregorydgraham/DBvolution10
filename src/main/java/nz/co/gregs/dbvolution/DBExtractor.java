@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,18 +51,10 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
  * accelerate and brake as possible or required to achieve close to optimal
  * throughput.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public abstract class DBExtractor extends DBScript {
 
-	/*
-	 * To change this license header, choose License Headers in Project Properties.
-	 * To change this template file, choose Tools | Templates
-	 * and open the template in the editor.
-	 */
 	private int maxBoundIncrease = 10000000;
 	private static final int MIN_BOUND_INCREASE = 1;
 	private int boundIncrease = 10;
@@ -77,15 +67,12 @@ public abstract class DBExtractor extends DBScript {
 	private Integer timeoutInMilliseconds = 10000;
 	private Long rowCount = null;
 	private boolean countOnly = false;
-	private final DBDatabase database;
 
 	/**
 	 * Default constructor.
 	 *
-	 * @param db the database to extract data from.
 	 */
-	public DBExtractor(DBDatabase db) {
-		database = db;
+	public DBExtractor() {
 	}
 
 	/**
@@ -126,10 +113,6 @@ public abstract class DBExtractor extends DBScript {
 	 */
 	abstract public DBQuery getQuery(DBDatabase db, int lowerbound, int upperbound);
 
-	private DBDatabase getDatabase() {
-		return database;
-	}
-
 	/**
 	 * Starts the extraction process.
 	 *
@@ -138,18 +121,18 @@ public abstract class DBExtractor extends DBScript {
 	 * the database and processing them.
 	 *
 	 * <p>
-	 * Works in conjuction with the
+	 * Works in conjunction with the
 	 * {@link #getQuery(nz.co.gregs.dbvolution.databases.DBDatabase, int, int)}
 	 * and {@link #processRows(java.util.List)} method to provide a dynamic
 	 * extraction process that achieves fast results on unreliable or
 	 * under-resourced databases.
 	 *
+	 * @param db the database to extract rows from
 	 * @return a list of actions that were tested.
 	 * @throws Exception any exception could be thrown
 	 */
-	public final DBActionList extract() throws Exception {
+	public final DBActionList extract(DBDatabase db) throws Exception {
 		DBActionList actions = new DBActionList();
-		DBDatabase db = getDatabase();
 		startLowerBound = lowerBound;
 		Date startTime = new Date();
 		GregorianCalendar cal = new GregorianCalendar();
