@@ -30,13 +30,16 @@
  */
 package nz.co.gregs.dbvolution.utility.comparators;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  *
  * @author gregorygraham
  */
-public class NumberComparator implements Comparator<Number> {
+public class NumberComparator implements Comparator<Number>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	public NumberComparator() {
 	}
