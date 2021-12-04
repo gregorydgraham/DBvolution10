@@ -30,13 +30,17 @@
  */
 package nz.co.gregs.dbvolution.utility.comparators;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  *
  * @author gregorygraham
+ * @param <O> the type of the objects to compare by hashcode
  */
-public class HashCodeComparator<O extends Object> implements Comparator<O> {
+public class HashCodeComparator<O extends Object> implements Comparator<O>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	public HashCodeComparator() {
 	}
