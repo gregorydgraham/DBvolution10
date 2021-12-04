@@ -401,7 +401,7 @@ public class DataModel {
 			}
 			storedRequiredTables = result;
 		}
-		return storedRequiredTables;
+		return new HashSet<DBRow>(storedRequiredTables);
 	}
 
 	/**
