@@ -26,17 +26,12 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * Provides support for the abstract concept of migrating rows from one or more
  * tables to another table.
- *
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  * @param <R> the resulting DBRow from this DBQueryInsertAction
@@ -67,8 +62,6 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 	 * Perform the migration
 	 *
 	 * @param database the database used by this action
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of the migration's effects
 	 * @throws SQLException SQL Exceptions may be thrown
 	 */
