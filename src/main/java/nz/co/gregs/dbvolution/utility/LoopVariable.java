@@ -33,6 +33,7 @@ package nz.co.gregs.dbvolution.utility;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -40,15 +41,20 @@ import java.util.function.Supplier;
  *
  * @author gregorygraham
  */
-public class LoopVariable implements Serializable{
+public class LoopVariable implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static LoopVariable withMaxAttempts(int size) {
+		LoopVariable newLoop = LoopVariable.factory();
+		newLoop.setMaxAttemptsAllowed(size);
+		return newLoop;
+	}
+
 	private boolean needed = true;
-	private int tries = 0;
 	private int maxAttemptsAllowed = 1000;
 	private boolean limitMaxAttempts = true;
-	private final Instant startTime = Instant.now();
+	private final State state = new State();
 
 	public static LoopVariable factory() {
 		return new LoopVariable();
@@ -125,7 +131,7 @@ public class LoopVariable implements Serializable{
 	 *
 	 */
 	public void attempt() {
-		tries++;
+		state.increaseTries();
 	}
 
 	/**
@@ -134,12 +140,11 @@ public class LoopVariable implements Serializable{
 	 * @return the number of attempts started.
 	 */
 	public int attempts() {
-		return tries;
+		return state.getTries();
 	}
 
 	public Duration elapsedTime() {
-		Duration duration = Duration.between(startTime, Instant.now());
-		return duration;
+		return state.elapsedTime();
 	}
 
 	/**
@@ -218,51 +223,8 @@ public class LoopVariable implements Serializable{
 	 * @param action the action to perform within the loop
 	 */
 	public void loop(Supplier<Void> action) {
-		while (isNeeded()) {
-			attempt();
-			action.get();
-		}
-	}
-
-	/**
-	 * Performs action until {@link #done() } has been called, or {@link #attempt()
-	 * } has been called maxAttempts times.
-	 *
-	 * <p>
-	 * This is a re-implementation of the while loop mechanism. Probably not as
-	 * good as the actual while loop but it was fun to do.</p>
-	 *
-	 * <pre>
-	 *		// Create the LoopVariable
-	 *		LoopVariable looper = new LoopVariable();
-	 *
-	 *		// Call loop() with maximum number of attempts to try
-	 *		looper.loop(100, () -&gt; {
-	 *
-	 *			// Perform your actions here
-	 *
-	 *			// check for the termination conditions
-	 *			if (looper.attempts() &gt;= 10) {
-	 *				// call done() to terminate the loop
-	 *				looper.done();
-	 *			}
-	 *
-	 *			// return NULL because Java requires us to
-	 *			return null;
-	 *		});
-	 * </pre>
-	 *
-	 * @param maxAttempts the number of attempts before the loop will abort
-	 * @param action the action to be performed within the loop
-	 * @deprecated this is superfluous and, very slightly, slower. Just use {@link #loop(java.util.function.Supplier)
-	 * }
-	 */
-	@Deprecated
-	public void loop(int maxAttempts, Supplier<Void> action) {
-		while (isNeeded() && attempts() < maxAttempts) {
-			attempt();
-			action.get();
-		}
+		Function<Integer, Void> function = (index) -> action.get();
+		loop(function);
 	}
 
 	/**
@@ -294,12 +256,118 @@ public class LoopVariable implements Serializable{
 	 * FALSE the loop will continue
 	 */
 	public void loop(Supplier<Void> action, Supplier<Boolean> test) {
+		Function<Integer, Void> function = (index) -> action.get();
+		Function<Integer, Boolean> testFunction = (index) -> test.get();
+		loop(function, testFunction);
+	}
+
+	/**
+	 * Performs action until test returns true.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <pre>
+	 *		LoopVariable looper = new LoopVariable();
+	 *		final int intendedAttempts = 10;
+	 *		looper.loop(
+	 *				() -&gt; {
+	 *					// do your processing here
+	 *
+	 *					// return null as required by Java
+	 *					return null;
+	 *				}
+	 *		);
+	 * </pre>
+	 *
+	 * @param action the action to perform with a loop
+	 */
+	public void loop(Function<Integer, Void> action) {
+		loop(action, (d) -> {
+			return false;
+		});
+	}
+
+	/**
+	 * Performs action until test returns true.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <pre>
+	 *		LoopVariable looper = new LoopVariable();
+	 *		final int intendedAttempts = 10;
+	 *		looper.loop(
+	 *				() -&gt; {
+	 *					// do your processing here
+	 *
+	 *					// return null as required by Java
+	 *					return null;
+	 *				},
+	 *				() -&gt; {
+	 *					// Check for termination conditions here
+	 *					return trueIfTaskCompletedOtherwiseFalse();
+	 *				}
+	 *		);
+	 * </pre>
+	 *
+	 * @param action the action to perform with a loop
+	 * @param test the test to check, if TRUE the loop will be terminated, if
+	 * FALSE the loop will continue
+	 */
+	public void loop(Function<Integer, Void> action, Function<Integer, Boolean> test) {
 		while (isNeeded()) {
 			attempt();
-			action.get();
-			if (test.get()) {
+			action.apply(getIndex());
+			if (test.apply(getIndex())) {
 				done();
 			}
+			increaseIndex();
+		}
+	}
+
+	public int getIndex() {
+		return state.index();
+	}
+
+	private void increaseIndex() {
+		state.increaseIndex();
+	}
+
+	public static class State {
+
+		private int tries = 0;
+		private int index = 0;
+		private final Instant startTime = Instant.now();
+
+		public State() {
+		}
+
+		public void increaseTries() {
+			tries++;
+		}
+
+		public int getTries() {
+			return tries;
+		}
+
+		public Instant getStartTime() {
+			return startTime;
+		}
+
+		public Duration elapsedTime() {
+			Duration duration = Duration.between(getStartTime(), Instant.now());
+			return duration;
+		}
+
+		public int index() {
+			return index;
+		}
+
+		public void increaseIndex() {
+			index++;
 		}
 	}
 }
