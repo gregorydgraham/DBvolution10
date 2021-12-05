@@ -39,10 +39,6 @@ import org.apache.commons.logging.LogFactory;
  * Provides support for the abstract concept of validating migration rows from
  * one or more tables to another table.
  *
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  * @param <R> the database table that will receive the migrated data
  */
@@ -73,9 +69,7 @@ public class DBMigrationValidation<R extends DBRow> {
 	/**
 	 * Perform the validation
 	 *
-	 * @param database
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param database the database to work on
 	 * @return the results of the validation
 	 * @throws SQLException database exceptions thrown when querying the database
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
@@ -223,7 +217,5 @@ public class DBMigrationValidation<R extends DBRow> {
 		public String toString() {
 			return "Result{" + "willBeProcessed=" + willBeProcessed + ", row=" + row + ", map=" + map + '}';
 		}
-		
-		
 	}
 }
