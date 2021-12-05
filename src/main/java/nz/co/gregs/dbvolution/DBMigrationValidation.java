@@ -190,7 +190,7 @@ public class DBMigrationValidation<R extends DBRow> {
 		}
 
 		/**
-		 * Return the validated row of the DBRow from these Results.
+		 * Return the validated row of the DBRow using these Results.
 		 *
 		 */
 		<A extends DBRow> A getRow(A exemplar) {

@@ -23,40 +23,47 @@ import nz.co.gregs.dbvolution.query.*;
 
 public class DBMigration<M extends DBRow> extends RowDefinition {
 
-	private final DBDatabase database;
 	private final M mapper;
 	private final List<DBRow> optionalTables = new ArrayList<>();
+	private final DBDatabase database;
 
-	public DBMigration(DBDatabase db, M migrationMapper) {
-		this.database = db;
-		this.mapper = migrationMapper;
+	private DBMigration(DBDatabase database, M migrationMapper) {
+		this.mapper = DBRow.copyDBRow(migrationMapper);
+		this.database = database.copy();
 	}
 
 	/**
-	 * Gets all the migrated rows using only conditions supplied within the
-	 * supplied DBMigration.
+	 * Create a migration that uses the mapper provided.
 	 *
 	 * <p>
-	 * Use this method to retrieve all rows when the criteria have been supplied
-	 * as part of the DBMigration subclass.
+	 * Mapper uses a subclass of a particular DBRow to create rows for that DBRow
+	 * and insert them into the table.</p>
 	 *
 	 * <p>
-	 * If you require extra criteria to be add to the DBMigration, limiting the
-	 * results to a subset, use the
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBRow...) other getAllRows method}.
+	 * Central to this concept is using other existing data in table, represented
+	 * by their own DBRow classes, transformed using DBvolution expressions</p>
+	 * <pre>
+	 * public static class MigrateToFight extends Fight {
+	 * public Villain baddy = new Villain();
+	 * public Hero goody = new Hero();
+	 * {
+	 * baddy.name.permittedPattern("Dr%");
+	 * hero = goody.column(goody.name).asExpressionColumn();
+	 * villain = baddy.column(baddy.name).asExpressionColumn();
+	 * }
+	 * }
+	 * database.createTable(new Fight());
+	 * DBMigration migration = DBMigration.using(new MigrateToFight());
+	 * migration.createAllRows(database);
+	 * </pre>
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a list of DBReport instances representing the results of the report
-	 * query. Database exceptions may be thrown
-	 * @throws java.sql.SQLException Database exceptions
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
-	 * thrown if DBV cannot detect and conditions applied to the query and blank
-	 * queries have not been explicitly allowed
+	 * @param <MAPPER> the transformation to apply
+	 * @param database the database to work with
+	 * @param migrationMapper
+	 * @return
 	 */
-	public List<M> getAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		return getAllRows(database);
+	public static <MAPPER extends DBRow> DBMigration<MAPPER> using(DBDatabase database, MAPPER migrationMapper) {
+		return new DBMigration<MAPPER>(database, migrationMapper);
 	}
 
 	private DBMigration<M> addTablesAndExpressions(DBQuery query) {
@@ -85,7 +92,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 						query.addExpressionColumn(value, qdtValue);
 						final DBExpression[] columnExpressions = qdtValue.getColumnExpression();
 						for (DBExpression columnExpression : columnExpressions) {
-//							query.addExpressionColumn(value, columnExpression);
 							if (!columnExpression.isAggregator()) {
 								query.addGroupByColumn(value, columnExpression);
 							}
@@ -121,7 +127,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 								Field targetField = newTarget.getClass().getField(field.getName());
 								targetField.set(newTarget, gotDefinedRow);
 							} catch (NoSuchFieldException ex) {
-//								throw new UnableToSetDBMigrationFieldException(newTarget, field, ex);
 							}
 						}
 					} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
@@ -131,7 +136,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 								Field targetField = newTarget.getClass().getField(field.getName());
 								targetField.set(newTarget, expressionColumnValue);
 							} catch (NoSuchFieldException ex) {
-//								throw new UnableToSetDBMigrationFieldException(newTarget, field, ex);
 							}
 						}
 					}
@@ -149,7 +153,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-//	private SortProvider[] sortColumns = new SortProvider[]{};
 	private final ArrayList<SortProvider> sortColumns = new ArrayList<>();
 	Boolean cartesian = false;
 	Boolean blank = false;
@@ -158,21 +161,17 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * Gets all the migrated rows using conditions in the DBMigration and the
 	 * supplied examples.
 	 *
+	 * @param database
 	 * @param extraExamples extra rows defining additional criteria
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException thrown if no conditions have been set and blank queries have not been explicitly allowed
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * thrown if no conditions have been set and blank queries have not been
+	 * explicitly allowed
 	 */
 	public List<M> getAllRows(DBRow... extraExamples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		return getAllRows(database, extraExamples);
-	}
-
-	private List<M> getAllRows(DBDatabase database, DBRow... extraExamples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		DBQuery query = getDBQuery(database, extraExamples);
-//		query.setBlankQueryAllowed(true);
+		DBQuery query = getDBQuery(extraExamples);
 		List<DBQueryRow> allRows = query.getAllRows();
 		List<M> reportRows = getInsertedRowsFromQueryResults(allRows);
 		return reportRows;
@@ -210,7 +209,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * rows.
 	 *
 	 * <p>
-	 * All supplied rows should be from a DBRow subclass that is included in the
+	 * All supplied rows should be using a DBRow subclass that is included in the
 	 * report.
 	 *
 	 * <p>
@@ -222,17 +221,16 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * limitations such as date ranges, department name, and other highly variable
 	 * parameters.
 	 *
-	 * @param database database
 	 * @param rows rows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException  thrown if no conditions have been set and blank queries have not been explicitly allowed
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * thrown if no conditions have been set and blank queries have not been
+	 * explicitly allowed
 	 */
-	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		DBQuery query = getDBQuery(database, rows);
+	public List<M> getRows(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+		DBQuery query = getDBQuery(rows);
 		List<DBQueryRow> allRows = query.getAllRows();
 		List<M> reportRows = getInsertedRowsFromQueryResults(allRows);
 		return reportRows;
@@ -246,7 +244,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * All conditions should only reference the fields/column of the DBMigration.
 	 *
 	 * <p>
-	 * All supplied rows should be from a DBRow subclass that is included in the
+	 * All supplied rows should be using a DBRow subclass that is included in the
 	 * report.
 	 *
 	 * <p>
@@ -262,15 +260,15 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @param rows rows example rows that provide extra criteria
 	 * @param conditions the conditions that will be supplied to the WHERE or
 	 * HAVING clause of the query
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException  thrown if no conditions have been set and blank queries have not been explicitly allowed
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * thrown if no conditions have been set and blank queries have not been
+	 * explicitly allowed
 	 */
-	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... conditions) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		DBQuery query = getDBQuery(database, rows);
+	public List<M> getRowsHaving(DBRow[] rows, BooleanExpression... conditions) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+		DBQuery query = getDBQuery(rows);
 		List<M> reportRows;
 		List<DBQueryRow> allRows = query.addConditions(conditions).getAllRows();
 		reportRows = getInsertedRowsFromQueryResults(allRows);
@@ -278,14 +276,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	}
 
 	private List<M> getInsertedRowsFromQueryResults(List<DBQueryRow> allRows) {
-//		List<M> reportRows = new ArrayList<>();
 		List<M> reportRows = allRows
 				.stream()
 				.map((t) -> getMappedTarget(t))
 				.collect(Collectors.toList());
-//		for (DBQueryRow row : allRows) {
-//			reportRows.add(getMappedTarget(row));
-//		}
 		return reportRows;
 	}
 
@@ -307,15 +301,12 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * See also
 	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
 	 *
-	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
 	 * exceptions may be thrown
 	 */
-	public String getSQLForQuery(DBDatabase database, DBRow... rows) {
-		DBQuery query = getDBQuery(database, rows);
+	public String getSQLForQuery(DBRow... rows) {
+		DBQuery query = getDBQuery(rows);
 		return query.getSQLForQuery();
 	}
 
@@ -339,12 +330,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
 	 * exceptions may be thrown
 	 */
-	public String getSQLForInsert(DBDatabase database, DBRow... rows) {
+	public String getSQLForInsert(DBRow... rows) {
 		DBMigrationAction<M> action = getDBMigrationAction(rows);
 		ArrayList<String> sqlStatements = action.getSQLStatements(database);
 		if (sqlStatements.size() > 0) {
@@ -362,16 +351,13 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * Use this method to check the SQL that will be executed during
 	 * {@link DBReport#count(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  the count method}
 	 *
-	 * @param database the database to format the query for.
 	 * @param rows additional conditions to be applied.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this report 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public String getSQLForCount(DBDatabase database, DBRow... rows) throws SQLException {
-		DBQuery query = getDBQuery(database, rows);
+	public String getSQLForCount(DBRow... rows) throws SQLException {
+		DBQuery query = getDBQuery(rows);
 		return query.getSQLForCount();
 	}
 
@@ -386,16 +372,13 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) getAllRows method}
 	 * been called.
 	 *
-	 * @param database the database to format the query for.
 	 * @param rows additional conditions for the query.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the number of rows that have or will be retrieved. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public Long count(DBDatabase database, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-		DBQuery setUpQuery = getDBQuery(database, rows);
+	public Long count(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+		DBQuery setUpQuery = getDBQuery(rows);
 		return setUpQuery.count();
 	}
 
@@ -411,20 +394,16 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * </pre>
 	 *
 	 * @param columns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
 	public DBMigration<M> setSortOrder(SortProvider... columns) {
 		sortColumns.clear();
 		sortColumns.addAll(Arrays.asList(columns));
-//		sortColumns = new SortProvider[columns.length];
-//		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
 		return this;
 	}
 
 	/**
-	 * Sets the sort order of DBReport (field and/or method) by the given column
+	 * Sets the sort order of migration (field and/or method) by the given column
 	 * providers.
 	 *
 	 * <p>
@@ -438,8 +417,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * </pre>
 	 *
 	 * @param columns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
 	public DBMigration<M> setSortOrder(QueryableDatatype<?>... columns) {
@@ -449,16 +426,20 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 			columnProviders.add(expr.getSortProvider());
 		}
 		sortColumns.addAll(columnProviders);
-//		sortColumns = columnProviders.toArray(new SortProvider[]{});
 		return this;
 	}
 
 	/**
 	 * Add the rows as optional tables in the query.
-	 * 
-	 * <p>Optional tables are joined to the query using an outer join and results are returned regardless of whether there is a matching row in the optional table.</p>
-	 * 
-	 * <p>Optional rows may contain only DBNull values, that is there getValue() method will return NULL and isDBNull() will be true.</p>
+	 *
+	 * <p>
+	 * Optional tables are joined to the query using an outer join and results are
+	 * returned regardless of whether there is a matching row in the optional
+	 * table.</p>
+	 *
+	 * <p>
+	 * Optional rows may contain only DBNull values, that is there getValue()
+	 * method will return NULL and isDBNull() will be true.</p>
 	 *
 	 * @param examples additional tables to include in the query if possible.
 	 */
@@ -466,7 +447,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		optionalTables.addAll(Arrays.asList(examples));
 	}
 
-	DBQuery getDBQuery(DBDatabase database, DBRow... rows) {
+	DBQuery getDBQuery(DBRow... rows) {
 		DBQuery query = database.getDBQuery();
 		query.setBlankQueryAllowed(blank);
 		query.setCartesianJoinsAllowed(cartesian);
@@ -479,9 +460,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	/**
 	 * Returns the list of sort columns
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the sortColumns
 	 */
 	protected SortProvider[] getSortColumns() {
@@ -492,7 +470,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * Suppresses Cartesian join error protection.
 	 *
 	 * <p>
-	 * DBvolution protects you from accidental Cartesian joins but use this
+	 * DBvolution protects you using accidental Cartesian joins but use this
 	 * function if a Cartesian is required.</p>
 	 *
 	 * <p>
@@ -514,8 +492,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * error-checking and the {@link AccidentalCartesianJoinException}</p>
 	 *
 	 * @param setting True if you need a Cartesian join in this DBQueryInsert.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQueryInsert object
 	 */
 	public DBMigration<M> setCartesianJoinAllowed(Boolean setting) {
@@ -528,7 +504,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * A common mistake is creating a query without supplying criteria and
-	 * accidently retrieving a huge number of rows.
+	 * accidentally retrieving a huge number of rows.
 	 *
 	 * <p>
 	 * DBvolution detects this situation and, by default, throws a
@@ -541,8 +517,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param setting - TRUE to allow blank queries, FALSE to return it to the
 	 * default setting.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQueryInsert instance
 	 */
 	public DBMigration<M> setBlankQueryAllowed(Boolean setting) {
@@ -550,23 +524,36 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		return this;
 	}
 
-	public void insertAllRows(DBRow... extraExamples) throws SQLException {
+	public void createAllRows(DBRow... extraExamples) throws SQLException {
 		DBMigrationAction<M> migrate = getDBMigrationAction(extraExamples);
 		migrate.migrate(database);
 	}
 
 	private DBMigrationAction<M> getDBMigrationAction(DBRow[] extraExamples) {
-		return new DBMigrationAction<>(this, this.mapper, extraExamples);
+		return new DBMigrationAction<>(this, mapper, extraExamples);
 	}
 
+	/**
+	 * Perform a migration validation using DBMigrationValidation.
+	 *
+	 * <p>
+	 * Validation will process all the available rows and try migrate them or to
+	 * identify why they were not migrated. FAILURE TO MIGRATE MAY BE CORRECT
+	 * BEHAVIOUR. Carefully check the results to determine if there are issues
+	 * with the migration or the data.</p>
+	 *
+	 * @param extraExamples extra examples
+	 * @return result from the migration validation
+	 * @throws SQLException
+	 */
 	public DBMigrationValidation.Results validateAllRows(DBRow... extraExamples) throws SQLException {
 
-		DBMigrationValidation<M> validate = new DBMigrationValidation<>(this, this.mapper, extraExamples);
+		DBMigrationValidation<M> validate = new DBMigrationValidation<>(this, mapper, extraExamples);
 		return validate.validate(database);
 	}
 
 	QueryDetails getQueryDetails() {
-		return this.getDBQuery(database).getQueryDetails();
+		return this.getDBQuery().getQueryDetails();
 	}
 
 }

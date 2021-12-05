@@ -30,11 +30,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Provides support for the abstract concept of migrating rows from one or more
- * tables to another table.
+ * Provides support for the abstract concept of migrating rows using one or more
+ tables to another table.
  *
  * @author Gregory Graham
- * @param <R> the resulting DBRow from this DBQueryInsertAction
+ * @param <R> the resulting DBRow using this DBQueryInsertAction
  */
 public class DBMigrationAction<R extends DBRow> extends DBAction {
 
@@ -84,7 +84,7 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 				+ defn.beginInsertColumnList()
 				+ allColumns
 				+ defn.endInsertColumnList()
-				+ sourceMigration.getSQLForQuery(db, extraExamples));
+				+ sourceMigration.getSQLForQuery(extraExamples));
 		return strs;
 	}
 
