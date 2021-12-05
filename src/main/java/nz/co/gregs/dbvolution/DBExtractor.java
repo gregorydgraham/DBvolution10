@@ -34,7 +34,8 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
  * <p>
  * To use Extractor, create a subclass implementing the
  * {@link #getQuery(nz.co.gregs.dbvolution.databases.DBDatabase, int, int)} and
- * {@link #processRows(java.util.List)} methods and call {@link #extract() }.
+ * {@link #processRows(java.util.List)} methods and call {@link #extract(nz.co.gregs.dbvolution.databases.DBDatabase)
+ * }.
  * <p>
  * The extractor uses primary key ranges to reduce the size of the query to
  * something the database can handle. The range is increased or decreased
@@ -144,7 +145,7 @@ public abstract class DBExtractor extends DBScript {
 			System.out.println("EXTRACTED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") in " + elapsedTimeInMilliseconds + "ms at " + timePerRecord + "ms/record.");
 			double estimatedRequiredTime = timePerRecord * (maxBound - startLowerBound);
 			cal.setTime(startTime);
-			int secondsValue = (int)(estimatedRequiredTime / 1000.0D);
+			int secondsValue = (int) (estimatedRequiredTime / 1000.0D);
 			cal.add(Calendar.SECOND, secondsValue);
 			double timeInHours = (Math.round((estimatedRequiredTime / (1000 * 60 * 60)) * 100) + 0.0) / 100.0;
 			double timeInMinutes = (Math.round((estimatedRequiredTime / (1000 * 60)) * 100) + 0.0) / 100.0;
@@ -173,7 +174,8 @@ public abstract class DBExtractor extends DBScript {
 	 * This method cannot be changed.
 	 *
 	 * @return an action list
-	 * @throws Exception any exception maybe thrown while get rows and processing them
+	 * @throws Exception any exception maybe thrown while get rows and processing
+	 * them
 	 */
 	@Override
 	public final DBActionList script(DBDatabase db) throws Exception {
@@ -190,7 +192,7 @@ public abstract class DBExtractor extends DBScript {
 	}
 
 	@SuppressFBWarnings(
-			value = "REC_CATCH_EXCEPTION", 
+			value = "REC_CATCH_EXCEPTION",
 			justification = "Database vendors throw many interesting exceptions")
 	private List<DBQueryRow> getRows(DBDatabase db) throws AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> rows = null;
@@ -382,7 +384,8 @@ public abstract class DBExtractor extends DBScript {
 	 * <p>
 	 * Use this method to extend or reduce the timeout period as required.
 	 *
-	 * @param milliseconds the milliseconds required to elapse before the underlying query is cancelled.
+	 * @param milliseconds the milliseconds required to elapse before the
+	 * underlying query is cancelled.
 	 */
 	protected void setTimeoutInMilliseconds(Integer milliseconds) {
 		this.timeoutInMilliseconds = milliseconds;
