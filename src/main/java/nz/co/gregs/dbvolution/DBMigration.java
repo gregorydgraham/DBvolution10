@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.actions.DBMigrationAction;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.expressions.*;
@@ -23,13 +22,29 @@ import nz.co.gregs.dbvolution.query.*;
 
 public class DBMigration<M extends DBRow> extends RowDefinition {
 
+	private static final long serialVersionUID = 1L;
+
 	private final M mapper;
 	private final List<DBRow> optionalTables = new ArrayList<>();
 	private final DBDatabase database;
+	
+	private final ArrayList<SortProvider> sortColumns = new ArrayList<>();
+	Boolean cartesian = false;
+	Boolean blank = false;
+
 
 	private DBMigration(DBDatabase database, M migrationMapper) {
 		this.mapper = DBRow.copyDBRow(migrationMapper);
 		this.database = database.copy();
+	}
+
+	public DBMigration<M> copy() {
+		DBMigration<M> copiedMigration = using(database, mapper);
+		copiedMigration.optionalTables.addAll(optionalTables);
+		copiedMigration.sortColumns.addAll(sortColumns);
+		copiedMigration.cartesian = cartesian;
+		copiedMigration.blank = blank;
+		return copiedMigration;
 	}
 
 	/**
@@ -151,17 +166,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		}
 	}
 
-	private static final long serialVersionUID = 1L;
-
-	private final ArrayList<SortProvider> sortColumns = new ArrayList<>();
-	Boolean cartesian = false;
-	Boolean blank = false;
-
 	/**
 	 * Gets all the migrated rows using conditions in the DBMigration and the
 	 * supplied examples.
 	 *
-	 * @param database
 	 * @param extraExamples extra rows defining additional criteria
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
@@ -256,7 +264,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * limitations such as date ranges, department name, and other highly variable
 	 * parameters.
 	 *
-	 * @param database database
 	 * @param rows rows example rows that provide extra criteria
 	 * @param conditions the conditions that will be supplied to the WHERE or
 	 * HAVING clause of the query
@@ -328,7 +335,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * See also
 	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
 	 *
-	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
 	 * exceptions may be thrown
@@ -396,11 +402,11 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @param columns a list of columns to sort the query by.
 	 * @return this DBReport instance
 	 */
-	public DBMigration<M> setSortOrder(SortProvider... columns) {
-		sortColumns.clear();
-		sortColumns.addAll(Arrays.asList(columns));
-		return this;
-	}
+//	public DBMigration<M> setSortOrder(SortProvider... columns) {
+//		sortColumns.clear();
+//		sortColumns.addAll(Arrays.asList(columns));
+//		return this;
+//	}
 
 	/**
 	 * Sets the sort order of migration (field and/or method) by the given column
@@ -419,15 +425,15 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @param columns a list of columns to sort the query by.
 	 * @return this DBReport instance
 	 */
-	public DBMigration<M> setSortOrder(QueryableDatatype<?>... columns) {
-		List<SortProvider> columnProviders = new ArrayList<>();
-		for (QueryableDatatype<?> qdt : columns) {
-			final ColumnProvider expr = this.column(qdt);
-			columnProviders.add(expr.getSortProvider());
-		}
-		sortColumns.addAll(columnProviders);
-		return this;
-	}
+//	public DBMigration<M> setSortOrder(QueryableDatatype<?>... columns) {
+//		List<SortProvider> columnProviders = new ArrayList<>();
+//		for (QueryableDatatype<?> qdt : columns) {
+//			final ColumnProvider expr = this.column(qdt);
+//			columnProviders.add(expr.getSortProvider());
+//		}
+//		sortColumns.addAll(columnProviders);
+//		return this;
+//	}
 
 	/**
 	 * Add the rows as optional tables in the query.
