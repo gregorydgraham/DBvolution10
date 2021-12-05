@@ -317,29 +317,30 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 
 	@Override
 	public String toString() {
-		final Set<Entry<Class<? extends DBRow>, DBRow>> entrySet = entrySet();
-		ArrayList<Entry<Class<? extends DBRow>, DBRow>> entryList = new ArrayList<>(entrySet);
-		entryList.sort((o1, o2) -> {
-			return o1.getKey().getCanonicalName().compareTo(o2.getKey().getCanonicalName());
+		final var entrySet = entrySet();
+		var entryList = new ArrayList<>(entrySet);
+		entryList.sort((original, other) -> {
+			return original.getKey().getCanonicalName().compareTo(other.getKey().getCanonicalName());
 		});
-		Iterator<Entry<Class<? extends DBRow>, DBRow>> i = entryList.iterator();
-		if (!i.hasNext()) {
+		var iterator = entryList.iterator();
+		if (!iterator.hasNext()) {
 			return "{}";
 		}
 
-		StringBuilder sb = new StringBuilder();
-		sb.append('{');
+		StringBuilder builder = new StringBuilder();
+		builder.append('{');
+		// infinite loop only if the map has infinite entries
 		for (;;) {
-			Entry<Class<? extends DBRow>, DBRow> e = i.next();
-			Class<? extends DBRow> key = e.getKey();
-			DBRow value = e.getValue();
-			sb.append(key);
-			sb.append('=');
-			sb.append(value);
-			if (!i.hasNext()) {
-				return sb.append('}').toString();
+			Entry<Class<? extends DBRow>, DBRow> entry = iterator.next();
+			Class<? extends DBRow> key = entry.getKey();
+			DBRow value = entry.getValue();
+			builder.append(key);
+			builder.append('=');
+			builder.append(value);
+			if (!iterator.hasNext()) {
+				return builder.append('}').toString();
 			} else {
-				sb.append(',').append(' ');
+				builder.append(',').append(' ');
 			}
 		}
 	}
