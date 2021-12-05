@@ -18,12 +18,7 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 
 /**
@@ -318,5 +313,34 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 	@Override
 	public DBQueryRow clone() {
 		return (DBQueryRow) super.clone();
+	}
+
+	@Override
+	public String toString() {
+		final Set<Entry<Class<? extends DBRow>, DBRow>> entrySet = entrySet();
+		ArrayList<Entry<Class<? extends DBRow>, DBRow>> entryList = new ArrayList<>(entrySet);
+		entryList.sort((o1, o2) -> {
+			return o1.getKey().getCanonicalName().compareTo(o2.getKey().getCanonicalName());
+		});
+		Iterator<Entry<Class<? extends DBRow>, DBRow>> i = entryList.iterator();
+		if (!i.hasNext()) {
+			return "{}";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append('{');
+		for (;;) {
+			Entry<Class<? extends DBRow>, DBRow> e = i.next();
+			Class<? extends DBRow> key = e.getKey();
+			DBRow value = e.getValue();
+			sb.append(key);
+			sb.append('=');
+			sb.append(value);
+			if (!i.hasNext()) {
+				return sb.append('}').toString();
+			} else {
+				sb.append(',').append(' ');
+			}
+		}
 	}
 }
