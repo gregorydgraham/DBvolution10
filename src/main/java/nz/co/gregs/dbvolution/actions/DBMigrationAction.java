@@ -25,16 +25,15 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * Provides support for the abstract concept of migrating rows using one or more
- tables to another table.
+ * tables to another table.
  *
  * @author Gregory Graham
- * @param <R> the resulting DBRow using this DBQueryInsertAction
+ * @param <R> the resulting DBRow using this DBMigrationAction
  */
 public class DBMigrationAction<R extends DBRow> extends DBAction {
 
@@ -163,9 +162,4 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	protected DBActionList getRevertDBActionList() {
 		throw new UnsupportedOperationException("Reverting A Migration Is Not Possible Yet.");
 	}
-
-//	@Override
-//	protected DBActionList getActions() {//DBRow row) {
-//		return new DBActionList(new DBInsert(getRow()));
-//	}
 }
