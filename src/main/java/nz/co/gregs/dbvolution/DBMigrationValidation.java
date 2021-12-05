@@ -30,7 +30,6 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import org.apache.commons.logging.Log;
@@ -66,8 +65,8 @@ public class DBMigrationValidation<R extends DBRow> {
 	 * query
 	 */
 	public DBMigrationValidation(DBMigration<R> migration, DBRow mapper, DBRow... examples) {
-		sourceMigration = migration;
-		this.mapper = mapper;
+		sourceMigration = migration.copy();
+		this.mapper = DBRow.copyDBRow(mapper);
 		extraExamples = examples;
 	}
 
@@ -200,9 +199,6 @@ public class DBMigrationValidation<R extends DBRow> {
 		/**
 		 * All the details of the results
 		 *
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-		 *
 		 * @return the names of the mappings with the resulting status
 		 */
 		public Map<String, String> getMap() {
@@ -222,5 +218,12 @@ public class DBMigrationValidation<R extends DBRow> {
 		public void setWillBeProcessed(Boolean willBeProcessed) {
 			this.willBeProcessed = willBeProcessed;
 		}
+
+		@Override
+		public String toString() {
+			return "Result{" + "willBeProcessed=" + willBeProcessed + ", row=" + row + ", map=" + map + '}';
+		}
+		
+		
 	}
 }
