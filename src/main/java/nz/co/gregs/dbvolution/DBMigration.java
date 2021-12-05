@@ -74,8 +74,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param <MAPPER> the transformation to apply
 	 * @param database the database to work with
-	 * @param migrationMapper
-	 * @return
+	 * @param migrationMapper the transformation class
+	 * @return a DBMigration object
 	 */
 	public static <MAPPER extends DBRow> DBMigration<MAPPER> using(DBDatabase database, MAPPER migrationMapper) {
 		return new DBMigration<MAPPER>(database, migrationMapper);
@@ -301,12 +301,12 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
 	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBRow...)  }
 	 *
 	 * @param rows additional conditions to apply to the report.
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
@@ -328,12 +328,12 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
 	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBRow...)  }
 	 *
 	 * @param rows additional conditions to apply to the report.
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
@@ -372,10 +372,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * Creates a
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...)  count query}
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBRow...)   count query}
 	 * for the report and conditions and retrieves the number of rows that would
 	 * have been returned had
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBRow...) getAllRows method}
 	 * been called.
 	 *
 	 * @param rows additional conditions for the query.
@@ -550,7 +550,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param extraExamples extra examples
 	 * @return result from the migration validation
-	 * @throws SQLException
+	 * @throws SQLException if the database has an issue with the validation script
 	 */
 	public DBMigrationValidation.Results validateAllRows(DBRow... extraExamples) throws SQLException {
 
