@@ -30,7 +30,6 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import org.apache.commons.logging.Log;
@@ -39,10 +38,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Provides support for the abstract concept of validating migration rows from
  * one or more tables to another table.
- *
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  * @param <R> the database table that will receive the data
@@ -73,9 +68,7 @@ public class DBValidation<R extends DBRow> {
 	/**
 	 * Perform the validation
 	 *
-	 * @param database
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param database the database to validate on
 	 * @return the results of the validation
 	 * @throws SQLException database errors
 	 */
@@ -193,9 +186,6 @@ public class DBValidation<R extends DBRow> {
 
 		/**
 		 * All the details of the results
-		 *
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 *
 		 * @return the names of the mappings with the resulting status
 		 */
