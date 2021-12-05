@@ -487,6 +487,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.generation.deprecated.CarCompany");
 		knownKeys.add("class nz.co.gregs.dbvolution.OracleCompatibilityTest$CountIfRow");
 		knownKeys.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$DBDatabaseClusterTestTrackedTable");
+		knownKeys.add("class nz.co.gregs.dbvolution.DBMigrationTest$MigrateHeroesAndSelectedVilliansToFight");
 
 		// Store the number found for use later
 		final int numberOfClassesFound = foundKeys.size();
