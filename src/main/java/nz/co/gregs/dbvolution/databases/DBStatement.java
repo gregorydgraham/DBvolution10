@@ -84,7 +84,7 @@ public class DBStatement implements AutoCloseable {
 		String sql = details.getSql();
 		String label = details.getLabel();
 		QueryIntention intent = details.getIntention();
-		final String logSQL = "EXECUTING QUERY \"" + label + "\": " + sql;
+		final String logSQL = "EXECUTING QUERY \"" + label + "\" on "+this.database.getJdbcURL()+": \n" + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
 		try {
@@ -469,7 +469,7 @@ public class DBStatement implements AutoCloseable {
 	public void execute(StatementDetails details) throws SQLException {
 		details.setDBStatement(this);
 		String sql = details.getSql();
-		final String logSQL = "EXECUTING: " + sql;
+		final String logSQL = "EXECUTING on "+database.getLabel()+": " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		try {
