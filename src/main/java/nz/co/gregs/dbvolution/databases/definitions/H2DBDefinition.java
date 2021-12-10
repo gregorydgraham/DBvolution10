@@ -720,20 +720,20 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	 */
 	@Override
 	public String doCurrentUTCTimeTransform() {
-		return "/*doCurrentUTCTimeTransform*/dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
+		return "dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
 	}
 
 	@Override
 	public String doCurrentUTCDateTimeTransform() {
-		return "/*doCurrentUTCDateTimeTransform*/dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
+		return "dateadd(timezone_minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(timezone_hour, -1*extract(timezone_hour from current_timestamp(9)), dateadd(minute, -1*extract(timezone_minute from current_timestamp(9)), dateadd(hour, -1*extract(timezone_hour from current_timestamp(9)), current_timestamp(9)))))";
 	}
 
 	public String doRemoveInstantTimeZoneTransform(String instantValue) {
-		return "/*remove timezone*/dateadd(minute, -1*extract(timezone_minute from " + instantValue + "), dateadd(hour, -1*extract(timezone_hour from " + instantValue + "), " + instantValue + "))/*!remove timezone*/";
+		return "dateadd(minute, -1*extract(timezone_minute from " + instantValue + "), dateadd(hour, -1*extract(timezone_hour from " + instantValue + "), " + instantValue + "))/*!remove timezone*/";
 	}
 
 	public String doInsertInstantTimeZoneTransform(String instantValueWithCorrectTZ, String dateValue) {
-		return "/*insert timezone*/dateadd(minute, extract(timezone_minute from " + instantValueWithCorrectTZ + "), dateadd(hour, extract(timezone_hour from " + instantValueWithCorrectTZ + "), " + dateValue + "))/*!insert timezone*/";
+		return "dateadd(minute, extract(timezone_minute from " + instantValueWithCorrectTZ + "), dateadd(hour, extract(timezone_hour from " + instantValueWithCorrectTZ + "), " + dateValue + "))/*!insert timezone*/";
 	}
 
 	@Override
