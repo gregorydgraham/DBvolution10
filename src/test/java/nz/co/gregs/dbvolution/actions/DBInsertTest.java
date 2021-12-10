@@ -180,7 +180,6 @@ public class DBInsertTest extends AbstractTest {
 			assertThat(row.pk_uid.getValue(), is(1L));
 
 			TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-			System.out.println("gotRow: " + gotRow.toString());
 
 			assertThat(gotRow.pk_uid.getValue(), is(1L));
 			assertThat(gotRow.name.getValue(), is("def"));
@@ -202,7 +201,6 @@ public class DBInsertTest extends AbstractTest {
 			/* Retreive the default values and check they're correct */
 			final Long pkValue = row2.pk_uid.getValue();
 			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			System.out.println("gotRow: " + gotRow);
 
 			assertThat(gotRow.pk_uid.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("notdefault"));
@@ -216,7 +214,6 @@ public class DBInsertTest extends AbstractTest {
 			gotRow.name.setValue("blarg");
 			database.update(gotRow);
 			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			System.out.println("gotRow: " + gotRow);
 
 			assertThat(gotRow.pk_uid.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("blarg"));
@@ -233,7 +230,6 @@ public class DBInsertTest extends AbstractTest {
 			gotRow.creationDate.setValue(april2nd2011);
 			database.update(gotRow);
 			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			System.out.println("gotRow: " + gotRow);
 
 			assertThat(gotRow.pk_uid.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("blarg"));
@@ -328,7 +324,6 @@ public class DBInsertTest extends AbstractTest {
 
 			/* Check that row can be inserted successfully*/
 			database.insert(row);
-			System.out.println("inserted row: " + row);
 
 			assertThat(row.pk_uid.getValue(), is(1L));
 			assertThat(row.name.getValue(), is("def"));
@@ -344,7 +339,6 @@ public class DBInsertTest extends AbstractTest {
 			assertThat(row.currentDate.getValue(), lessThanOrEqualTo(soon));
 
 			TestDefaultInsertWithLocalDateTimeValue gotRow = database.getDBTable(row).setQueryLabel("AFTER INSERT").getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-			System.out.println("gotRow: " + gotRow);
 
 			soon = gotRow.currentDatePlus.getValue();
 			assertThat(gotRow.pk_uid.getValue(), is(1L));
@@ -364,7 +358,6 @@ public class DBInsertTest extends AbstractTest {
 				DBDatabase[] databases = cluster.getDatabases();
 				for (DBDatabase db : databases) {
 					TestDefaultInsertWithLocalDateTimeValue rowFromMember = db.getDBTable(row).setQueryLabel("CHECK MEMBERS").getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-					System.out.println("rowFromMember: " + rowFromMember);
 					assertThat(rowFromMember.pk_uid.getValue(), is(gotRow.pk_uid.getValue()));
 					assertThat(rowFromMember.name.getValue(), is(gotRow.name.getValue()));
 					assertThat(rowFromMember.defaultExpression.getValue(), is(gotRow.defaultExpression.getValue()));
@@ -385,7 +378,6 @@ public class DBInsertTest extends AbstractTest {
 			/* Retreive the default values and check they're correct */
 			final Long pkValue = row2.pk_uid.getValue();
 			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 1").getRowsByPrimaryKey(pkValue).get(0);
-			System.out.println("gotRow: " + gotRow);
 
 			soon = gotRow.currentDatePlus.getValue();
 			assertThat(gotRow.pk_uid.getValue(), is(2L));
@@ -400,7 +392,6 @@ public class DBInsertTest extends AbstractTest {
 			gotRow.name.setValue("blarg");
 			database.update(gotRow);
 			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 2").getRowsByPrimaryKey(pkValue).get(0);
-			System.out.println("gotRow: " + gotRow);
 
 			soon = gotRow.currentDatePlus.getValue();
 			assertThat(gotRow.pk_uid.getValue(), is(2L));
@@ -418,7 +409,6 @@ public class DBInsertTest extends AbstractTest {
 			gotRow.creationDate.setValue(april2nd2011);
 			database.update(gotRow);
 			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 3").getRowsByPrimaryKey(pkValue).get(0);
-			System.out.println("gotRow: " + gotRow);
 
 			soon = gotRow.currentDatePlus.getValue();
 			assertThat(gotRow.pk_uid.getValue(), is(2L));
