@@ -1597,7 +1597,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] ejecta = getDetails().getQuarantinedDatabases();
 		if (ejecta.length > 0) {
-			LOG.info(this.getLabel() + " HAS NO DATABASES TO RECONNECT");
+			LOG.info(this.getLabel() + " HAS NO QUARANTINED DATABASES");
 		} else {
 			for (DBDatabase ejected : ejecta) {
 				str.append(ejected.getSettings());
