@@ -105,6 +105,7 @@ public class DBTable<E extends DBRow> {
 		}
 		query.setQueryLabel(options.getQueryLabel());
 		query.setRawSQL(options.getRawSQL());
+		query.setPrintSQLBeforeExecution(options.getPrintSQLBeforeExecution());
 
 		return query;
 	}
