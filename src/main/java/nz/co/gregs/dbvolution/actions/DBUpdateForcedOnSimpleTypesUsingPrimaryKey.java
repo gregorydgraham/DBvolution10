@@ -26,7 +26,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Provides support for the abstract concept of updating rows without primary
@@ -50,7 +49,8 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 
 	/**
 	 * Executes required update actions for the row and returns a
-	 * {@link DBActionList} of those actions.The original rows are not changed by this method, or any DBUpdate method.
+	 * {@link DBActionList} of those actions.The original rows are not changed by
+	 * this method, or any DBUpdate method.
 	 *
 	 * Use {@link DBRow#setSimpleTypesToUnchanged() } if you need to ignore the
 	 * changes to the row.
@@ -178,13 +178,14 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-		DBRow table = getRow();
+		DBRow table = originalRow;
 		DBActionList actions = new DBActionList(new DBUpdateForcedOnSimpleTypesUsingPrimaryKey(table));
-		try (DBStatement statement = db.getDBStatement()) {
+		try ( DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				statement.execute("Update row", QueryIntention.UPDATE_ROW, sql);
 			}
 		}
+		refetch(db, originalRow);
 		return actions;
 	}
 

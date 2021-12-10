@@ -22,7 +22,12 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * DBAction encapsulates the concept of permanent changes to the database.
@@ -48,6 +53,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 public abstract class DBAction implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static final Log LOG = LogFactory.getLog(DBInsert.class);
+	
 	final DBRow row;
 
 	/**
@@ -159,5 +166,27 @@ public abstract class DBAction implements Serializable {
 
 	public boolean runOnDatabaseDuringCluster(DBDatabase initialDatabase, DBDatabase next) {
 		return true;
+	}
+
+	protected void refetch(DBDatabase db, DBRow originalRow) {
+		try {
+			if (originalRow.hasAutomaticValueFields()) {
+				if (originalRow.getPrimaryKeys().size() > 0) {
+					DBRow example = DBRow.getPrimaryKeyExample(originalRow);
+					List<DBRow> got = db.get(1L, example);
+					DBRow newRow = got.get(0);
+					List<PropertyWrapper<?, ?, ?>> props = originalRow.getColumnPropertyWrappers();
+					props.stream().filter(p -> p != null).forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
+				}
+			}
+		} catch (SQLException ex) {
+			LOG.fatal(null, ex);
+		} catch (UnexpectedNumberOfRowsException ex) {
+			LOG.fatal(null, ex);
+		} catch (AccidentalBlankQueryException ex) {
+			LOG.fatal(null, ex);
+		} catch (NoAvailableDatabaseException ex) {
+			LOG.fatal(null, ex);
+		}
 	}
 }

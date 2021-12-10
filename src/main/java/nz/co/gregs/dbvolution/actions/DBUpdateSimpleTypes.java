@@ -25,7 +25,6 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Provides support for the abstract concept of updating rows with standard
@@ -40,20 +39,23 @@ import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 public class DBUpdateSimpleTypes extends DBUpdate {
 
 	private static final long serialVersionUID = 1l;
+	protected final DBRow originalRow;
 
 	DBUpdateSimpleTypes(DBRow row) {
 		super(row);
+		originalRow = row;
 	}
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-		DBRow table = getRow();
+		DBRow table = originalRow;
 		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(table));
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				statement.execute("Update row", QueryIntention.UPDATE_ROW, sql);
 			}
 		}
+		refetch(db, originalRow);
 		return actions;
 	}
 

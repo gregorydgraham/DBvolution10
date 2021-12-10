@@ -32,10 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.DBSQLException;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,30 +98,6 @@ public class DBInsert extends DBAction {
 		DBInsert dbInsert = new DBInsert(row);
 		final DBActionList executedActions = database.executeDBAction(dbInsert);
 		return executedActions;
-	}
-
-	private void refetch(DBDatabase db, DBRow originalRow) {
-		try {
-			if (originalRow.hasAutomaticValueFields()) {
-				if (originalRow.getPrimaryKeys().size() > 0) {
-					var example = DBRow.getPrimaryKeyExample(originalRow);
-					List<DBRow> got = db.get(1L, example);
-					var newRow = got.get(0);
-					var props = originalRow.getColumnPropertyWrappers();
-					props.stream()
-							.filter(p -> p != null)
-							.forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
-				}
-			}
-		} catch (SQLException ex) {
-			LOG.fatal(null, ex);
-		} catch (UnexpectedNumberOfRowsException ex) {
-			LOG.fatal(null, ex);
-		} catch (AccidentalBlankQueryException ex) {
-			LOG.fatal(null, ex);
-		} catch (NoAvailableDatabaseException ex) {
-			LOG.fatal(null, ex);
-		}
 	}
 
 	/**

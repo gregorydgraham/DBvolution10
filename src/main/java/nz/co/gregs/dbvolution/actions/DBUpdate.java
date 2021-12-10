@@ -107,4 +107,8 @@ public abstract class DBUpdate extends DBAction {
 		return false;
 	}
 
+	@Override
+	public boolean requiresRunOnIndividualDatabaseBeforeCluster() {
+		return true;
+	}
 }

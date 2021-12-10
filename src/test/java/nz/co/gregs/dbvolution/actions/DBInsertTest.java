@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.SlowSynchingDatabase;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.InstantColumn;
 import nz.co.gregs.dbvolution.columns.LocalDateTimeColumn;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -37,6 +38,7 @@ import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.utility.Brake;
+import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
@@ -168,74 +170,84 @@ public class DBInsertTest extends AbstractTest {
 		Date startTime = cal.getTime();
 
 		TestDefaultInsertValue row = new TestDefaultInsertValue();
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(row);
-		database.createTable(row);
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+			database.createTable(row);
 
-		/* Check that row can be inserted successfully*/
-		database.insert(row);
-		assertThat(row.pk_uid.getValue(), is(1L));
+			/* Check that row can be inserted successfully*/
+			database.insert(row);
+			assertThat(row.pk_uid.getValue(), is(1L));
 
-		TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+			TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+			System.out.println("gotRow: " + gotRow.toString());
 
-		assertThat(gotRow.pk_uid.getValue(), is(1L));
-		assertThat(gotRow.name.getValue(), is("def"));
-		assertThat(gotRow.defaultExpression.getValue(), is("def"));
-		assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), nullValue());
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			assertThat(gotRow.pk_uid.getValue(), is(1L));
+			assertThat(gotRow.name.getValue(), is("def"));
+			assertThat(gotRow.defaultExpression.getValue(), is("def"));
+			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			assertThat(gotRow.updateDate.getValue(), nullValue());
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 
-		/* Check that default insert values can be overridden */
-		TestDefaultInsertValue row2 = new TestDefaultInsertValue();
-		row2.name.setValue("notdefault");
-		row2.defaultExpression.setValue("notdefaulteither");
-		assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
-		database.insert(row2);
-		assertThat(row2.pk_uid.getValue(), is(2L));
+			/* Check that default insert values can be overridden */
+			TestDefaultInsertValue row2 = new TestDefaultInsertValue();
+			row2.name.setValue("notdefault");
+			row2.defaultExpression.setValue("notdefaulteither");
+			assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
+			database.insert(row2);
+			assertThat(row2.pk_uid.getValue(), is(2L));
 
-		/* Retreive the default values and check they're correct */
-		final Long pkValue = row2.pk_uid.getValue();
-		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
-		assertThat(gotRow.name.getValue(), is("notdefault"));
-		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), nullValue());
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			/* Retreive the default values and check they're correct */
+			final Long pkValue = row2.pk_uid.getValue();
+			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+			System.out.println("gotRow: " + gotRow);
 
-		gotRow.name.setValue("blarg");
-		database.update(gotRow);
-		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
-		assertThat(gotRow.name.getValue(), is("blarg"));
-		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
-		assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		Date formerUpdateDate = gotRow.updateDate.getValue();
+			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.name.getValue(), is("notdefault"));
+			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
+			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			assertThat(gotRow.updateDate.getValue(), nullValue());
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 
-		gotRow.name.setValue("blarg");
-		gotRow.creationDate.setValue(april2nd2011);
-		database.update(gotRow);
-		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
-		assertThat(gotRow.name.getValue(), is("blarg"));
-		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		assertThat(gotRow.creationDate.getValue(), is(april2nd2011));
-		assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
-		assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			gotRow.name.setValue("blarg");
+			database.update(gotRow);
+			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+			System.out.println("gotRow: " + gotRow);
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(row);
+			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.name.getValue(), is("blarg"));
+			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
+			assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
+			assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
+			assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			Date formerUpdateDate = gotRow.updateDate.getValue();
+
+			gotRow.name.setValue("blarg");
+			gotRow.creationDate.setValue(april2nd2011);
+			database.update(gotRow);
+			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+			System.out.println("gotRow: " + gotRow);
+
+			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.name.getValue(), is("blarg"));
+			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
+			assertThat(gotRow.creationDate.getValue(), is(april2nd2011));
+			assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
+			assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+		} finally {
+			database.setPrintSQLBeforeExecuting(true);
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+		}
 	}
 
 	public static class TestDefaultValueRetrieval extends DBRow {
@@ -289,83 +301,154 @@ public class DBInsertTest extends AbstractTest {
 		public DBDate currentDate = new DBDate(DateExpression.currentDate());
 
 	}
-
+	
 	@Test
 	public void testSaveWithDefaultWithLocalDateTimeValue() throws Exception {
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.add(GregorianCalendar.MINUTE, -1);
-		LocalDateTime startTime = cal.toZonedDateTime().toLocalDateTime();
-
 		TestDefaultInsertWithLocalDateTimeValue row = new TestDefaultInsertWithLocalDateTimeValue();
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(row);
-		database.createTable(row);
+		try {
+			if(database instanceof DBDatabaseCluster){
+				// if the cluster members are on different servers, like we'd expect,
+				// then we can expect their clocks to be slightly different.
+				// That mean an update performed on a different member to the insert may 
+				// produce an update date that is earlier than the creation date.
+				// This is not a big deal operationally, but it will make these tests fail
+				// So we set a preferred member to get a consistent system clock.
+				DBDatabaseCluster cluster = (DBDatabaseCluster)database;
+				final DBDatabase readyDatabase = cluster.getReadyDatabase();
+				cluster.getDetails().setPreferredDatabase(readyDatabase);
+			}
+			database.setPrintSQLBeforeExecuting(true);
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.add(GregorianCalendar.MINUTE, -1);
+			LocalDateTime startTime = cal.toZonedDateTime().toLocalDateTime();
 
-		/* Check that row can be inserted successfully*/
-		database.insert(row);
-		assertThat(row.pk_uid.getValue(), is(1L));
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+			database.createTable(row);
 
-		TestDefaultInsertWithLocalDateTimeValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+			/* Check that row can be inserted successfully*/
+			database.insert(row);
+			System.out.println("inserted row: " + row);
 
-		assertThat(gotRow.pk_uid.getValue(), is(1L));
-		assertThat(gotRow.name.getValue(), is("def"));
-		assertThat(gotRow.defaultExpression.getValue(), is("def"));
-		assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), nullValue());
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			assertThat(row.pk_uid.getValue(), is(1L));
+			assertThat(row.name.getValue(), is("def"));
+			assertThat(row.defaultExpression.getValue(), is("def"));
+			assertThat(row.creationDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(row.updateDate.getValue(), nullValue());
+			assertThat(row.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
 
-		/* Check that default insert values can be overridden */
-		TestDefaultInsertWithLocalDateTimeValue row2 = new TestDefaultInsertWithLocalDateTimeValue();
-		row2.name.setValue("notdefault");
-		row2.defaultExpression.setValue("notdefaulteither");
-		assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
-		database.insert(row2);
-		assertThat(row2.pk_uid.getValue(), is(2L));
+			LocalDateTime soon = row.currentDatePlus.getValue();
+			assertThat(row.creationDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(row.updateDate.getValue(), nullValue());
+			assertThat(row.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(row.currentDate.getValue(), lessThanOrEqualTo(soon));
 
-		/* Retreive the default values and check they're correct */
-		final Long pkValue = row2.pk_uid.getValue();
-		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
-		assertThat(gotRow.name.getValue(), is("notdefault"));
-		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), nullValue());
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			TestDefaultInsertWithLocalDateTimeValue gotRow = database.getDBTable(row).setQueryLabel("AFTER INSERT").getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+			System.out.println("gotRow: " + gotRow);
 
-		gotRow.name.setValue("blarg");
-		database.update(gotRow);
-		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
-		assertThat(gotRow.name.getValue(), is("blarg"));
-		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
-		assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
-		assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		LocalDateTime formerUpdateDate = gotRow.updateDate.getValue();
+			soon = gotRow.currentDatePlus.getValue();
+			assertThat(gotRow.pk_uid.getValue(), is(1L));
+			assertThat(gotRow.name.getValue(), is("def"));
+			assertThat(gotRow.defaultExpression.getValue(), is("def"));
+			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.updateDate.getValue(), nullValue());
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(gotRow.updateDate.getValue(), nullValue());
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(gotRow.currentDate.getValue(), lessThanOrEqualTo(soon));
 
-		gotRow.name.setValue("blarg");
-		gotRow.creationDate.setValue(april2nd2011);
-		database.update(gotRow);
-		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
-		assertThat(gotRow.name.getValue(), is("blarg"));
-		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
-		final LocalDateTime april2nd2011Instant = LocalDateTime.ofInstant(april2nd2011.toInstant(), ZoneId.systemDefault());
-		assertThat(gotRow.creationDate.getValue(), is(april2nd2011Instant));
-		assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
-		assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
-		assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
+			if (database instanceof DBDatabaseCluster) {
+				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
+				cluster.waitUntilDatabaseIsSynchronised(database, 10000);
+				DBDatabase[] databases = cluster.getDatabases();
+				for (DBDatabase db : databases) {
+					TestDefaultInsertWithLocalDateTimeValue rowFromMember = db.getDBTable(row).setQueryLabel("CHECK MEMBERS").getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+					System.out.println("rowFromMember: " + rowFromMember);
+					assertThat(rowFromMember.pk_uid.getValue(), is(gotRow.pk_uid.getValue()));
+					assertThat(rowFromMember.name.getValue(), is(gotRow.name.getValue()));
+					assertThat(rowFromMember.defaultExpression.getValue(), is(gotRow.defaultExpression.getValue()));
+					assertThat(rowFromMember.creationDate.getValue(), isApproximately(gotRow.creationDate.getValue()));
+					assertThat(rowFromMember.updateDate.getValue(), isApproximately(gotRow.updateDate.getValue()));
+					assertThat(rowFromMember.creationOrUpdateDate.getValue(), isApproximately(gotRow.creationOrUpdateDate.getValue()));
+				}
+			}
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(row);
+			/* Check that default insert values can be overridden */
+			TestDefaultInsertWithLocalDateTimeValue row2 = new TestDefaultInsertWithLocalDateTimeValue();
+			row2.name.setValue("notdefault");
+			row2.defaultExpression.setValue("notdefaulteither");
+			assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
+			database.insert(row2);
+			assertThat(row2.pk_uid.getValue(), is(2L));
+
+			/* Retreive the default values and check they're correct */
+			final Long pkValue = row2.pk_uid.getValue();
+			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 1").getRowsByPrimaryKey(pkValue).get(0);
+			System.out.println("gotRow: " + gotRow);
+
+			soon = gotRow.currentDatePlus.getValue();
+			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.name.getValue(), is("notdefault"));
+			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
+			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(gotRow.updateDate.getValue(), nullValue());
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
+
+			gotRow.name.setValue("blarg");
+			database.update(gotRow);
+			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 2").getRowsByPrimaryKey(pkValue).get(0);
+			System.out.println("gotRow: " + gotRow);
+
+			soon = gotRow.currentDatePlus.getValue();
+			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.name.getValue(), is("blarg"));
+			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
+			assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
+			assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
+			assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
+			LocalDateTime formerUpdateDate = gotRow.updateDate.getValue();
+
+			gotRow.name.setValue("blargest");
+			gotRow.creationDate.setValue(april2nd2011);
+			database.update(gotRow);
+			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 3").getRowsByPrimaryKey(pkValue).get(0);
+			System.out.println("gotRow: " + gotRow);
+
+			soon = gotRow.currentDatePlus.getValue();
+			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.name.getValue(), is("blargest"));
+			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
+			final LocalDateTime april2nd2011Instant = LocalDateTime.ofInstant(april2nd2011.toInstant(), ZoneId.systemDefault());
+			assertThat(gotRow.creationDate.getValue(), is(april2nd2011Instant));
+			assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
+			// the below errors occasionally when using a cluster
+			assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(soon));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
+
+		} finally {
+			database.setPrintSQLBeforeExecuting(true);
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+		}
+	}
+
+	public static Matcher<LocalDateTime> isApproximately(LocalDateTime then) {
+		if (then == null) {
+			return is(then);
+		} else {
+			return isOneOf(
+					then,
+					then.truncatedTo(ChronoUnit.MILLIS),
+					then.truncatedTo(ChronoUnit.MICROS)
+			);
+		}
 	}
 
 	public static class TestDefaultInsertWithLocalDateTimeValue extends DBRow {
@@ -404,7 +487,47 @@ public class DBInsertTest extends AbstractTest {
 		@DBColumn
 		public DBLocalDateTime currentDate = new DBLocalDateTime(LocalDateTimeExpression.currentLocalDateTime());
 
+		@DBColumn
+		public DBLocalDateTime currentDatePlus = new DBLocalDateTime(LocalDateTimeExpression.currentLocalDateTime().addSeconds(10));
 	}
+
+//	public static class TestDefaultInsertWithLocalDateTimeValue extends DBRow {
+//
+//		private static final long serialVersionUID = 1L;
+//
+//		@DBPrimaryKey
+//		@DBColumn
+//		@DBAutoIncrement
+//		public DBInteger pk_uid = new DBInteger();
+//
+//		@DBColumn
+//		public DBString name = new DBString().setDefaultInsertValue("def");
+//
+//		@DBColumn
+//		public DBString defaultExpression = new DBString()
+//				.setDefaultInsertValue(StringExpression.value("default").substring(0, 3));
+//
+//		@DBColumn
+//		public DBLocalDateTime javaDate = new DBLocalDateTime()
+//				.setDefaultInsertValue(LocalDateTimeColumn.now());
+//
+//		@DBColumn
+//		public DBLocalDateTime creationDate = new DBLocalDateTime()
+//				.setDefaultInsertValue(LocalDateTimeExpression.currentLocalDateTime());
+//
+//		@DBColumn
+//		public DBLocalDateTime updateDate = new DBLocalDateTime()
+//				.setDefaultUpdateValue(LocalDateTimeExpression.currentLocalDateTime());
+//
+//		@DBColumn
+//		public DBLocalDateTime creationOrUpdateDate = new DBLocalDateTime()
+//				.setDefaultInsertValue(LocalDateTimeExpression.currentLocalDateTime())
+//				.setDefaultUpdateValue(LocalDateTimeExpression.currentLocalDateTime());
+//
+//		@DBColumn
+//		public DBLocalDateTime currentDate = new DBLocalDateTime(LocalDateTimeExpression.currentLocalDateTime());
+//
+//	}
 
 	@Test
 	public void testSaveWithDefaultWithInstantValue() throws Exception {
@@ -535,15 +658,15 @@ public class DBInsertTest extends AbstractTest {
 				}
 
 				final Instant db1CreationValue = gotRow1.creationDate.getValue().truncatedTo(precision);
-				final Instant db1UpdateValue = gotRow1.updateDate.getValue()!=null?gotRow1.updateDate.getValue().truncatedTo(precision):null;
+				final Instant db1UpdateValue = gotRow1.updateDate.getValue() != null ? gotRow1.updateDate.getValue().truncatedTo(precision) : null;
 				final Instant db1CreationOrUpdateValue = gotRow1.creationOrUpdateDate.getValue().truncatedTo(precision);
 
 				final Instant db2CreationValue = gotRow2.creationDate.getValue().truncatedTo(precision);
-				final Instant db2UpdateValue = gotRow2.updateDate.getValue()!=null?gotRow2.updateDate.getValue().truncatedTo(precision):null;
+				final Instant db2UpdateValue = gotRow2.updateDate.getValue() != null ? gotRow2.updateDate.getValue().truncatedTo(precision) : null;
 				final Instant db2CreationOrUpdateValue = gotRow2.creationOrUpdateDate.getValue().truncatedTo(precision);
 
 				final Instant db3CreationValue = gotRow3.creationDate.getValue().truncatedTo(precision);
-				final Instant db3UpdateValue = gotRow3.updateDate.getValue()!=null?gotRow3.updateDate.getValue().truncatedTo(precision):null;
+				final Instant db3UpdateValue = gotRow3.updateDate.getValue() != null ? gotRow3.updateDate.getValue().truncatedTo(precision) : null;
 				final Instant db3CreationOrUpdateValue = gotRow3.creationOrUpdateDate.getValue().truncatedTo(precision);
 
 				assertThat(db2CreationValue, is(db1CreationValue));
