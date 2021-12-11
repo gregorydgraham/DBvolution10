@@ -72,7 +72,7 @@ public abstract class AbstractTest {
 			getDatabasesFromSettings();
 		}
 		databases.forEach(database -> {
-			System.out.println("Processing: Database " + database[0]+ " = "+((DBDatabase)database[1]).getJdbcURL());
+			System.out.println("Processing: Database " + database[0] + " = " + ((DBDatabase) database[1]).getJdbcURL());
 		});
 		return databases;
 	}
@@ -120,8 +120,8 @@ public abstract class AbstractTest {
 			final MySQLDB mysql = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase();
 			final MSSQLServerDB sqlserver = MSSQLServerLocalTestDB.getFromSettings("sqlserver");
 			final Oracle11XEDB oracle = new Oracle11XESettingsBuilder().fromSystemUsingPrefix("oraclexe").getDBDatabase();
-			final DBDatabaseCluster cluster = new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.autoStart(), h2Mem, sqlite, 
-					postgres, mysql,sqlserver, 
+			final DBDatabaseCluster cluster = new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.autoStart(), h2Mem, sqlite,
+					postgres, mysql, sqlserver,
 					oracle);
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle", cluster});
 		}
@@ -315,61 +315,68 @@ public abstract class AbstractTest {
 	}
 
 	public void setup(DBDatabase database) throws Exception {
-		database.preventDroppingOfTables(false);
-		database.dropTableIfExists(new Marque());
-		database.createTable(myMarqueRow);
+		if (database != null) {
+			if (database instanceof DBDatabaseCluster) {
+				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
+				cluster.reconnectQuarantinedDatabases();
+				cluster.waitUntilSynchronised();
+			}
+			database.preventDroppingOfTables(false);
+			database.dropTableIfExists(new Marque());
+			database.createTable(myMarqueRow);
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(myCarCompanyRow);
-		database.createTable(myCarCompanyRow);
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(myCarCompanyRow);
+			database.createTable(myCarCompanyRow);
 
-		marquesTable = DBTable.getInstance(database, myMarqueRow);
-		carCompanies = DBTable.getInstance(database, myCarCompanyRow);
-		carCompanies.insert(new CarCompany("TOYOTA", 1));
-		carTableRows.add(new CarCompany("Ford", 2));
-		carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
-		carTableRows.add(new CarCompany("OTHER", 4));
-		carCompanies.insert(carTableRows);
+			marquesTable = DBTable.getInstance(database, myMarqueRow);
+			carCompanies = DBTable.getInstance(database, myCarCompanyRow);
+			carCompanies.insert(new CarCompany("TOYOTA", 1));
+			carTableRows.add(new CarCompany("Ford", 2));
+			carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
+			carTableRows.add(new CarCompany("OTHER", 4));
+			carCompanies.insert(carTableRows);
 
-		Date firstDate = DATETIME_FORMAT.parse(firstDateStr);
-		Date secondDate = DATETIME_FORMAT.parse(secondDateStr);
+			Date firstDate = DATETIME_FORMAT.parse(firstDateStr);
+			Date secondDate = DATETIME_FORMAT.parse(secondDateStr);
 
-		marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, true));
-		marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, false));
-		marqueRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", firstDate, 3, null));
-		marqueRows.add(new Marque(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(4896300, "False", 1246974, null, 2, "UV", "HYUNDAI", null, "Y", firstDate, 1, null));
-		marqueRows.add(new Marque(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y", firstDate, 3, null));
-		marqueRows.add(new Marque(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(8376505, "False", 1246974, "", null, "", "ISUZU", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(8587147, "False", 1246974, "", null, "", "DAEWOO", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y", firstDate, 4, null));
-		marqueRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y", secondDate, 4, null));
-		marqueRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", secondDate, 4, null));
-		marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, true));
-		marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
+			marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, true));
+			marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, false));
+			marqueRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", firstDate, 3, null));
+			marqueRows.add(new Marque(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(4896300, "False", 1246974, null, 2, "UV", "HYUNDAI", null, "Y", firstDate, 1, null));
+			marqueRows.add(new Marque(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y", firstDate, 3, null));
+			marqueRows.add(new Marque(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(8376505, "False", 1246974, "", null, "", "ISUZU", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(8587147, "False", 1246974, "", null, "", "DAEWOO", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y", firstDate, 4, null));
+			marqueRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y", secondDate, 4, null));
+			marqueRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", secondDate, 4, null));
+			marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, true));
+			marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
-		marquesTable.insert(marqueRows);
+			marquesTable.insert(marqueRows);
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(new CompanyLogo());
-		database.createTable(new CompanyLogo());
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CompanyLogo());
+			database.createTable(new CompanyLogo());
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(new CompanyText());
-		database.createTable(new CompanyText());
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CompanyText());
+			database.createTable(new CompanyText());
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-		database.createOrUpdateTable(new LinkCarCompanyAndLogo());
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+			database.createOrUpdateTable(new LinkCarCompanyAndLogo());
+		}
 	}
 
 	@After
@@ -378,6 +385,13 @@ public abstract class AbstractTest {
 	}
 
 	public void tearDown(DBDatabase database) throws Exception {
+		if (database != null) {
+			if (database instanceof DBDatabaseCluster) {
+				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
+				cluster.reconnectQuarantinedDatabases();
+				cluster.waitUntilSynchronised();
+			}
+		}
 	}
 
 	protected String oracleSafeStrings(String expect) throws NoAvailableDatabaseException {
