@@ -239,7 +239,7 @@ public class DBInsert extends DBAction {
 		}
 		originalRow.setSimpleTypesToUnchanged();
 
-		refetch(db, originalRow);
+		refetchIfClusterRequires(db, originalRow);
 
 		return actions;
 	}
@@ -460,6 +460,11 @@ public class DBInsert extends DBAction {
 	@Override
 	public boolean runOnDatabaseDuringCluster(DBDatabase initialDatabase, DBDatabase next) {
 		return initialDatabase != next;
+	}
+
+	@Override
+	protected void updateRefetchRequirementForOtherDatabases() {
+		setRefetchStatus(RefetchRequirement.DO_NOT_REFETCH);
 	}
 
 	protected static class InsertFields {

@@ -185,7 +185,7 @@ public class DBUpdateForcedOnSimpleTypesUsingPrimaryKey extends DBUpdateSimpleTy
 				statement.execute("Update row", QueryIntention.UPDATE_ROW, sql);
 			}
 		}
-		refetch(db, originalRow);
+		refetchIfClusterRequires(db, originalRow);
 		return actions;
 	}
 

@@ -54,8 +54,9 @@ public abstract class DBAction implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final Log LOG = LogFactory.getLog(DBInsert.class);
-	
+
 	final DBRow row;
+	private RefetchRequirement refetchStatus = RefetchRequirement.REFETCH;
 
 	/**
 	 * Standard action constructor.
@@ -168,15 +169,21 @@ public abstract class DBAction implements Serializable {
 		return true;
 	}
 
-	protected void refetch(DBDatabase db, DBRow originalRow) {
+	protected void refetchIfClusterRequires(DBDatabase db, DBRow originalRow) {
 		try {
-			if (originalRow.hasAutomaticValueFields()) {
-				if (originalRow.getPrimaryKeys().size() > 0) {
-					DBRow example = DBRow.getPrimaryKeyExample(originalRow);
-					List<DBRow> got = db.get(1L, example);
-					DBRow newRow = got.get(0);
-					List<PropertyWrapper<?, ?, ?>> props = originalRow.getColumnPropertyWrappers();
-					props.stream().filter(p -> p != null).forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
+			if (refetchNeeded()) {
+				if (originalRow.hasAutomaticValueFields()) {
+					if (originalRow.getPrimaryKeys().size() > 0) {
+						updateRefetchRequirementForOtherDatabases();
+						DBRow example = DBRow.getPrimaryKeyExample(originalRow);
+						DBRow newRow = db
+								.getDBTable(example)
+								.setQueryLabel("AUTOMATIC REFETCH")
+								.setPrintSQLBeforeExecution(true)
+								.getOnlyRow();
+						List<PropertyWrapper<?, ?, ?>> props = originalRow.getColumnPropertyWrappers();
+						props.stream().filter(p -> p != null).forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
+					}
 				}
 			}
 		} catch (SQLException ex) {
@@ -188,5 +195,22 @@ public abstract class DBAction implements Serializable {
 		} catch (NoAvailableDatabaseException ex) {
 			LOG.fatal(null, ex);
 		}
+	}
+
+	private boolean refetchNeeded() {
+		return RefetchRequirement.REFETCH.equals(refetchStatus);
+	}
+
+	protected void updateRefetchRequirementForOtherDatabases() {
+		setRefetchStatus(RefetchRequirement.REFETCH);
+	}
+
+	protected void setRefetchStatus(RefetchRequirement refetchStatus) {
+		this.refetchStatus = refetchStatus;
+	}
+
+	public static enum RefetchRequirement {
+		REFETCH,
+		DO_NOT_REFETCH
 	}
 }

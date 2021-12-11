@@ -111,4 +111,10 @@ public abstract class DBUpdate extends DBAction {
 	public boolean requiresRunOnIndividualDatabaseBeforeCluster() {
 		return true;
 	}
+
+	@Override
+	protected void updateRefetchRequirementForOtherDatabases() {
+		setRefetchStatus(RefetchRequirement.DO_NOT_REFETCH);
+	}
+
 }

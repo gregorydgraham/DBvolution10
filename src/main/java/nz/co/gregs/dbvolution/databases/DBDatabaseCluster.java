@@ -1596,27 +1596,31 @@ public class DBDatabaseCluster extends DBDatabase {
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] ejecta = getDetails().getQuarantinedDatabases();
-		if (ejecta.length > 0) {
+		if (ejecta.length == 0) {
 			LOG.info(this.getLabel() + " HAS NO QUARANTINED DATABASES");
 		} else {
 			for (DBDatabase ejected : ejecta) {
-				str.append(ejected.getSettings());
-				try {
-					LOG.info(this.getLabel() + " RECONNECTING DATABASE: " + ejected.getLabel());
-					addDatabase(ejected);
-					LOG.info(this.getLabel() + " RECONNECTED DATABASE: " + ejected.getLabel());
-					str.append("").append(ejected.getLabel()).append(" added");
-				} catch (SQLException ex) {
-					LOG.info(this.getLabel() + " RECONNECTION FAILED FOR DATABASE: " + ejected.getLabel());
-					quarantineDatabase(ejected, ex);
-					str.append("").append(ejected.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
-				} finally {
-					str.append("\n");
-				}
+				reconnectQuarantinedDatabase(str, ejected);
 			}
 		}
 
 		return str.toString();
+	}
+
+	private void reconnectQuarantinedDatabase(StringBuilder str, DBDatabase ejected) throws UnableToRemoveLastDatabaseFromClusterException {
+		str.append(ejected.getSettings());
+		try {
+			LOG.info(this.getLabel() + " RECONNECTING DATABASE: " + ejected.getLabel());
+			addDatabase(ejected);
+			LOG.info(this.getLabel() + " RECONNECTED DATABASE: " + ejected.getLabel());
+			str.append("").append(ejected.getLabel()).append(" added");
+		} catch (SQLException ex) {
+			LOG.info(this.getLabel() + " RECONNECTION FAILED FOR DATABASE: " + ejected.getLabel());
+			quarantineDatabase(ejected, ex);
+			str.append("").append(ejected.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
+		} finally {
+			str.append("\n");
+		}
 	}
 
 	public DBRow[] getTrackedTables() {

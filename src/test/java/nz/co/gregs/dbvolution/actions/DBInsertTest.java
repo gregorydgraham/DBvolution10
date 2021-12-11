@@ -80,12 +80,12 @@ public class DBInsertTest extends AbstractTest {
 			row.name.setValue("First Row");
 			row2.name.setValue("Second Row");
 			database.insert(row);
-			assertThat(row.pk_uid.getValue(), is(1L));
+			assertThat(row.pk_TestDefaultValueRetrieval.getValue(), is(1L));
 			database.insert(row2);
-			assertThat(row2.pk_uid.getValue(), is(2L));
-			final Long pkValue = row2.pk_uid.getValue();
+			assertThat(row2.pk_TestDefaultValueRetrieval.getValue(), is(2L));
+			final Long pkValue = row2.pk_TestDefaultValueRetrieval.getValue();
 			TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			assertThat(gotRow2.pk_uid.getValue(), is(2L));
+			assertThat(gotRow2.pk_TestDefaultValueRetrieval.getValue(), is(2L));
 
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
@@ -104,12 +104,12 @@ public class DBInsertTest extends AbstractTest {
 			database.createTable(row);
 
 			database.insert(row);
-			assertThat(row.pk_uid.getValue(), is(1L));
+			assertThat(row.pk_TestDefaultValueRetrieval.getValue(), is(1L));
 			database.insert(row2);
-			assertThat(row2.pk_uid.getValue(), is(2L));
-			final Long pkValue = row2.pk_uid.getValue();
+			assertThat(row2.pk_TestDefaultValueRetrieval.getValue(), is(2L));
+			final Long pkValue = row2.pk_TestDefaultValueRetrieval.getValue();
 			TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			assertThat(gotRow2.pk_uid.getValue(), is(2L));
+			assertThat(gotRow2.pk_TestDefaultValueRetrieval.getValue(), is(2L));
 
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
@@ -128,12 +128,12 @@ public class DBInsertTest extends AbstractTest {
 			database.createTable(row);
 
 			database.insert(row);
-			assertThat(row.pk_uid.getValue(), is(1L));
+			assertThat(row.pk_TestInsertDoesNotUpdateExpressionColumns.getValue(), is(1L));
 			database.insert(row2);
-			assertThat(row2.pk_uid.getValue(), is(2L));
-			final Long pkValue = row2.pk_uid.getValue();
+			assertThat(row2.pk_TestInsertDoesNotUpdateExpressionColumns.getValue(), is(2L));
+			final Long pkValue = row2.pk_TestInsertDoesNotUpdateExpressionColumns.getValue();
 			TestInsertDoesNotUpdateExpressionColumns gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			assertThat(gotRow2.pk_uid.getValue(), is(2L));
+			assertThat(gotRow2.pk_TestInsertDoesNotUpdateExpressionColumns.getValue(), is(2L));
 
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
@@ -177,11 +177,11 @@ public class DBInsertTest extends AbstractTest {
 
 			/* Check that row can be inserted successfully*/
 			database.insert(row);
-			assertThat(row.pk_uid.getValue(), is(1L));
+			assertThat(row.pk_TestDefaultInsertValue.getValue(), is(1L));
 
-			TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+			TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertValue.getValue()).get(0);
 
-			assertThat(gotRow.pk_uid.getValue(), is(1L));
+			assertThat(gotRow.pk_TestDefaultInsertValue.getValue(), is(1L));
 			assertThat(gotRow.name.getValue(), is("def"));
 			assertThat(gotRow.defaultExpression.getValue(), is("def"));
 			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
@@ -196,13 +196,13 @@ public class DBInsertTest extends AbstractTest {
 			row2.defaultExpression.setValue("notdefaulteither");
 			assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
 			database.insert(row2);
-			assertThat(row2.pk_uid.getValue(), is(2L));
+			assertThat(row2.pk_TestDefaultInsertValue.getValue(), is(2L));
 
 			/* Retreive the default values and check they're correct */
-			final Long pkValue = row2.pk_uid.getValue();
+			final Long pkValue = row2.pk_TestDefaultInsertValue.getValue();
 			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
 
-			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.pk_TestDefaultInsertValue.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("notdefault"));
 			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
@@ -215,7 +215,7 @@ public class DBInsertTest extends AbstractTest {
 			database.update(gotRow);
 			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
 
-			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.pk_TestDefaultInsertValue.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("blarg"));
 			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 			assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
@@ -231,7 +231,7 @@ public class DBInsertTest extends AbstractTest {
 			database.update(gotRow);
 			gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
 
-			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.pk_TestDefaultInsertValue.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("blarg"));
 			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 			assertThat(gotRow.creationDate.getValue(), is(april2nd2011));
@@ -240,7 +240,6 @@ public class DBInsertTest extends AbstractTest {
 			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
 			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 		} finally {
-			database.setPrintSQLBeforeExecuting(true);
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
 		}
@@ -253,7 +252,7 @@ public class DBInsertTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBColumn
 		@DBAutoIncrement
-		public DBInteger pk_uid = new DBInteger();
+		public DBInteger pk_TestDefaultValueRetrieval = new DBInteger();
 
 		@DBColumn
 		public DBString name = new DBString();
@@ -267,7 +266,7 @@ public class DBInsertTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBColumn
 		@DBAutoIncrement
-		public DBInteger pk_uid = new DBInteger();
+		public DBInteger pk_TestDefaultInsertValue = new DBInteger();
 
 		@DBColumn
 		public DBString name = new DBString().setDefaultInsertValue("def");
@@ -312,8 +311,8 @@ public class DBInsertTest extends AbstractTest {
 				DBDatabaseCluster cluster = (DBDatabaseCluster)database;
 				final DBDatabase readyDatabase = cluster.getReadyDatabase();
 				cluster.getDetails().setPreferredDatabase(readyDatabase);
+				cluster.getDetails().setPreferredDatabaseRequired(true);
 			}
-			database.setPrintSQLBeforeExecuting(true);
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.add(GregorianCalendar.MINUTE, -1);
 			LocalDateTime startTime = cal.toZonedDateTime().toLocalDateTime();
@@ -325,7 +324,7 @@ public class DBInsertTest extends AbstractTest {
 			/* Check that row can be inserted successfully*/
 			database.insert(row);
 
-			assertThat(row.pk_uid.getValue(), is(1L));
+			assertThat(row.pk_TestDefaultInsertWithLocalDateTimeValue.getValue(), is(1L));
 			assertThat(row.name.getValue(), is("def"));
 			assertThat(row.defaultExpression.getValue(), is("def"));
 			assertThat(row.creationDate.getValue(), greaterThanOrEqualTo(startTime));
@@ -338,10 +337,10 @@ public class DBInsertTest extends AbstractTest {
 			assertThat(row.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
 			assertThat(row.currentDate.getValue(), lessThanOrEqualTo(soon));
 
-			TestDefaultInsertWithLocalDateTimeValue gotRow = database.getDBTable(row).setQueryLabel("AFTER INSERT").getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+			TestDefaultInsertWithLocalDateTimeValue gotRow = database.getDBTable(row).setQueryLabel("AFTER INSERT").getRowsByPrimaryKey(row.pk_TestDefaultInsertWithLocalDateTimeValue.getValue()).get(0);
 
 			soon = gotRow.currentDatePlus.getValue();
-			assertThat(gotRow.pk_uid.getValue(), is(1L));
+			assertThat(gotRow.pk_TestDefaultInsertWithLocalDateTimeValue.getValue(), is(1L));
 			assertThat(gotRow.name.getValue(), is("def"));
 			assertThat(gotRow.defaultExpression.getValue(), is("def"));
 			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
@@ -354,11 +353,11 @@ public class DBInsertTest extends AbstractTest {
 
 			if (database instanceof DBDatabaseCluster) {
 				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
-				cluster.waitUntilDatabaseIsSynchronised(database, 10000);
+				cluster.waitUntilSynchronised();
 				DBDatabase[] databases = cluster.getDatabases();
 				for (DBDatabase db : databases) {
-					TestDefaultInsertWithLocalDateTimeValue rowFromMember = db.getDBTable(row).setQueryLabel("CHECK MEMBERS").getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-					assertThat(rowFromMember.pk_uid.getValue(), is(gotRow.pk_uid.getValue()));
+					TestDefaultInsertWithLocalDateTimeValue rowFromMember = db.getDBTable(row).setQueryLabel("CHECK MEMBERS").getRowsByPrimaryKey(row.pk_TestDefaultInsertWithLocalDateTimeValue.getValue()).get(0);
+					assertThat(rowFromMember.pk_TestDefaultInsertWithLocalDateTimeValue.getValue(), is(gotRow.pk_TestDefaultInsertWithLocalDateTimeValue.getValue()));
 					assertThat(rowFromMember.name.getValue(), is(gotRow.name.getValue()));
 					assertThat(rowFromMember.defaultExpression.getValue(), is(gotRow.defaultExpression.getValue()));
 					assertThat(rowFromMember.creationDate.getValue(), isApproximately(gotRow.creationDate.getValue()));
@@ -373,14 +372,14 @@ public class DBInsertTest extends AbstractTest {
 			row2.defaultExpression.setValue("notdefaulteither");
 			assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
 			database.insert(row2);
-			assertThat(row2.pk_uid.getValue(), is(2L));
+			assertThat(row2.pk_TestDefaultInsertWithLocalDateTimeValue.getValue(), is(2L));
 
 			/* Retreive the default values and check they're correct */
-			final Long pkValue = row2.pk_uid.getValue();
+			final Long pkValue = row2.pk_TestDefaultInsertWithLocalDateTimeValue.getValue();
 			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 1").getRowsByPrimaryKey(pkValue).get(0);
 
 			soon = gotRow.currentDatePlus.getValue();
-			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.pk_TestDefaultInsertWithLocalDateTimeValue.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("notdefault"));
 			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 			assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
@@ -394,7 +393,7 @@ public class DBInsertTest extends AbstractTest {
 			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 2").getRowsByPrimaryKey(pkValue).get(0);
 
 			soon = gotRow.currentDatePlus.getValue();
-			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.pk_TestDefaultInsertWithLocalDateTimeValue.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("blarg"));
 			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 			assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
@@ -411,7 +410,7 @@ public class DBInsertTest extends AbstractTest {
 			gotRow = database.getDBTable(row2).setQueryLabel("CHECK DEFAULT VALUES 3").getRowsByPrimaryKey(pkValue).get(0);
 
 			soon = gotRow.currentDatePlus.getValue();
-			assertThat(gotRow.pk_uid.getValue(), is(2L));
+			assertThat(gotRow.pk_TestDefaultInsertWithLocalDateTimeValue.getValue(), is(2L));
 			assertThat(gotRow.name.getValue(), is("blargest"));
 			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 			final LocalDateTime april2nd2011Instant = LocalDateTime.ofInstant(april2nd2011.toInstant(), ZoneId.systemDefault());
@@ -423,7 +422,6 @@ public class DBInsertTest extends AbstractTest {
 			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
 
 		} finally {
-			database.setPrintSQLBeforeExecuting(true);
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
 		}
@@ -448,7 +446,7 @@ public class DBInsertTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBColumn
 		@DBAutoIncrement
-		public DBInteger pk_uid = new DBInteger();
+		public DBInteger pk_TestDefaultInsertWithLocalDateTimeValue = new DBInteger();
 
 		@DBColumn
 		public DBString name = new DBString().setDefaultInsertValue("def");
@@ -481,44 +479,6 @@ public class DBInsertTest extends AbstractTest {
 		public DBLocalDateTime currentDatePlus = new DBLocalDateTime(LocalDateTimeExpression.currentLocalDateTime().addSeconds(10));
 	}
 
-//	public static class TestDefaultInsertWithLocalDateTimeValue extends DBRow {
-//
-//		private static final long serialVersionUID = 1L;
-//
-//		@DBPrimaryKey
-//		@DBColumn
-//		@DBAutoIncrement
-//		public DBInteger pk_uid = new DBInteger();
-//
-//		@DBColumn
-//		public DBString name = new DBString().setDefaultInsertValue("def");
-//
-//		@DBColumn
-//		public DBString defaultExpression = new DBString()
-//				.setDefaultInsertValue(StringExpression.value("default").substring(0, 3));
-//
-//		@DBColumn
-//		public DBLocalDateTime javaDate = new DBLocalDateTime()
-//				.setDefaultInsertValue(LocalDateTimeColumn.now());
-//
-//		@DBColumn
-//		public DBLocalDateTime creationDate = new DBLocalDateTime()
-//				.setDefaultInsertValue(LocalDateTimeExpression.currentLocalDateTime());
-//
-//		@DBColumn
-//		public DBLocalDateTime updateDate = new DBLocalDateTime()
-//				.setDefaultUpdateValue(LocalDateTimeExpression.currentLocalDateTime());
-//
-//		@DBColumn
-//		public DBLocalDateTime creationOrUpdateDate = new DBLocalDateTime()
-//				.setDefaultInsertValue(LocalDateTimeExpression.currentLocalDateTime())
-//				.setDefaultUpdateValue(LocalDateTimeExpression.currentLocalDateTime());
-//
-//		@DBColumn
-//		public DBLocalDateTime currentDate = new DBLocalDateTime(LocalDateTimeExpression.currentLocalDateTime());
-//
-//	}
-
 	@Test
 	public void testSaveWithDefaultWithInstantValue() throws Exception {
 		GregorianCalendar cal = new GregorianCalendar();
@@ -532,11 +492,11 @@ public class DBInsertTest extends AbstractTest {
 
 		/* Check that row can be inserted successfully*/
 		database.insert(row);
-		assertThat(row.pk_uid.getValue(), is(1L));
+		assertThat(row.pk_TestDefaultInsertWithInstantValue.getValue(), is(1L));
 
-		TestDefaultInsertWithInstantValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+		TestDefaultInsertWithInstantValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertWithInstantValue.getValue()).get(0);
 
-		assertThat(gotRow.pk_uid.getValue(), is(1L));
+		assertThat(gotRow.pk_TestDefaultInsertWithInstantValue.getValue(), is(1L));
 		assertThat(gotRow.name.getValue(), is("def"));
 		assertThat(gotRow.defaultExpression.getValue(), is("def"));
 		assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
@@ -551,12 +511,12 @@ public class DBInsertTest extends AbstractTest {
 		row2.defaultExpression.setValue("notdefaulteither");
 		assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
 		database.insert(row2);
-		assertThat(row2.pk_uid.getValue(), is(2L));
+		assertThat(row2.pk_TestDefaultInsertWithInstantValue.getValue(), is(2L));
 
 		/* Retreive the default values and check they're correct */
-		final Long pkValue = row2.pk_uid.getValue();
+		final Long pkValue = row2.pk_TestDefaultInsertWithInstantValue.getValue();
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
+		assertThat(gotRow.pk_TestDefaultInsertWithInstantValue.getValue(), is(2L));
 		assertThat(gotRow.name.getValue(), is("notdefault"));
 		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 		assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
@@ -568,7 +528,7 @@ public class DBInsertTest extends AbstractTest {
 		gotRow.name.setValue("blarg");
 		database.update(gotRow);
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
+		assertThat(gotRow.pk_TestDefaultInsertWithInstantValue.getValue(), is(2L));
 		assertThat(gotRow.name.getValue(), is("blarg"));
 		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 		assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
@@ -584,7 +544,7 @@ public class DBInsertTest extends AbstractTest {
 		gotRow.creationDate.setValue(april2nd2011Instant);
 		database.update(gotRow);
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		assertThat(gotRow.pk_uid.getValue(), is(2L));
+		assertThat(gotRow.pk_TestDefaultInsertWithInstantValue.getValue(), is(2L));
 		assertThat(gotRow.name.getValue(), is("blarg"));
 		assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 		assertThat(gotRow.creationDate.getValue(), is(april2nd2011Instant));
@@ -628,13 +588,13 @@ public class DBInsertTest extends AbstractTest {
 
 				/* Check that row can be inserted successfully*/
 				cluster.insert(row);
-				assertThat(row.pk_uid.getValue(), is(1L));
+				assertThat(row.pk_TestDefaultInsertWithInstantValue.getValue(), is(1L));
 
 				cluster.waitUntilSynchronised();
 
-				final List<TestDefaultInsertWithInstantValue> rows1 = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
-				final List<TestDefaultInsertWithInstantValue> rows2 = slowDatabase2.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
-				final List<TestDefaultInsertWithInstantValue> rows3 = slowDatabase3.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue());
+				final List<TestDefaultInsertWithInstantValue> rows1 = database.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertWithInstantValue.getValue());
+				final List<TestDefaultInsertWithInstantValue> rows2 = slowDatabase2.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertWithInstantValue.getValue());
+				final List<TestDefaultInsertWithInstantValue> rows3 = slowDatabase3.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertWithInstantValue.getValue());
 
 				TestDefaultInsertWithInstantValue gotRow1 = rows1.get(0);
 				TestDefaultInsertWithInstantValue gotRow2 = rows2.get(0);
@@ -677,7 +637,7 @@ public class DBInsertTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBColumn
 		@DBAutoIncrement
-		public DBInteger pk_uid = new DBInteger();
+		public DBInteger pk_TestDefaultInsertWithInstantValue = new DBInteger();
 
 		@DBColumn
 		public DBString name = new DBString().setDefaultInsertValue("def");
@@ -715,7 +675,7 @@ public class DBInsertTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBColumn(value = "pkuid")
 		@DBAutoIncrement
-		public DBString pk_uid = new DBString();
+		public DBString pk_TestDefaultValueIncorrectDatatype = new DBString();
 
 		@DBColumn
 		public DBString name = new DBString();
@@ -728,7 +688,7 @@ public class DBInsertTest extends AbstractTest {
 
 		@DBPrimaryKey
 		@DBColumn
-		public DBInteger pk_uid = new DBInteger();
+		public DBInteger pk_TestValueRetrievalWith2PKs = new DBInteger();
 
 		@DBPrimaryKey
 		@DBColumn
@@ -746,7 +706,7 @@ public class DBInsertTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBColumn
 		@DBAutoIncrement
-		public DBInteger pk_uid = new DBInteger();
+		public DBInteger pk_TestInsertDoesNotUpdateExpressionColumns = new DBInteger();
 
 		@DBColumn
 		public DBString name = new DBString();

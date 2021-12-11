@@ -86,6 +86,7 @@ public class ClusterDetails implements Serializable {
 	private DBDatabase preferredDatabase;
 
 	private final static Random RANDOM = new Random();
+	private boolean preferredDatabaseRequired;
 
 	public ClusterDetails(String label) {
 		this.clusterLabel = label;
@@ -243,7 +244,7 @@ public class ClusterDetails implements Serializable {
 		DBDatabase secondary = databaseToReady;
 		try {
 			if (hasReadyDatabases()) {
-				DBDatabase readyDatabase = getReadyDatabase();
+				DBDatabase readyDatabase = getRandomReadyDatabase();
 				if (readyDatabase != null) {
 					secondary.setPrintSQLBeforeExecuting(readyDatabase.getPrintSQLBeforeExecuting());
 					secondary.setBatchSQLStatementsWhenPossible(readyDatabase.getBatchSQLStatementsWhenPossible());
@@ -280,26 +281,33 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized DBDatabase getPausedDatabase() throws NoAvailableDatabaseException {
-		DBDatabase template = getReadyDatabase();
+		DBDatabase template = getRandomReadyDatabase();
 		members.setPaused(template);
 		return template;
 	}
 
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
-		if (preferredDatabaseHasBeenSet()) {
-			return getPreferredDatabaseWhenReady();
+		if (preferredDatabaseHasBeenSet() && preferredDatabaseIsReady()) {
+			return preferredDatabase;
+		} else if (preferredDatabaseHasBeenSet() && preferredDatabaseRequired) {
+			waitUntilDatabaseHasSynchronised(preferredDatabase);
+			return preferredDatabase;
 		} else {
-			DBDatabase[] dbs = getReadyDatabases();
-			int tries = 0;
-			while (dbs.length < 1 && members.countPausedDatabases() > 0 && tries <= 10) {
-				awaitReadyDatabase();
-				dbs = getReadyDatabases();
-			}
-			if (dbs.length > 0) {
-				final int randNumber = RANDOM.nextInt(dbs.length);
-				DBDatabase randomElement = dbs[randNumber];
-				return randomElement;
-			}
+			return getRandomReadyDatabase();
+		}
+	}
+
+	private DBDatabase getRandomReadyDatabase() throws NoAvailableDatabaseException {
+		DBDatabase[] dbs = getReadyDatabases();
+		int tries = 0;
+		while (dbs.length < 1 && members.countPausedDatabases() > 0 && tries <= 10) {
+			awaitReadyDatabase();
+			dbs = getReadyDatabases();
+		}
+		if (dbs.length > 0) {
+			final int randNumber = RANDOM.nextInt(dbs.length);
+			DBDatabase randomElement = dbs[randNumber];
+			return randomElement;
 		}
 		throw new NoAvailableDatabaseException();
 	}
@@ -619,20 +627,27 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public boolean isSynchronized() {
-		return !isNotSynchronized();
+		if (configuration.isUseAutoReconnect()) {
+			return members.getDatabases(DBDatabaseCluster.Status.READY).length == members.size();
+		} else {
+			return (members.getDatabases(DBDatabaseCluster.Status.READY).length 
+					+ members.getDatabases(DBDatabaseCluster.Status.QUARANTINED).length)
+					== members.size();
+		}
 	}
 
 	public boolean isNotSynchronized() {
-		return members.countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) > 0
-				|| members.countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) > 0
-				|| (configuration.isUseAutoReconnect() && members.countDatabases(DBDatabaseCluster.Status.QUARANTINED) > 0);
+		return !isSynchronized();
+//		return members.countDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED) > 0
+//				|| members.countDatabases(DBDatabaseCluster.Status.SYNCHRONIZING) > 0
+//				|| (configuration.isUseAutoReconnect() && members.countDatabases(DBDatabaseCluster.Status.QUARANTINED) > 0);
 	}
 
 	public void waitUntilSynchronised() {
 		synchronisingLock.lock();
 		try {
 			while (isNotSynchronized()) {
-				allDatabasesAreSynchronised.await(1, TimeUnit.HOURS);
+				allDatabasesAreSynchronised.await(1, TimeUnit.SECONDS);
 			}
 		} catch (InterruptedException ex) {
 			Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
@@ -648,12 +663,12 @@ public class ClusterDetails implements Serializable {
 	public void waitUntilDatabaseHasSynchronised(DBDatabase database, long timeoutInMilliseconds) {
 		synchronisingLock.lock();
 		try {
-			if (clusterContainsDatabase(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY) {
+			if (isEligibleForSynchronizing(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY) {
 				if (timeoutInMilliseconds > 0) {
 					aDatabaseHasBeenSynchronised.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS);
 				} else {
 					while (clusterContainsDatabase(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY) {
-						aDatabaseHasBeenSynchronised.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS);
+						aDatabaseHasBeenSynchronised.await(100, TimeUnit.MILLISECONDS);
 					}
 				}
 				DBDatabaseCluster.Status status = getStatusOf(database);
@@ -666,6 +681,10 @@ public class ClusterDetails implements Serializable {
 		} finally {
 			synchronisingLock.unlock();
 		}
+	}
+
+	private boolean isEligibleForSynchronizing(DBDatabase database) {
+		return clusterContainsDatabase(database) && (getStatusOf(database) != DBDatabaseCluster.Status.QUARANTINED || configuration.isUseAutoReconnect());
 	}
 
 	public void synchronizeSecondaryDatabases() {
@@ -806,8 +825,11 @@ public class ClusterDetails implements Serializable {
 		return preferredDatabase != null;
 	}
 
-	private DBDatabase getPreferredDatabaseWhenReady() {
-		waitUntilDatabaseHasSynchronised(preferredDatabase, 10000);
-		return preferredDatabase;
+	private boolean preferredDatabaseIsReady() {
+		return getStatusOf(preferredDatabase).equals(DBDatabaseCluster.Status.READY);
+	}
+
+	public void setPreferredDatabaseRequired(boolean b) {
+		preferredDatabaseRequired = b;
 	}
 }

@@ -55,7 +55,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 				statement.execute("Update row", QueryIntention.UPDATE_ROW, sql);
 			}
 		}
-		refetch(db, originalRow);
+		refetchIfClusterRequires(db, originalRow);
 		return actions;
 	}
 
