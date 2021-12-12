@@ -935,7 +935,10 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
-		return "ALTER SEQUENCE " + tableName + "_" + columnName + "_seq RESTART WITH " + (primaryKeyGenerated + 1) + ";";
+		String formattedTableName = tableName.toLowerCase().substring(0, 29);
+		String formattedColumnName = columnName.toLowerCase().substring(0, 29);
+		final String result = "ALTER SEQUENCE " + formattedTableName + "_" + formattedColumnName + "_seq RESTART WITH " + (primaryKeyGenerated + 1) + ";";
+		return result;
 	}
 
 	@Override
