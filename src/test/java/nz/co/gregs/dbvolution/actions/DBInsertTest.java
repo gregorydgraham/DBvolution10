@@ -296,19 +296,19 @@ public class DBInsertTest extends AbstractTest {
 		public DBDate currentDate = new DBDate(DateExpression.currentDate());
 
 	}
-	
+
 	@Test
 	public void testSaveWithDefaultWithLocalDateTimeValue() throws Exception {
 		TestDefaultInsertWithLocalDateTimeValue row = new TestDefaultInsertWithLocalDateTimeValue();
 		try {
-			if(database instanceof DBDatabaseCluster){
+			if (database instanceof DBDatabaseCluster) {
 				// if the cluster members are on different servers, like we'd expect,
 				// then we can expect their clocks to be slightly different.
 				// That mean an update performed on a different member to the insert may 
 				// produce an update date that is earlier than the creation date.
 				// This is not a big deal operationally, but it will make these tests fail
 				// So we set a preferred member to get a consistent system clock.
-				DBDatabaseCluster cluster = (DBDatabaseCluster)database;
+				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
 				final DBDatabase readyDatabase = cluster.getReadyDatabase();
 				cluster.getDetails().setPreferredDatabase(readyDatabase);
 				cluster.getDetails().setPreferredDatabaseRequired(true);
@@ -558,9 +558,9 @@ public class DBInsertTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDefaultValuesAreConsistentInCluster1() throws Exception {
+	public void testDefaultValuesAreConsistentInCluster() throws Exception {
 		for (int i = 0; i < 1; i++) {
-			try ( DBDatabaseCluster cluster = new DBDatabaseCluster(
+			try (DBDatabaseCluster cluster = new DBDatabaseCluster(
 					"testDefaultValuesAreConsistentInCluster",
 					DBDatabaseCluster.Configuration.autoStart(),
 					database)) {
@@ -581,24 +581,24 @@ public class DBInsertTest extends AbstractTest {
 				cluster.addDatabaseAndWait(slowDatabase3);
 				brake.apply();
 
-				TestDefaultInsertWithInstantValue row = new TestDefaultInsertWithInstantValue();
+				testDefaultValuesAreConsistentInCluster row = new testDefaultValuesAreConsistentInCluster();
 				cluster.preventDroppingOfTables(false);
 				cluster.dropTableNoExceptions(row);
 				cluster.createTable(row);
 
 				/* Check that row can be inserted successfully*/
 				cluster.insert(row);
-				assertThat(row.pk_TestDefaultInsertWithInstantValue.getValue(), is(1L));
+				assertThat(row.pk_testDefaultValuesAreConsistentInCluster.getValue(), is(1L));
 
 				cluster.waitUntilSynchronised();
 
-				final List<TestDefaultInsertWithInstantValue> rows1 = database.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertWithInstantValue.getValue());
-				final List<TestDefaultInsertWithInstantValue> rows2 = slowDatabase2.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertWithInstantValue.getValue());
-				final List<TestDefaultInsertWithInstantValue> rows3 = slowDatabase3.getDBTable(row).getRowsByPrimaryKey(row.pk_TestDefaultInsertWithInstantValue.getValue());
+				final List<testDefaultValuesAreConsistentInCluster> rows1 = database.getDBTable(row).getRowsByPrimaryKey(row.pk_testDefaultValuesAreConsistentInCluster.getValue());
+				final List<testDefaultValuesAreConsistentInCluster> rows2 = slowDatabase2.getDBTable(row).getRowsByPrimaryKey(row.pk_testDefaultValuesAreConsistentInCluster.getValue());
+				final List<testDefaultValuesAreConsistentInCluster> rows3 = slowDatabase3.getDBTable(row).getRowsByPrimaryKey(row.pk_testDefaultValuesAreConsistentInCluster.getValue());
 
-				TestDefaultInsertWithInstantValue gotRow1 = rows1.get(0);
-				TestDefaultInsertWithInstantValue gotRow2 = rows2.get(0);
-				TestDefaultInsertWithInstantValue gotRow3 = rows3.get(0);
+				testDefaultValuesAreConsistentInCluster gotRow1 = rows1.get(0);
+				testDefaultValuesAreConsistentInCluster gotRow2 = rows2.get(0);
+				testDefaultValuesAreConsistentInCluster gotRow3 = rows3.get(0);
 
 				ChronoUnit precision = ChronoUnit.MILLIS;
 				if (database.supportsNanosecondPrecision() && slowDatabase2.supportsNanosecondPrecision() && slowDatabase3.supportsNanosecondPrecision()) {
@@ -638,6 +638,44 @@ public class DBInsertTest extends AbstractTest {
 		@DBColumn
 		@DBAutoIncrement
 		public DBInteger pk_TestDefaultInsertWithInstantValue = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString().setDefaultInsertValue("def");
+
+		@DBColumn
+		public DBString defaultExpression = new DBString()
+				.setDefaultInsertValue(StringExpression.value("default").substring(0, 3));
+
+		@DBColumn
+		public DBInstant javaDate = new DBInstant()
+				.setDefaultInsertValue(InstantColumn.now());
+
+		@DBColumn
+		public DBInstant creationDate = new DBInstant()
+				.setDefaultInsertValue(InstantExpression.currentInstant());
+
+		@DBColumn
+		public DBInstant updateDate = new DBInstant()
+				.setDefaultUpdateValue(InstantExpression.currentInstant());
+
+		@DBColumn
+		public DBInstant creationOrUpdateDate = new DBInstant()
+				.setDefaultInsertValue(InstantExpression.currentInstant())
+				.setDefaultUpdateValue(InstantExpression.currentInstant());
+
+		@DBColumn
+		public DBInstant currentDate = new DBInstant(InstantExpression.currentInstant());
+
+	}
+
+	public static class testDefaultValuesAreConsistentInCluster extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn
+		@DBAutoIncrement
+		public DBInteger pk_testDefaultValuesAreConsistentInCluster = new DBInteger();
 
 		@DBColumn
 		public DBString name = new DBString().setDefaultInsertValue("def");
