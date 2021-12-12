@@ -57,7 +57,8 @@ public class StringCheck {
 	 * Returns the empty string if no value is non-null and non-empty.<p>
 	 *
 	 * @param initialValue the expected value
-	 * @param defaultValues  the values to use if the expected value is null or empty
+	 * @param defaultValues the values to use if the expected value is null or
+	 * empty
 	 * @return the empty string or the first non-null non-empty value
 	 */
 	public static String check(String initialValue, String... defaultValues) {
@@ -142,7 +143,8 @@ public class StringCheck {
 	}
 
 	/**
-	 * Synonym for value != null &amp;&amp; !value.isEmpty() but a lot more concise.
+	 * Synonym for value != null &amp;&amp; !value.isEmpty() but a lot more
+	 * concise.
 	 *
 	 * @param value the source text
 	 * @return TRUE if the source text is neither null nor empty
@@ -159,6 +161,12 @@ public class StringCheck {
 	 */
 	public static boolean isEmptyOrNull(String value) {
 		return value == null || value.isEmpty();
+	}
+
+	public static String substring(String tableName, int startIndex, int endIndex) {
+		final int start = Math.max(startIndex, 0);
+		final int end = Math.min(endIndex, tableName.length());
+		return tableName.substring(start, end);
 	}
 
 	private StringCheck() {
