@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
@@ -207,6 +208,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String doSecondAndSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0)";
 	}
+
 	@Override
 	public String doSubsecondTransform(String dateExpression) {
 		return "((EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0) - (" + doTruncTransform(doSecondTransform(dateExpression), "0") + "))";
@@ -294,7 +296,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doCurrentDateOnlyTransform() {
-		return super.getCurrentDateOnlyFunctionName(); 
+		return super.getCurrentDateOnlyFunctionName();
 	}
 
 	@Override
@@ -935,8 +937,8 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
-		String formattedTableName = tableName.toLowerCase().substring(0, 29);
-		String formattedColumnName = columnName.toLowerCase().substring(0, 29);
+		String formattedTableName = StringCheck.substring(tableName, 0, 29);
+		String formattedColumnName = StringCheck.substring(columnName, 0, 29);
 		final String result = "ALTER SEQUENCE " + formattedTableName + "_" + formattedColumnName + "_seq RESTART WITH " + (primaryKeyGenerated + 1) + ";";
 		return result;
 	}
