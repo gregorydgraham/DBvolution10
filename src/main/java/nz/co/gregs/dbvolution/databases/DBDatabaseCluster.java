@@ -1362,12 +1362,12 @@ public class DBDatabaseCluster extends DBDatabase {
 	public String getClusterStatus() {
 		final String summary = getStatusOfActiveDatabases();
 		final String unsyn = getStatusOfUnsynchronisedDatabases();
-		final String ejected = getStatusOfEjectedDatabases();
-		return summary + "\n" + unsyn + "\n" + ejected;
+		final String quarantined = getStatusOfQuarantinedDatabases();
+		return summary + "\n" + unsyn + "\n" + quarantined;
 	}
 
-	private String getStatusOfEjectedDatabases() {
-		return (new Date()).toString() + "Ejected Databases: " + getDetails().getQuarantinedDatabases().length + " of " + getDetails().getAllDatabases().length;
+	private String getStatusOfQuarantinedDatabases() {
+		return (new Date()).toString() + "Quarantined Databases: " + getDetails().getQuarantinedDatabases().length + " of " + getDetails().getAllDatabases().length;
 	}
 
 	private String getStatusOfUnsynchronisedDatabases() {
@@ -1595,29 +1595,29 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
-		DBDatabase[] ejecta = getDetails().getQuarantinedDatabases();
-		if (ejecta.length == 0) {
+		DBDatabase[] quarantined = getDetails().getQuarantinedDatabases();
+		if (quarantined.length == 0) {
 			LOG.info(this.getLabel() + " HAS NO QUARANTINED DATABASES");
 		} else {
-			for (DBDatabase ejected : ejecta) {
-				reconnectQuarantinedDatabase(str, ejected);
+			for (DBDatabase quarantee : quarantined) {
+				reconnectQuarantinedDatabase(str, quarantee);
 			}
 		}
 
 		return str.toString();
 	}
 
-	private void reconnectQuarantinedDatabase(StringBuilder str, DBDatabase ejected) throws UnableToRemoveLastDatabaseFromClusterException {
-		str.append(ejected.getSettings());
+	private void reconnectQuarantinedDatabase(StringBuilder str, DBDatabase quarantee) throws UnableToRemoveLastDatabaseFromClusterException {
+		str.append(quarantee.getSettings());
 		try {
-			LOG.info(this.getLabel() + " RECONNECTING DATABASE: " + ejected.getLabel());
-			addDatabase(ejected);
-			LOG.info(this.getLabel() + " RECONNECTED DATABASE: " + ejected.getLabel());
-			str.append("").append(ejected.getLabel()).append(" added");
+			LOG.info(this.getLabel() + " RECONNECTING DATABASE: " + quarantee.getLabel());
+			addDatabase(quarantee);
+			LOG.info(this.getLabel() + " RECONNECTED DATABASE: " + quarantee.getLabel());
+			str.append("").append(quarantee.getLabel()).append(" added");
 		} catch (SQLException ex) {
-			LOG.info(this.getLabel() + " RECONNECTION FAILED FOR DATABASE: " + ejected.getLabel());
-			quarantineDatabase(ejected, ex);
-			str.append("").append(ejected.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
+			LOG.info(this.getLabel() + " RECONNECTION FAILED FOR DATABASE: " + quarantee.getLabel());
+			quarantineDatabase(quarantee, ex);
+			str.append("").append(quarantee.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
 		} finally {
 			str.append("\n");
 		}
