@@ -703,7 +703,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 		assertThat(
 				db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-				is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
+				is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nQuarantined Databases: 0 of 0"));
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 		source.setDbdatabaseClass(H2MemoryDB.class
@@ -762,7 +762,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			}
 			assertThat(
 					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-					is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nEjected Databases: 0 of 2"));
+					is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nQuarantined Databases: 0 of 2"));
 		} finally {
 			db.dismantle();
 		}
@@ -795,7 +795,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			}
 			assertThat(
 					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-					is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
+					is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nQuarantined Databases: 0 of 0"));
 
 			DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 			source.setDbdatabaseClass(H2MemoryDB.class
@@ -854,7 +854,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			}
 			assertThat(
 					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-					is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nEjected Databases: 0 of 2"));
+					is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nQuarantined Databases: 0 of 2"));
 
 			file.delete();
 
