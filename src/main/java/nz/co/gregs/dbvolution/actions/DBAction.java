@@ -179,7 +179,6 @@ public abstract class DBAction implements Serializable {
 						DBRow newRow = db
 								.getDBTable(example)
 								.setQueryLabel("AUTOMATIC REFETCH")
-								.setPrintSQLBeforeExecution(true)
 								.getOnlyRow();
 						List<PropertyWrapper<?, ?, ?>> props = originalRow.getColumnPropertyWrappers();
 						props.stream().filter(p -> p != null).forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
