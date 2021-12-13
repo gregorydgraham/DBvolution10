@@ -488,6 +488,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.OracleCompatibilityTest$CountIfRow");
 		knownKeys.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$DBDatabaseClusterTestTrackedTable");
 		knownKeys.add("class nz.co.gregs.dbvolution.DBMigrationTest$MigrateHeroesAndSelectedVilliansToFight");
+		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$testDefaultValuesAreConsistentInCluster");
 
 		// Store the number found for use later
 		final int numberOfClassesFound = foundKeys.size();
@@ -660,6 +661,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest.DBDatabaseClusterTestTrackedTable");
 		knownKeys.add("nz.co.gregs.dbvolution.query.QueryGraphDepthFirstTest.TableA");
 		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.RequiredTableShouldBeCreatedAutomatically");
+		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.testDefaultValuesAreConsistentInCluster");
 
 		// Store the number found for use later
 		final int numberOfFoundClasses = foundClasses.size();
