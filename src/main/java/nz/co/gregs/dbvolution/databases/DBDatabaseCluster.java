@@ -175,11 +175,12 @@ public class DBDatabaseCluster extends DBDatabase {
 	public void waitUntilSynchronised() {
 		getDetails().waitUntilSynchronised();
 	}
+
 	public void waitUntilDatabaseIsSynchronised(DBDatabase database) {
 		getDetails().waitUntilDatabaseHasSynchronised(database);
 	}
 
-	public void waitUntilDatabaseIsSynchronised(DBDatabase database,long timeoutInMilliseconds) {
+	public void waitUntilDatabaseIsSynchronised(DBDatabase database, long timeoutInMilliseconds) {
 		getDetails().waitUntilDatabaseHasSynchronised(database, timeoutInMilliseconds);
 	}
 
@@ -192,13 +193,56 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public static enum Status {
+		/**
+		 * A READY database has fully implemented the database schema and has
+		 * up-to-date data.
+		 *
+		 * Ready databases are used to execute queries on the cluster.
+		 */
 		READY,
+		/**
+		 * Unsynchronised databases have not yet had the schema implemented nor the
+		 * data updated.
+		 */
 		UNSYNCHRONISED,
+		/**
+		 * Paused databases are ready databases that are being use to synchronize
+		 * other databases.
+		 */
 		PAUSED,
+		/**
+		 * DEAD databases have been quarantined and then failed reconnection.
+		 *
+		 * DEAD databases are still included when reconnecting databases so they may
+		 * re-appear as a ready database, but they are not counting toward
+		 * synchronizing the whole cluster.
+		 */
 		DEAD,
+		/**
+		 * QUARANTINED databases have failed to complete an expected query or action
+		 * and been isolated from the cluster.
+		 *
+		 * <p>
+		 * QUARANTINED database will be reconnected during automatic or manual
+		 * reconnect but only count toward synchronizing the cluster when
+		 * auto-reconnection is active.
+		 */
 		QUARANTINED,
+		/**
+		 * UNKNOWN.
+		 * 
+		 */
 		UNKNOWN,
+		/**
+		 * PROCESSING.
+		 * 
+		 * <p>Currently unused</p>
+		 */
 		PROCESSING,
+		/**
+		 * SYNCHRONIZING databases are being actively updated to match the cluster
+		 * schema and data.
+		 */
 		SYNCHRONIZING
 	}
 
@@ -581,6 +625,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public void quarantineDatabase(DBDatabase database, Throwable except) throws UnableToRemoveLastDatabaseFromClusterException {
 		getDetails().quarantineDatabase(database, except);
+	}
+
+	private void deadDatabase(DBDatabase database, Throwable except) throws UnableToRemoveLastDatabaseFromClusterException {
+		getDetails().deadDatabase(database, except);
 	}
 
 	/**
@@ -1595,12 +1643,12 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
-		DBDatabase[] quarantined = getDetails().getQuarantinedDatabases();
-		if (quarantined.length == 0) {
-			LOG.info(this.getLabel() + " HAS NO QUARANTINED DATABASES");
+		DBDatabase[] reconnectables = details.getDatabasesForReconnecting();
+		if (reconnectables.length == 0) {
+			LOG.info(this.getLabel() + " HAS NO QUARANTINED/DEAD DATABASES");
 		} else {
-			for (DBDatabase quarantee : quarantined) {
-				reconnectQuarantinedDatabase(str, quarantee);
+			for (DBDatabase reconnectee : reconnectables) {
+				reconnectQuarantinedDatabase(str, reconnectee);
 			}
 		}
 
@@ -1616,7 +1664,8 @@ public class DBDatabaseCluster extends DBDatabase {
 			str.append("").append(quarantee.getLabel()).append(" added");
 		} catch (SQLException ex) {
 			LOG.info(this.getLabel() + " RECONNECTION FAILED FOR DATABASE: " + quarantee.getLabel());
-			quarantineDatabase(quarantee, ex);
+			LOG.info(this.getLabel() + " DEAD DATABASE: " + quarantee.getLabel());
+			deadDatabase(quarantee, ex);
 			str.append("").append(quarantee.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
 		} finally {
 			str.append("\n");
@@ -1656,7 +1705,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	}
 
-	public static class Configuration implements Serializable{
+	public static class Configuration implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
