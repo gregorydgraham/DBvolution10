@@ -178,14 +178,16 @@ public class DatabaseList implements Serializable {
 		return statusMap.getOrDefault(getKey(database), UNKNOWN).equals(READY);
 	}
 
-	public synchronized DBDatabase[] getDatabases(DBDatabaseCluster.Status status) {
+	public synchronized DBDatabase[] getDatabases(DBDatabaseCluster.Status... statuses) {
 		List<DBDatabase> found = new ArrayList<>(0);
 		for (Map.Entry<String, DBDatabaseCluster.Status> entry : statusMap.entrySet()) {
 			String key = entry.getKey();
 			DBDatabaseCluster.Status val = entry.getValue();
-			if (val.equals(status)) {
-				DBDatabase db = databaseMap.get(key);
-				found.add(db);
+			for (DBDatabaseCluster.Status status : statuses) {
+				if (val.equals(status)) {
+					DBDatabase db = databaseMap.get(key);
+					found.add(db);
+				}
 			}
 		}
 		DBDatabase[] array = found.toArray(new DBDatabase[]{});
@@ -200,8 +202,8 @@ public class DatabaseList implements Serializable {
 		return statusMap.values().stream().filter(t -> t.equals(PAUSED)).count();
 	}
 
-	public synchronized long countDatabases(DBDatabaseCluster.Status status) {
-		return statusMap.values().stream().filter(t -> t.equals(status)).count();
+	public synchronized long countDatabases(DBDatabaseCluster.Status... statuses) {
+		return getDatabases(statuses).length;
 	}
 
 	public synchronized void clear() {
