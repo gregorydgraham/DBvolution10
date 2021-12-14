@@ -765,7 +765,6 @@ public class ClusterDetails implements Serializable {
 				}
 			} catch (NoAvailableDatabaseException except) {
 				// must be the first database
-				LOG.severe("SYNCHRONIZING: No database available, probably the first database");
 			} catch (Throwable throwable) {
 				LOG.severe(throwable.getLocalizedMessage());
 				throw throwable;
