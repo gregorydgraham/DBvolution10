@@ -302,6 +302,11 @@ public class ClusterDetails implements Serializable {
 		return template;
 	}
 
+	public synchronized DBDatabase getPausedDatabase(DBDatabase db) throws NoAvailableDatabaseException {
+		members.setPaused(db);
+		return db;
+	}
+
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
 		if (preferredDatabaseHasBeenSet() && preferredDatabaseIsReady()) {
 			return preferredDatabase;
@@ -692,7 +697,9 @@ public class ClusterDetails implements Serializable {
 	}
 
 	private boolean isEligibleForSynchronizing(DBDatabase database) {
-		return clusterContains(database) && (getStatusOf(database) != DBDatabaseCluster.Status.QUARANTINED || configuration.isUseAutoReconnect());
+		final DBDatabaseCluster.Status statusOfDatabase = getStatusOf(database);
+		final boolean notQuarantined = statusOfDatabase != DBDatabaseCluster.Status.QUARANTINED;
+		return clusterContains(database) && (notQuarantined || configuration.isUseAutoReconnect());
 	}
 
 	public void synchronizeSecondaryDatabases() {
@@ -707,14 +714,15 @@ public class ClusterDetails implements Serializable {
 	public synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) {
 		members.setSynchronising(secondary);
 
+		DBDatabase template = null;
 		final String secondaryLabel = secondary.getLabel();
 		LOG.log(Level.FINEST, "{0} SYNCHRONISING: {1}", new Object[]{clusterLabel, secondaryLabel});
 		try {
 			try {
-				DBDatabase template = getTemplateDatabase();
-				if (template != null) {
-					// we need to unpause the template no matter wht happens so use a finally clause
-					try {
+				template = getTemplateDatabase();
+				// we need to unpause the template no matter wht happens so use a finally clause
+				try {
+					if (template != null) {
 						// Check that we're not synchronising the reference database
 						if (!template.getSettings().equals(secondary.getSettings())) {
 							LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
@@ -749,41 +757,52 @@ public class ClusterDetails implements Serializable {
 								LOG.log(Level.FINEST, "{0} FINSHED WITH TABLE: {1}", new Object[]{clusterLabel, table.getTableName()});
 							}
 						}
-					} catch (Throwable e) {
-						LOG.severe(e.getLocalizedMessage());
-						throw e;
-					} finally {
-						releaseTemplateDatabase(template);
 					}
+				} catch (Throwable e) {
+					LOG.severe(e.getLocalizedMessage());
+					throw e;
+				} finally {
 				}
 			} catch (NoAvailableDatabaseException except) {
 				// must be the first database
+				LOG.severe("SYNCHRONIZING: No database available, probably the first database");
+			} catch (Throwable throwable) {
+				LOG.severe(throwable.getLocalizedMessage());
+				throw throwable;
 			}
 			LOG.log(Level.FINEST, "{0} START SYNCHRONISING ACTIONS ON: {1}", new Object[]{clusterLabel, secondaryLabel});
 			synchronizeActions(secondary);
 		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
+			LOG.log(Level.SEVERE, "QUARANTINING DATABASE {0}: {1}", new Object[]{secondaryLabel, ex.getLocalizedMessage()});
 			quarantineDatabaseAutomatically(secondary, ex);
+		} finally {
+			releaseTemplateDatabase(template);
 		}
 	}
 
-	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws SQLException, NoAvailableDatabaseException {
+	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws NoAvailableDatabaseException {
 		if (primary != null) {
 			if (clusterContains(primary)) {
 				synchronizeActions(primary);
 			} else {
+				LOG.log(Level.INFO, "SYNCHRONISING - STOPPING {0} {1}", new Object[]{primary.getLabel(), primary.getJdbcURL()});
 				primary.stop();
 			}
 		}
 	}
 
-	private synchronized void synchronizeActions(DBDatabase db) throws SQLException, NoAvailableDatabaseException {
+	private synchronized void synchronizeActions(DBDatabase db) throws NoAvailableDatabaseException {
 		if (db != null) {
-			Queue<DBAction> queue = getActionQueue(db);
-			while (queue != null && !queue.isEmpty()) {
-				DBAction action = queue.remove();
-				db.executeDBAction(action);
+			try {
+				Queue<DBAction> queue = getActionQueue(db);
+				while (queue != null && !queue.isEmpty()) {
+					DBAction action = queue.remove();
+					db.executeDBAction(action);
+				}
+				readyDatabase(db);
+			} catch (SQLException e) {
+				quarantineDatabase(db, e);
 			}
-			readyDatabase(db);
 		}
 	}
 
