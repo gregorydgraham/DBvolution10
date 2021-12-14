@@ -1645,7 +1645,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] reconnectables = details.getDatabasesForReconnecting();
 		if (reconnectables.length == 0) {
-			LOG.info(this.getLabel() + " HAS NO QUARANTINED/DEAD DATABASES");
+			LOG.trace(this.getLabel() + " HAS NO QUARANTINED/DEAD DATABASES");
 		} else {
 			for (DBDatabase reconnectee : reconnectables) {
 				reconnectQuarantinedDatabase(str, reconnectee);
