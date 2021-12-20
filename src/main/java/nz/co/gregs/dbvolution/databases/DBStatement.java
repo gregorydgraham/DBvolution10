@@ -84,7 +84,7 @@ public class DBStatement implements AutoCloseable {
 		String sql = details.getSql();
 		String label = details.getLabel();
 		QueryIntention intent = details.getIntention();
-		final String logSQL = "EXECUTING QUERY \"" + label + "\" on "+this.database.getJdbcURL()+": \n" + sql;
+		final String logSQL = "EXECUTING QUERY \"" + label + "\" on " + this.database.getJdbcURL() + ": \n" + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
 		try {
@@ -195,17 +195,20 @@ public class DBStatement implements AutoCloseable {
 		closeInternalStatement();
 	}
 
-	private synchronized void closeInternalStatement() {
-		try {
-			if (internalStatement != null) {
-				internalStatement.close();
-			}
-		} catch (SQLException e) {
-			// Someone please tell me how you are supposed to cope 
-			// with an exception during the close method????????
-			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
-		} finally {
+	private void closeInternalStatement() {
+		Statement statementToClose;
+		synchronized (this) {
+			statementToClose = internalStatement;
 			internalStatement = null;
+		}
+		if (statementToClose != null) {
+			try {
+				statementToClose.close();
+			} catch (SQLException e) {
+				// Someone please tell me how you are supposed to cope 
+				// with an exception during the close method????????
+				LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
+			}
 		}
 	}
 
@@ -469,7 +472,7 @@ public class DBStatement implements AutoCloseable {
 	public void execute(StatementDetails details) throws SQLException {
 		details.setDBStatement(this);
 		String sql = details.getSql();
-		final String logSQL = "EXECUTING on "+database.getLabel()+": " + sql;
+		final String logSQL = "EXECUTING on " + database.getLabel() + ": " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		try {
