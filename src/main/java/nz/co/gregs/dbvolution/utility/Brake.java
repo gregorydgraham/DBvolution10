@@ -101,7 +101,7 @@ public class Brake {
 					if (timeout > 0) {
 						monitor.wait(timeout);
 					} else {
-						monitor.wait();
+						monitor.wait(100);
 					}
 				} catch (InterruptedException ex) {
 					Logger.getLogger(Brake.class.getName()).log(Level.SEVERE, null, ex);
