@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,23 +96,26 @@ public abstract class AbstractTest {
 							getSQLiteDBFromSystem(),
 							new H2MemorySettingsBuilder().fromSystemUsingPrefix("h2memory").getDBDatabase()
 					);
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite", cluster});
+			cluster.setLabel("ClusteredDB-H2+SQLite");
+			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
-				new DBDatabaseCluster("testBundledCluster", DBDatabaseCluster.Configuration.autoStart(),
-				getSQLiteDBFromSystem("bundle"),
-				H2MemoryTestDB.getFromSettings("h2memory")
-				)});
+			final DBDatabaseCluster cluster = new DBDatabaseCluster("testBundledCluster", DBDatabaseCluster.Configuration.autoStart(),
+					getSQLiteDBFromSystem("bundle"),
+					H2MemoryTestDB.getFromSettings("h2memory")
+			);
+			cluster.setLabel("ClusteredDB-H2+SQLite");
+			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
-				new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.autoStart(),
-				H2MemoryTestDB.getFromSettings("h2memory"),
-				getSQLiteDBFromSystem("open"),
-				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
-				new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
-				)});
+			final DBDatabaseCluster cluster = new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.autoStart(),
+					H2MemoryTestDB.getFromSettings("h2memory"),
+					getSQLiteDBFromSystem("open"),
+					new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
+					new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
+			);
+			cluster.setLabel("ClusteredDB-H2+SQLite+Postgres+MySQL");
+			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("testFullCluster") != null) {
 			final H2MemoryDB h2Mem = H2MemoryTestDB.getFromSettings("h2memory");
@@ -123,7 +127,8 @@ public abstract class AbstractTest {
 			final DBDatabaseCluster cluster = new DBDatabaseCluster("testFullCluster", DBDatabaseCluster.Configuration.autoStart(), h2Mem, sqlite,
 					postgres, mysql, sqlserver,
 					oracle);
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle", cluster});
+			cluster.setLabel("ClusteredDB-H2+SQLite+Postgres+MySQL+SQLServer+Oracle");
+			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
@@ -133,9 +138,8 @@ public abstract class AbstractTest {
 				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
 				new MySQLSettingsBuilder().fromSystemUsingPrefix("mysqlcluster").getDBDatabase()
 				)});
-			databases.add(new Object[]{"MySQL",
-				new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
-			});
+			final MySQLDB dbDatabase = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase();
+			databases.add(new Object[]{"MySQL", dbDatabase});
 		}
 		if (System.getProperty("testSQLite") != null) {
 			databases.add(new Object[]{"SQLiteDB", getSQLiteDBFromSystem()});
@@ -160,13 +164,14 @@ public abstract class AbstractTest {
 		if (System.getProperty("testH2FileDB") != null) {
 			//Quite convoluted creation but it's meant to test the file builder
 			final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix("h2file");
-			databases.add(new Object[]{"H2FileDB", new H2FileDB(
-				new H2FileSettingsBuilder()
-				.setFilename(settings.getFilename())
-				.setUsername(settings.getUsername())
-				.setPassword(settings.getUsername())
-				)
-			}
+			final H2FileDB h2FileDB = new H2FileDB(
+					new H2FileSettingsBuilder()
+							.setFilename(settings.getFilename())
+							.setUsername(settings.getUsername())
+							.setPassword(settings.getUsername())
+			);
+			h2FileDB.setLabel("H2FileDB");
+			databases.add(new Object[]{h2FileDB.getLabel(), h2FileDB}
 			);
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
@@ -178,7 +183,7 @@ public abstract class AbstractTest {
 		if (System.getProperty("testPostgresContainer") != null) {
 			databases.add(new Object[]{
 				"PostgresContainer",
-				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgrescontainer").getDBDatabase()
+				new PostgresSettingsBuilder().fromSystemUsingPrefix("postgrescontainer").setLabel("PostgresContainer").getDBDatabase()
 			});
 		}
 		if (System.getProperty("testNuo") != null) {
@@ -249,7 +254,6 @@ public abstract class AbstractTest {
 	public AbstractTest(Object testIterationName, Object db) {
 		if (db instanceof DBDatabase) {
 			this.database = (DBDatabase) db;
-			database.setLabel("Actual Test Database (" + db.getClass().getSimpleName() + ")");
 		}
 	}
 
@@ -385,13 +389,6 @@ public abstract class AbstractTest {
 	}
 
 	public void tearDown(DBDatabase database) throws Exception {
-		if (database != null) {
-			if (database instanceof DBDatabaseCluster) {
-				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
-				cluster.reconnectQuarantinedDatabases();
-				cluster.waitUntilSynchronised();
-			}
-		}
 	}
 
 	protected String oracleSafeStrings(String expect) throws NoAvailableDatabaseException {
