@@ -543,6 +543,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testLastDatabaseCannotBeRemovedDirectly() throws SQLException {
 		try ( DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testLastDatabaseCannotBeRemovedDirectly");
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
 			assertThat(cluster.size(), is(2));
@@ -564,6 +565,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInDelete() throws SQLException {
 		try ( DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testDatabaseRemovedAfterErrorInDelete");
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
@@ -585,6 +587,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInInsert() throws SQLException {
 		try ( DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testDatabaseRemovedAfterErrorInInsert");
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
 			assertThat(cluster.size(), is(2));
@@ -606,6 +609,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInUpdate() throws SQLException {
 		try ( DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testDatabaseRemovedAfterErrorInUpdate");
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
 			assertThat(cluster.size(), is(2));
@@ -628,6 +632,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInCreateTable() throws SQLException {
 		try ( DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testDatabaseRemovedAfterErrorInCreateTable");
 			cluster.createTableNoExceptions(new TableThatDoesExistOnTheCluster());
 			final H2MemorySettingsBuilder settings = new H2MemorySettingsBuilder()
 					.setLabel("testDatabaseRemovedAfterErrorInCreateTable")
@@ -657,6 +662,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testDatabaseRemainsInClusterAfterCreatingExistingTable() throws SQLException {
 		try ( DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testDatabaseRemainsInClusterAfterCreatingExistingTable");
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
 			assertThat(cluster.size(), is(2));
@@ -676,6 +682,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	@Test
 	public synchronized void testDatabaseTableDoesNotExists() throws SQLException {
 		try ( DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testDatabaseTableDoesNotExists");
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabaseAndWait(soloDB2);
 			cluster.setQuietExceptionsPreference(true);
