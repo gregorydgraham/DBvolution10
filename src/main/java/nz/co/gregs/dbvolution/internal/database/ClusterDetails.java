@@ -228,36 +228,36 @@ public class ClusterDetails implements Serializable {
 		synchronized (trackedTables) {
 			trackedTables.clear();
 			trackedTables.addAll(rows);
-			saveTrackedTables();
 		}
+		saveTrackedTables();
 	}
 
 	public void addTrackedTable(DBRow row) {
 		synchronized (trackedTables) {
 			trackedTables.add(row);
-			saveTrackedTables();
 		}
+		saveTrackedTables();
 	}
 
 	public void addTrackedTables(Collection<DBRow> rows) {
 		synchronized (trackedTables) {
 			trackedTables.addAll(rows);
-			saveTrackedTables();
 		}
+		saveTrackedTables();
 	}
 
 	public void removeTrackedTable(DBRow row) {
 		synchronized (trackedTables) {
 			trackedTables.remove(row);
-			saveTrackedTables();
 		}
+		saveTrackedTables();
 	}
 
 	public void removeTrackedTables(Collection<DBRow> rows) {
 		synchronized (trackedTables) {
 			trackedTables.removeAll(rows);
-			saveTrackedTables();
 		}
+		saveTrackedTables();
 	}
 
 	public synchronized void readyDatabase(DBDatabase databaseToReady) throws SQLException {
@@ -715,68 +715,85 @@ public class ClusterDetails implements Serializable {
 		members.setSynchronising(secondary);
 
 		DBDatabase template = null;
+		boolean proceedWithSynchronization = true;
 		final String secondaryLabel = secondary.getLabel();
 		LOG.log(Level.FINEST, "{0} SYNCHRONISING: {1}", new Object[]{clusterLabel, secondaryLabel});
 		try {
+			// we need to unpause the template no matter what happens so use a finally clause
 			try {
 				template = getTemplateDatabase();
-				// we need to unpause the template no matter wht happens so use a finally clause
-				try {
-					if (template != null) {
-						// Check that we're not synchronising the reference database
-						if (!template.getSettings().equals(secondary.getSettings())) {
-							LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
-							for (DBRow table : getRequiredAndTrackedTables()) {
-								LOG.log(Level.FINEST, "{0} CHECKING TABLE: {1}", new Object[]{clusterLabel, table.getTableName()});
+				if (proceedWithSynchronization && template != null) {
+					// Check that we're not synchronising the reference database
+					if (!template.getSettings().equals(secondary.getSettings())) {
+						LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
+						for (DBRow table : getRequiredAndTrackedTables()) {
+							final String tableName = table.getTableName();
+							if (proceedWithSynchronization) {
+								LOG.log(Level.FINEST, "{0} CHECKING TABLE: {1}", new Object[]{clusterLabel, tableName});
 								// make sure the table exists in the cluster already
 								if (template.tableExists(table)) {
-									LOG.log(Level.FINEST, "{0} INCLUDES TABLE: {1}", new Object[]{clusterLabel, table.getTableName()});
+									LOG.log(Level.FINEST, "{0} INCLUDES TABLE: {1}", new Object[]{clusterLabel, tableName});
 									// Make sure it exists in the new database
 									if (secondary.tableExists(table) == true) {
-										LOG.log(Level.FINEST, "{0} REMOVING FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
+										LOG.log(Level.FINEST, "{0} REMOVING FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
 										secondary.preventDroppingOfTables(false);
 										secondary.dropTableNoExceptions(table);
 									}
-									LOG.log(Level.FINEST, "{0} CREATING ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
+									LOG.log(Level.FINEST, "{0} CREATING ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
 									secondary.createTable(table);
-									LOG.log(Level.FINEST, "{0} CREATED ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
+									LOG.log(Level.FINEST, "{0} CREATED ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
 									// Check that the table has data
 									final DBTable<DBRow> primaryTable = template.getDBTable(table);
-									final Long primaryTableCount = primaryTable.count();
-									if (primaryTableCount > 0) {
-										final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
-										// Check that the new database has data
-										LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
-										List<DBRow> allRows = primaryData.getAllRows();
-										LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2} with {3} rows", new Object[]{clusterLabel, secondaryLabel, table.getTableName(), allRows.size()});
-										final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
-										secondaryTable.insert(allRows);
-										LOG.log(Level.FINEST, "{0} FILLED TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, table.getTableName()});
+									try {
+										final Long primaryTableCount = primaryTable.count();
+										try {
+											if (primaryTableCount > 0) {
+												final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
+												// Check that the new database has data
+												LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+												List<DBRow> allRows = primaryData.getAllRows();
+												LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2} with {3} rows", new Object[]{clusterLabel, secondaryLabel, tableName, allRows.size()});
+												final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
+												try {
+													secondaryTable.insert(allRows);
+													LOG.log(Level.FINEST, "{0} FILLED TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+												} catch (SQLException ex) {
+													proceedWithSynchronization = false;
+													LOG.log(Level.SEVERE, "QUARANTINING DATABASE {0}: {1}", new Object[]{secondaryLabel, ex.getLocalizedMessage()});
+													ex.printStackTrace();
+													quarantineDatabaseAutomatically(secondary, ex);
+													//exit the loop, to avoid unnecessary tests
+													break;
+												}
+											}
+										} catch (SQLException exceptionGettingData) {
+											LOG.log(Level.WARNING, "SKIPPING TABLE: {0}{1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
+											// lets just skip this table since it seems to be broken
+										}
+									} catch (SQLException exceptionCountingPrimaryTable) {
+										LOG.log(Level.WARNING, "SKIPPING TABLE: {0}{1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
+										// lets just skip this table since it seems to be broken
 									}
 								}
-								LOG.log(Level.FINEST, "{0} FINSHED WITH TABLE: {1}", new Object[]{clusterLabel, table.getTableName()});
 							}
+							LOG.log(Level.FINEST, "{0} FINISHED WITH TABLE: {1}", new Object[]{clusterLabel, tableName});
 						}
 					}
-				} catch (Throwable e) {
-					LOG.severe(e.getLocalizedMessage());
-					throw e;
-				} finally {
 				}
 			} catch (NoAvailableDatabaseException except) {
 				// must be the first database
 			} catch (Throwable throwable) {
+				proceedWithSynchronization = false;
 				LOG.severe(throwable.getLocalizedMessage());
-				throw throwable;
 			}
-			LOG.log(Level.FINEST, "{0} START SYNCHRONISING ACTIONS ON: {1}", new Object[]{clusterLabel, secondaryLabel});
-			synchronizeActions(secondary);
-		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
-			LOG.log(Level.SEVERE, "QUARANTINING DATABASE {0}: {1}", new Object[]{secondaryLabel, ex.getLocalizedMessage()});
-			quarantineDatabaseAutomatically(secondary, ex);
+			if (proceedWithSynchronization) {
+				LOG.log(Level.FINEST, "{0} START SYNCHRONISING ACTIONS ON: {1}", new Object[]{clusterLabel, secondaryLabel});
+				synchronizeActions(secondary);
+			}
 		} finally {
 			releaseTemplateDatabase(template);
 		}
+		// Successfully synchronised the new database :)
 	}
 
 	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws NoAvailableDatabaseException {
