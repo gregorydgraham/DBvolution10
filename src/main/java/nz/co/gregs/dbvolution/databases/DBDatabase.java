@@ -1752,7 +1752,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
 	@Override
-	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
+	public DBDefinition getDefinition() throws NoAvailableDatabaseException {
 		return definition;
 	}
 
