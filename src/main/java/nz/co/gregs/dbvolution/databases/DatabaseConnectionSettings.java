@@ -148,19 +148,22 @@ public class DatabaseConnectionSettings implements Serializable{
 
 	@Override
 	public String toString() {
-		return "DATABASECONNECTIONSETTINGS: "
-				+ getDbdatabaseClass() + TOSTRING_SEPARATOR
-				+ getHost() + TOSTRING_SEPARATOR
-				+ getPort() + TOSTRING_SEPARATOR
-				+ getInstance() + TOSTRING_SEPARATOR
-				+ getDatabaseName() + TOSTRING_SEPARATOR
-				+ getSchema() + TOSTRING_SEPARATOR
-				+ getUrl() + TOSTRING_SEPARATOR
-				+ getUsername() + TOSTRING_SEPARATOR
-				+ getLabel() + TOSTRING_SEPARATOR
-				+ getFilename() + TOSTRING_SEPARATOR
-				+ encodeClusterHosts(getClusterHosts()) + TOSTRING_SEPARATOR
-				+ encodeExtras(getExtras());
+		SeparatedString toStringer = getToStringer();
+		toStringer.addAll(
+				StringCheck.check(getDbdatabaseClass()),
+				StringCheck.check(getHost()),
+				StringCheck.check(getPort()),
+				StringCheck.check(getInstance()),
+				StringCheck.check(getDatabaseName()),
+				StringCheck.check(getSchema()),
+				StringCheck.check(getUrl()),
+				StringCheck.check(getUsername()),
+				StringCheck.check(getPassword()),
+				StringCheck.check(getLabel()),
+				StringCheck.check(getFilename()),
+				StringCheck.check(encodeClusterHosts(getClusterHosts())),
+				StringCheck.check(encodeExtras(getExtras())));
+		return toStringer.encode();
 	}
 
 	/**
@@ -174,24 +177,29 @@ public class DatabaseConnectionSettings implements Serializable{
 	 */
 	public String encode() {
 		SeparatedString encoder = getEncoder();
-		encoder.addAll(getDbdatabaseClass(),
-				getHost(),
-				getPort(),
-				getInstance(),
-				getDatabaseName(),
-				getSchema(),
-				getUrl(),
-				getUsername(),
-				getPassword(),
-				getLabel(),
-				getFilename(),
-				encodeClusterHosts(getClusterHosts()),
-				encodeExtras(getExtras()));
+		encoder.addAll(
+				StringCheck.check(getDbdatabaseClass()),
+				StringCheck.check(getHost()),
+				StringCheck.check(getPort()),
+				StringCheck.check(getInstance()),
+				StringCheck.check(getDatabaseName()),
+				StringCheck.check(getSchema()),
+				StringCheck.check(getUrl()),
+				StringCheck.check(getUsername()),
+				StringCheck.check(getPassword()),
+				StringCheck.check(getLabel()),
+				StringCheck.check(getFilename()),
+				StringCheck.check(encodeClusterHosts(getClusterHosts())),
+				StringCheck.check(encodeExtras(getExtras())));
 		return encoder.encode();
 	}
 
 	private static SeparatedString getEncoder() {
 		return SeparatedStringBuilder.forSeparator(FIELD_SEPARATOR).withEscapeChar("\\").withPrefix("DATABASECONNECTIONSETTINGS: ");
+	}
+
+	private static SeparatedString getToStringer() {
+		return SeparatedStringBuilder.forSeparator(TOSTRING_SEPARATOR).withEscapeChar("\\").withPrefix("DATABASECONNECTIONSETTINGS: ");
 	}
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
