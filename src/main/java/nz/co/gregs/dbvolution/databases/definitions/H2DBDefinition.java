@@ -23,14 +23,7 @@ import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
-import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
-import nz.co.gregs.dbvolution.datatypes.DBInstant;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.DBLargeText;
-import nz.co.gregs.dbvolution.datatypes.DBLocalDateTime;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.internal.h2.*;
 
@@ -115,6 +108,8 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 			return "TIMESTAMP(9) WITH TIME ZONE";
 		} else if (qdt instanceof DBLocalDateTime) {
 			return "TIMESTAMP(9)";
+		} else if (qdt instanceof DBBoolean) {
+			return "BIT";
 		} else if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBDateRepeat) {
