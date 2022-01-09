@@ -986,7 +986,7 @@ public class DBTable<E extends DBRow> {
 	 * For example the following code snippet will sort by just the name column:
 	 * <pre>
 	 * Customer customer = ...;
-	 * customer.setSortOrder(customer, customer.name);
+	 * customer.setSortOrder(customer.column(customer.name).ascending());
 	 * </pre>
 	 *
 	 * <p>
