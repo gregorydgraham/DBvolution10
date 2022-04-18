@@ -308,9 +308,9 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
-		if (preferredDatabaseHasBeenSet() && preferredDatabaseIsReady()) {
+		if (hasPreferredDatabase() && preferredDatabaseIsReady()) {
 			return preferredDatabase;
-		} else if (preferredDatabaseHasBeenSet() && preferredDatabaseRequired) {
+		} else if (hasPreferredDatabase() && preferredDatabaseRequired) {
 			waitUntilDatabaseHasSynchronised(preferredDatabase);
 			return preferredDatabase;
 		} else {
@@ -368,7 +368,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	private DBDatabase getAuthoritativeDatabase() throws NoAvailableDatabaseException {
+	private synchronized DBDatabase getAuthoritativeDatabase() throws NoAvailableDatabaseException {
 		final DatabaseConnectionSettings authoritativeDCS = getAuthoritativeDatabaseConnectionSettings();
 		if (authoritativeDCS != null) {
 			try {
@@ -863,7 +863,7 @@ public class ClusterDetails implements Serializable {
 		preferredDatabase = database;
 	}
 
-	private boolean preferredDatabaseHasBeenSet() {
+	public boolean hasPreferredDatabase() {
 		return preferredDatabase != null;
 	}
 
@@ -875,6 +875,10 @@ public class ClusterDetails implements Serializable {
 		preferredDatabaseRequired = b;
 	}
 
+	public boolean isPreferredDatabaseRequired() {
+		return preferredDatabaseRequired;
+	}
+
 	private boolean canSynchronize() {
 		final boolean willAutoReconnect = configuration.isUseAutoReconnect();
 		final boolean hasNothingToReconnect = members.countDatabases(DBDatabaseCluster.Status.QUARANTINED, DBDatabaseCluster.Status.DEAD) == 0;
@@ -883,5 +887,9 @@ public class ClusterDetails implements Serializable {
 
 	public DBDatabase[] getDatabasesForReconnecting() {
 		return members.getDatabases(DBDatabaseCluster.Status.QUARANTINED, DBDatabaseCluster.Status.DEAD);
+	}
+
+	public DBDatabase getPreferredDatabase() {
+		return preferredDatabase;
 	}
 }
