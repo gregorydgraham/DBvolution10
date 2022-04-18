@@ -2652,7 +2652,7 @@ public class InstantExpression extends RangeExpression<Instant, InstantResult, D
 	}
 
 	public InstantExpression toInstant() {
-		return new InstantExpression(this);
+		return this;
 	}
 
 	public InstantExpression setYear(int i) {
