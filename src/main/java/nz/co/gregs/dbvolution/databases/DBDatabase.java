@@ -1752,7 +1752,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
 	@Override
-	public DBDefinition getDefinition() throws NoAvailableDatabaseException {
+	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
 		return definition;
 	}
 
@@ -2714,11 +2714,11 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
-	public boolean getPrintSQLBeforeExecuting() {
+	public synchronized boolean getPrintSQLBeforeExecuting() {
 		return printSQLBeforeExecuting;
 	}
 
-	public boolean getBatchSQLStatementsWhenPossible() {
+	public synchronized boolean getBatchSQLStatementsWhenPossible() {
 		return batchIfPossible;
 	}
 
