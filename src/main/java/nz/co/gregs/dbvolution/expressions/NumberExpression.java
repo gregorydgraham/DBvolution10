@@ -4316,7 +4316,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			}
 			return new IsNotInFunction(
 					getColumn() == null ? null : getColumn().copy(),
-					getValues()
+					newValues
 			);
 		}
 	}
