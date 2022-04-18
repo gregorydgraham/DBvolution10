@@ -959,10 +959,17 @@ public class InstantExpressionTest extends AbstractTest {
 		final Instant april1st2011 = (new GregorianCalendar(2011, 3, 1)).toZonedDateTime().toInstant();
 
 		MarqueWithInstant marq = new MarqueWithInstant();
-		DBQuery query = database.getDBQuery(marq);
+		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
+		query.addExpressionColumn("beginning", marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().asExpressionColumn());
+		List<DBQueryRow> gotTest = query.getAllRows();
+		
 		query.addCondition(
 				marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetweenExclusive(march1st2013, march2nd2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
+		
+		if (got.size()!=18){
+			database.print(gotTest);
+		}
 
 		assertThat(got.size(), is(18));
 
