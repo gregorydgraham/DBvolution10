@@ -112,8 +112,6 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 			return "BIT";
 		} else if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
-		} else if (qdt instanceof DBDateRepeat) {
-			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBPoint2D) {
 			return DataTypes.POINT2D.datatype();
 		} else if (qdt instanceof DBLineSegment2D) {
