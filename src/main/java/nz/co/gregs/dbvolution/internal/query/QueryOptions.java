@@ -392,7 +392,7 @@ public class QueryOptions implements Serializable {
 		this.rawSQL = rawQuery;
 	}
 
-	public String getRawSQL() {
+	public synchronized String getRawSQL() {
 		return rawSQL;
 	}
 
