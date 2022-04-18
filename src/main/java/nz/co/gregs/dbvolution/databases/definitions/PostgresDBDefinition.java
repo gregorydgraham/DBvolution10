@@ -562,13 +562,18 @@ public class PostgresDBDefinition extends DBDefinition {
 		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<>();
 		Coordinate firstCoord = null;
-		for (int i = 1; i < splits.length; i += 2) {
-			String splitX = splits[i];
-			String splitY = splits[i + 1];
-			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
-			coords.add(coordinate);
-			if (firstCoord == null) {
-				firstCoord = coordinate;
+		String splitX = "0";
+		String splitY;
+		for (int i = 1; i < splits.length; i++) {
+			if (i % 2 != 0) {
+				splitX = splits[i];
+			} else {
+				splitY = splits[i + 1];
+				final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
+				coords.add(coordinate);
+				if (firstCoord == null) {
+					firstCoord = coordinate;
+				}
 			}
 		}
 		if (coords.size() == 1) {
