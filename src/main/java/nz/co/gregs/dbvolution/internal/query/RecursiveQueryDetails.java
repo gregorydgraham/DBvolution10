@@ -494,13 +494,6 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 				longs.add(Double.parseDouble(value));
 			}
 			qdt.permittedValues(longs);
-		} else if (primaryKey instanceof DBInteger) {
-			DBInteger qdt = (DBInteger) primaryKey;
-			List<Long> longs = new ArrayList<>();
-			for (String value : values) {
-				longs.add(Long.parseLong(value));
-			}
-			qdt.permittedValues(longs);
 		} else if (primaryKey instanceof DBString) {
 			DBString qdt = (DBString) primaryKey;
 			qdt.permittedValues(values);
