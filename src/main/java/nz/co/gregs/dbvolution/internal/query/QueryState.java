@@ -41,9 +41,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class QueryState {
 
-	//		private QueryGraph graph;
 	final List<BooleanExpression> remainingExpressions;
-	private final List<BooleanExpression> consumedExpressions = new ArrayList<>();
 	private final List<String> requiredConditions = new ArrayList<>();
 	private final List<String> optionalConditions = new ArrayList<>();
 	private boolean queryIsFullOuterJoin = true;
@@ -63,7 +61,6 @@ public class QueryState {
 
 	public void consumeExpression(BooleanExpression expr) {
 		remainingExpressions.remove(expr);
-		consumedExpressions.add(expr);
 	}
 
 	/**
@@ -82,9 +79,6 @@ public class QueryState {
 	/**
 	 * Returns all the current conditions that pertain to required tables.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of SQL snippets representing required conditions.
 	 */
 	public List<String> getRequiredConditions() {
@@ -102,9 +96,6 @@ public class QueryState {
 
 	/**
 	 * Returns all the current conditions that pertain to options tables.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of SQL snippets representing conditions on optional tables.
 	 */
