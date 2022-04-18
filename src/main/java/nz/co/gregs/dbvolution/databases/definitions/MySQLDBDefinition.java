@@ -76,8 +76,6 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " DATETIME(6) ";
 		} else if (qdt instanceof DBInstant) {
 			return " TIMESTAMP(6) ";
-		} else if (qdt instanceof DBDate) {
-			return " DATE ";
 		} else if (qdt instanceof DBLocalDateTime) {
 			return " TIMESTAMP(6) ";
 		} else if (qdt instanceof DBLargeBinary) {
