@@ -43,5 +43,8 @@ public class IntegerUtil {
 	public static boolean isEven(int index) {
 		return index % 2 == 0;
 	}
+
+	private IntegerUtil() {
+	}
 	
 }
