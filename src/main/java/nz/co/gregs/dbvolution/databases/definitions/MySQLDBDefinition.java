@@ -86,8 +86,6 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
-//		} else if (qdt instanceof DBDuration) {
-//			return " VARCHAR(65) ";
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
@@ -103,9 +101,7 @@ public class MySQLDBDefinition extends DBDefinition {
 						"' '", doLeftPadTransform(hours, "0", "2"),
 						"'-'", doLeftPadTransform(minutes, "0", "2"),
 						"'-'", doTruncTransform("(" + seconds + "+" + subsecond + ")", "6")
-				//"' '", timeZoneSign, timeZoneHourOffset, timeZoneMinuteOffSet)//MySQL doesn't support time zones
 				) + ", '%Y-%m-%d %H-%i-%s.%f') ";
-		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -163,7 +159,6 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringEqualsTransform(String firstString, String secondString) {
-		//return "(" + firstString + " = binary " + secondString + ")";
 		return doStringIfNullTransform(firstString, "'<DBVOLUTION NULL PROTECTION>'") + " = binary " + doStringIfNullTransform(secondString, "'<DBVOLUTION NULL PROTECTION>'");
 	}
 
