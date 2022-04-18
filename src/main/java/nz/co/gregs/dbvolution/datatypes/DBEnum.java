@@ -330,8 +330,6 @@ public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BA
 	 * Provides the literal values for all the enumeration values provided.
 	 *
 	 * @param enumValues	enumValues
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the literal database values for the enumeration values.
 	 */
 	@SuppressWarnings("unchecked")
@@ -366,8 +364,6 @@ public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BA
 	 * Provides the value for the enumeration value provided.
 	 *
 	 * @param enumValue	enumValue
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the literal database value for the enumeration value.
 	 */
 	protected final BASETYPE convertToLiteral(ENUM enumValue) {
