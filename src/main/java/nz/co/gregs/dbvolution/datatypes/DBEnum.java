@@ -264,9 +264,6 @@ public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BA
 			} else if (n1 instanceof Short || n2 instanceof Short) {
 				v1 = n1.shortValue();
 				v2 = n2.shortValue();
-			} else if (n1 instanceof Float || n2 instanceof Float) {
-				v1 = n1.floatValue();
-				v2 = n2.floatValue();
 			}
 
 			if (v1 != null && v2 != null) {
@@ -286,17 +283,13 @@ public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BA
 				|| (n instanceof Float)
 				|| (n instanceof Short)
 				|| (n instanceof Long)
-				|| (n instanceof Integer)
-				|| (n instanceof Short);
+				|| (n instanceof Integer);
 	}
 
 	/**
 	 * Gets the declared type of enumeration that the literal value is to be
 	 * mapped to. Dependent on the property wrapper being injected, or the
 	 * enumType being set
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return non-null enum type
 	 * @throws IllegalStateException if not configured correctly
