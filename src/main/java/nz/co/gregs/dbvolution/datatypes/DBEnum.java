@@ -344,8 +344,8 @@ public abstract class DBEnum<ENUM extends Enum<ENUM> & DBEnumValue<BASETYPE>, BA
 			int index = 0;
 			ENUM firstValue = null;
 			while (firstValue == null && index < enumValues.length) {
-				index++;
 				firstValue = enumValues[index];
+				index++;
 			}
 			if (enumType == null && firstValue == null) {
 				return (BASETYPE[]) new Object[]{};
