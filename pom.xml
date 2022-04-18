@@ -1585,7 +1585,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.oracle.jdbc</groupId>
+			<groupId>com.oracle.database.xml</groupId>
 			<artifactId>xdb6</artifactId>
 			<version>18.3.0.0</version>
 			<scope>test</scope>
@@ -1633,7 +1633,7 @@
 			<id>Atlassian 3rd-Party</id>
 			<url>https://maven.atlassian.com/3rdparty/</url>
 		</repository>
-		<repository>
+<!--		<repository>
 			<id>maven.oracle.com</id>
 			<releases>
 				<enabled>true</enabled>
@@ -1643,12 +1643,12 @@
 			</snapshots>
 			<url>https://maven.oracle.com</url>
 			<layout>default</layout>
-		</repository>
+		</repository>-->
 	</repositories>
-	<pluginRepositories>
+<!--	<pluginRepositories>
 		<pluginRepository>
 			<id>maven.oracle.com</id>
 			<url>https://maven.oracle.com</url>
 		</pluginRepository>
-	</pluginRepositories>
+	</pluginRepositories>-->
 </project>
