@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import nz.co.gregs.dbvolution.utility.IntegerUtil;
 import org.sqlite.Function;
 
 /**
@@ -192,11 +193,12 @@ public class Line2DFunctions {
 			} else {
 				Double maxX = null;
 				String[] split = firstLine.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
-					double x = Double.parseDouble(split[i]);
-//					double y = Double.parseDouble(split[i + 1]);
-					if (maxX == null || maxX < x) {
-						maxX = x;
+				for (int index = 1; index < split.length; index++) {
+					if (IntegerUtil.isOdd(index)) {
+						double x = Double.parseDouble(split[index]);
+						if (maxX == null || maxX < x) {
+							maxX = x;
+						}
 					}
 				}
 				result(maxX);
@@ -215,11 +217,12 @@ public class Line2DFunctions {
 			} else {
 				Double maxY = null;
 				String[] split = firstPoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
-//					double x = Double.parseDouble(split[i]);
-					double y = Double.parseDouble(split[i + 1]);
-					if (maxY == null || maxY < y) {
-						maxY = y;
+				for (int index = 1; index < split.length; index++) {
+					if (IntegerUtil.isEven(index)) {
+						double y = Double.parseDouble(split[index]);
+						if (maxY == null || maxY < y) {
+							maxY = y;
+						}
 					}
 				}
 				result(maxY);
@@ -237,11 +240,12 @@ public class Line2DFunctions {
 			} else {
 				Double minX = null;
 				String[] split = firstPoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
-					double x = Double.parseDouble(split[i]);
-//					double y = Double.parseDouble(split[i + 1]);
-					if (minX == null || minX > x) {
-						minX = x;
+				for (int index = 1; index < split.length; index++) {
+					if (IntegerUtil.isOdd(index)) {
+						double x = Double.parseDouble(split[index]);
+						if (minX == null || minX > x) {
+							minX = x;
+						}
 					}
 				}
 				result(minX);
@@ -260,11 +264,12 @@ public class Line2DFunctions {
 			} else {
 				Double minY = null;
 				String[] split = firstPoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
-//					double x = Double.parseDouble(split[i]);
-					double y = Double.parseDouble(split[i + 1]);
-					if (minY == null || minY > y) {
-						minY = y;
+				for (int index = 1; index < split.length; index++) {
+					if (IntegerUtil.isEven(index)) {
+						double y = Double.parseDouble(split[index]);
+						if (minY == null || minY > y) {
+							minY = y;
+						}
 					}
 				}
 				result(minY);
@@ -292,7 +297,7 @@ public class Line2DFunctions {
 						result(firstLine.intersects(secondLine) ? 1 : 0);
 					}
 				}
-			} catch (SQLException|ParseException ex) {
+			} catch (SQLException | ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -324,7 +329,7 @@ public class Line2DFunctions {
 						}
 					}
 				}
-			} catch (SQLException|ParseException ex) {
+			} catch (SQLException | ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -370,7 +375,7 @@ public class Line2DFunctions {
 						}
 					}
 				}
-			} catch (SQLException|ParseException ex) {
+			} catch (SQLException | ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -397,21 +402,26 @@ public class Line2DFunctions {
 				Double maxY = null;
 				Double minX = null;
 				Double minY = null;
+				double x = 0.0d;
+				double y;
 				String[] split = firstLine.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
-					double x = Double.parseDouble(split[i]);
-					double y = Double.parseDouble(split[i + 1]);
-					if (maxX == null || maxX < x) {
-						maxX = x;
-					}
-					if (maxY == null || maxY < y) {
-						maxY = y;
-					}
-					if (minX == null || minX > x) {
-						minX = x;
-					}
-					if (minY == null || minY > y) {
-						minY = y;
+				for (int index = 1; index < split.length; index++) {
+					if (IntegerUtil.isOdd(index)) {
+						x = Double.parseDouble(split[index]);
+					} else {
+						y = Double.parseDouble(split[index]);
+						if (maxX == null || maxX < x) {
+							maxX = x;
+						}
+						if (maxY == null || maxY < y) {
+							maxY = y;
+						}
+						if (minX == null || minX > x) {
+							minX = x;
+						}
+						if (minY == null || minY > y) {
+							minY = y;
+						}
 					}
 				}
 				String resultString = "POLYGON ((" + minX + " " + minY + ", " + maxX + " " + minY + ", " + maxX + " " + maxY + ", " + minX + " " + maxY + ", " + minX + " " + minY + "))";
