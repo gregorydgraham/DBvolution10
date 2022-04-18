@@ -603,10 +603,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 			setToNull();
 		} else {
 			this.literalValue = newLiteralValue;
-			if (newLiteralValue instanceof Date) {
-				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
-			} else if (newLiteralValue instanceof Timestamp) {
+			if (newLiteralValue instanceof Timestamp) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Timestamp) newLiteralValue)));
+			} else if (newLiteralValue instanceof Date) {
+				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
 			} else {
 				this.setOperator(new DBEqualsOperator(this.copy()));
 			}
