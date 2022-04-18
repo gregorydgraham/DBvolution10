@@ -3584,7 +3584,7 @@ public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateRes
 			}
 			return new DateIsInExpression(
 					getColumn().copy(),
-					getValues()
+					newValues
 			);
 		}
 
