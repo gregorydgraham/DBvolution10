@@ -50,6 +50,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -960,13 +961,13 @@ public class InstantExpressionTest extends AbstractTest {
 
 		MarqueWithInstant marq = new MarqueWithInstant();
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
-		query.addExpressionColumn("beginningOfMonth", marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().asExpressionColumn());
+		query.addExpressionColumn("beginningOfMonth", marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).asExpressionColumn());
 		query.addExpressionColumn("earliestDate", InstantExpression.value(march1st2013).asExpressionColumn());
 		query.addExpressionColumn("lastDate", InstantExpression.value(march2nd2013).asExpressionColumn());
 		List<DBQueryRow> gotTest = query.getAllRows();
 		
 		query.addCondition(
-				marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetweenExclusive(march1st2013, march2nd2013));
+				marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetweenExclusive(march1st2013, march2nd2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 		
 		if (got.size()!=18){
