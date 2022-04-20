@@ -961,6 +961,8 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant marq = new MarqueWithInstant();
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		query.addExpressionColumn("beginningOfMonth", marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().asExpressionColumn());
+		query.addExpressionColumn("earliestDate", InstantExpression.value(march1st2013).asExpressionColumn());
+		query.addExpressionColumn("lastDate", InstantExpression.value(march2nd2013).asExpressionColumn());
 		List<DBQueryRow> gotTest = query.getAllRows();
 		
 		query.addCondition(
