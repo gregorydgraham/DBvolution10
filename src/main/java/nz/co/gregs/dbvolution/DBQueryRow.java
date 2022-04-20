@@ -20,6 +20,8 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
+import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * Contains all the instances of DBRow that are associated with one line of a
@@ -173,7 +175,7 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 				returnList.addAll(actualRow.getFieldValues(dateFormat));
 			} else {
 				for (String returnList1 : tab.getFieldNames()) {
-					returnList.add("");
+					returnList.add(returnList1);
 				}
 			}
 		}
@@ -317,31 +319,34 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 
 	@Override
 	public String toString() {
-		final var entrySet = entrySet();
-		var entryList = new ArrayList<>(entrySet);
+		SeparatedString sepString = SeparatedStringBuilder
+				.forSeparator(", ")
+				.withKeyValueSeparator("=")
+				.withPrefix("{")
+				.withSuffix("}")
+				.useWhenEmpty("{}");
+
+		var entrySet = entrySet();
+		ArrayList<Entry<Class<? extends DBRow>, DBRow>> entryList = new ArrayList<>(entrySet);
 		entryList.sort((original, other) -> {
 			return original.getKey().getCanonicalName().compareTo(other.getKey().getCanonicalName());
 		});
-		var iterator = entryList.iterator();
-		if (!iterator.hasNext()) {
-			return "{}";
+		for (Entry<Class<? extends DBRow>, DBRow> entry : entryList) {
+			sepString.add(entry.getKey().toString(),entry.getValue().toString());
 		}
 
-		StringBuilder builder = new StringBuilder();
-		builder.append('{');
-		// infinite loop only if the map has infinite entries
-		for (;;) {
-			Entry<Class<? extends DBRow>, DBRow> entry = iterator.next();
-			Class<? extends DBRow> key = entry.getKey();
-			DBRow value = entry.getValue();
-			builder.append(key);
-			builder.append('=');
-			builder.append(value);
-			if (!iterator.hasNext()) {
-				return builder.append('}').toString();
-			} else {
-				builder.append(',').append(' ');
-			}
+		var entrySet2 = expressionColumnValues.entrySet();
+		ArrayList<Entry<Object, QueryableDatatype<?>>> entryList2 = new ArrayList<>(entrySet2);
+		entryList2.sort((original, other) -> {
+			return original.getKey().toString().compareTo(other.getKey().toString());
+		});
+		for (Entry<Object, QueryableDatatype<?>> entry2 : entryList2) {
+			sepString.add(entry2.getKey().toString(),entry2.getValue().toString());
 		}
+
+
+
+		final String toString = sepString.toString();
+		return toString;
 	}
 }
