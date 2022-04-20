@@ -810,25 +810,25 @@ public class InstantExpressionTest extends AbstractTest {
 		MarqueWithInstant marq = new MarqueWithInstant();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetween(march1st2013, march2nd2013));
+				marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetween(march1st2013, march2nd2013));
 		List<MarqueWithInstant> got = query.getAllInstancesOf(marq);
 
 		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetween(april1st2011, april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetween(april1st2011, april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetween(InstantExpression.value(april1st2011), april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetween(InstantExpression.value(april1st2011), april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetween(april1st2011, InstantExpression.value(april2nd2011Instant)));
+		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetween(april1st2011, InstantExpression.value(april2nd2011Instant)));
 		got = query.getAllInstancesOf(marq);
 
 		assertThat(got.size(), is(3));
@@ -977,19 +977,19 @@ public class InstantExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(18));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetweenExclusive(april1st2011, april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetweenExclusive(april1st2011, april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetweenExclusive(InstantExpression.value(april1st2011), april2nd2011Instant));
+		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetweenExclusive(InstantExpression.value(april1st2011), april2nd2011Instant));
 		got = query.getAllInstancesOf(marq);
 
 		assertThat(got.size(), is(3));
 
 		query = database.getDBQuery(marq);
-		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().isBetweenExclusive(april1st2011, InstantExpression.value(april2nd2011Instant)));
+		query.addCondition(marq.column(marq.creationInstant).firstOfMonth().atStartOfDay().plus(Period.seconds(1)).isBetweenExclusive(april1st2011, InstantExpression.value(april2nd2011Instant)));
 		got = query.getAllInstancesOf(marq);
 
 		assertThat(got.size(), is(3));
