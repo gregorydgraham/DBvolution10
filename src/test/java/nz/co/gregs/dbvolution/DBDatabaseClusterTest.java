@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import cern.jet.math.IntFunctions;
 import nz.co.gregs.dbvolution.utility.Brake;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -134,13 +135,18 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 				brake.release();
 
-				LoopVariable i = LoopVariable.factory();
-				while (cluster.getDatabaseStatus(slowSynchingDB) != DBDatabaseCluster.Status.READY && i.attempts() < 1000) {
-					System.out.println("STILL NOT SYNCHRONISED: " + i.elapsedTime());
-					i.attempt();
-					cluster.waitUntilDatabaseIsSynchronised(slowSynchingDB, 100);
-				}
+				LoopVariable looper = LoopVariable.factory();
+				looper.setMaxAttemptsAllowed(1000);
+				looper.loop(
+						(index) -> {
+							System.out.println("" + index + "> STILL NOT SYNCHRONISED: " + looper.elapsedTime());
+							cluster.waitUntilDatabaseIsSynchronised(slowSynchingDB, 100);
+						},
+						(index) -> cluster.getDatabaseStatus(slowSynchingDB) == DBDatabaseCluster.Status.READY,
+						(index) -> System.out.println("" + looper.attempts() + "> SYNCHRONISED: " + looper.elapsedTime())
+				);
 
+				assertThat(looper.attempts(), is(Matchers.greaterThan(1)));
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), is(DBDatabaseCluster.Status.READY));
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(22l));
 

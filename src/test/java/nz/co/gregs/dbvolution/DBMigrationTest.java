@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -241,11 +241,9 @@ public class DBMigrationTest extends AbstractTest {
 
 		LoopVariable looper = new LoopVariable();
 		looper.setMaxAttemptsAllowed(9);
-		Function<Integer, Void> action = (index) -> {
+		looper.loop((index) -> {
 			assertThat(resultStrings.get(index), is(expectedList.get(index)));
-			return null;
-		};
-		looper.loop(action);
+		});
 	}
 
 	public static class MigrateHeroesAndSelectedVilliansToFight extends Fight {
@@ -307,9 +305,8 @@ public class DBMigrationTest extends AbstractTest {
 		expectedList.sort(sorter);
 
 		LoopVariable looper = LoopVariable.withMaxAttempts(resultStrings.size());
-		Function<Integer, Void> action = (index) -> {
+		Consumer<Integer> action = (index) -> {
 			assertThat(resultStrings.get(index), is(expectedList.get(index)));
-			return null;
 		};
 		looper.loop(action);
 	}

@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /**
  * Implements a while/for loop combination.
@@ -54,7 +55,7 @@ public class LoopVariable implements Serializable {
 	private boolean needed = true;
 	private int maxAttemptsAllowed = 1000;
 	private boolean limitMaxAttempts = true;
-	private final State state = new State();
+	private transient final State state = new State();
 
 	public static LoopVariable factory() {
 		return new LoopVariable();
@@ -223,7 +224,7 @@ public class LoopVariable implements Serializable {
 	 * @param action the action to perform within the loop
 	 */
 	public void loop(Supplier<Void> action) {
-		Function<Integer, Void> function = (index) -> action.get();
+		Consumer<Integer> function = (index) -> action.get();
 		loop(function);
 	}
 
@@ -256,7 +257,7 @@ public class LoopVariable implements Serializable {
 	 * FALSE the loop will continue
 	 */
 	public void loop(Supplier<Void> action, Supplier<Boolean> test) {
-		Function<Integer, Void> function = (index) -> action.get();
+		Consumer<Integer> function = (index) -> action.get();
 		Function<Integer, Boolean> testFunction = (index) -> test.get();
 		loop(function, testFunction);
 	}
@@ -283,7 +284,7 @@ public class LoopVariable implements Serializable {
 	 *
 	 * @param action the action to perform with a loop
 	 */
-	public void loop(Function<Integer, Void> action) {
+	public void loop(Consumer<Integer> action) {
 		loop(action, (d) -> {
 			return false;
 		});
@@ -298,15 +299,14 @@ public class LoopVariable implements Serializable {
 	 *
 	 * <pre>
 	 *		LoopVariable looper = new LoopVariable();
-	 *		final int intendedAttempts = 10;
 	 *		looper.loop(
-	 *				() -&gt; {
+	 *				(index) -&gt; {
 	 *					// do your processing here
 	 *
 	 *					// return null as required by Java
 	 *					return null;
 	 *				},
-	 *				() -&gt; {
+	 *				(index) -&gt; {
 	 *					// Check for termination conditions here
 	 *					return trueIfTaskCompletedOtherwiseFalse();
 	 *				}
@@ -317,15 +317,59 @@ public class LoopVariable implements Serializable {
 	 * @param test the test to check, if TRUE the loop will be terminated, if
 	 * FALSE the loop will continue
 	 */
-	public void loop(Function<Integer, Void> action, Function<Integer, Boolean> test) {
+	public void loop(Consumer<Integer> action, Function<Integer, Boolean> test) {
 		while (isNeeded()) {
 			attempt();
-			action.apply(getIndex());
+			action.accept(getIndex());
 			if (test.apply(getIndex())) {
 				done();
 			}
 			increaseIndex();
 		}
+	}
+
+	/**
+	 * Performs action until test returns true.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <pre>
+	 *		LoopVariable looper = new LoopVariable();
+	 *		looper.loop(
+	 *				(index) -&gt; {
+	 *					// do your processing here
+	 *
+	 *					// return null as required by Java
+	 *					return null;
+	 *				},
+	 *				(index) -&gt; {
+	 *					// Check for termination conditions here
+	 *					return trueIfTaskCompletedOtherwiseFalse();
+	 *				},
+	 *				(index) -&gt; {
+	 *					// perform any post loop operations here
+	 *					System.out.println("Completed loop after "+attempts()+" attempts");
+	 *				}
+	 *		);
+	 * </pre>
+	 *
+	 * @param action the action to perform with a loop
+	 * @param test the test to check, if TRUE the loop will be terminated, if
+	 * FALSE the loop will continue
+	 * @param completion the action to perform immediately after the loop
+	 */
+	public void loop(Consumer<Integer> action, Function<Integer, Boolean> test, Consumer<Integer> completion) {
+		while (isNeeded()) {
+			attempt();
+			action.accept(getIndex());
+			if (test.apply(getIndex())) {
+				done();
+			}
+			increaseIndex();
+		}
+		completion.accept(getIndex());
 	}
 
 	public int getIndex() {
