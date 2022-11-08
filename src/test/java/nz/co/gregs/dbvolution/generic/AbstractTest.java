@@ -267,6 +267,9 @@ public abstract class AbstractTest {
 						.replaceAll("\\b_+", "")
 						.replaceAll(" +[aA][sS] +", " ")
 						.replaceAll(" *; *$", "");
+			}else if (database instanceof H2DB)  {
+				return trimStr
+						.replaceAll("\"", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
 			} else if ((database instanceof NuoDB)) {
@@ -285,7 +288,7 @@ public abstract class AbstractTest {
 		if (str != null) {
 			String trimStr = str
 					.trim()
-					.replaceAll(" DB[_0-9]+", "")
+					.replaceAll(" [dD][bB][_0-9]+", "")
 					.replaceAll("[ \\r\\n]+", " ")
 					.replaceAll(", ", ",")
 					.toLowerCase();
@@ -297,6 +300,9 @@ public abstract class AbstractTest {
 						.replaceAll("\\b_+", "")
 						.replaceAll(" *; *$", "")
 						.replaceAll(" as ", " ");
+			} else if (database instanceof H2DB) {
+				return trimStr
+						.replaceAll("\"", "");
 			} else if ((database instanceof NuoDB)) {
 				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
 			} else if ((database instanceof MSSQLServerDB)) {

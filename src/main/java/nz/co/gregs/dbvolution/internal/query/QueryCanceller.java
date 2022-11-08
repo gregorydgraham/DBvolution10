@@ -77,7 +77,7 @@ public class QueryCanceller implements Runnable {
 			statement.cancel();
 			setQueryWasCancelled(true);
 		} catch (SQLException ex) {
-			Logger.getLogger(QueryDetails.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(QueryDetails.class.getName()).log(Level.SEVERE, "QueryCanceller caught an exception", ex);
 		}
 	}
 	protected static final Logger LOGGER = Logger.getLogger(QueryCanceller.class.getName());

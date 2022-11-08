@@ -206,7 +206,7 @@ public class DatabaseList implements Serializable {
 		return getDatabases(statuses).length;
 	}
 
-	public synchronized void clear() {
+	public void clear() {
 		statusMap.clear();
 		databaseMap.clear();
 	}

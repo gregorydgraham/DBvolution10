@@ -21,10 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
-import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBForeignKey;
-import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBPasswordHash;
@@ -212,6 +209,7 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 
 	}
 
+	@DBTableName("USER_TABLE_FOR_TESTING")
 	public static class User extends DBRow {
 
 	private static final long serialVersionUID = 1L;
