@@ -124,21 +124,17 @@ public class DBStatement implements AutoCloseable {
 			} else if (details.isIgnoreExceptions()) {
 				// do nothing
 			} else {
-				LOG.info("REPEATED EXCEPTIONS FROM: " + sql, exp);
-//				System.out.println("REPEATED EXCEPTIONS FROM: " + sql);
-				exp.printStackTrace();
-//				System.out.println("SECONDLY");
-				ex.printStackTrace();
+//				LOG.info("REPEATED EXCEPTIONS FROM: " + sql, exp);
 			}
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
-				DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
-				if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
-					return null;
+					DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
+					if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+						return null;
+					}
 				}
-			}
 			throw new SQLException(ex);
-		}
+			}
 		try {
 			executeQuery = getInternalStatement().executeQuery(sql);
 			return executeQuery;

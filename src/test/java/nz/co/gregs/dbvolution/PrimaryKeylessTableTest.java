@@ -45,7 +45,7 @@ public class PrimaryKeylessTableTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		String sqlForQuery = dbQuery.getSQLForQuery();
 		assertThat(
-				testableSQL(sqlForQuery),
+				testableSQLWithoutColumnAliases(sqlForQuery),
 				anyOf(
 						is(testableSQLWithoutColumnAliases("select __78874071.name db_241667647, __78874071.uid_carcompany db112832814, _1617907935.fk_car_company db_238514883, _1617907935.fk_company_logo db_1915875486 from car_company as __78874071 inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) ;")),
 						is(testableSQLWithoutColumnAliases("select __78874071.name db_241667647, __78874071.uid_carcompany db112832814, _1617907935.fk_car_company db_238514883, _1617907935.fk_company_logo db_1915875486 from [car_company] as __78874071 inner join [lt_carco_logo] as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany )")),
@@ -71,7 +71,7 @@ public class PrimaryKeylessTableTest extends AbstractTest {
 		if (!(database instanceof DBDatabaseCluster)) {
 			String sqlForQuery = dbQuery.getSQLForQuery();
 			assertThat(
-					testableSQL(sqlForQuery),
+					testableSQLWithoutColumnAliases(sqlForQuery),
 					anyOf(
 							is(testableSQLWithoutColumnAliases("select __78874071.name db_241667647, __78874071.uid_carcompany db112832814, _1617907935.fk_car_company db_238514883, _1617907935.fk_company_logo db_1915875486, _1159239592.logo_id db_1579317226, _1159239592.car_company_fk db1430605643, _1159239592.image_file db1622411417, _1159239592.image_name db1622642088 from car_company as __78874071 inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) inner join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id ) ;")),
 							is(testableSQLWithoutColumnAliases("select __78874071.name db_241667647, __78874071.uid_carcompany db112832814, _1159239592.logo_id db_1579317226, _1159239592.car_company_fk db1430605643, _1159239592.image_file db1622411417, _1159239592.image_name db1622642088, _1617907935.fk_car_company db_238514883, _1617907935.fk_company_logo db_1915875486 from car_company as __78874071 inner join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany ) inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id ) ;")),

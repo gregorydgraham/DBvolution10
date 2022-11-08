@@ -51,6 +51,11 @@ public class LoopVariable implements Serializable {
 		newLoop.setMaxAttemptsAllowed(size);
 		return newLoop;
 	}
+	public static LoopVariable withInfiniteLoopsPermitted(int size) {
+		LoopVariable newLoop = LoopVariable.factory();
+		newLoop.setInfiniteLoopPermitted();
+		return newLoop;
+	}
 
 	private boolean needed = true;
 	private int maxAttemptsAllowed = 1000;
@@ -59,6 +64,12 @@ public class LoopVariable implements Serializable {
 
 	public static LoopVariable factory() {
 		return new LoopVariable();
+	}
+
+	public static LoopVariable factory(int max) {
+		LoopVariable loopVariable = new LoopVariable();
+		loopVariable.setMaxAttemptsAllowed(max);
+		return loopVariable;
 	}
 
 	/**
@@ -161,12 +172,14 @@ public class LoopVariable implements Serializable {
 	 *
 	 * @param maxAttemptsAllowed the number of attempts after which the loop will
 	 * abort.
+	 * @return this object with the configuration changed
 	 */
-	public void setMaxAttemptsAllowed(int maxAttemptsAllowed) {
+	public LoopVariable setMaxAttemptsAllowed(int maxAttemptsAllowed) {
 		if (maxAttemptsAllowed > 0) {
 			limitMaxAttempts = true;
 			this.maxAttemptsAllowed = maxAttemptsAllowed;
 		}
+		return this;
 	}
 
 	/**
@@ -179,9 +192,11 @@ public class LoopVariable implements Serializable {
 	 * <p>
 	 * Alternatively you can seta higher, or lower, limit with {@link #setMaxAttemptsAllowed(int)
 	 * }.</p>
+	 * @return this object with the configuration changed
 	 */
-	public void setInfiniteLoopPermitted() {
+	public LoopVariable setInfiniteLoopPermitted() {
 		limitMaxAttempts = false;
+		return this;
 	}
 
 	/**
@@ -299,6 +314,36 @@ public class LoopVariable implements Serializable {
 	 *
 	 * <pre>
 	 *		LoopVariable looper = new LoopVariable();
+	 *		final int intendedAttempts = 10;
+	 *		looper.loop(
+	 *				() -&gt; {
+	 *					// do your processing here
+	 *
+	 *					// return null as required by Java
+	 *					return null;
+	 *				}
+	 *		);
+	 * </pre>
+	 *
+	 * @param action the action to perform with a loop
+	 * @return if an exception stops processing it is immediately returned
+	 * @throws java.lang.Exception
+	 */
+	public Exception loop(Function<Integer, Exception> action) throws Exception {
+		return loop(action, (d) -> {
+			return false;
+		});
+	}
+
+	/**
+	 * Performs action until test returns true.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <pre>
+	 *		LoopVariable looper = new LoopVariable();
 	 *		looper.loop(
 	 *				(index) -&gt; {
 	 *					// do your processing here
@@ -326,6 +371,50 @@ public class LoopVariable implements Serializable {
 			}
 			increaseIndex();
 		}
+	}
+
+
+	/**
+	 * Performs action until test returns true.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 *
+	 * <pre>
+	 *		LoopVariable looper = new LoopVariable();
+	 *		looper.loop(
+	 *				(index) -&gt; {
+	 *					// do your processing here
+	 *
+	 *					// return null as required by Java
+	 *					return null;
+	 *				},
+	 *				(index) -&gt; {
+	 *					// Check for termination conditions here
+	 *					return trueIfTaskCompletedOtherwiseFalse();
+	 *				}
+	 *		);
+	 * </pre>
+	 *
+	 * @param action the action to perform with a loop
+	 * @param test the test to check, if TRUE the loop will be terminated, if
+	 * FALSE the loop will continue
+	 * @return if an exception occurs during processing it is immediately returned
+	 */
+	public Exception loop(Function<Integer, Exception> action, Function<Integer, Boolean> test) {
+		while (isNeeded()) {
+			attempt();
+			Exception except = action.apply(getIndex());
+			if (except!=null){
+				return except;
+			}
+			if (test.apply(getIndex())) {
+				done();
+			}
+			increaseIndex();
+		}
+		return null;
 	}
 
 	/**

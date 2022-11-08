@@ -51,6 +51,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
+import nz.co.gregs.dbvolution.utility.LoopVariable;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.RegexReplacement;
 import nz.co.gregs.separatedstring.SeparatedString;
@@ -1194,9 +1195,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	protected synchronized void fillResultSetInternal(QueryOptions options) throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException, LoopDetectedInRecursiveSQL {
-		final List<String> sqlForQuery = this.getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options);
+		final List<String> sqlOptions = this.getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, options);
 
-		setResultSQL(sqlForQuery);
+		setResultSQL(sqlOptions);
 
 		final DBDefinition defn = options.getQueryDefinition();
 
@@ -1210,18 +1211,21 @@ public class QueryDetails implements DBQueryable, Serializable {
 			throw new AccidentalCartesianJoinException(this);
 		}
 		// all set to execute the query
-		fillResultSetFromSQL(options, defn);
+		fillResultSetFromSQL(options, defn, sqlOptions);
 	}
 
-	protected synchronized void fillResultSetFromSQL(QueryOptions options, final DBDefinition defn) throws AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL, SQLTimeoutException, SQLException {
+	protected synchronized void fillResultSetFromSQL(QueryOptions options, final DBDefinition defn, List<String> sqlOptions) throws AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL, SQLTimeoutException, SQLException {
 		ArrayList<DBQueryRow> foundRows = new ArrayList<DBQueryRow>();
 		SQLException firstException = null;
+		SeparatedString errorMessages = SeparatedStringBuilder.byLines();
 		boolean successfulQuery = false;
-		for (String sql : resultSQL) {
+		for (String sql : sqlOptions) {
 			final DBDatabase queryDatabase = options.getQueryDatabase();
 			try ( DBStatement dbStatement = queryDatabase.getDBStatement()) {
-				printSQLIfRequired(sql);
-				try ( ResultSet resultSet = getResultSetForSQL(dbStatement, sql)) {
+				printSQLIfRequired(sql);		
+				final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, dbStatement);
+				statementDetails.setIgnoreExceptions(this.isQuietExceptions());
+				try ( ResultSet resultSet = getResultSetForSQL(dbStatement, statementDetails, sql)) {
 					if (resultSet != null) {
 						DBQueryRow queryRow;
 						while (resultSet.next()) {
@@ -1238,11 +1242,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 				break;// we've successfully run the sql so carry on
 			} catch (SQLException e) {
 				if (isQuietExceptions() == false) {
+					errorMessages.add("ERRORS REPORTED FOR QUERY: "+sql);
 					StackTraceElement[] trace = e.getStackTrace();
 					System.out.println("" + e.getMessage());
 					System.out.println("" + e.getLocalizedMessage());
 					for (int i = 0; i < 11 && i < trace.length; i++) {
-						System.out.println("" + trace[i]);
+						errorMessages.add("" + trace[i]);
 					}
 				}
 				queryDatabase.handleErrorDuringExecutingSQL(queryDatabase, e, sql);
@@ -1262,6 +1267,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 			setResults(foundRows);
 		} else {
+			System.err.println(""+errorMessages);
 			throw firstException;
 		}
 	}
@@ -1387,7 +1393,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * @throws nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL
 	 * Recursive queries may cause loops
 	 */
-	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException, LoopDetectedInRecursiveSQL {
+	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, StatementDetails statementDetails, String sql) throws SQLException, SQLTimeoutException, LoopDetectedInRecursiveSQL {
 		final Long timeoutTime = this.getTimeoutInMilliseconds();
 		ScheduledFuture<?> cancelHandle = null;
 		QueryCanceller canceller = null;
@@ -1397,8 +1403,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 				cancelHandle = canceller.schedule(timeoutTime);
 			}
 		}
-		final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, statement);
-		statementDetails.setIgnoreExceptions(this.isQuietExceptions());
 		ResultSet queryResults;
 		try {
 			queryResults = statement.executeQuery(statementDetails);

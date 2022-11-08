@@ -117,7 +117,8 @@ public class DBBooleanArrayTest extends AbstractTest {
 				anyOf(
 						is("'011'"), //MS SQLServer
 						is("b'110'"), //MySQL
-						is("(FALSE,TRUE,TRUE)"), //H2
+						is("(FALSE,TRUE,TRUE)"), //H2v1
+						is("ARRAY[FALSE, TRUE, TRUE]"), //H2v2
 						is("'{0,1,1}'") // Postgres
 				)
 		);

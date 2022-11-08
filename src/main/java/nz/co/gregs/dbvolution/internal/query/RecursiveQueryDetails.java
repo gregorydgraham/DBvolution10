@@ -47,6 +47,7 @@ import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -199,7 +200,9 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 			String descendingQuery = getRecursiveSQL(database, recursiveDetails, recursiveDetails.getKeyToFollow(), direction);
 			query.setTimeoutInMilliseconds(recursiveDetails.getTimeoutInMilliseconds());
 			final QueryDetails queryDetails = query.getQueryDetails();
-			try (ResultSet resultSet = queryDetails.getResultSetForSQL(dbStatement, descendingQuery)) {
+			final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.RECURSIVE_QUERY, descendingQuery, dbStatement);
+			statementDetails.setIgnoreExceptions(this.isQuietExceptions());
+			try (ResultSet resultSet = queryDetails.getResultSetForSQL(dbStatement, statementDetails, descendingQuery)) {
 				if (resultSet != null) {
 					while (resultSet.next()) {
 						DBQueryRow queryRow = new DBQueryRow(queryDetails);

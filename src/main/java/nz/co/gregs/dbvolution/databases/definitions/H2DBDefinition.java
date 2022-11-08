@@ -26,6 +26,8 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.internal.h2.*;
+import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -41,8 +43,8 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	public static final long serialVersionUID = 1L;
 
-	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSSSSSSSS Z";
-	private static final String H2_DATE_FORMAT_INCLUDING_TIMEZONE = "yyyy-M-d HH:mm:ss.SSSSSSSSS Z";//2017-02-18 18:59:59.000 +10:00
+	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
+//	private static final String H2_DATE_FORMAT_INCLUDING_TIMEZONE = "yyyy-M-d HH:mm:ss.SSSSSSSSS Z";//2017-02-18 18:59:59.000 +10:00
 
 	private static SimpleDateFormat getStringToDateFormat() {
 		return new SimpleDateFormat(DATE_FORMAT_STR);
@@ -53,7 +55,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 		if (date == null) {
 			return getNull();
 		}
-		return "PARSEDATETIME('" + getStringToDateFormat().format(date) + "','" + H2_DATE_FORMAT_INCLUDING_TIMEZONE + "')";
+		return "PARSEDATETIME('" + getStringToDateFormat().format(date) + "','" + DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -97,7 +99,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	@Override
 	public String formatColumnName(String columnName) {
-		return columnName.toUpperCase();
+		return "\""+columnName.toUpperCase().replaceAll("\"", "\"\"")+"\"";
 	}
 
 	@Override
@@ -110,6 +112,8 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 			return "TIMESTAMP(9)";
 		} else if (qdt instanceof DBBoolean) {
 			return "BIT";
+		} else if (qdt instanceof DBBooleanArray) {
+			return "BOOLEAN ARRAY";
 		} else if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBPoint2D) {
@@ -265,22 +269,11 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	@Override
 	public String doBooleanArrayTransform(Boolean[] bools) {
-		StringBuilder str = new StringBuilder();
-		str.append("(");
-		String separator = "";
-		switch (bools.length) {
-			case 0:
-				return "()";
-			case 1:
-				return "(" + bools[0] + ",)";
-			default:
-				for (Boolean bool : bools) {
-					str.append(separator).append(bool.toString().toUpperCase());
-					separator = ",";
-				}
-				str.append(")");
-				return str.toString();
+		SeparatedString result = SeparatedStringBuilder.byCommaSpace().withPrefix("ARRAY[").withSuffix("]");
+		for (Boolean c : bools) {
+				result.add(c.toString().toUpperCase());
 		}
+		return result.toString();
 	}
 
 	@Override
