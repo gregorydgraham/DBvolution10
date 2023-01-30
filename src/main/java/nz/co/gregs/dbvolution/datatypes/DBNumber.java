@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
-import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 
 /**
  * Encapsulates database values that are Numbers.
@@ -183,7 +183,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * @param newLiteralValue	newLiteralValue
 	 */
 	public void setValue(String newLiteralValue) {
-		setValue(Double.parseDouble(newLiteralValue));
+		setValue(Double.valueOf(StringCheck.checkNotNullOrEmpty(newLiteralValue, null, null)));
 	}
 
 	/**
@@ -270,7 +270,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 		} else if (getLiteralValue() instanceof Number) {
 			return getLiteralValue().doubleValue();
 		} else {
-			return Double.parseDouble(getLiteralValue().toString());
+			return Double.valueOf(StringCheck.checkNotNullOrEmpty(getLiteralValue().toString(), null, null));
 		}
 	}
 
@@ -726,7 +726,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		setValue(Double.parseDouble(encodedValue));
+		setValue(Double.valueOf(StringCheck.checkNotNullOrEmpty(encodedValue, null, null)));
 	}
 
 	@Override
