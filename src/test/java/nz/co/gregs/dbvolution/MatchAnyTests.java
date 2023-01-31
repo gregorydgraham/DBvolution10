@@ -108,7 +108,8 @@ public class MatchAnyTests extends AbstractTest {
 				testableSQL(dbQuery.getSQLForQuery()),
 				anyOf(
 						containsString(testableSQL("ON( __2076078474.FK_COMPANY_LOGO = _1159239592.LOGO_ID OR __2076078474.FK_PREV_COMPANY_LOGO = _1159239592.LOGO_ID )")),
-						containsString(testableSQL("on( \"_2076078474\".fk_company_logo = \"1159239592\".logo_id or \"_2076078474\".fk_prev_company_logo = \"1159239592\".logo_id )"))
+						containsString(testableSQL("on( \"_2076078474\".fk_company_logo = \"1159239592\".logo_id or \"_2076078474\".fk_prev_company_logo = \"1159239592\".logo_id )")),
+						containsString(testableSQL("on( __2076078474.\"fk_company_logo\" = _1159239592.\"logo_id\" or __2076078474.\"fk_prev_company_logo\" = _1159239592.\"logo_id\" )"))
 				)
 		);
 	}

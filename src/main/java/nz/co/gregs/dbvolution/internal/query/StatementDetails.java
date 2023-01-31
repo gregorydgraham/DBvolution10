@@ -51,6 +51,7 @@ public class StatementDetails {
 	private boolean withGeneratedKeys = false;
 	private String namedPKColumn;
 	private DBStatement activeStatement;
+	private Long timeout;
 
 	public StatementDetails(String label, QueryIntention intent, String sql, DBStatement statement) {
 		this(label, intent, sql, null, false, false, "", statement);
@@ -113,8 +114,8 @@ public class StatementDetails {
 	 * Calls the appropriate execute method on the Statement and returns the
 	 * boolean result.
 	 *
-	 * @param stmt the statement on which to excute this SQL command
-	 * @throws SQLException database errors are propogated
+	 * @param stmt the statement on which to execute this SQL command
+	 * @throws SQLException database errors are propagated
 	 */
 	public void execute(Statement stmt) throws SQLException {
 		if (StringCheck.isNotEmptyNorNull(namedPKColumn)) {
@@ -147,6 +148,14 @@ public class StatementDetails {
 
 	public void setDBStatement(DBStatement statement) {
 		this.activeStatement = statement;
+	}
+
+	public void setTimeout(Long timeoutTime) {
+		timeout = timeoutTime;
+	}
+
+	public Long getTimeout() {
+		return timeout;
 	}
 
 }

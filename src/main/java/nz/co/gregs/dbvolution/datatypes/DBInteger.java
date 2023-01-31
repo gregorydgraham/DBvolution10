@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.dbvolution.utility.comparators.ComparableComparator;
 
 /**
@@ -664,7 +665,7 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	 * @param newLiteralValue	newLiteralValue
 	 */
 	public void setValue(String newLiteralValue) {
-		setValue(Long.parseLong(newLiteralValue));
+		setValue(Long.valueOf(StringCheck.checkNotNullOrEmpty(newLiteralValue,null,null)));
 	}
 
 	/**
@@ -762,7 +763,7 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 			super.setLiteralValue(null);
 		} else {
 			try {
-				Double parseDouble = Double.parseDouble(encodedValue);
+				Double parseDouble = Double.valueOf(StringCheck.checkNotNullOrEmpty(encodedValue,null,null));
 				Long literalLong = parseDouble.longValue();
 				setLiteralValue(literalLong);
 			} catch (NumberFormatException noFormat) {

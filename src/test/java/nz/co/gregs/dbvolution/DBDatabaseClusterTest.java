@@ -28,7 +28,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import cern.jet.math.IntFunctions;
 import nz.co.gregs.dbvolution.utility.Brake;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -39,13 +38,11 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -121,30 +118,37 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			SlowSynchingDatabase slowSynchingDB = SlowSynchingDatabase.createANewRandomDatabase("SlowSynchingDatabase-", "-H2");
 			Brake brake = slowSynchingDB.getBrake();
-			brake.setTimeout(10000);
+			brake.setTimeout(10);
 
 			try (slowSynchingDB) {
 
 				brake.release();
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
 
-				brake.brake();
+				brake.apply();
 				cluster.addDatabase(slowSynchingDB);
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), not(DBDatabaseCluster.Status.READY));
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
-
-				brake.release();
-
+				
 				LoopVariable looper = LoopVariable.factory();
-				looper.setMaxAttemptsAllowed(1000);
+				looper.setMaxAttemptsAllowed(5);
 				looper.loop(
 						(index) -> {
-							System.out.println("" + index + "> STILL NOT SYNCHRONISED: " + looper.elapsedTime());
 							cluster.waitUntilDatabaseIsSynchronised(slowSynchingDB, 100);
 						},
 						(index) -> cluster.getDatabaseStatus(slowSynchingDB) == DBDatabaseCluster.Status.READY,
-						(index) -> System.out.println("" + looper.attempts() + "> SYNCHRONISED: " + looper.elapsedTime())
+						(index) -> {
+							System.out.println("" + looper.attempts() + "> SYNCHRONISED: elapsed time " + looper.elapsedTime());
+							System.out.println("-----THIS SHOULD NOT HAVE HAPPENED-----");
+									},
+						(index) -> {
+							System.out.println("FAILED TO SYNCHRONISE in "+ looper.attempts() +" attempts: elapsed time " + looper.elapsedTime());
+							System.out.println("THIS IS DELIBERATE AND EXPECTED");
+									}
 				);
+				
+				brake.release();				
+				cluster.waitUntilSynchronised();
 
 				assertThat(looper.attempts(), is(Matchers.greaterThan(1)));
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), is(DBDatabaseCluster.Status.READY));
@@ -346,7 +350,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				boolean dismantleCluster = true;
 				H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 				try {
-					cluster.addDatabase(soloDB2);
+					cluster.addDatabaseAndWait(soloDB2);
 					assertThat(cluster.size(), is(2));
 
 					cluster.delete(cluster.getDBTable(new DBDatabaseClusterTestTable()).setBlankQueryAllowed(true).getAllRows());
