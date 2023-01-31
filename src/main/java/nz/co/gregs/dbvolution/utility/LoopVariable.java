@@ -51,6 +51,7 @@ public class LoopVariable implements Serializable {
 		newLoop.setMaxAttemptsAllowed(size);
 		return newLoop;
 	}
+
 	public static LoopVariable withInfiniteLoopsPermitted(int size) {
 		LoopVariable newLoop = LoopVariable.factory();
 		newLoop.setInfiniteLoopPermitted();
@@ -81,7 +82,7 @@ public class LoopVariable implements Serializable {
 	 */
 	public boolean isNeeded() {
 		if (limitMaxAttempts) {
-			return needed && attempts() < maxAttemptsAllowed;
+			return needed && attempts()+1 <= maxAttemptsAllowed;
 		} else {
 			return needed;
 		}
@@ -96,7 +97,7 @@ public class LoopVariable implements Serializable {
 	 */
 	public boolean isNotNeeded() {
 		if (limitMaxAttempts) {
-			return !needed || attempts() >= maxAttemptsAllowed;
+			return !needed || attempts()+1 > maxAttemptsAllowed;
 		} else {
 			return !needed;
 		}
@@ -192,6 +193,7 @@ public class LoopVariable implements Serializable {
 	 * <p>
 	 * Alternatively you can seta higher, or lower, limit with {@link #setMaxAttemptsAllowed(int)
 	 * }.</p>
+	 *
 	 * @return this object with the configuration changed
 	 */
 	public LoopVariable setInfiniteLoopPermitted() {
@@ -373,7 +375,6 @@ public class LoopVariable implements Serializable {
 		}
 	}
 
-
 	/**
 	 * Performs action until test returns true.
 	 *
@@ -406,7 +407,7 @@ public class LoopVariable implements Serializable {
 		while (isNeeded()) {
 			attempt();
 			Exception except = action.apply(getIndex());
-			if (except!=null){
+			if (except != null) {
 				return except;
 			}
 			if (test.apply(getIndex())) {
@@ -460,6 +461,66 @@ public class LoopVariable implements Serializable {
 		}
 		completion.accept(getIndex());
 	}
+
+	/**
+	 * Performs action until test returns true.
+	 *
+	 * <p>
+	 * This is a re-implementation of the while loop mechanism. Probably not as
+	 * good as the actual while loop but it was fun to do.</p>
+	 * 
+	 * <p>This method is particularly good for re-attempting operations that failed but may have been affected by
+	 * transient issues (network packet loss, broken database, etc).</p>
+	 *
+	 * <pre>
+	 *		LoopVariable looper = new LoopVariable();
+	 *		looper.loop(
+	 *				(index) -&gt; {
+	 *					// do your processing here
+	 *
+	 *					// return null as required by Java
+	 *					return null;
+	 *				},
+	 *				(index) -&gt; {
+	 *					// Check for termination conditions here
+	 *					return trueIfTaskCompletedOtherwiseFalse();
+	 *				},
+	 *				(index) -&gt; {
+	 *					// perform any post successful loop operations here
+	 *					System.out.println("Completed loop successfully after "+attempts()+" attempts");
+	 *				}
+	 *				(index) -&gt; {
+	 *					// perform any post failed loop operations here
+	 *					System.out.println("Completed loop without success after "+attempts()+" attempts");
+	 *				}
+	 *		);
+	 * </pre>
+	 *
+	 * @param action the action to perform with a loop
+	 * @param test the test to check, if TRUE the loop will be terminated, if
+	 * FALSE the loop will continue
+	 * @param successfulCompletion the action to perform immediately after the loop if the test is true after completion
+	 * @param unsuccessfulCompletion the action to perform immediately after the loop if the test fails after completion
+	 */
+	public void loop(Consumer<Integer> action, Function<Integer, Boolean> test, Consumer<Integer> successfulCompletion, Consumer<Integer> unsuccessfulCompletion) {
+		Boolean testSuccessful = false;
+		while (isNeeded()) {
+			attempt();
+			action.accept(getIndex());
+			testSuccessful = test.apply(getIndex());
+			if (testSuccessful) {
+				done();
+			}
+			increaseIndex();
+		}
+		if (testSuccessful) {
+			successfulCompletion.accept(getIndex());
+		} else {
+			unsuccessfulCompletion.accept(getIndex());
+		}
+	}
+
+	
 
 	public int getIndex() {
 		return state.index();
