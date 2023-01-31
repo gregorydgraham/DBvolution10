@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryTimeout;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.internal.PartialRegex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -1110,38 +1111,42 @@ public class DBStatement implements AutoCloseable {
 		this.internalStatement = realStatement;
 	}
 //Could not create connection to database server
-	private static final Regex COULDNT_CREATE_CONNECTION_REGEX = Regex.empty()
-			.literalCaseInsensitive("create").anyCharacter().zeroOrMore().literalCaseInsensitive("connection").toRegex();
-	private static final Regex CONNECTION_FAILED_REGEX = Regex.empty()
-			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("failed").toRegex();
-	private static final Regex CONNECTION_BROKEN_REGEX = Regex.empty()
-			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("broken").toRegex();
-	private static final Regex CONNECTION_CLOSED_REGEX = Regex.empty()
-			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("closed").toRegex();
-	private static final Regex CONNECTION_RESET_REGEX = Regex.empty()
-			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("reset").toRegex();
-	private static final Regex STATEMENT_BROKEN_REGEX = Regex.empty()
-			.literalCaseInsensitive("statement").anyCharacter().optionalMany().literalCaseInsensitive("broken").toRegex();
-	private static final Regex STATEMENT_CLOSED_REGEX = Regex.empty()
-			.literalCaseInsensitive("statement").anyCharacter().optionalMany().literalCaseInsensitive("closed").toRegex();
-	private static final Regex INSUFFICIENT_MEMORY_REGEX = Regex.empty()
+	private static final PartialRegex COULDNT_CREATE_CONNECTION_REGEX = Regex.empty()
+			.literalCaseInsensitive("create").anyCharacter().zeroOrMore().literalCaseInsensitive("connection");
+	private static final PartialRegex CONNECTION_FAILED_REGEX = Regex.empty()
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("failed");
+	private static final PartialRegex CONNECTION_BROKEN_REGEX = Regex.empty()
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("broken");
+	private static final PartialRegex CONNECTION_CLOSED_REGEX = Regex.empty()
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("closed");
+	private static final PartialRegex CONNECTION_RESET_REGEX = Regex.empty()
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("reset");
+	private static final PartialRegex STATEMENT_BROKEN_REGEX = Regex.empty()
+			.literalCaseInsensitive("statement").anyCharacter().optionalMany().literalCaseInsensitive("broken");
+	private static final PartialRegex STATEMENT_CLOSED_REGEX = Regex.empty()
+			.literalCaseInsensitive("statement").anyCharacter().optionalMany().literalCaseInsensitive("closed");
+	private static final PartialRegex INSUFFICIENT_MEMORY_REGEX = Regex.empty()
 			.literalCaseInsensitive("There is insufficient system memory in resource pool ")
 			.charactersWrappedBy('\'')
-			.literalCaseInsensitive(" to run this query.").toRegex();
+			.literalCaseInsensitive(" to run this query.");
+	private static final Regex ALL_KNOWN_ERRORS = Regex.startOrGroup()
+			.add(CONNECTION_BROKEN_REGEX)
+			.add(CONNECTION_CLOSED_REGEX)
+			.add(CONNECTION_FAILED_REGEX)
+			.add(CONNECTION_RESET_REGEX)
+			.add(COULDNT_CREATE_CONNECTION_REGEX)
+			.add(INSUFFICIENT_MEMORY_REGEX)
+			.add(STATEMENT_BROKEN_REGEX)
+			.add(STATEMENT_CLOSED_REGEX)
+			.endOrGroup().toRegex()
+			;
 
 	private boolean checkForBrokenConnection(Exception originalExc, String sql) throws SQLException {
 		Throwable exp = originalExc;
 		while (exp != null) {
 			String message = exp.getMessage();
 			if (StringCheck.isNotEmptyNorNull(message)) {
-				if (COULDNT_CREATE_CONNECTION_REGEX.matchesWithinString(message)
-						||CONNECTION_FAILED_REGEX.matchesWithinString(message)
-						||CONNECTION_BROKEN_REGEX.matchesWithinString(message)
-						||CONNECTION_CLOSED_REGEX.matchesWithinString(message)
-						||STATEMENT_BROKEN_REGEX.matchesWithinString(message)
-						||STATEMENT_CLOSED_REGEX.matchesWithinString(message)
-						||CONNECTION_RESET_REGEX.matchesWithinString(message)
-						||INSUFFICIENT_MEMORY_REGEX.matchesWithinString(message)) {
+				if (ALL_KNOWN_ERRORS.matchesWithinString(message)) {
 					replaceBrokenConnection();
 					return true;
 				}
