@@ -94,23 +94,23 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private String driverName = "";
 	private boolean printSQLBeforeExecuting = false;
 	boolean isInATransaction = false;
-	DBTransactionStatement transactionStatement;
+	transient DBTransactionStatement transactionStatement;
 	private DBDefinition definition = null;
 	private boolean batchIfPossible = true;
 	private boolean preventAccidentalDroppingOfTables = true;
 	private boolean preventAccidentalDroppingDatabase = true;
-	private final Object getStatementSynchronizeObject = new Object();
-	private final Object getConnectionSynchronizeObject = new Object();
-	DBConnection transactionConnection;
+	private transient final Object getStatementSynchronizeObject = new Object();
+	private transient final Object getConnectionSynchronizeObject = new Object();
+	transient DBConnection transactionConnection;
 	private static final transient Map<String, List<DBConnection>> BUSY_CONNECTIONS = new HashMap<>();
-	private static final transient HashMap<String, List<DBConnection>> FREE_CONNECTIONS = new HashMap<>();
+	private static final transient Map<String, List<DBConnection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
 	private final DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
 	private boolean terminated = false;
-	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
+	private transient final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
 	private Throwable exception = null;
-	private ScheduledFuture<?> regularThreadPoolFuture;
+	private transient ScheduledFuture<?> regularThreadPoolFuture;
 	private boolean hasCreatedRequiredTables = false;
 	private boolean quietExceptionsPreference = false;
 
@@ -149,7 +149,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		DBDatabase newInstance = (DBDatabase) clone;
 		return newInstance;
 	}
-	public DBDatabase copy(){
+
+	public DBDatabase copy() {
 		try {
 			return clone();
 		} catch (CloneNotSupportedException ex) {
@@ -220,9 +221,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * database.
 	 *
 	 * <p>
- DBDatabase encapsulates the knowledge of the database, in particular the
- syntax of the database in the DBDefinition and the connection details using
- a DataSource.
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details using
+	 * a DataSource.
 	 *
 	 * @see DBDefinition
 	 * @see Oracle12DB
@@ -252,9 +253,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * database.
 	 *
 	 * <p>
- DBDatabase encapsulates the knowledge of the database, in particular the
- syntax of the database in the DBDefinition and the connection details using
- a DataSource.
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details using
+	 * a DataSource.
 	 *
 	 * @param settings - a SettingsBuilder for the required database.
 	 * @throws java.sql.SQLException database errors
@@ -386,10 +387,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			DBConnection conn = null;
 			while (conn == null) {
 				if (supportsPooledConnections()) {
-					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
+					if (FREE_CONNECTIONS.isEmpty() || getFreeConnections().isEmpty()) {
 						conn = getRawConnection();
 					} else {
-						conn = getConnectionList(FREE_CONNECTIONS).get(0);
+						conn = getFreeConnections().get(0);
 					}
 				} else {
 					conn = getRawConnection();
@@ -469,6 +470,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 					}
 				}
 			}
+			getFreeConnections().add(connection);
 			return connection;
 		}
 		return null;
@@ -480,7 +482,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Used to hold the database open if required by the database.
 	 *
 	 */
-	protected DBConnection storedConnection;
+	protected transient DBConnection storedConnection;
 
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
 			value = {"OBL_UNSATISFIED_OBLIGATION", "ODR_OPEN_DATABASE_RESOURCE"},
@@ -931,7 +933,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	/**
 	 *
 	 * Convenience method to simplify switching using READONLY to COMMITTED
- transaction
+	 * transaction
 	 *
 	 * @param <V> the return type of the transaction, can be anything
 	 * @param dbTransaction the transaction to execute
@@ -1568,10 +1570,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * {@link #createForeignKeyConstraints(nz.co.gregs.dbvolution.DBRow)}.
 	 *
 	 * <p>
- If a pair of tables have foreign keys constraints to each other it may be
- necessary to remove the constraints to successfully insert some rows.
- DBvolution cannot to protect you using this situation, however this method
- will remove some of the problem.
+	 * If a pair of tables have foreign keys constraints to each other it may be
+	 * necessary to remove the constraints to successfully insert some rows.
+	 * DBvolution cannot to protect you using this situation, however this method
+	 * will remove some of the problem.
 	 *
 	 * @param newTableRow the data models version of the table that needs FKs
 	 * removed
@@ -1985,15 +1987,15 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * <p>
 	 * Calls the
 	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
-
- Retrieves a list of report rows using the database using the constraints
- supplied by the report and the examples supplied.
+	 *
+	 * Retrieves a list of report rows using the database using the constraints
+	 * supplied by the report and the examples supplied.
 	 *
 	 * @param <A> DBReport type
 	 * @param report report
 	 * @param examples examples
 	 * @return A List of instances of the supplied report using the database 1
- Database exceptions may be thrown
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
@@ -2009,9 +2011,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * <p>
 	 * Calls the
 	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
-
- Retrieves a list of report rows using the database using the constraints
- supplied by the report and the examples supplied.
+	 *
+	 * Retrieves a list of report rows using the database using the constraints
+	 * supplied by the report and the examples supplied.
 	 *
 	 * @param <A> the DBReport to be derived using the database data.
 	 * @param report the report to be produced
@@ -2029,15 +2031,15 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * <p>
 	 * Calls the
 	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
-
- Retrieves a list of report rows using the database using the constraints
- supplied by the report and the examples supplied.
+	 *
+	 * Retrieves a list of report rows using the database using the constraints
+	 * supplied by the report and the examples supplied.
 	 *
 	 * @param <A> DBReport type
 	 * @param report report
 	 * @param examples examples
 	 * @return A List of instances of the supplied report using the database 1
- Database exceptions may be thrown
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
@@ -2123,12 +2125,15 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public synchronized void unusedConnection(DBConnection connection) throws SQLException {
 		if (supportsPooledConnections()) {
-			List<DBConnection> busy = getConnectionList(BUSY_CONNECTIONS);
-			busy.remove(connection);
-			getConnectionList(FREE_CONNECTIONS).add(connection);
+			getBusyConnections().remove(connection);
+			getFreeConnections().add(connection);
 		} else {
 			discardConnection(connection);
 		}
+	}
+
+	private List<DBConnection> getBusyConnections() {
+		return getConnectionList(BUSY_CONNECTIONS);
 	}
 
 	/**
@@ -2147,9 +2152,13 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	private synchronized void usedConnection(DBConnection connection) {
 		if (supportsPooledConnections()) {
-			getConnectionList(FREE_CONNECTIONS).remove(connection);
-			getConnectionList(BUSY_CONNECTIONS).add(connection);
+			getFreeConnections().remove(connection);
+			getBusyConnections().add(connection);
 		}
+	}
+
+	private List<DBConnection> getFreeConnections() {
+		return getConnectionList(FREE_CONNECTIONS);
 	}
 
 	/**
@@ -2162,8 +2171,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 */
 	public synchronized void discardConnection(DBConnection connection) {
 		if (connection != null) {
-			getConnectionList(BUSY_CONNECTIONS).remove(connection);
-			getConnectionList(FREE_CONNECTIONS).remove(connection);
+			getBusyConnections().remove(connection);
+			getFreeConnections().remove(connection);
 			try {
 				connection.close();
 			} catch (SQLException ex) {
@@ -2218,12 +2227,12 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * Create a DBRecursiveQuery based on the query and foreign key supplied.
 	 *
 	 * <p>
- DBRecursiveQuery uses the query to create the first rows of the recursive
- query. This can be any query and contain any tables. However it must
- contain the table T and the foreign key must be a recursive foreign key
- (FK) to and using table T.
-
- <p>
+	 * DBRecursiveQuery uses the query to create the first rows of the recursive
+	 * query. This can be any query and contain any tables. However it must
+	 * contain the table T and the foreign key must be a recursive foreign key
+	 * (FK) to and using table T.
+	 *
+	 * <p>
 	 * After the priming query has been created the FK supplied will be followed
 	 * repeatedly. The FK must be contained in one of the tables of the priming
 	 * query and it must reference the same table, that is to say it must be a
@@ -2406,8 +2415,8 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * <p>
 	 * See DBMigrationTest for examples.</p>
 	 *
-	 * @param <MAPPER> the DBRow extension that maps fields of internal DBRows to all
-	 * the fields of it's superclass.
+	 * @param <MAPPER> the DBRow extension that maps fields of internal DBRows to
+	 * all the fields of it's superclass.
 	 * @param mapper a class that can be used to map one or more database tables
 	 * to a single table.
 	 * @return a DBQueryInsert for the mapper class
@@ -2661,7 +2670,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * is shutdown and emptied.
 	 *
 	 * <p>
- Please note that this is very different using {@link DBDatabaseCluster#dismantle()
+	 * Please note that this is very different using {@link DBDatabaseCluster#dismantle()
 	 * }
 	 *
 	 */
@@ -2687,7 +2696,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				} catch (Exception ex) {
 				}
 			}
-			final List<DBConnection> freeConnections = getConnectionList(FREE_CONNECTIONS);
+			final List<DBConnection> freeConnections = getFreeConnections();
 			synchronized (freeConnections) {
 				final DBConnection[] free = freeConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : free) {
@@ -2695,7 +2704,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 					discardConnection(connection);
 				}
 			}
-			final List<DBConnection> busyConnections = getConnectionList(BUSY_CONNECTIONS);
+			final List<DBConnection> busyConnections = getBusyConnections();
 			synchronized (busyConnections) {
 				final DBConnection[] busy = busyConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : busy) {

@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -1221,7 +1220,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		for (String sql : sqlOptions) {
 			final DBDatabase queryDatabase = options.getQueryDatabase();
 			try ( DBStatement dbStatement = queryDatabase.getDBStatement()) {
-				printSQLIfRequired(sql);		
+				printSQLIfRequired(sql);
 				final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, dbStatement);
 				statementDetails.setIgnoreExceptions(this.isQuietExceptions());
 				try ( ResultSet resultSet = getResultSetForSQL(dbStatement, statementDetails, sql)) {
@@ -1241,7 +1240,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				break;// we've successfully run the sql so carry on
 			} catch (SQLException e) {
 				if (isQuietExceptions() == false) {
-					errorMessages.add("ERRORS REPORTED FOR QUERY: "+sql);
+					errorMessages.add("ERRORS REPORTED FOR QUERY: " + sql);
 					StackTraceElement[] trace = e.getStackTrace();
 					System.out.println("" + e.getMessage());
 					System.out.println("" + e.getLocalizedMessage());
@@ -1266,7 +1265,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 			setResults(foundRows);
 		} else {
-			System.err.println(""+errorMessages);
+			System.err.println("" + errorMessages);
 			throw firstException;
 		}
 	}
@@ -1382,6 +1381,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * Executes the query using the statement provided and returns the ResultSet
 	 *
 	 * @param statement dbStatement
+	 * @param statementDetails
 	 * @param sql sql
 	 *
 	 *
@@ -1394,26 +1394,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 */
 	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, StatementDetails statementDetails, String sql) throws SQLException, SQLTimeoutException, LoopDetectedInRecursiveSQL {
 		final Long timeoutTime = this.getTimeoutInMilliseconds();
-		ScheduledFuture<?> cancelHandle = null;
-		QueryCanceller canceller = null;
-		if (timeoutTime > 0) {
-			if (timeoutTime != null && timeoutTime > 0) {
-				canceller = new QueryCanceller(statement, sql, this);
-				cancelHandle = canceller.schedule(timeoutTime);
-			}
-		}
-		ResultSet queryResults;
-		try {
-			queryResults = statement.executeQuery(statementDetails);
-		} finally {
-			if (cancelHandle != null) {
-				cancelHandle.cancel(true);
-			}
-		}
-		if (canceller != null && canceller.queryWasCancelled()) {
-			throw new SQLTimeoutException("Query Timed Out");
-		}
-		return queryResults;
+		statementDetails.setTimeout(timeoutTime);
+		return statement.executeQuery(statementDetails);
 	}
 
 	private void setExpressionColumns(DBDefinition defn, ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
@@ -1605,7 +1587,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 */
 	public synchronized Long getTimeoutInMilliseconds() {
 		if (timeoutInMilliseconds == null || timeoutInMilliseconds == 0) {
-			return QueryCanceller.getStandardCancelOffset();
+			return QueryTimeout.getStandardTimeoutOffset();
 		} else {
 			return timeoutInMilliseconds;
 		}
@@ -1719,16 +1701,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 			return groupByClauses;
 		}
 
-		void addGroupByClause(String clause) {
-			groupByClauses.add(clause);
-		}
-
 		void addGroupByClauses(List<String> clauses) {
 			groupByClauses.addAll(clauses);
-		}
-
-		void setOrderByClause(String clause) {
-			orderByClause = clause;
 		}
 
 		void setOrderByClause(SeparatedString clause) {

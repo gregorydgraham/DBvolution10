@@ -66,9 +66,9 @@ public class ClusterDetails implements Serializable {
 
 	private final DatabaseList members = new DatabaseList();
 
-	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
-	private final Set<DBRow> trackedTables = Collections.synchronizedSet(new HashSet<DBRow>());
-	private final Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
+	private transient final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
+	private transient final Set<DBRow> trackedTables = Collections.synchronizedSet(new HashSet<DBRow>());
+	private transient final Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
 	private transient final PreferencesImproved prefs = PreferencesImproved.userNodeForPackage(this.getClass());
 	private String clusterLabel = "NotDefined";
@@ -516,7 +516,7 @@ public class ClusterDetails implements Serializable {
 		return members.getDatabases(DBDatabaseCluster.Status.QUARANTINED);
 	}
 
-	public synchronized void removeAllDatabases() throws SQLException {
+	public void removeAllDatabases() throws SQLException {
 		members.clear();
 	}
 
@@ -659,7 +659,7 @@ public class ClusterDetails implements Serializable {
 	public void waitUntilSynchronised() {
 		synchronisingLock.lock();
 		try {
-			while (isNotSynchronized() && canSynchronize()) {
+			while (isNotSynchronized()) {
 				allDatabasesAreSynchronised.await(1, TimeUnit.SECONDS);
 			}
 		} catch (InterruptedException ex) {
@@ -767,11 +767,13 @@ public class ClusterDetails implements Serializable {
 												}
 											}
 										} catch (SQLException exceptionGettingData) {
-											LOG.log(Level.WARNING, "SKIPPING TABLE: {0}{1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
+											LOG.log(Level.WARNING, "FAIL TO RETREIVE TABLE DATA: {0} - {1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
+											LOG.log(Level.WARNING, "SKIPPING TABLE: {0} - {1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
 											// lets just skip this table since it seems to be broken
 										}
 									} catch (SQLException exceptionCountingPrimaryTable) {
-										LOG.log(Level.WARNING, "SKIPPING TABLE: {0}{1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
+										LOG.log(Level.WARNING, "FAILED TO COUNT TABLE: {0} - {1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
+										LOG.log(Level.WARNING, "SKIPPING TABLE: {0} - {1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
 										// lets just skip this table since it seems to be broken
 									}
 								}
@@ -785,6 +787,7 @@ public class ClusterDetails implements Serializable {
 			} catch (Throwable throwable) {
 				proceedWithSynchronization = false;
 				LOG.severe(throwable.getLocalizedMessage());
+				throwable.printStackTrace();
 			}
 			if (proceedWithSynchronization) {
 				LOG.log(Level.FINEST, "{0} START SYNCHRONISING ACTIONS ON: {1}", new Object[]{clusterLabel, secondaryLabel});
@@ -877,12 +880,6 @@ public class ClusterDetails implements Serializable {
 
 	public boolean isPreferredDatabaseRequired() {
 		return preferredDatabaseRequired;
-	}
-
-	private boolean canSynchronize() {
-		final boolean willAutoReconnect = configuration.isUseAutoReconnect();
-		final boolean hasNothingToReconnect = members.countDatabases(DBDatabaseCluster.Status.QUARANTINED, DBDatabaseCluster.Status.DEAD) == 0;
-		return willAutoReconnect || hasNothingToReconnect;
 	}
 
 	public DBDatabase[] getDatabasesForReconnecting() {
