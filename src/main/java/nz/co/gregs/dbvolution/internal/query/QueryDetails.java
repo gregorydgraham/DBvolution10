@@ -51,7 +51,6 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
-import nz.co.gregs.dbvolution.utility.LoopVariable;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.RegexReplacement;
 import nz.co.gregs.separatedstring.SeparatedString;
