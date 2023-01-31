@@ -20,11 +20,10 @@ import java.sql.*;
 import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
-import nz.co.gregs.dbvolution.internal.query.QueryCanceller;
+import nz.co.gregs.dbvolution.internal.query.QueryTimeout;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
@@ -81,14 +80,17 @@ public class DBStatement implements AutoCloseable {
 	 * @throws SQLException database exceptions
 	 */
 	public ResultSet executeQuery(StatementDetails details) throws SQLException {
+		return executeQueryWithRecovery(details);
+	}
+
+	public ResultSet executeQueryWithRecovery(StatementDetails details) throws SQLException {
 		String sql = details.getSql();
 		String label = details.getLabel();
-		QueryIntention intent = details.getIntention();
 		final String logSQL = "EXECUTING QUERY \"" + label + "\" on " + this.database.getJdbcURL() + ": \n" + sql;
 		database.printSQLIfRequested(logSQL);
 		ResultSet executeQuery = null;
 		try {
-			executeQuery = getInternalStatement().executeQuery(sql);
+			executeQuery = executeQueryWithTimeout(details);
 		} catch (SQLException exp) {
 			try {
 				var statementDetails = details.copy().withLabel("UNLABELLED QUERY").withException(exp);
@@ -105,38 +107,60 @@ public class DBStatement implements AutoCloseable {
 		return executeQuery;
 	}
 
+	private ResultSet executeQueryWithTimeout(StatementDetails details) throws SQLException {
+		final Long timeoutTime = details.getTimeout();
+		QueryTimeout timer = new QueryTimeout(details, timeoutTime);
+
+		ResultSet queryResult = null;
+		try {
+			queryResult = executeQueryWithInternalStatement(details);
+			timer.noLongerRequired();
+			if (timer.queryTimedOut()) {
+				throw new SQLTimeoutException("Execution Timed Out");
+			}
+		} finally {
+			timer.noLongerRequired();
+		}
+			return queryResult;
+	}
+
+	private ResultSet executeQueryWithInternalStatement(StatementDetails details) throws SQLException {
+		return getInternalStatement().executeQuery(details.getSql());
+	}
+
 	private ResultSet addFeatureAndAttemptQueryAgain(StatementDetails details) throws Exception, LoopDetectedInRecursiveSQL {
 		ResultSet executeQuery;
 		final Exception exp = details.getException();
 		final String sql = details.getSql();
 		final QueryIntention intent = details.getIntention();
-		checkForBrokenConnection(exp, sql);
-		try {
-			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
-			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
-				return null;
-			}
-		} catch (LoopDetectedInRecursiveSQL loop) {
-			throw loop;
-		} catch (Exception ex) {
-			if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
-				// Checking the table will generate exceptions that we don't need to investigate
-			} else if (details.isIgnoreExceptions()) {
-				// do nothing
-			} else {
+		if (!checkForBrokenConnection(exp, sql)) {
+			try {
+				DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
+				if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+					return null;
+				}
+			} catch (LoopDetectedInRecursiveSQL loop) {
+				throw loop;
+			} catch (Exception ex) {
+				if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
+					// Checking the table will generate exceptions that we don't need to investigate
+				} else if (details.isIgnoreExceptions()) {
+					// do nothing
+				} else {
 //				LOG.info("REPEATED EXCEPTIONS FROM: " + sql, exp);
-			}
-			Exception ex1 = exp;
-			while (!ex1.getMessage().equals(ex.getMessage())) {
+				}
+				Exception ex1 = exp;
+				while (!ex1.getMessage().equals(ex.getMessage())) {
 					DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
 					if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
 						return null;
 					}
 				}
-			throw new SQLException(ex);
+				throw new SQLException(ex);
 			}
+		}
 		try {
-			executeQuery = getInternalStatement().executeQuery(sql);
+			executeQuery = executeQueryWithTimeout(details);
 			return executeQuery;
 		} catch (SQLException exp2) {
 			if (exp.getMessage().equals(exp2.getMessage())) {
@@ -203,6 +227,7 @@ public class DBStatement implements AutoCloseable {
 			} catch (SQLException e) {
 				// Someone please tell me how you are supposed to cope 
 				// with an exception during the close method????????
+				LOG.warn("Exception occurred during close(): No action required");
 				LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
 			}
 		}
@@ -466,13 +491,17 @@ public class DBStatement implements AutoCloseable {
 	 * @throws SQLException Database exceptions may be thrown
 	 */
 	public void execute(StatementDetails details) throws SQLException {
+		executeWithRecovery(details);
+	}
+
+	private void executeWithRecovery(StatementDetails details) throws SQLException {
 		details.setDBStatement(this);
 		String sql = details.getSql();
 		final String logSQL = "EXECUTING on " + database.getLabel() + ": " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		try {
-			executeWithCanceller(details);
+			executeWithTimeout(details);
 		} catch (SQLException exp) {
 			StatementDetails statementDetails
 					= details.copy()
@@ -482,50 +511,57 @@ public class DBStatement implements AutoCloseable {
 		}
 	}
 
-	private void executeWithCanceller(StatementDetails details) throws SQLException {
-		final var stmt = getInternalStatement();
+	private void executeWithTimeout(StatementDetails details) throws SQLException {
 		final Long timeoutTime = this.getTIMEOUT_IN_MILLISECONDS();
-		ScheduledFuture<?> cancelHandle = null;
-		QueryCanceller canceller = null;
-		if (timeoutTime > 0) {
-			if (timeoutTime != null && timeoutTime > 0) {
-				canceller = new QueryCanceller(this, details.getSql());
-				cancelHandle = canceller.schedule(timeoutTime);
-			}
-		}
+		QueryTimeout timer = new QueryTimeout(details, timeoutTime);
+
 		try {
-			details.execute(stmt);
-		} finally {
-			if (cancelHandle != null) {
-				cancelHandle.cancel(true);
+			executeOnInternalStatement(details);
+			timer.noLongerRequired();
+			if (timer.queryTimedOut()) {
+				throw new SQLTimeoutException("Execution Timed Out");
 			}
-		}
-		if (canceller != null && canceller.queryWasCancelled()) {
-			throw new SQLTimeoutException("Execution Timed Out");
+		} finally {
+			timer.noLongerRequired();
 		}
 	}
+
+	private void executeOnInternalStatement(StatementDetails details) throws UnableToCreateDatabaseConnectionException, SQLException, UnableToFindJDBCDriver {
+		Statement stmt = getInternalStatement();
+		details.execute(stmt);
+	}
+
+	static final Regex DROP_INTENTION_MATCHER = Regex.startingAnywhere().literal("DROP").toRegex();
+	static final Regex DROP_EXCEPTION_MATCHER = Regex.startingAnywhere().beginCaseInsensitiveSection().anyOf("does not exist", "doesn't exist").endCaseInsensitiveSection().toRegex();
 
 	private void addFeatureAndAttemptExecuteAgain(StatementDetails details) throws SQLException {
 		details.setDBStatement(this);
 		String sql = details.getSql();
 		Exception exp = details.getException();
 		QueryIntention intent = details.getIntention();
-		checkForBrokenConnection(exp, sql);
-		try {
-			DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
-			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
-				return;
+		if (DROP_INTENTION_MATCHER.matchesWithinString(details.getIntention().name())
+				&& DROP_EXCEPTION_MATCHER.matchesWithinString(exp.getMessage())) {
+			// discard as we've tried to drop something that doesn't exist and that's ok
+			LOG.info("Attempted to drop an entity that doesn't exist - continuing: " + exp.getMessage());
+		} else {
+			if (!checkForBrokenConnection(exp, sql)) {
+				try {
+					DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
+					if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+						return;
+					}
+				} catch (Exception ex) {
+					throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
+				}
 			}
-		} catch (Exception ex) {
-			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
-		}
-		try {
-			executeWithCanceller(details);
-		} catch (SQLException exp2) {
-			if (!exp.getMessage().equals(exp2.getMessage())) {
-				addFeatureAndAttemptExecuteAgain(details);
-			} else {
-				throw new SQLException(exp);
+			try {
+				executeWithTimeout(details);
+			} catch (SQLException exp2) {
+				if (!exp.getMessage().equals(exp2.getMessage())) {
+					addFeatureAndAttemptExecuteAgain(details);
+				} else {
+					throw new SQLException(exp);
+				}
 			}
 		}
 	}
@@ -1055,6 +1091,12 @@ public class DBStatement implements AutoCloseable {
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected synchronized Statement getInternalStatement() throws SQLException {
+		if (connection==null){
+			replaceBrokenConnection();
+		}
+		if (connection.isClosed()){
+			replaceBrokenConnection();
+		}
 		if (this.internalStatement == null) {
 			this.setInternalStatement(connection.getInternalStatement());
 		}
@@ -1067,39 +1109,46 @@ public class DBStatement implements AutoCloseable {
 	protected synchronized void setInternalStatement(Statement realStatement) {
 		this.internalStatement = realStatement;
 	}
-
+//Could not create connection to database server
+	private static final Regex COULDNT_CREATE_CONNECTION_REGEX = Regex.empty()
+			.literalCaseInsensitive("create").anyCharacter().zeroOrMore().literalCaseInsensitive("connection").toRegex();
+	private static final Regex CONNECTION_FAILED_REGEX = Regex.empty()
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("failed").toRegex();
 	private static final Regex CONNECTION_BROKEN_REGEX = Regex.empty()
-			.literal("connection").anyCharacter().optionalMany().literal("broken").toRegex();
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("broken").toRegex();
 	private static final Regex CONNECTION_CLOSED_REGEX = Regex.empty()
-			.literal("connection").anyCharacter().optionalMany().literal("closed").toRegex();
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("closed").toRegex();
 	private static final Regex CONNECTION_RESET_REGEX = Regex.empty()
-			.literal("connection").anyCharacter().optionalMany().literal("reset").toRegex();
+			.literalCaseInsensitive("connection").anyCharacter().optionalMany().literalCaseInsensitive("reset").toRegex();
 	private static final Regex STATEMENT_BROKEN_REGEX = Regex.empty()
-			.literal("statement").anyCharacter().optionalMany().literal("broken").toRegex();
+			.literalCaseInsensitive("statement").anyCharacter().optionalMany().literalCaseInsensitive("broken").toRegex();
 	private static final Regex STATEMENT_CLOSED_REGEX = Regex.empty()
-			.literal("statement").anyCharacter().optionalMany().literal("closed").toRegex();
+			.literalCaseInsensitive("statement").anyCharacter().optionalMany().literalCaseInsensitive("closed").toRegex();
 	private static final Regex INSUFFICIENT_MEMORY_REGEX = Regex.empty()
-			.literal("There is insufficient system memory in resource pool ").charactersWrappedBy('\'').literal(" to run this query.").toRegex();
+			.literalCaseInsensitive("There is insufficient system memory in resource pool ")
+			.charactersWrappedBy('\'')
+			.literalCaseInsensitive(" to run this query.").toRegex();
 
-	private void checkForBrokenConnection(Exception exp, String sql) throws SQLException {
-		if (exp != null) {
-			if (StringCheck.isNotEmptyNorNull(exp.getMessage())) {
-				final String message = exp.getMessage().toLowerCase();
-				if (CONNECTION_BROKEN_REGEX.matchesWithinString(message)) {
+	private boolean checkForBrokenConnection(Exception originalExc, String sql) throws SQLException {
+		Throwable exp = originalExc;
+		while (exp != null) {
+			String message = exp.getMessage();
+			if (StringCheck.isNotEmptyNorNull(message)) {
+				if (COULDNT_CREATE_CONNECTION_REGEX.matchesWithinString(message)
+						||CONNECTION_FAILED_REGEX.matchesWithinString(message)
+						||CONNECTION_BROKEN_REGEX.matchesWithinString(message)
+						||CONNECTION_CLOSED_REGEX.matchesWithinString(message)
+						||STATEMENT_BROKEN_REGEX.matchesWithinString(message)
+						||STATEMENT_CLOSED_REGEX.matchesWithinString(message)
+						||CONNECTION_RESET_REGEX.matchesWithinString(message)
+						||INSUFFICIENT_MEMORY_REGEX.matchesWithinString(message)) {
 					replaceBrokenConnection();
-				} else if (CONNECTION_CLOSED_REGEX.matchesWithinString(message)) {
-					replaceBrokenConnection();
-				} else if (STATEMENT_BROKEN_REGEX.matchesWithinString(message)) {
-					replaceBrokenConnection();
-				} else if (STATEMENT_CLOSED_REGEX.matchesWithinString(message)) {
-					replaceBrokenConnection();
-				} else if (CONNECTION_RESET_REGEX.matchesWithinString(message)) {
-					replaceBrokenConnection();
-				} else if (INSUFFICIENT_MEMORY_REGEX.matchesWithinString(message)) {
-					replaceBrokenConnection();
+					return true;
 				}
 			}
+			exp = exp.getCause();
 		}
+		return false;
 	}
 
 	private Long getTIMEOUT_IN_MILLISECONDS() {
