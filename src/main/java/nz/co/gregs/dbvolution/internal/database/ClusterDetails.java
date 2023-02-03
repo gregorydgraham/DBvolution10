@@ -388,14 +388,18 @@ public class ClusterDetails implements Serializable {
 
 	private synchronized void saveTrackedTables() {
 		if (configuration.isUseAutoRebuild()) {
-			final String name = getTrackedTablesPrefsIdentifier();
+			Set<Class<?>> previousClasses = new HashSet<>(0);
 			SeparatedString rowClasses = getTrackedTablesSeparatedStringTemplate();
 			for (DBRow trackedTable : trackedTables) {
-				rowClasses.add(trackedTable.getClass().getName());
+				if (!previousClasses.contains(trackedTable.getClass())) {
+					previousClasses.add(trackedTable.getClass());
+					rowClasses.add(trackedTable.getClass().getName());
+				}
 			}
 			String encodedTablenames = rowClasses.encode();
 			try {
 				final String encryptedText = Encryption_Internal.encrypt(encodedTablenames);
+				final String name = getTrackedTablesPrefsIdentifier();
 				prefs.put(name, encryptedText);
 			} catch (CannotEncryptInputException ex) {
 				LOG.log(Level.SEVERE, null, ex);
@@ -420,14 +424,18 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized void loadTrackedTables() {
+		Set<Class<DBRow>> previousClasses = new HashSet<>(0);
 		if (configuration.isUseAutoRebuild()) {
 			List<String> savedTrackedTables = getSavedTrackedTables();
 			for (String savedTrackedTable : savedTrackedTables) {
 				try {
 					@SuppressWarnings("unchecked")
 					Class<DBRow> trackedTableClass = (Class<DBRow>) Class.forName(savedTrackedTable);
-					DBRow dbRow = DBRow.getDBRow(trackedTableClass);
-					trackedTables.add(dbRow);
+					if (!previousClasses.contains(trackedTableClass)) {
+						previousClasses.add(trackedTableClass);
+						DBRow dbRow = DBRow.getDBRow(trackedTableClass);
+						trackedTables.add(dbRow);
+					}
 				} catch (ClassNotFoundException ex) {
 					ex.printStackTrace();
 					LOG.log(

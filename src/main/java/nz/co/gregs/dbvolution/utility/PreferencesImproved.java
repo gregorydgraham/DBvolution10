@@ -39,6 +39,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.NodeChangeListener;
 import java.util.prefs.PreferenceChangeListener;
+import nz.co.gregs.looper.*;
 
 /**
  *
@@ -85,17 +86,22 @@ public class PreferencesImproved {
 		if (!defaultString.equals(simpleGot)) {
 			return simpleGot;
 		} else {
+			StringBuilder prefGot = new StringBuilder();
 			List<String> foundStrings = new ArrayList<>(0);
-			LoopVariable findStopper = new LoopVariable();
-			while (findStopper.hasNotHappened()) {
-				simpleGot = prefs.get(key + "[" + findStopper.attempts() + "]", defaultString);
-				findStopper.attempt();
-				if (defaultString.equals(simpleGot)) {
-					findStopper.done();
-				} else {
-					foundStrings.add(simpleGot);
-				}
-			}
+			Looper
+					.loopUntilSuccess()
+					.withAction(
+							(state) -> {
+								prefGot.delete(0, prefGot.length());
+								prefGot.append(getPref(prefs, key, state.getIndex(), defaultString));
+							})
+					.withTest((state) -> {
+						return defaultString.equals(prefGot.toString());
+					})
+					.withFailedTestAction((state) -> {
+						foundStrings.add(prefGot.toString());
+					})
+					.loop();
 			if (foundStrings.isEmpty()) {
 				return defaultString;
 			} else {
@@ -107,6 +113,12 @@ public class PreferencesImproved {
 				return returnValue;
 			}
 		}
+	}
+
+	private String getPref(java.util.prefs.Preferences prefs, String key, int index, String defaultString) {
+		String fullKey = key + "[" + index + "]";
+		String got = prefs.get(fullKey, defaultString);
+		return got;
 	}
 
 	public void remove(String key) {
@@ -123,7 +135,7 @@ public class PreferencesImproved {
 					} else {
 						loop.done();
 					}
-				} catch (Exception ex) {
+				} catch (BackingStoreException ex) {
 					loop.done();
 				}
 			}

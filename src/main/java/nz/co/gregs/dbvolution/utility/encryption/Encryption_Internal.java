@@ -30,7 +30,6 @@
  */
 package nz.co.gregs.dbvolution.utility.encryption;
 
-import nz.co.gregs.dbvolution.utility.LoopVariable;
 import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -49,6 +48,7 @@ import javax.crypto.spec.SecretKeySpec;
 import nz.co.gregs.dbvolution.exceptions.CannotEncryptInputException;
 import nz.co.gregs.dbvolution.exceptions.UnableToDecryptInput;
 import nz.co.gregs.dbvolution.utility.StringCheck;
+import nz.co.gregs.looper.LoopVariable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.crypto.cipher.CryptoCipher;
 import org.apache.commons.crypto.utils.Utils;
@@ -93,6 +93,7 @@ public class Encryption_Internal {
 			LoopVariable successfullyCallUpdate = new LoopVariable();
 			while (successfullyCallUpdate.hasNotHappened()) {
 				try {
+					successfullyCallUpdate.attempt();
 					outBuffer = ByteBuffer.allocateDirect(outBufferSize);
 					// Continues a multiple-part encryption/decryption operation for byte buffer.
 					updateBytes = encipher.update(inBuffer, outBuffer);

@@ -66,7 +66,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.utility.LoopVariable;
+import nz.co.gregs.looper.Looper;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -130,8 +130,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), not(DBDatabaseCluster.Status.READY));
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
 				
-				LoopVariable looper = LoopVariable.factory();
-				looper.setMaxAttemptsAllowed(5);
+				Looper looper = Looper.loopUntilSuccessOrLimit(5);
 				looper.loop(
 						(index) -> {
 							cluster.waitUntilDatabaseIsSynchronised(slowSynchingDB, 100);
