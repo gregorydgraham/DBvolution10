@@ -15,7 +15,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.utility.LoopVariable;
+import nz.co.gregs.looper.Looper;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
@@ -239,10 +239,9 @@ public class DBMigrationTest extends AbstractTest {
 		}).collect(Collectors.toList());
 		resultStrings.sort(sorter);
 
-		LoopVariable looper = new LoopVariable();
-		looper.setMaxAttemptsAllowed(9);
-		looper.loop((index) -> {
-			assertThat(resultStrings.get(index), is(expectedList.get(index)));
+		Looper looper = Looper.loopUntilSuccessOrLimit(9);
+		looper.loop((state) -> {
+			assertThat(resultStrings.get(state.getIndex()), is(expectedList.get(state.getIndex())));
 		});
 	}
 
@@ -304,11 +303,13 @@ public class DBMigrationTest extends AbstractTest {
 
 		expectedList.sort(sorter);
 
-		LoopVariable looper = LoopVariable.withMaxAttempts(resultStrings.size());
-		Consumer<Integer> action = (index) -> {
-			assertThat(resultStrings.get(index), is(expectedList.get(index)));
-		};
-		looper.loop(action);
+		Looper looper
+				= Looper
+						.loopUntilSuccessOrLimit(resultStrings.size())
+						.withAction((state) -> {
+							assertThat(resultStrings.get(state.getIndex()), is(expectedList.get(state.getIndex())));
+						});
+		looper.loop();
 	}
 
 }
