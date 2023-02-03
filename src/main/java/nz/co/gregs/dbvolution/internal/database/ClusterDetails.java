@@ -432,7 +432,6 @@ public class ClusterDetails implements Serializable {
 					@SuppressWarnings("unchecked")
 					Class<DBRow> trackedTableClass = (Class<DBRow>) Class.forName(savedTrackedTable);
 					if (!previousClasses.contains(trackedTableClass)) {
-						System.out.println("TRACKING: " + trackedTableClass.getSimpleName());
 						previousClasses.add(trackedTableClass);
 						DBRow dbRow = DBRow.getDBRow(trackedTableClass);
 						trackedTables.add(dbRow);
