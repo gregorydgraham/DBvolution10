@@ -726,6 +726,7 @@ public class ClusterDetails implements Serializable {
 					// Check that we're not synchronising the reference database
 					if (!template.getSettings().equals(secondary.getSettings())) {
 						LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
+						if(copyTemplateActionQueueToSecondary(template, secondary)){
 						for (DBRow table : getRequiredAndTrackedTables()) {
 							final String tableName = table.getTableName();
 							if (proceedWithSynchronization) {
@@ -779,7 +780,7 @@ public class ClusterDetails implements Serializable {
 								}
 							}
 							LOG.log(Level.FINEST, "{0} FINISHED WITH TABLE: {1}", new Object[]{clusterLabel, tableName});
-						}
+						}}
 					}
 				}
 			} catch (NoAvailableDatabaseException except) {
@@ -808,6 +809,15 @@ public class ClusterDetails implements Serializable {
 				primary.stop();
 			}
 		}
+	}
+
+	private synchronized boolean copyTemplateActionQueueToSecondary(DBDatabase template, DBDatabase secondary) {
+		boolean result = false;
+		Queue<DBAction> templateQ = getActionQueue(template);
+		Queue<DBAction> secondaryQ = getActionQueue(secondary);
+		secondaryQ.clear();
+		secondaryQ.addAll(templateQ);
+		return result;
 	}
 
 	private synchronized void synchronizeActions(DBDatabase db) throws NoAvailableDatabaseException {
