@@ -65,6 +65,7 @@ public enum QueryIntention {
 	CREATE_EXTENSION,
 	SET_TIMEZONE,
 	CREATE_TRIGGER_BASED_IDENTITY, 
+	DROP_TRIGGER_BASED_IDENTITY, 
 	CHECK_TABLE_STRUCTURE;
 
 	boolean is(QueryIntention queryIntention) {
