@@ -2409,7 +2409,7 @@ public abstract class DBDefinition implements Serializable {
 		return new ArrayList<>();
 	}
 
-	public List<String> dropTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
+	public List<String> dropTriggerBasedIdentitySQL(String table, String column) {
 		return new ArrayList<>();
 	}
 
@@ -2783,8 +2783,8 @@ public abstract class DBDefinition implements Serializable {
 		}
 	}
 	private static final String[] STANDARD_DATETIME_PARSER_FORMATS = new String[]{"uuuu-MM-dd[ ]['T'][HH:mm:ss][.][S][S][S][S][S][S][S][S][S][ ][VV]", "uuuu-MM-dd HH:mm:ss.SSSSSS[ ]VV", "uuuu-MM-dd HH:mm:ss.SSSSSSX"};
-	
-	private static SimpleDateFormat getSimpleDateFormat(){
+
+	private static SimpleDateFormat getSimpleDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	}
 
@@ -6444,7 +6444,8 @@ public abstract class DBDefinition implements Serializable {
 	 * @param sql input SQL expression that produces a number
 	 *
 	 *
-	 * @return the input SQL transformed to produce the log base 10 of the SQL's value.
+	 * @return the input SQL transformed to produce the log base 10 of the SQL's
+	 * value.
 	 */
 	public String doLogBase10NumberTransform(String sql) {
 		return "log10(" + sql + ")";
@@ -7155,6 +7156,28 @@ public abstract class DBDefinition implements Serializable {
 
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
 		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION, GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
+	}
+
+	public List<String> getSQLToDropAnyAssociatedDatabaseObjects(DBRow tableRow) {
+		return new ArrayList<>(0);
+	}
+	
+	private static final Regex TABLE_NOT_FOUND = Regex
+			.startingAnywhere()
+			.literalCaseInsensitive("table")
+			.space().doublequote()
+			.anythingButThis("\"")
+			.atLeastOnce()
+			.doublequote().space()
+			.literalCaseInsensitive("not found")
+			.toRegex();
+
+	public boolean exceptionIsTableNotFound(Exception e) {
+		boolean matches = TABLE_NOT_FOUND.matchesWithinString(e.getMessage());
+		if (!matches){
+			TABLE_NOT_FOUND.testAgainst(e.getMessage());
+		}
+		return matches;
 	}
 
 	public static enum GroupByClauseMethod {

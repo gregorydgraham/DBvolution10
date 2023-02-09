@@ -178,12 +178,6 @@ public class DBDatabaseHandle extends DBDatabase {
 	}
 
 	@Override
-	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement,
-			TR tableRow) throws SQLException {
-		wrappedDatabase.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
-	}
-
-	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		wrappedDatabase.dropTableNoExceptions(tableRow);
 	}

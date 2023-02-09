@@ -50,14 +50,14 @@ public class DBBulkInsert extends DBAction {
 
 	public static final long serialVersionUID = 1l;
 
-	List<DBRow> rows = new ArrayList<>();
+	ArrayList<DBRow> rows = new ArrayList<>();
 
 	private <R extends DBRow> DBBulkInsert(R row) {
-		super(row);
+		super(row, QueryIntention.BULK_INSERT);
 	}
 
 	public <R extends DBRow> DBBulkInsert() {
-		super(null);
+		super(null, QueryIntention.BULK_INSERT);
 	}
 
 	public void addRow(DBRow row) {

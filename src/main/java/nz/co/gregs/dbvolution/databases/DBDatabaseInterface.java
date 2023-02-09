@@ -118,8 +118,6 @@ interface DBDatabaseInterface {
 
 	void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData);
 
-	<TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException;
-
 	<TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException;
 
 	Connection getConnectionFromDriverManager() throws SQLException;

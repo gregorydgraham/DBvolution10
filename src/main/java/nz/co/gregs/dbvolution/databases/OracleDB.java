@@ -15,20 +15,15 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractOracleSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.regexi.Regex;
 
@@ -142,35 +137,6 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		}
 	}
 
-	@Override
-	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
-
-		dropAnyTriggerBasedPrimaryKeyObject(dbStatement, tableRow);
-		removeSpatialMetadata(dbStatement, tableRow);
-	}
-
-	protected <TR extends DBRow> void dropAnyTriggerBasedPrimaryKeyObject(DBStatement dbStatement, TR tableRow) throws SQLException {
-		var fields = tableRow.getColumnPropertyWrappers();
-		List<String> triggerBasedIdentitySQL = new ArrayList<>();
-		final DBDefinition definition = this.getDefinition();
-		if (definition.prefersTriggerBasedIdentities()) {
-			List<PropertyWrapper<?, ?, ?>> pkFields = new ArrayList<>();
-			for (var field : fields) {
-				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-					if (field.isPrimaryKey()) {
-						pkFields.add(field);
-					}
-				}
-			}
-			if (pkFields.size() == 1) {
-				triggerBasedIdentitySQL = definition.dropTriggerBasedIdentitySQL(this, definition.formatTableName(tableRow), definition.formatColumnName(pkFields.get(0).columnName()));
-			}
-		}
-		for (String sql : triggerBasedIdentitySQL) {
-			dbStatement.execute("Remove identity trigger", QueryIntention.CREATE_TRIGGER_BASED_IDENTITY, sql);
-		}
-	}
-
 	private final static Regex SEQUENCE_DOES_NOT_EXIST = Regex.empty().literal("ORA-02289: sequence does not exist").toRegex();
 	private final static Regex TRIGGER_DOES_NOT_EXIST = Regex.empty().literal("ORA-04080: trigger ").anyCharacter().optionalMany().literal(" does not exist").toRegex();
 	private final static Regex TABLE_ALREADY_EXISTS = Regex.empty().literal("ORA-00955: name is already used by an existing object").toRegex();
@@ -198,25 +164,6 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		return super.addFeatureToFixException(exp, intent, details);
 	}
 
-	/**
-	 * Allows the database to remove any spatial metadata that might exist for a
-	 * table during DROP TABLE.
-	 *
-	 * @param <TR> the class of the object defining the table to have it's spatial
-	 * meta-data removed.
-	 * @param statement the statement to use
-	 * @param tableRow the object defining the table to have it's spatial
-	 * meta-data removed.
-	 * @throws SQLException database exceptions may be thrown.
-	 */
-	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-			justification = "Compiled DBRows are safe, for a reasonable value of safe")
-	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement statement, TR tableRow) throws SQLException {
-		DBDefinition definition = getDefinition();
-		final String formattedTableName = definition.formatTableName(tableRow);
-		final String sql = "DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'";
-		statement.execute("Delete user", QueryIntention.DELETE_ROW, sql);
-	}
 
 	@Override
 	public Integer getDefaultPort() {

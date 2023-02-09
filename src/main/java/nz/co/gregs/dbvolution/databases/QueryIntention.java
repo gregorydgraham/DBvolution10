@@ -40,6 +40,7 @@ public enum QueryIntention {
 	CREATE_TABLE,
 	CREATE_TRIGGER,
 	DELETE_ROW,
+	DELETE_BY_EXAMPLE,
 	DROP_SEQUENCE,
 	DROP_TRIGGER,
 	DROP_TABLE,
@@ -55,6 +56,7 @@ public enum QueryIntention {
 	BULK_INSERT,
 	BULK_DELETE,
 	INSERT_ROW,
+	INSERT_ROW_WITH_LARGE_OBJECT,
 	RETRIEVE_LAST_INSERT,
 	UPDATE_SEQUENCE,
 	UPDATE_ROW,
@@ -66,7 +68,10 @@ public enum QueryIntention {
 	SET_TIMEZONE,
 	CREATE_TRIGGER_BASED_IDENTITY, 
 	DROP_TRIGGER_BASED_IDENTITY, 
-	CHECK_TABLE_STRUCTURE;
+	CHECK_TABLE_STRUCTURE,
+	UPDATE_ROW_WITH_LARGE_OBJECT,
+	MIGRATION,
+	INSERT_QUERY;
 
 	boolean is(QueryIntention queryIntention) {
 		return this.equals(queryIntention);
@@ -78,5 +83,11 @@ public enum QueryIntention {
 			result = result || this.is(intent);
 		}
 		return result;
+	}
+	
+	@Override
+	public String toString(){
+		String toString = super.toString().replace("_", " ");
+		return toString;
 	}
 }

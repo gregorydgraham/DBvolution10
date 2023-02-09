@@ -49,11 +49,11 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	 * @param row the row to be deleted
 	 */
 	protected <R extends DBRow> DBDeleteByPrimaryKey(R row) {
-		super(row);
+		super(row, QueryIntention.DELETE_ROW);
 	}
 
 	private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
-		super(row);
+		this(row);
 		DBRow example = DBRow.getPrimaryKeyExample(row);
 		List<DBRow> gotRows = db.get(example);
 		for (DBRow gotRow : gotRows) {

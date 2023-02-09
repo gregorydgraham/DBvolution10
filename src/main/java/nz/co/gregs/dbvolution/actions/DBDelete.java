@@ -20,13 +20,11 @@ import java.util.Collection;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Provides support for the abstract concept of deleting rows.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -40,8 +38,8 @@ public abstract class DBDelete extends DBAction {
 	 * @param <R> the table affected
 	 * @param row the row to delete
 	 */
-	protected <R extends DBRow> DBDelete(R row) {
-		super(row);
+	protected <R extends DBRow> DBDelete(R row, QueryIntention intent) {
+		super(row, intent);
 	}
 
 	/**
@@ -50,8 +48,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param database the target database
 	 * @param row the row to be deleted
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the actions executed as a DBActionList
 	 * @throws SQLException database exceptions
 	 */
@@ -66,8 +63,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param database the target database
 	 * @param rows the row to be deleted
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the actions executed as a DBActionList
 	 * @throws SQLException database exceptions
 	 */
@@ -82,8 +78,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param database the target database
 	 * @param rows the row to be deleted
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the actions executed as a DBActionList
 	 * @throws SQLException database exceptions
 	 */
@@ -102,8 +97,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param database the target database
 	 * @param rows the row to be deleted
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the actions executed as a DBActionList
 	 * @throws SQLException database exceptions
 	 */
@@ -126,8 +120,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param db the target database
 	 * @param rows the rows to be deleted
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a DBActionList of delete actions.
 	 * @throws SQLException Database actions can throw SQLException
 	 */
@@ -165,8 +158,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param db the target database
 	 * @param rows the rows to be deleted
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a DBActionList of delete actions.
 	 * @throws SQLException Database actions can throw SQLException
 	 */
@@ -201,8 +193,7 @@ public abstract class DBDelete extends DBAction {
 	 * @param db the target database
 	 * @param row the row to be deleted
 	 * @throws SQLException Database actions can throw SQLException
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a DBActionList of the actions required to implement the change.
 	 */
 	protected abstract DBActionList getActions(DBDatabase db, DBRow row) throws SQLException;
@@ -213,9 +204,6 @@ public abstract class DBDelete extends DBAction {
 	 * <p>
 	 * Actions are allowed to create sub-actions so all actions are returned as a
 	 * DBActionList.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a DBActionList of this DBAction.
 	 */

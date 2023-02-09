@@ -155,7 +155,7 @@ public class ClusterDetails implements Serializable {
 			if (quietExceptions) {
 			} else {
 				LOG.log(Level.WARNING, "QUARANTINING: {0}", database.getLabel());
-				LOG.log(Level.WARNING, "QUARANTINING: {0}", database.getSettings().toString());
+				LOG.log(Level.WARNING, "QUARANTINING: {0}", database.getJdbcURL());
 				LOG.log(Level.WARNING, "QUARANTINING: {0}", except.getLocalizedMessage());
 			}
 			database.setLastException(except);
@@ -726,7 +726,7 @@ public class ClusterDetails implements Serializable {
 					// Check that we're not synchronising the reference database
 					if (!template.getSettings().equals(secondary.getSettings())) {
 						LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
-						if(copyTemplateActionQueueToSecondary(template, secondary)){
+						copyTemplateActionQueueToSecondary(template, secondary);
 						for (DBRow table : getRequiredAndTrackedTables()) {
 							final String tableName = table.getTableName();
 							if (proceedWithSynchronization) {
@@ -780,11 +780,14 @@ public class ClusterDetails implements Serializable {
 								}
 							}
 							LOG.log(Level.FINEST, "{0} FINISHED WITH TABLE: {1}", new Object[]{clusterLabel, tableName});
-						}}
+						}
 					}
 				}
 			} catch (NoAvailableDatabaseException except) {
 				// must be the first database
+			} catch (Exception exc) {proceedWithSynchronization = false;
+				LOG.severe(exc.getLocalizedMessage());
+				exc.printStackTrace();
 			} catch (Throwable throwable) {
 				proceedWithSynchronization = false;
 				LOG.severe(throwable.getLocalizedMessage());
@@ -811,13 +814,11 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	private synchronized boolean copyTemplateActionQueueToSecondary(DBDatabase template, DBDatabase secondary) {
-		boolean result = false;
+	private synchronized void copyTemplateActionQueueToSecondary(DBDatabase template, DBDatabase secondary) {
 		Queue<DBAction> templateQ = getActionQueue(template);
 		Queue<DBAction> secondaryQ = getActionQueue(secondary);
 		secondaryQ.clear();
 		secondaryQ.addAll(templateQ);
-		return result;
 	}
 
 	private synchronized void synchronizeActions(DBDatabase db) throws NoAvailableDatabaseException {
@@ -894,9 +895,5 @@ public class ClusterDetails implements Serializable {
 
 	public DBDatabase[] getDatabasesForReconnecting() {
 		return members.getDatabases(DBDatabaseCluster.Status.QUARANTINED, DBDatabaseCluster.Status.DEAD);
-	}
-
-	public DBDatabase getPreferredDatabase() {
-		return preferredDatabase;
 	}
 }

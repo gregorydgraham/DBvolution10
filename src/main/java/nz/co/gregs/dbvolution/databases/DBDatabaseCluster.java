@@ -68,6 +68,7 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.utility.LoopVariable;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
+import nz.co.gregs.regexi.Regex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -230,13 +231,14 @@ public class DBDatabaseCluster extends DBDatabase {
 		QUARANTINED,
 		/**
 		 * UNKNOWN.
-		 * 
+		 *
 		 */
 		UNKNOWN,
 		/**
 		 * PROCESSING.
-		 * 
-		 * <p>Currently unused</p>
+		 *
+		 * <p>
+		 * Currently unused</p>
 		 */
 		PROCESSING,
 		/**
@@ -782,69 +784,66 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws AutoCommitActionDuringTransactionException dropping a table within
 	 * a transaction is not permitted
 	 */
-	@Override
-	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
-		LOG.debug("DROPPING TABLE IFEXISTS: " + tableRow.getTableName());
-		removeTrackedTable(tableRow);
-		if (getPreventAccidentalDroppingOfTables()) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					next.dropTableIfExists(tableRow);
-					finished = true;
-				}
-			}
-		} while (!finished);
-	}
-
-	@Override
-	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, UnableToRemoveLastDatabaseFromClusterException {
-		LOG.debug("DROPPING TABLE NOEXEC: " + tableRow.getTableName());
-		removeTrackedTable(tableRow);
-		if (getPreventAccidentalDroppingOfTables()) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					next.dropTableNoExceptions(tableRow);
-					finished = true;
-				}
-			}
-		} while (!finished);
-	}
-
-	@Override
-	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException, UnableToRemoveLastDatabaseFromClusterException {
-		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
-		removeTrackedTable(tableRow);
-		if (getPreventAccidentalDroppingOfTables()) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					try {
-						next.dropTable(tableRow);
-						finished = true;
-					} catch (Exception e) {
-						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-							throw e;
-						}
-					}
-				}
-			}
-		} while (!finished);
-	}
-
+//	@Override
+//	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+//		LOG.debug("DROPPING TABLE IFEXISTS: " + tableRow.getTableName());
+//		removeTrackedTable(tableRow);
+//		if (getPreventAccidentalDroppingOfTables()) {
+//			throw new AccidentalDroppingOfTableException();
+//		}
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					next.dropTableIfExists(tableRow);
+//					finished = true;
+//				}
+//			}
+//		} while (!finished);
+//	}
+//	@Override
+//	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, UnableToRemoveLastDatabaseFromClusterException {
+//		LOG.debug("DROPPING TABLE NOEXEC: " + tableRow.getTableName());
+//		removeTrackedTable(tableRow);
+//		if (getPreventAccidentalDroppingOfTables()) {
+//			throw new AccidentalDroppingOfTableException();
+//		}
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					next.dropTableNoExceptions(tableRow);
+//					finished = true;
+//				}
+//			}
+//		} while (!finished);
+//	}
+//	@Override
+//	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException, UnableToRemoveLastDatabaseFromClusterException {
+//		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
+//		removeTrackedTable(tableRow);
+//		if (getPreventAccidentalDroppingOfTables()) {
+//			throw new AccidentalDroppingOfTableException();
+//		}
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					try {
+//						next.dropTable(tableRow);
+//						finished = true;
+//					} catch (Exception e) {
+//						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+//							throw e;
+//						}
+//					}
+//				}
+//			}
+//		} while (!finished);
+//	}
 	@Override
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 		boolean finished = false;
@@ -1137,6 +1136,10 @@ public class DBDatabaseCluster extends DBDatabase {
 		throw new UnsupportedOperationException("DBDatabase.getConnection should not be used.");
 	}
 
+	public DBStatement getDBStatement() throws SQLException {
+		throw new UnsupportedOperationException("DBDatabase.getDBStatement should not be used.");
+	}
+
 	@Override
 	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getLowLevelStatement should not be used.");
@@ -1171,7 +1174,7 @@ public class DBDatabaseCluster extends DBDatabase {
 						finished = true;
 					}
 				} catch (SQLException e) {
-					if (handleExceptionDuringAction(e, firstDatabase).equals(HandlerAdvice.ABORT)) {
+					if (handleExceptionDuringAction(e, firstDatabase, action).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
 				}
@@ -1179,10 +1182,14 @@ public class DBDatabaseCluster extends DBDatabase {
 			final DBDatabase[] databases = getDetails().getReadyDatabases();
 			// Now execute on all the other databases
 			for (DBDatabase next : databases) {
-				if (action.runOnDatabaseDuringCluster(firstDatabase, next)) {
-					final ActionTask task = new ActionTask(this, next, action);
-					tasks.add(task);
-					removeActionFromQueue(next, action);
+				if (action.requiresRunOnIndividualDatabaseBeforeCluster() && next.equals(firstDatabase)) {
+					// skip this database as it's already been actioned
+				} else {
+					if (action.runOnDatabaseDuringCluster(firstDatabase, next)) {
+						final ActionTask task = new ActionTask(this, next, action);
+						tasks.add(task);
+						removeActionFromQueue(next, action);
+					}
 				}
 			}
 			ACTION_THREAD_POOL.invokeAll(tasks);
@@ -1190,7 +1197,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 			throw new DBRuntimeException("Unable To Run Actions", ex);
 		}
-		if (actionsPerformed.isEmpty()) {
+		if (actionsPerformed.isEmpty() && !tasks.isEmpty()) {
 			actionsPerformed = tasks.get(0).getActionList();
 		}
 		return actionsPerformed;
@@ -1268,7 +1275,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private HandlerAdvice handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
+	private HandlerAdvice handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase, DBAction action) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
+		if (action.getIntent().is(QueryIntention.DROP_TABLE)) {
+			if (readyDatabase.getDefinition().exceptionIsTableNotFound(e)) {
+				return HandlerAdvice.SKIP;
+			}
+		}
 		if (size() < 2) {
 			return HandlerAdvice.ABORT;
 		} else {
@@ -1588,7 +1600,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				setActionList(actions);
 				return getActionList();
 			} catch (SQLException | NoAvailableDatabaseException e) {
-				if (cluster.handleExceptionDuringAction(e, database).equals(HandlerAdvice.ABORT)) {
+				if (cluster.handleExceptionDuringAction(e, database, action).equals(HandlerAdvice.ABORT)) {
 					throw e;
 				}
 			}

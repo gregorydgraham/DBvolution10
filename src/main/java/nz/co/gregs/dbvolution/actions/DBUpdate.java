@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException;
 
@@ -38,7 +39,18 @@ public abstract class DBUpdate extends DBAction {
 	 * @param row the row to be updated
 	 */
 	public <R extends DBRow> DBUpdate(R row) {
-		super(row);
+		super(row, QueryIntention.UPDATE_ROW);
+	}
+
+	/**
+	 * Creates a DBUpdate action for the row supplied.
+	 *
+	 * @param <R> the table affected
+	 * @param row the row to be updated
+	 * @param intent the specific intention of this action, a description of what is expected to occur
+	 */
+	public <R extends DBRow> DBUpdate(R row, QueryIntention intent) {
+		super(row, intent);
 	}
 
 	/**

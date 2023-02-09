@@ -54,7 +54,7 @@ public class DBInsert extends DBAction {
 
 	private static final Log LOG = LogFactory.getLog(DBInsert.class);
 
-	private final List<Long> generatedKeys = new ArrayList<>();
+	private final ArrayList<Long> generatedKeys = new ArrayList<>();
 	private final DBRow originalRow;
 	private boolean primaryKeyWasGenerated = false;
 	private Long primaryKeyGenerated = null;
@@ -66,7 +66,7 @@ public class DBInsert extends DBAction {
 	 * @param row the row to insert
 	 */
 	protected <R extends DBRow> DBInsert(R row) {
-		super(row);
+		super(row, QueryIntention.INSERT_ROW);
 		originalRow = row;
 	}
 

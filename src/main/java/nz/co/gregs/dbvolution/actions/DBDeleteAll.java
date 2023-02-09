@@ -52,11 +52,11 @@ public class DBDeleteAll extends DBDelete {
 	 * @param row the example to be deleted
 	 */
 	protected <R extends DBRow> DBDeleteAll(R row) {
-		super(row);
+		super(row,QueryIntention.BULK_DELETE);
 	}
 
 	private <R extends DBRow> DBDeleteAll(DBDatabase db, R row) throws SQLException {
-		super(row);
+		this(row);
 		List<R> gotRows = db.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
 		for (R gotRow : gotRows) {
 			savedRows.add(DBRow.copyDBRow(gotRow));

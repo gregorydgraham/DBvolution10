@@ -23,7 +23,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Supplies supports for the abstract concept of deleting rows based on an
@@ -39,7 +38,7 @@ public class DBDeleteByExample extends DBDelete {
 
 	private static final long serialVersionUID = 1l;
 	
-	private final List<DBRow> savedRows = new ArrayList<DBRow>();
+	private final ArrayList<DBRow> savedRows = new ArrayList<DBRow>();
 
 	/**
 	 * Creates a DBDeleteByExample action for the supplied example DBRow on the
@@ -49,11 +48,11 @@ public class DBDeleteByExample extends DBDelete {
 	 * @param row the example to be deleted
 	 */
 	protected <R extends DBRow> DBDeleteByExample(R row) {
-		super(row);
+		super(row, QueryIntention.DELETE_BY_EXAMPLE);
 	}
 
 	private <R extends DBRow> DBDeleteByExample(DBDatabase db, R row) throws SQLException {
-		super(row);
+		this(row);
 		List<R> gotRows = db.get(row);
 		for (R gotRow : gotRows) {
 			savedRows.add(DBRow.copyDBRow(gotRow));

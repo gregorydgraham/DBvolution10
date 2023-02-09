@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.*;
 import java.util.ArrayList;
+import java.util.List;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
 
@@ -27,9 +29,6 @@ import nz.co.gregs.dbvolution.internal.oracle.xe.*;
  * <p>
  * This DBDefinition is automatically included in {@link Oracle11XEDB}
  * instances, and you should not need to use it directly.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -44,7 +43,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DSQL) {
-		return Point2DFunctions.ASTEXT+"("+point2DSQL+")";
+		return Point2DFunctions.ASTEXT + "(" + point2DSQL + ")";
 	}
 
 	@Override
@@ -218,5 +217,26 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),"
 				+ ordinateArray
 				+ ")";
+	}
+
+	@Override
+	public List<String> getSQLToDropAnyAssociatedDatabaseObjects(DBRow tableRow) {
+		ArrayList<String> result = new ArrayList<>(0);
+
+		if (tableRow.getPrimaryKeys() != null) {
+			final String formattedTableName = formatTableName(tableRow);
+			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
+			for (String primaryKeyColumnName : primaryKeyColumnNames) {
+				String sql = getSQLToDropSequence(primaryKeyColumnName, formattedTableName);
+				result.add(sql);
+			}
+		}
+		return result;
+	}
+
+	protected String getSQLToDropSequence(String primaryKeyColumnName, final String formattedTableName) {
+		final String formattedColumnName = formatColumnName(primaryKeyColumnName);
+		final String sql = "DROP SEQUENCE " + getPrimaryKeySequenceName(formattedTableName, formattedColumnName);
+		return sql;
 	}
 }

@@ -344,7 +344,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return statement;
 	}
 
-	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+	protected synchronized DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (!terminated) {
 			DBConnection connection = getConnection();
 			try {
@@ -1658,26 +1658,35 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * 1 Database exceptions may be thrown
 	 *
 	 * @param tableRow tableRow
+	 * @return a list of all actions that have been executed
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public synchronized void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
-		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
-		preventDDLDuringTransaction("DBDatabase.dropTable()");
-		if (preventAccidentalDroppingOfTables) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		StringBuilder sqlScript = new StringBuilder();
-		final String dropTableStart = definition.getDropTableStart();
-		final String formatTableName = definition.formatTableName(tableRow);
-		final String endSQLStatement = definition.endSQLStatement();
+	public synchronized DBActionList dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
+		DBActionList changes = new DBActionList();
+		DBDropTable drop = new DBDropTable(tableRow);
+		changes.add(drop);
 
-		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
-		String sqlString = sqlScript.toString();
-		try ( DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute("DROP TABLE", QueryIntention.DROP_TABLE, sqlString);
-			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
-		}
-		preventAccidentalDroppingOfTables = true;
+		executeDBAction(drop);
+
+		return changes;
+		
+//		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
+//		preventDDLDuringTransaction("DBDatabase.dropTable()");
+//		if (preventAccidentalDroppingOfTables) {
+//			throw new AccidentalDroppingOfTableException();
+//		}
+//		StringBuilder sqlScript = new StringBuilder();
+//		final String dropTableStart = definition.getDropTableStart();
+//		final String formatTableName = definition.formatTableName(tableRow);
+//		final String endSQLStatement = definition.endSQLStatement();
+//
+//		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
+//		String sqlString = sqlScript.toString();
+//		try ( DBStatement dbStatement = getDBStatement()) {
+//			dbStatement.execute("DROP TABLE", QueryIntention.DROP_TABLE, sqlString);
+//			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
+//		}
+//		preventAccidentalDroppingOfTables = true;
 	}
 
 	/**
@@ -1931,7 +1940,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
 
-	protected synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
+	public synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
 		if (isInATransaction) {
 			throw new AutoCommitActionDuringTransactionException(message);
 		}
@@ -2107,11 +2116,11 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param tableRow tableRow
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	@SuppressWarnings("empty-statement")
-	@Override
-	public <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
-		;
-	}
+//	@SuppressWarnings("empty-statement")
+//	@Override
+//	public <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
+//		;
+//	}
 
 	/**
 	 * Used by DBStatement to release the connection back into the connection
@@ -2386,6 +2395,14 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	public boolean supportsPolygonDatatype() {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void preventAccidentalDroppingOfTables() {
+		if (preventAccidentalDroppingOfTables) {
+			throw new AccidentalDroppingOfTableException();
+		}else {
+			preventAccidentalDroppingOfTables = true;
+		}
 	}
 
 	public static enum ResponseToException {

@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
@@ -58,6 +59,8 @@ public abstract class DBAction implements Serializable {
 	final DBRow row;
 	private RefetchRequirement refetchStatus = RefetchRequirement.REFETCH;
 
+	protected final QueryIntention intention;
+	
 	/**
 	 * Standard action constructor.
 	 *
@@ -66,14 +69,20 @@ public abstract class DBAction implements Serializable {
 	 *
 	 * @param <R> the table that this action applies to.
 	 * @param row the row or example that this action applies to.
+	 * @param intent the specific intention of this action, a description of what is expected to occur
 	 */
-	public <R extends DBRow> DBAction(R row) {
+	public <R extends DBRow> DBAction(R row, QueryIntention intent) {
 		super();
 		if (row != null) {
 			this.row = DBRow.copyDBRow(row);
 		} else {
 			this.row = row;
 		}
+		this.intention = intent;
+	}
+	
+	public QueryIntention getIntent(){
+		return intention;
 	}
 
 	/**
