@@ -77,14 +77,14 @@ public class DBDropTable extends DBAction {
 		db.preventDDLDuringTransaction("DBDatabase.dropTable()");
 		db.preventAccidentalDroppingOfTables();
 
-		String sqlString = creatDropTableSQL(db, tableRow);
+		String sqlString = createDropTableSQL(db, tableRow);
 		result.add(sqlString);
 		result.addAll(db.getDefinition().getSQLToDropAnyAssociatedDatabaseObjects(tableRow));
 
 		return result;
 	}
 
-	protected String creatDropTableSQL(DBDatabase db, DBRow tableRow) {
+	protected String createDropTableSQL(DBDatabase db, DBRow tableRow) {
 		DBDefinition definition = db.getDefinition();
 		StringBuilder sqlScript = new StringBuilder(0);
 		final String dropTableStart = definition.getDropTableStart();
