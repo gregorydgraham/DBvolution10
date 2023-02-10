@@ -335,11 +335,15 @@ public class MultiPoint2DFunctions {
 		@Override
 		protected void xFunc() throws SQLException {
 			String multipoint = value_text(0);
-			String line = multipoint.replace("), (", ", ").replace("MULTIPOINT", "LINESTRING").replace("((", "(").replace("))", ")");
-			result(line);
+			if (multipoint == null) {
+				result((String)null);
+			} else {
+				String line = multipoint.replace("), (", ", ").replace("MULTIPOINT", "LINESTRING").replace("((", "(").replace("))", ")");
+				result(line);
+			}
 		}
 	}
-	
+
 	private static abstract class PolygonFunction extends Function {
 
 		Polygon getPolygon(String possiblePoly) throws ParseException {
