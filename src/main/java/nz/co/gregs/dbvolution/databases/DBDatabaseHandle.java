@@ -209,8 +209,8 @@ public class DBDatabaseHandle extends DBDatabase {
 	}
 
 	@Override
-	public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-		wrappedDatabase.createTable(newTableRow, includeForeignKeyClauses);
+	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		return wrappedDatabase.createTable(newTableRow, includeForeignKeyClauses);
 	}
 
 	@Override

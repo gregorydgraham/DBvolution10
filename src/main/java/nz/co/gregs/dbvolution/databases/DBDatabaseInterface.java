@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Properties;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBAction;
@@ -130,7 +131,9 @@ interface DBDatabaseInterface {
 
 	public boolean tableExists(DBRow table) throws SQLException;
 
-	void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException;
+	List<DBAction> createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException;
+
+	List<DBAction> dropTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException;
 
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException;
 

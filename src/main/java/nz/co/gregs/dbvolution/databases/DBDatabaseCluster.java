@@ -904,129 +904,129 @@ public class DBDatabaseCluster extends DBDatabase {
 		} while (!finished);
 	}
 
-	@Override
-	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		addTrackedTable(newTableRow);
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					try {
-						next.createTableWithForeignKeys(newTableRow);
-						finished = true;
-					} catch (Exception e) {
-						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-							throw e;
-						}
-					}
-				}
-			}
-		} while (!finished);
-	}
+//	@Override
+//	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+//		addTrackedTable(newTableRow);
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					try {
+//						next.createTableWithForeignKeys(newTableRow);
+//						finished = true;
+//					} catch (Exception e) {
+//						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+//							throw e;
+//						}
+//					}
+//				}
+//			}
+//		} while (!finished);
+//	}
 
-	@Override
-	public synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-		LOG.debug("CREATING TABLE: " + newTableRow.getTableName());
-		addTrackedTable(newTableRow);
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					try {
-						next.createTable(newTableRow, includeForeignKeyClauses);
-						finished = true;
-					} catch (Exception e) {
-						if (getQuietExceptionsPreference()) {
-						} else {
-							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
-							e.printStackTrace();
-						}
-						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
-							throw e;
-						}
-					}
-				}
-			}
-		} while (!finished);
-	}
+//	@Override
+//	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+//		LOG.debug("CREATING TABLE: " + newTableRow.getTableName());
+//		addTrackedTable(newTableRow);
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					try {
+//						next.createTable(newTableRow, includeForeignKeyClauses);
+//						finished = true;
+//					} catch (Exception e) {
+//						if (getQuietExceptionsPreference()) {
+//						} else {
+//							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
+//							e.printStackTrace();
+//						}
+//						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+//							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
+//							throw e;
+//						}
+//					}
+//				}
+//			}
+//		} while (!finished);
+//	}
 
-	@Override
-	public synchronized void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
-		addTrackedTables(newTables);
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					next.createTablesWithForeignKeysNoExceptions(newTables);
-					finished = true;
-				}
-			}
-		} while (!finished);
-	}
+//	@Override
+//	public synchronized void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
+//		addTrackedTables(newTables);
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					next.createTablesWithForeignKeysNoExceptions(newTables);
+//					finished = true;
+//				}
+//			}
+//		} while (!finished);
+//	}
 
-	@Override
-	public synchronized void createTablesNoExceptions(DBRow... newTables) {
-		addTrackedTables(Arrays.asList(newTables));
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					next.createTablesNoExceptions(newTables);
-					finished = true;
-				}
-			}
-		} while (!finished);
-	}
+//	@Override
+//	public synchronized void createTablesNoExceptions(DBRow... newTables) {
+//		addTrackedTables(Arrays.asList(newTables));
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					next.createTablesNoExceptions(newTables);
+//					finished = true;
+//				}
+//			}
+//		} while (!finished);
+//	}
 
-	@Override
-	public synchronized void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
-		addTrackedTables(Arrays.asList(newTables));
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					next.createTablesNoExceptions(includeForeignKeyClauses, newTables);
-					finished = true;
-				}
-			}
-		} while (!finished);
-	}
+//	@Override
+//	public synchronized void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
+//		addTrackedTables(Arrays.asList(newTables));
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					next.createTablesNoExceptions(includeForeignKeyClauses, newTables);
+//					finished = true;
+//				}
+//			}
+//		} while (!finished);
+//	}
 
-	@Override
-	public synchronized void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
-		addTrackedTable(newTable);
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					next.createTableNoExceptions(newTable);
-					finished = true;
-				}
-			}
-		} while (!finished);
-	}
+//	@Override
+//	public synchronized void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
+//		addTrackedTable(newTable);
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					next.createTableNoExceptions(newTable);
+//					finished = true;
+//				}
+//			}
+//		} while (!finished);
+//	}
 
-	@Override
-	public synchronized void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
-		addTrackedTable(newTable);
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					next.createTableNoExceptions(includeForeignKeyClauses, newTable);
-					finished = true;
-				}
-			}
-		} while (!finished);
-	}
+//	@Override
+//	public synchronized void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
+//		addTrackedTable(newTable);
+//		boolean finished = false;
+//		do {
+//			DBDatabase[] dbs = getDetails().getReadyDatabases();
+//			for (DBDatabase next : dbs) {
+//				synchronized (next) {
+//					next.createTableNoExceptions(includeForeignKeyClauses, newTable);
+//					finished = true;
+//				}
+//			}
+//		} while (!finished);
+//	}
 
 	@Override
 	public void updateTableToMatchDBRow(DBRow table) throws SQLException {
@@ -1158,6 +1158,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	private DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, DBRuntimeException, SQLException {
 		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
 		addActionToQueue(action);
+		if(action.getIntent().equals(QueryIntention.CREATE_TABLE)){
+			addTrackedTable(action.getRow());
+		}
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
 		try {

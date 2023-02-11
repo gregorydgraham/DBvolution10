@@ -43,6 +43,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -648,7 +649,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			cluster.setLabel("testDatabaseRemovedAfterErrorInCreateTable");
 
 			cluster.createTableNoExceptions(new TableThatDoesExistOnTheCluster());
-
+			
 			final H2MemorySettingsBuilder settings
 					= new H2MemorySettingsBuilder()
 							.setLabel("testDatabaseRemovedAfterErrorInCreateTable")
@@ -659,11 +660,11 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				private static final long serialVersionUID = 1l;
 
 				@Override
-				public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+				public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 					if (newTableRow instanceof TableThatDoesExistOnTheCluster) {
 						throw new SQLException("DELIBERATE EXCEPTION");
 					} else {
-						super.createTable(newTableRow, includeForeignKeyClauses);
+						return super.createTable(newTableRow, includeForeignKeyClauses);
 					}
 				}
 

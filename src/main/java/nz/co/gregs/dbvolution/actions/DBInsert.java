@@ -106,7 +106,7 @@ public class DBInsert extends DBAction {
 	 * @return the row
 	 */
 	@Override
-	protected DBRow getRow() {
+	public DBRow getRow() {
 		return DBRow.copyDBRow(originalRow);
 	}
 

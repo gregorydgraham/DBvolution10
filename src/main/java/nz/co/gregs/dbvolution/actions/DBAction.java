@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -107,7 +108,7 @@ public abstract class DBAction implements Serializable {
 	 *
 	 * @return the row
 	 */
-	protected DBRow getRow() {
+	public DBRow getRow() {
 		return DBRow.copyDBRow(row);
 	}
 
@@ -215,6 +216,14 @@ public abstract class DBAction implements Serializable {
 
 	protected void setRefetchStatus(RefetchRequirement refetchStatus) {
 		this.refetchStatus = refetchStatus;
+	}
+
+	protected void executeOnStatement(DBDatabase db) throws SQLException {
+		try (final DBStatement statement = db.getDBStatement()) {
+			for (String sql : getSQLStatements(db)) {
+				statement.execute(getIntent(), sql);
+			}
+		}
 	}
 
 	public static enum RefetchRequirement {

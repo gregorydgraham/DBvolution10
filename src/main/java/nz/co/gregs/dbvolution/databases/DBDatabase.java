@@ -63,6 +63,7 @@ import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -460,7 +461,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 			synchronized (this) {
 				if (needToAddDatabaseSpecificFeatures) {
-					try ( DBStatement createStatement = connection.createDBStatement()) {
+					try (DBStatement createStatement = connection.createDBStatement()) {
 						try {
 							addDatabaseSpecificFeatures(createStatement.getInternalStatement());
 						} catch (ExceptionDuringDatabaseFeatureSetup exceptionDuringDBCreation) {
@@ -1415,102 +1416,25 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
-		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper<?, ?, ?>>(), new ArrayList<PropertyWrapper<?, ?, ?>>());
-	}
-
-	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper<?, ?, ?>> pkFields, List<PropertyWrapper<?, ?, ?>> spatial2DFields) {
-		StringBuilder sqlScript = new StringBuilder();
-		String lineSeparator = System.getProperty("line.separator");
-		// table name
-
-		sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow)).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
-
-		// columns
-		String sep = "";
-		String nextSep = definition.getCreateTableColumnsSeparator();
-		var fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<>();
-		for (var field : fields) {
-			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-				String colName = field.columnName();
-				sqlScript
-						.append(sep)
-						.append(definition.formatColumnName(colName))
-						.append(definition.getCreateTableColumnsNameAndTypeSeparator())
-						.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
-				sep = nextSep + lineSeparator;
-
-				if (field.isPrimaryKey()) {
-					pkFields.add(field);
-				}
-				if (field.isSpatial2DType()) {
-					spatial2DFields.add(field);
-				}
-				String fkClause = definition.getForeignKeyClauseForCreateTable(field);
-				if (!fkClause.isEmpty()) {
-					fkClauses.add(fkClause);
-				}
-			}
-		}
-
-		if (includeForeignKeyClauses) {
-			for (String fkClause : fkClauses) {
-				sqlScript.append(sep).append(fkClause);
-				sep = nextSep + lineSeparator;
-			}
-		}
-
-		// primary keys
-		if (definition.prefersTrailingPrimaryKeyDefinition()) {
-			String pkStart = lineSeparator + definition.getCreateTablePrimaryKeyClauseStart();
-			String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
-			String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
-			String pkSep = pkStart;
-			for (var field : pkFields) {
-				sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
-				pkSep = pkMiddle;
-			}
-			if (!pkSep.equalsIgnoreCase(pkStart)) {
-				sqlScript.append(pkEnd);
-			}
-		}
-
-		//finish
-		sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
-		return sqlScript.toString();
+		DBCreateTable create = new DBCreateTable(newTableRow, includeForeignKeyClauses);
+		List<String> sqlStatements = create.getSQLStatements(this);
+		String sql = SeparatedStringBuilder
+				.byLines()
+				.addAll(sqlStatements)
+				.toString();
+		return sql;
 	}
 
 	@Override
-	public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		DBActionList changes = new DBActionList();
+		DBCreateTable create = new DBCreateTable(newTableRow, includeForeignKeyClauses);
+		changes.add(create);
 
-		preventDDLDuringTransaction("DBDatabase.createTable()");
+		executeDBAction(create);
 
-		List<PropertyWrapper<?, ?, ?>> pkFields = new ArrayList<>();
-		List<PropertyWrapper<?, ?, ?>> spatial2DFields = new ArrayList<>();
+		return changes;
 
-		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
-		try ( DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute("CREATE TABLE", QueryIntention.CREATE_TABLE, sqlString);
-
-			//Oracle style trigger based auto-increment keys
-			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
-				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
-				for (String sql : triggerBasedIdentitySQL) {
-					try {
-						dbStatement.execute("CREATE IDENTITY TRIGGER FOR NEW TABLE", QueryIntention.CREATE_TRIGGER_BASED_IDENTITY, sql);
-					} catch (Exception sqlex) {
-						sqlex.printStackTrace();
-					}
-				}
-			}
-
-			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() > 0) {
-				List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
-				for (String sql : triggerBasedIdentitySQL) {
-					dbStatement.execute("CREATE NEW SPACIAL INDEXES", QueryIntention.CREATE_TRIGGER, sql);
-				}
-			}
-		}
 	}
 
 	/**
@@ -1548,7 +1472,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 				}
 			}
 			if (fkClauses.size() > 0) {
-				try ( DBStatement statement = getDBStatement()) {
+				try (DBStatement statement = getDBStatement()) {
 					for (String fkClause : fkClauses) {
 						statement.execute("CREATE FOREIGN KEY", QueryIntention.CREATE_FOREIGN_KEY, fkClause);
 					}
@@ -1592,7 +1516,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 		}
 		if (fkClauses.size() > 0) {
-			try ( DBStatement statement = getDBStatement()) {
+			try (DBStatement statement = getDBStatement()) {
 				for (String fkClause : fkClauses) {
 					statement.execute("REMOVE FK CONSTRAINTS", QueryIntention.DROP_FOREIGN_KEY, fkClause);
 				}
@@ -1634,7 +1558,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 		//Create indexes
 		if (indexClauses.size() > 0) {
-			try ( DBStatement statement = getDBStatement()) {
+			try (DBStatement statement = getDBStatement()) {
 				for (String indexClause : indexClauses) {
 					statement.execute("CREATE INDEX ON FIELD", QueryIntention.CREATE_INDEX, indexClause);
 				}
@@ -1661,6 +1585,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @return a list of all actions that have been executed
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
+	@Override
 	public synchronized DBActionList dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
 		DBActionList changes = new DBActionList();
 		DBDropTable drop = new DBDropTable(tableRow);
@@ -1669,7 +1594,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		executeDBAction(drop);
 
 		return changes;
-		
+
 //		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
 //		preventDDLDuringTransaction("DBDatabase.dropTable()");
 //		if (preventAccidentalDroppingOfTables) {
@@ -1990,6 +1915,12 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return this.preventAccidentalDroppingDatabase;
 	}
 
+	public synchronized void preventAccidentalDroppingOfDatabases() throws AccidentalDroppingOfDatabaseException {
+		if (preventAccidentalDroppingDatabase) {
+			throw new AccidentalDroppingOfDatabaseException();
+		}
+	}
+
 	/**
 	 * Get The Rows For The Supplied DBReport Constrained By The Examples.
 	 *
@@ -2121,7 +2052,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 //	public <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
 //		;
 //	}
-
 	/**
 	 * Used by DBStatement to release the connection back into the connection
 	 * pool.
@@ -2397,10 +2327,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public void preventAccidentalDroppingOfTables() {
+	public void preventAccidentalDroppingOfTables() throws AccidentalDroppingOfTableException {
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
-		}else {
+		} else {
 			preventAccidentalDroppingOfTables = true;
 		}
 	}
@@ -2492,7 +2422,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private boolean checkTableExistsViaQuery(DBRow table) throws NoAvailableDatabaseException {
 		boolean tableExists;
 		String testQuery = getDefinition().getTableExistsSQL(table);
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			var dets = new StatementDetails("CHECK FOR TABLE " + table.getTableName(), QueryIntention.CHECK_TABLE_EXISTS, testQuery, dbStatement);
 			ResultSet results = dbStatement.executeQuery(dets);
 			if (results != null) {
@@ -2514,7 +2444,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
 		boolean tableExists = false;
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			DBConnection conn = dbStatement.getConnection();
 			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
 			if (rset.next()) {
@@ -2557,9 +2487,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
 		String testQuery = definition.getTableStructureQuery(table, getDBTable(table));
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			var dets = new StatementDetails("CHECK TABLE STRUCTURE FOR " + table.getTableName(), QueryIntention.CHECK_TABLE_STRUCTURE, testQuery, dbStatement);
-			try ( ResultSet resultSet = dbStatement.executeQuery(dets)) {
+			try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
 				if (resultSet != null) {
 					ResultSetMetaData metaData = resultSet.getMetaData();
 					var columnPropertyWrappers = table.getColumnPropertyWrappers();
@@ -2599,7 +2529,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
 
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			try {
 				dbStatement.execute("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString);
 			} catch (SQLException ex) {

@@ -86,7 +86,7 @@ public class DBBulkInsert extends DBAction {
 	}
 
 	@Override
-	protected DBRow getRow() {
+	public DBRow getRow() {
 		return DBRow.copyDBRow(rows.get(0));
 	}
 

@@ -40,6 +40,7 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +63,8 @@ public class DBDropTable extends DBAction {
 	@Override
 	protected DBActionList getRevertDBActionList() {
 		DBActionList reverts = new DBActionList();
-		reverts.add(new DBCreateTable(getRow()));
+		/* TODO: work out if the table has foreign keys or not */
+		reverts.add(new DBCreateTable(getRow(), false));
 		for (DBRow savedRow : savedRows) {
 			reverts.add(new DBInsert(savedRow));
 		}
@@ -73,9 +75,7 @@ public class DBDropTable extends DBAction {
 	public List<String> getSQLStatements(DBDatabase db) {
 		List<String> result = new ArrayList<>(1);
 		DBRow tableRow = getRow();
-		LOG.info("DROPPING TABLE: " + tableRow.getTableName());
-		db.preventDDLDuringTransaction("DBDatabase.dropTable()");
-		db.preventAccidentalDroppingOfTables();
+//		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
 
 		String sqlString = createDropTableSQL(db, tableRow);
 		result.add(sqlString);
@@ -98,30 +98,47 @@ public class DBDropTable extends DBAction {
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
 
-		DBActionList actions = prepareRollBackData(db);
+		return execute2(db);
+	}
 
+	public DBActionList execute2(DBDatabase db) throws SQLException {
+
+		preventImproperActions(db);
+
+		DBActionList actions = prepareActionList(db);
+		prepareRollbackData(db, actions);
 		executeOnStatement(db);
-
 		return actions;
 	}
 
-	protected void executeOnStatement(DBDatabase db) throws SQLException {
-		try (DBStatement statement = db.getDBStatement()) {
-			for (String sql : getSQLStatements(db)) {
-				statement.execute(getIntent(), sql);
-			}
-		}
+	protected void preventImproperActions(DBDatabase db) throws AutoCommitActionDuringTransactionException {
+		db.preventDDLDuringTransaction("DBDropTable");
+		db.preventAccidentalDroppingOfTables();
 	}
 
-	protected DBActionList prepareRollBackData(DBDatabase db) throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException, UnableToInstantiateDBRowSubclassException {
+	protected DBActionList prepareActionList(DBDatabase db) throws AccidentalBlankQueryException, SQLException, UnableToInstantiateDBRowSubclassException {
 		DBRow table = getRow();
 		final DBDropTable newAction = new DBDropTable(table);
 		DBActionList actions = new DBActionList(newAction);
-		DBRow example = DBRow.getDBRow(table.getClass());
-		if (db.tableExists(example)) {
-			List<DBRow> rowsToBeDeleted = db.getDBTable(example).setBlankQueryAllowed(true).getAllRows();
-			for (DBRow deletingRow : rowsToBeDeleted) {
-				newAction.savedRows.add(DBRow.copyDBRow(deletingRow));
+		return actions;
+	}
+
+	protected DBActionList prepareRollbackData(DBDatabase db, DBActionList actions) throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException, UnableToInstantiateDBRowSubclassException {
+		for (DBAction act : actions) {
+			if (act instanceof DBDropTable) {
+				DBDropTable drop = (DBDropTable) act;
+				DBRow table = drop.getRow();
+				DBRow example = DBRow.getDBRow(table.getClass());
+				if (db.tableExists(example)) {
+					try {
+						List<DBRow> rowsToBeDeleted = db.getDBTable(example).setBlankQueryAllowed(true).getAllRows();
+						for (DBRow deletingRow : rowsToBeDeleted) {
+							drop.savedRows.add(DBRow.copyDBRow(deletingRow));
+						}
+					} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
+						LOG.warn("EXCEPTION OCCURRED WHILE PREPARING ROLLBACK: rollback data will not be available.", e);
+					}
+				}
 			}
 		}
 		return actions;

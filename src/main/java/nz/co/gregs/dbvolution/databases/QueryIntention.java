@@ -36,23 +36,23 @@ package nz.co.gregs.dbvolution.databases;
  */
 public enum QueryIntention {
 
-	CREATE_SEQUENCE,
-	CREATE_TABLE,
-	CREATE_TRIGGER,
+	CREATE_SEQUENCE(true,false,false),
+	CREATE_TABLE(true, false, false),
+	CREATE_TRIGGER(true, false, false),
 	DELETE_ROW,
 	DELETE_BY_EXAMPLE,
-	DROP_SEQUENCE,
-	DROP_TRIGGER,
-	DROP_TABLE,
+	DROP_SEQUENCE(true, false, false),
+	DROP_TRIGGER(true, false, false),
+	DROP_TABLE(true, true, false),
 	SIMPLE_SELECT_QUERY,
 	RECURSIVE_QUERY,
-	CREATE_DATABASE,
-	CREATE_USER,
-	CREATE_FOREIGN_KEY,
-	DROP_FOREIGN_KEY,
-	CREATE_INDEX,
+	CREATE_DATABASE(true, false, false),
+	CREATE_USER(true, false, false),
+	CREATE_FOREIGN_KEY(true, false, false),
+	DROP_FOREIGN_KEY(true, false, false),
+	CREATE_INDEX(true, false, false),
 	CHECK_TABLE_EXISTS,
-	ADD_COLUMN_TO_TABLE,
+	ADD_COLUMN_TO_TABLE(true, false, false),
 	BULK_INSERT,
 	BULK_DELETE,
 	INSERT_ROW,
@@ -60,18 +60,43 @@ public enum QueryIntention {
 	RETRIEVE_LAST_INSERT,
 	UPDATE_SEQUENCE,
 	UPDATE_ROW,
-	CREATE_DOMAIN,
-	DROP_FUNCTION,
-	CREATE_FUNCTION,
+	CREATE_DOMAIN(true, false, false),
+	DROP_FUNCTION(true, false, false),
+	CREATE_FUNCTION(true, false, false),
 	ALLOW_IDENTITY_INSERT,
-	CREATE_EXTENSION,
+	CREATE_EXTENSION(true, false, false),
 	SET_TIMEZONE,
-	CREATE_TRIGGER_BASED_IDENTITY, 
-	DROP_TRIGGER_BASED_IDENTITY, 
+	CREATE_TRIGGER_BASED_IDENTITY(true, false, false), 
+	DROP_TRIGGER_BASED_IDENTITY(true, false, false), 
 	CHECK_TABLE_STRUCTURE,
 	UPDATE_ROW_WITH_LARGE_OBJECT,
 	MIGRATION,
 	INSERT_QUERY;
+	private boolean isDDL;
+
+	public boolean isDDL() {
+		return isDDL;
+	}
+
+	public boolean isDropTable() {
+		return isDropTable;
+	}
+
+	public boolean isDropDatabase() {
+		return isDropDatabase;
+	}
+	private boolean isDropTable;
+	private boolean isDropDatabase;
+	
+	private QueryIntention(){
+		this(false, false,false);
+	}
+	private QueryIntention(boolean isDDL, boolean isDropTable, boolean isDropDatabase){
+		this.isDDL = isDDL;
+		this.isDropTable = isDropTable;
+		this.isDropDatabase = isDropDatabase;
+		
+	}
 
 	boolean is(QueryIntention queryIntention) {
 		return this.equals(queryIntention);
