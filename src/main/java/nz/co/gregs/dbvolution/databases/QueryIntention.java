@@ -36,23 +36,26 @@ package nz.co.gregs.dbvolution.databases;
  */
 public enum QueryIntention {
 
-	CREATE_SEQUENCE(true,false,false),
-	CREATE_TABLE(true, false, false),
-	CREATE_TRIGGER(true, false, false),
+	ALTER_TABLE_ADD_COLUMN(true),
+	CHECK_TABLE_EXISTS(false),
+	CREATE_SEQUENCE(true),
+	CREATE_TABLE(true),
+	CREATE_TRIGGER(true),
+	DELETE_ALL_ROWS,
 	DELETE_ROW,
 	DELETE_BY_EXAMPLE,
-	DROP_SEQUENCE(true, false, false),
-	DROP_TRIGGER(true, false, false),
-	DROP_TABLE(true, true, false),
+	DROP_DATABASE(true),
+	DROP_SEQUENCE(true),
+	DROP_TRIGGER(true),
+	DROP_TABLE(true),
 	SIMPLE_SELECT_QUERY,
 	RECURSIVE_QUERY,
-	CREATE_DATABASE(true, false, false),
-	CREATE_USER(true, false, false),
-	CREATE_FOREIGN_KEY(true, false, false),
-	DROP_FOREIGN_KEY(true, false, false),
-	CREATE_INDEX(true, false, false),
-	CHECK_TABLE_EXISTS,
-	ADD_COLUMN_TO_TABLE(true, false, false),
+	CREATE_DATABASE(true),
+	CREATE_USER(true),
+	CREATE_FOREIGN_KEY(true),
+	DROP_FOREIGN_KEY(true),
+	CREATE_INDEX(true),
+	ADD_COLUMN_TO_TABLE(true),
 	BULK_INSERT,
 	BULK_DELETE,
 	INSERT_ROW,
@@ -60,42 +63,39 @@ public enum QueryIntention {
 	RETRIEVE_LAST_INSERT,
 	UPDATE_SEQUENCE,
 	UPDATE_ROW,
-	CREATE_DOMAIN(true, false, false),
-	DROP_FUNCTION(true, false, false),
-	CREATE_FUNCTION(true, false, false),
+	CREATE_DOMAIN(true),
+	DROP_FUNCTION(true),
+	CREATE_FUNCTION(true),
 	ALLOW_IDENTITY_INSERT,
-	CREATE_EXTENSION(true, false, false),
+	CREATE_EXTENSION(true),
 	SET_TIMEZONE,
-	CREATE_TRIGGER_BASED_IDENTITY(true, false, false), 
-	DROP_TRIGGER_BASED_IDENTITY(true, false, false), 
+	CREATE_TRIGGER_BASED_IDENTITY(true), 
+	DROP_TRIGGER_BASED_IDENTITY(true), 
 	CHECK_TABLE_STRUCTURE,
 	UPDATE_ROW_WITH_LARGE_OBJECT,
 	MIGRATION,
 	INSERT_QUERY;
+	
 	private boolean isDDL;
+	
+	private QueryIntention(){
+		this(false);
+	}
+	private QueryIntention(boolean isDDL){
+		this.isDDL = isDDL;
+		
+	}
 
 	public boolean isDDL() {
 		return isDDL;
 	}
 
 	public boolean isDropTable() {
-		return isDropTable;
+		return DROP_TABLE.equals(this);
 	}
 
 	public boolean isDropDatabase() {
-		return isDropDatabase;
-	}
-	private boolean isDropTable;
-	private boolean isDropDatabase;
-	
-	private QueryIntention(){
-		this(false, false,false);
-	}
-	private QueryIntention(boolean isDDL, boolean isDropTable, boolean isDropDatabase){
-		this.isDDL = isDDL;
-		this.isDropTable = isDropTable;
-		this.isDropDatabase = isDropDatabase;
-		
+		return DROP_DATABASE.equals(this);
 	}
 
 	boolean is(QueryIntention queryIntention) {
@@ -114,5 +114,9 @@ public enum QueryIntention {
 	public String toString(){
 		String toString = super.toString().replace("_", " ");
 		return toString;
+	}
+
+	boolean isDeleteAllRows() {
+		return DELETE_ALL_ROWS.equals(this);
 	}
 }

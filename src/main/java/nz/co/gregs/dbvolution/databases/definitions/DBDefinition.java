@@ -1609,12 +1609,29 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * @param databaseName	databaseName
 	 *
+	 * <p>
+	 * Unsupported for most databases</p>
 	 *
 	 * @return the default implementation does not support dropping databases.
 	 *
 	 */
 	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("DROP DATABASE is not supported by this DBDatabase implementation");
+	}
+
+	/**
+	 * Provides the SQL statement required to create the named database.
+	 *
+	 * @param databaseName	databaseName
+	 *
+	 * <p>
+	 * Unsupported by most databases</p>
+	 *
+	 * @return the default implementation does not support dropping databases.
+	 *
+	 */
+	public String getCreateDatabase(String databaseName) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("CREATE DATABASE is not supported by this DBDatabase implementation");
 	}
 
 	/**
@@ -7161,7 +7178,7 @@ public abstract class DBDefinition implements Serializable {
 	public List<String> getSQLToDropAnyAssociatedDatabaseObjects(DBRow tableRow) {
 		return new ArrayList<>(0);
 	}
-	
+
 	private static final Regex TABLE_NOT_FOUND = Regex
 			.startingAnywhere()
 			.literalCaseInsensitive("table")
@@ -7174,7 +7191,7 @@ public abstract class DBDefinition implements Serializable {
 
 	public boolean exceptionIsTableNotFound(Exception e) {
 		boolean matches = TABLE_NOT_FOUND.matchesWithinString(e.getMessage());
-		if (!matches){
+		if (!matches) {
 			TABLE_NOT_FOUND.testAgainst(e.getMessage());
 		}
 		return matches;

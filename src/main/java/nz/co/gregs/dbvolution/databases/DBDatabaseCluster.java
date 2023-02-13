@@ -54,7 +54,6 @@ import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -68,7 +67,6 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.utility.LoopVariable;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
-import nz.co.gregs.regexi.Regex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -699,151 +697,29 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException, ExceptionThrownDuringTransaction {
-		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
-		if (getPreventAccidentalDroppingOfTables()) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		if (getPreventAccidentalDroppingOfDatabases()) {
-			throw new AccidentalDroppingOfDatabaseException();
-		}
-		boolean finished = false;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				try {
-					next.dropDatabase(databaseName, doIt);
-					finished = true;
-				} catch (UnsupportedOperationException | SQLException | AutoCommitActionDuringTransactionException | ExceptionThrownDuringTransaction e) {
-					if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-						throw e;
-					}
-				}
-			}
-		} while (!finished);
-	}
-
-	@Override
-	public void dropDatabase(boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException, UnableToRemoveLastDatabaseFromClusterException, ExceptionThrownDuringTransaction {
-		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
-		if (getPreventAccidentalDroppingOfTables()) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		if (getPreventAccidentalDroppingOfDatabases()) {
-			throw new AccidentalDroppingOfDatabaseException();
-		}
-		boolean finished = false;
-		int tried = 0;
-		do {
-			DBDatabase[] dbs = getDetails().getReadyDatabases();
-			for (DBDatabase next : dbs) {
-				synchronized (next) {
-					try {
-						tried++;
-						next.dropDatabase(doIt);
-						finished = true;
-					} catch (UnsupportedOperationException | SQLException | AutoCommitActionDuringTransactionException | ExceptionThrownDuringTransaction e) {
-						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-							throw e;
-						}
-					}
-				}
-			}
-		} while (tried < 20 && !finished);
-	}
-
-	@Override
 	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException {
 		return getReadyDatabase().willCreateBlankQuery(row);
 	}
 
-	/**
-	 * Drops a table from the database.
-	 *
-	 * <p>
-	 * The easy way to drop a table that might not exist. Will still throw a
-	 * AutoCommitActionDuringTransactionException if you use it during a
-	 * transaction or AccidentalDroppingOfTableException if dropping tables is
-	 * being prevented by DBvolution.
-	 * <p>
-	 * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)}
-	 * <p>
-	 * In General NEVER USE THIS METHOD.
-	 *
-	 * <p>
-	 * Seriously NEVER USE THIS METHOD.
-	 *
-	 * <p>
-	 * Your DBA will murder you.
-	 *
-	 * @param <TR> DBRow type
-	 * @param tableRow tableRow
-	 * @throws SQLException database errors may occur
-	 * @throws AccidentalDroppingOfTableException Always ensure that this not done
-	 * accidentally
-	 * @throws AutoCommitActionDuringTransactionException dropping a table within
-	 * a transaction is not permitted
-	 */
-//	@Override
-//	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
-//		LOG.debug("DROPPING TABLE IFEXISTS: " + tableRow.getTableName());
-//		removeTrackedTable(tableRow);
-//		if (getPreventAccidentalDroppingOfTables()) {
-//			throw new AccidentalDroppingOfTableException();
-//		}
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					next.dropTableIfExists(tableRow);
-//					finished = true;
-//				}
-//			}
-//		} while (!finished);
-//	}
-//	@Override
-//	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, UnableToRemoveLastDatabaseFromClusterException {
-//		LOG.debug("DROPPING TABLE NOEXEC: " + tableRow.getTableName());
-//		removeTrackedTable(tableRow);
-//		if (getPreventAccidentalDroppingOfTables()) {
-//			throw new AccidentalDroppingOfTableException();
-//		}
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					next.dropTableNoExceptions(tableRow);
-//					finished = true;
-//				}
-//			}
-//		} while (!finished);
-//	}
-//	@Override
-//	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException, UnableToRemoveLastDatabaseFromClusterException {
-//		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
-//		removeTrackedTable(tableRow);
-//		if (getPreventAccidentalDroppingOfTables()) {
-//			throw new AccidentalDroppingOfTableException();
-//		}
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					try {
-//						next.dropTable(tableRow);
-//						finished = true;
-//					} catch (Exception e) {
-//						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-//							throw e;
-//						}
-//					}
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+		removeTrackedTable(tableRow);
+		super.dropTableIfExists(tableRow);
+	}
+
+	@Override
+	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
+		removeTrackedTable(tableRow);
+		super.dropTableNoExceptions(tableRow);
+	}
+
+	@Override
+	public synchronized DBActionList dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
+		removeTrackedTable(tableRow);
+		return super.dropTable(tableRow);
+	}
+
+	/*TODO: convert to use DBAction to improve cluster implementation */
 	@Override
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 		boolean finished = false;
@@ -884,6 +760,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		} while (!finished);
 	}
 
+	/*TODO: convert to use DBAction to improve cluster implementation */
 	@Override
 	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		boolean finished = false;
@@ -904,129 +781,53 @@ public class DBDatabaseCluster extends DBDatabase {
 		} while (!finished);
 	}
 
-//	@Override
-//	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-//		addTrackedTable(newTableRow);
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					try {
-//						next.createTableWithForeignKeys(newTableRow);
-//						finished = true;
-//					} catch (Exception e) {
-//						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-//							throw e;
-//						}
-//					}
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTableRow);
+		return super.createTable(newTableRow, includeForeignKeyClauses);
+	}
 
-//	@Override
-//	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-//		LOG.debug("CREATING TABLE: " + newTableRow.getTableName());
-//		addTrackedTable(newTableRow);
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					try {
-//						next.createTable(newTableRow, includeForeignKeyClauses);
-//						finished = true;
-//					} catch (Exception e) {
-//						if (getQuietExceptionsPreference()) {
-//						} else {
-//							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
-//							e.printStackTrace();
-//						}
-//						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
-//							System.out.println("nz.co.gregs.dbvolution.databases.DBDatabaseCluster.createTable(DBRow, boolean): " + e.getLocalizedMessage());
-//							throw e;
-//						}
-//					}
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTableRow);
+		super.createTableWithForeignKeys(newTableRow);
+	}
 
-//	@Override
-//	public synchronized void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
-//		addTrackedTables(newTables);
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					next.createTablesWithForeignKeysNoExceptions(newTables);
-//					finished = true;
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTableRow);
+		super.createTable(newTableRow);
+	}
 
-//	@Override
-//	public synchronized void createTablesNoExceptions(DBRow... newTables) {
-//		addTrackedTables(Arrays.asList(newTables));
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					next.createTablesNoExceptions(newTables);
-//					finished = true;
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
+		addTrackedTables(newTables);
+		super.createTablesWithForeignKeysNoExceptions(newTables);
+	}
 
-//	@Override
-//	public synchronized void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
-//		addTrackedTables(Arrays.asList(newTables));
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					next.createTablesNoExceptions(includeForeignKeyClauses, newTables);
-//					finished = true;
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public void createTablesNoExceptions(DBRow... newTables) {
+		addTrackedTables(newTables);
+		super.createTablesNoExceptions(newTables);
+	}
 
-//	@Override
-//	public synchronized void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
-//		addTrackedTable(newTable);
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					next.createTableNoExceptions(newTable);
-//					finished = true;
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
+		addTrackedTables(newTables);
+		super.createTablesNoExceptions(includeForeignKeyClauses, newTables);
+	}
 
-//	@Override
-//	public synchronized void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
-//		addTrackedTable(newTable);
-//		boolean finished = false;
-//		do {
-//			DBDatabase[] dbs = getDetails().getReadyDatabases();
-//			for (DBDatabase next : dbs) {
-//				synchronized (next) {
-//					next.createTableNoExceptions(includeForeignKeyClauses, newTable);
-//					finished = true;
-//				}
-//			}
-//		} while (!finished);
-//	}
+	@Override
+	public void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTable);
+		super.createTableNoExceptions(newTable);
+	}
+
+	@Override
+	public void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
+		addTrackedTable(newTable);
+		super.createTableNoExceptions(includeForeignKeyClauses, newTable);
+	}
 
 	@Override
 	public void updateTableToMatchDBRow(DBRow table) throws SQLException {
@@ -1136,6 +937,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		throw new UnsupportedOperationException("DBDatabase.getConnection should not be used.");
 	}
 
+	@Override
 	public DBStatement getDBStatement() throws SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getDBStatement should not be used.");
 	}
@@ -1152,15 +954,15 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
+		preventAccidentalDDLDuringTransaction(action);
+		preventAccidentalDroppingOfDatabases(action);
+		preventAccidentalDroppingOfTables(action);
 		return executeDBActionOnClusterMembers(action);
 	}
 
 	private DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, DBRuntimeException, SQLException {
 		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
 		addActionToQueue(action);
-		if(action.getIntent().equals(QueryIntention.CREATE_TABLE)){
-			addTrackedTable(action.getRow());
-		}
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
 		try {
@@ -1204,16 +1006,6 @@ public class DBDatabaseCluster extends DBDatabase {
 			actionsPerformed = tasks.get(0).getActionList();
 		}
 		return actionsPerformed;
-	}
-
-	@Override
-	public DBActionList executeDBAction(DBInsert action) throws SQLException, NoAvailableDatabaseException {
-		return executeDBActionOnClusterMembers(action);
-	}
-
-	@Override
-	public DBActionList executeDBAction(DBUpdate action) throws SQLException, NoAvailableDatabaseException {
-		return executeDBActionOnClusterMembers(action);
 	}
 
 	@Override
@@ -1572,6 +1364,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private synchronized void shutdownClusterProcesses() {
 		LOG.debug("STOPPING: action thread pool");
 		ACTION_THREAD_POOL.shutdown();
+		details.shutdown();
 	}
 
 	@Override

@@ -38,7 +38,6 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
@@ -73,8 +72,6 @@ public class DBCreateTable extends DBAction {
 	public List<String> getSQLStatements(DBDatabase db) {
 		List<String> result = new ArrayList<>(1);
 		DBRow newTableRow = getRow();
-//		LOG.debug("CREATING TABLE: " + newTableRow.getTableName());
-		db.preventDDLDuringTransaction("DBDatabase.dropTable()");
 
 		List<String> sqlString = getSQLForCreateTable(db, newTableRow, includeForeignKeyClauses);
 		result.addAll(sqlString);
@@ -88,16 +85,7 @@ public class DBCreateTable extends DBAction {
 		return execute2(db);
 	}
 
-	public DBActionList execute2(DBDatabase db) throws SQLException {
-
-		preventImproperActions(db);
-
-		DBActionList actions = prepareActionList(db);
-		prepareRollbackData(db, actions);
-		executeOnStatement(db);
-		return actions;
-	}
-
+	@Override
 	protected DBActionList prepareActionList(DBDatabase db) throws AccidentalBlankQueryException, SQLException, UnableToInstantiateDBRowSubclassException {
 		DBRow table = getRow();
 		final DBCreateTable newAction = new DBCreateTable(table, includeForeignKeyClauses);
@@ -105,7 +93,8 @@ public class DBCreateTable extends DBAction {
 		return actions;
 	}
 
-	private void prepareRollbackData(DBDatabase db, DBActionList actions) {
+	@Override
+	protected void prepareRollbackData(DBDatabase db, DBActionList actions) {
 		// no data required
 	}
 
@@ -191,17 +180,5 @@ public class DBCreateTable extends DBAction {
 		}
 
 		return sqlList;
-	}
-
-	private void preventImproperActions(DBDatabase db) throws DBRuntimeException {
-		if (this.getIntent().isDDL()) {
-			db.preventDDLDuringTransaction(this.getClass().getSimpleName());
-		}
-		if (this.getIntent().isDropTable()) {
-			db.preventAccidentalDroppingOfTables();
-		}
-		if (this.getIntent().isDropDatabase()) {
-			db.preventAccidentalDroppingOfDatabases();
-		}
 	}
 }

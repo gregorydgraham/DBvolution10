@@ -35,13 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,94 +46,50 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author gregorygraham
  */
-public class DBDropTable extends DBAction {
+public class DBAlterTableAddColumn extends DBAction {
 
 	private static final long serialVersionUID = 1L;
-	static final private Log LOG = LogFactory.getLog(DBDropTable.class);
+	private static final Log LOG = LogFactory.getLog(DBDropTable.class);
+	
+	private final DBRow existingTable;
+	private final PropertyWrapper<?, ?, ?> columnPropertyWrapper;
 
-	private final ArrayList<DBRow> savedRows = new ArrayList<>(0);
-
-	public <R extends DBRow> DBDropTable(R row) {
-		super(row, QueryIntention.DROP_TABLE);
+	public <R extends DBRow> DBAlterTableAddColumn(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
+		super(null, QueryIntention.ALTER_TABLE_ADD_COLUMN);
+		this.existingTable = existingTable;
+		this.columnPropertyWrapper = columnPropertyWrapper;
 	}
 
 	@Override
 	protected DBActionList getRevertDBActionList() {
 		DBActionList reverts = new DBActionList();
-		/* TODO: work out if the table has foreign keys or not */
-		reverts.add(new DBCreateTable(getRow(), false));
-		for (DBRow savedRow : savedRows) {
-			reverts.add(new DBInsert(savedRow));
-		}
 		return reverts;
 	}
 
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
 		List<String> result = new ArrayList<>(1);
-		DBRow tableRow = getRow();
-//		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
 
-		String sqlString = createDropTableSQL(db, tableRow);
+		String sqlString = db.getDefinition().getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
 		result.add(sqlString);
-		result.addAll(db.getDefinition().getSQLToDropAnyAssociatedDatabaseObjects(tableRow));
 
 		return result;
 	}
 
-	protected String createDropTableSQL(DBDatabase db, DBRow tableRow) {
-		DBDefinition definition = db.getDefinition();
-		StringBuilder sqlScript = new StringBuilder(0);
-		final String dropTableStart = definition.getDropTableStart();
-		final String formatTableName = definition.formatTableName(tableRow);
-		final String endSQLStatement = definition.endSQLStatement();
-		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
-		String sqlString = sqlScript.toString();
-		return sqlString;
-	}
-
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-
 		return execute2(db);
 	}
 
-//	public DBActionList execute2(DBDatabase db) throws SQLException {
-//		DBActionList actions = prepareActionList(db);
-//		prepareRollbackData(db, actions);
-//		executeOnStatement(db);
-//		return actions;
-//	}
-
 	@Override
 	protected DBActionList prepareActionList(DBDatabase db) throws AccidentalBlankQueryException, SQLException, UnableToInstantiateDBRowSubclassException {
-		DBRow table = getRow();
-		final DBDropTable newAction = new DBDropTable(table);
+		final DBAlterTableAddColumn newAction = new DBAlterTableAddColumn(existingTable, columnPropertyWrapper);
 		DBActionList actions = new DBActionList(newAction);
 		return actions;
 	}
 
 	@Override
-	protected void prepareRollbackData(DBDatabase db, DBActionList actions) throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException, UnableToInstantiateDBRowSubclassException {
-		for (DBAction act : actions) {
-			if (act instanceof DBDropTable) {
-				DBDropTable drop = (DBDropTable) act;
-				drop.savedRows.clear();
-				DBRow table = drop.getRow();
-				DBRow example = DBRow.getDBRow(table.getClass());
-				if (db.tableExists(example)) {
-					if (db.getDBTable(example).count() < 1000) {
-						try {
-							List<DBRow> rowsToBeDeleted = db.getDBTable(example).setBlankQueryAllowed(true).getAllRows();
-							for (DBRow deletingRow : rowsToBeDeleted) {
-								drop.savedRows.add(DBRow.copyDBRow(deletingRow));
-							}
-						} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
-							LOG.warn("EXCEPTION OCCURRED WHILE PREPARING ROLLBACK: rollback data will not be available.", e);
-						}
-					}
-				}
-			}
-		}
+	protected void prepareRollbackData(DBDatabase db, DBActionList actions) {
+		// with any real database attempting this is absurd
 	}
 }

@@ -762,22 +762,8 @@ public class DBTable<E extends DBRow> {
 	@SafeVarargs
 	public final DBActionList delete(E... oldRows) throws SQLException {
 		DBActionList actions = new DBActionList();
-		actions.addAll(DBDelete.delete(database, oldRows));
-		return actions;
-	}
-
-	/**
-	 * Deletes the rows from the database permanently.
-	 *
-	 * @param oldRows	oldRows
-	 * @return a {@link DBActionList} of the delete actions. 1 Database exceptions
-	 * may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-	@SafeVarargs
-	public final DBActionList deleteAll(E... oldRows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		actions.addAll(DBDelete.deleteAll(database, oldRows));
+		List<E> asList = Arrays.asList(oldRows);
+		actions.addAll(DBDelete.delete(database, asList));
 		return actions;
 	}
 

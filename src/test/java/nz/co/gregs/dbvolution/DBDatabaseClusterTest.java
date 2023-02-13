@@ -197,7 +197,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			assertThat(soloDB.getDBTable(testTable).count(), is(0l));
 
 			cluster.addDatabase(soloDB);
-			cluster.waitUntilSynchronised();
+			cluster.waitUntilDatabaseIsSynchronised(soloDB);
 
 			assertThat(cluster.getDBTable(testTable).count(), is(22l));
 			assertThat(database.getDBTable(testTable).count(), is(22l));
@@ -669,9 +669,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				}
 
 			};
-			cluster.setQuietExceptionsPreference(true);
+//			cluster.setQuietExceptionsPreference(true);
 			cluster.addDatabaseAndWait(soloDB2);
-			cluster.setQuietExceptionsPreference(false);
+//			cluster.setQuietExceptionsPreference(false);
 			assertThat(cluster.size(), is(1));
 		}
 	}

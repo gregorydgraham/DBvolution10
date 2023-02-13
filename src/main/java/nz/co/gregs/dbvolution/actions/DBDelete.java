@@ -62,33 +62,16 @@ public abstract class DBDelete extends DBAction {
 	 * actions performed.
 	 *
 	 * @param database the target database
-	 * @param rows the row to be deleted
+	 * @param firstRow the first row to delete
+	 * @param rows the other rows to be deleted
 	 *
 	 * @return the actions executed as a DBActionList
 	 * @throws SQLException database exceptions
 	 */
-	public static DBActionList delete(DBDatabase database, DBRow... rows) throws SQLException {
-		DBActionList delete = getDeletes(database, rows);
+	public static DBActionList delete(DBDatabase database, DBRow firstRow, DBRow... rows) throws SQLException {
+		DBActionList delete = getDeletes(database, firstRow);
+		delete.addAll(getDeletes(database, rows));
 		return delete.execute(database);
-	}
-
-	/**
-	 * Deletes the specified row or example from the database and returns the
-	 * actions performed.
-	 *
-	 * @param database the target database
-	 * @param rows the row to be deleted
-	 *
-	 * @return the actions executed as a DBActionList
-	 * @throws SQLException database exceptions
-	 */
-	public static DBActionList deleteAll(DBDatabase database, DBRow... rows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (DBRow row : rows) {
-			DBDeleteAll example = new DBDeleteAll(row);
-			actions.addAll(example.getActions(database, row));
-		}
-		return actions.execute(database);
 	}
 
 	/**

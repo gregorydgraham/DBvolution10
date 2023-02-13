@@ -228,4 +228,9 @@ public class DBDatabaseHandle extends DBDatabase {
 		return wrappedDatabase.getDefinition();
 	}
 
+	@Override
+	public void deleteAllRowsFromTable(DBRow table) throws SQLException {
+		wrappedDatabase.deleteAllRowsFromTable(table);
+	}
+
 }

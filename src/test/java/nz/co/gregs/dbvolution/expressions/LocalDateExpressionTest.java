@@ -1411,7 +1411,7 @@ public class LocalDateExpressionTest extends AbstractTest {
 		DBLocalDate endOfMonth = this.column(this.creationLocalDate).endOfMonth().asExpressionColumn();
 	}
 
-	@DBTableName("marque_with_instant")
+	@DBTableName("marque_with_localdate")
 	public static class MarqueWithLocalDate extends DBRow {
 
 		private static final long serialVersionUID = 1L;

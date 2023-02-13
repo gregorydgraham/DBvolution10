@@ -114,6 +114,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private transient ScheduledFuture<?> regularThreadPoolFuture;
 	private boolean hasCreatedRequiredTables = false;
 	private boolean quietExceptionsPreference = false;
+	private boolean preventAccidentalDeletingAllRowFromTable = true;
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -651,22 +652,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		DBActionList changes = new DBActionList();
 		for (DBRow row : rows) {
 			changes.addAll(this.getDBTable(row).delete(row));
-		}
-		return changes;
-	}
-
-	/**
-	 *
-	 * Deletes DBRows using the correct tables automatically
-	 *
-	 * @param rows a list of DBRows
-	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException database exceptions
-	 */
-	public final DBActionList deleteAll(DBRow... rows) throws SQLException {
-		DBActionList changes = new DBActionList();
-		for (DBRow row : rows) {
-			changes.addAll(this.getDBTable(row).deleteAll(row));
 		}
 		return changes;
 	}
@@ -1459,6 +1444,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param newTableRow the table that needs foreign key constraints
 	 * @throws SQLException the database has had an issue.
 	 */
+	/*TODO: convert to use DBAction to improve cluster implementation */
 	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		if (this.definition.supportsAlterTableAddConstraint()) {
 			var fields = newTableRow.getColumnPropertyWrappers();
@@ -1503,6 +1489,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * removed
 	 * @throws SQLException database exceptions
 	 */
+	/*TODO: convert to use DBAction to improve cluster implementation */
 	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
 		var fields = newTableRow.getColumnPropertyWrappers();
@@ -1543,6 +1530,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param newTableRow the data model's version of the table that needs indexes
 	 * @throws SQLException database exceptions
 	 */
+	/*TODO: convert to use DBAction to improve cluster implementation */
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 
 		var fields = newTableRow.getColumnPropertyWrappers();
@@ -1596,7 +1584,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return changes;
 
 //		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
-//		preventDDLDuringTransaction("DBDatabase.dropTable()");
+//		preventAccidentalDDLDuringTransaction("DBDatabase.dropTable()");
 //		if (preventAccidentalDroppingOfTables) {
 //			throw new AccidentalDroppingOfTableException();
 //		}
@@ -1759,28 +1747,32 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * If you're lucky...
 	 */
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
-		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
-		if (preventAccidentalDroppingOfTables) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		if (preventAccidentalDroppingDatabase) {
-			throw new AccidentalDroppingOfDatabaseException();
-		}
-
-		String dropStr = getDefinition().getDropDatabase(databaseName);
-
-		printSQLIfRequested(dropStr);
-		LOG.debug(dropStr);
 		if (doIt) {
-			try {
-				this.doTransaction(new DBRawSQLTransaction(dropStr));
-			} catch (SQLException | ExceptionThrownDuringTransaction ex) {
-				throw new UnableToDropDatabaseException(ex);
-			}
+			executeDBAction(new DBDropDatabase(databaseName));
 		}
-		preventAccidentalDroppingOfTables = true;
-		preventAccidentalDroppingDatabase = true;
 	}
+//		preventAccidentalDDLDuringTransaction("DBDatabase.dropDatabase()");
+//		if (preventAccidentalDroppingOfTables) {
+//			throw new AccidentalDroppingOfTableException();
+//		}
+//		if (preventAccidentalDroppingDatabase) {
+//			throw new AccidentalDroppingOfDatabaseException();
+//		}
+//
+//		String dropStr = getDefinition().getDropDatabase(databaseName);
+//
+//		printSQLIfRequested(dropStr);
+//		LOG.debug(dropStr);
+//		if (doIt) {
+//			try {
+//				this.doTransaction(new DBRawSQLTransaction(dropStr));
+//			} catch (SQLException | ExceptionThrownDuringTransaction ex) {
+//				throw new UnableToDropDatabaseException(ex);
+//			}
+//		}
+//		preventAccidentalDroppingOfTables = true;
+//		preventAccidentalDroppingDatabase = true;
+//	}
 
 	/**
 	 * Returns the database name if one was supplied.
@@ -1865,9 +1857,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
 
-	public synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
-		if (isInATransaction) {
-			throw new AutoCommitActionDuringTransactionException(message);
+	public synchronized void preventAccidentalDDLDuringTransaction(DBAction action) throws AutoCommitActionDuringTransactionException {
+		if (isInATransaction && action.getIntent().isDDL()) {
+			throw new AutoCommitActionDuringTransactionException(action.getClass().getSimpleName());
 		}
 	}
 
@@ -1915,9 +1907,11 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return this.preventAccidentalDroppingDatabase;
 	}
 
-	public synchronized void preventAccidentalDroppingOfDatabases() throws AccidentalDroppingOfDatabaseException {
-		if (preventAccidentalDroppingDatabase) {
+	public synchronized void preventAccidentalDroppingOfDatabases(DBAction action) throws AccidentalDroppingOfDatabaseException {
+		if (preventAccidentalDroppingDatabase && action.getIntent().isDropDatabase()) {
 			throw new AccidentalDroppingOfDatabaseException();
+		} else {
+			preventAccidentalDroppingDatabase = true;
 		}
 	}
 
@@ -2327,12 +2321,29 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public void preventAccidentalDroppingOfTables() throws AccidentalDroppingOfTableException {
-		if (preventAccidentalDroppingOfTables) {
+	public synchronized void preventAccidentalDroppingOfTables(DBAction action) throws AccidentalDroppingOfTableException {
+		if (preventAccidentalDroppingOfTables && action.getIntent().isDropTable()) {
 			throw new AccidentalDroppingOfTableException();
 		} else {
 			preventAccidentalDroppingOfTables = true;
 		}
+	}
+
+	public synchronized void preventAccidentalDeletingAllRowsFromTable(DBAction action) throws AccidentalDroppingOfTableException {
+		if (preventAccidentalDeletingAllRowFromTable && action.getIntent().isDeleteAllRows()) {
+			throw new AccidentalDeletingAllRowsFromTableException();
+		} else {
+			preventAccidentalDeletingAllRowFromTable = true;
+		}
+	}
+
+	public void setPreventAccidentalDeletingAllRowsFromTable(boolean b) {
+		preventAccidentalDeletingAllRowFromTable = b;
+	}
+
+	@Override
+	public void deleteAllRowsFromTable(DBRow table) throws SQLException {
+		executeDBAction(new DBDeleteAll(table));
 	}
 
 	public static enum ResponseToException {
@@ -2374,17 +2385,20 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
+		preventAccidentalDDLDuringTransaction(action);
+		preventAccidentalDroppingOfDatabases(action);
+		preventAccidentalDroppingOfTables(action);
+		preventAccidentalDeletingAllRowsFromTable(action);
 		return action.execute(this);
 	}
 
-	public DBActionList executeDBAction(DBInsert action) throws SQLException, NoAvailableDatabaseException {
-		return action.execute(this);
-	}
-
-	public DBActionList executeDBAction(DBUpdate action) throws SQLException, NoAvailableDatabaseException {
-		return action.execute(this);
-	}
-
+//	public DBActionList executeDBAction(DBInsert action) throws SQLException, NoAvailableDatabaseException {
+//		return action.execute(this);
+//	}
+//
+//	public DBActionList executeDBAction(DBUpdate action) throws SQLException, NoAvailableDatabaseException {
+//		return action.execute(this);
+//	}
 	public void setQuietExceptionsPreference(boolean b) {
 		this.quietExceptionsPreference = b;
 	}
@@ -2404,6 +2418,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return query.toSQLString(this);
 	}
 
+	/*TODO: convert to use DBQuery to improve cluster implementation */
 	@Override
 	@SuppressFBWarnings(
 			value = "REC_CATCH_EXCEPTION",
@@ -2419,6 +2434,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
+	/*TODO: convert to use DBQuery to improve cluster implementation */
 	private boolean checkTableExistsViaQuery(DBRow table) throws NoAvailableDatabaseException {
 		boolean tableExists;
 		String testQuery = getDefinition().getTableExistsSQL(table);
@@ -2442,6 +2458,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
+	/*TODO: convert to use DBQuery to improve cluster implementation */
 	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
 		boolean tableExists = false;
 		try (DBStatement dbStatement = getDBStatement()) {
@@ -2483,6 +2500,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
+	/*TODO: convert to use DBAction to improve cluster implementation */
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
 
 		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
@@ -2525,22 +2543,28 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
-		preventDDLDuringTransaction("DBDatabase.alterTable()");
-
-		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
-
-		try (DBStatement dbStatement = getDBStatement()) {
-			try {
-				dbStatement.execute("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString);
-			} catch (SQLException ex) {
-				Logger.getLogger(DBDatabase.class
-						.getName()).log(Level.SEVERE, null, ex);
-			}
-
+		try {
+			executeDBAction(new DBAlterTableAddColumn(existingTable, columnPropertyWrapper));
 		} catch (SQLException ex) {
 			Logger.getLogger(DBDatabase.class
 					.getName()).log(Level.SEVERE, null, ex);
 		}
+//		preventDDLDuringTransaction("DBDatabase.alterTable()");
+//
+//		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
+//
+//		try (DBStatement dbStatement = getDBStatement()) {
+//			try {
+//				dbStatement.execute("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString);
+//			} catch (SQLException ex) {
+//				Logger.getLogger(DBDatabase.class
+//						.getName()).log(Level.SEVERE, null, ex);
+//			}
+//
+//		} catch (SQLException ex) {
+//			Logger.getLogger(DBDatabase.class
+//					.getName()).log(Level.SEVERE, null, ex);
+//		}
 	}
 
 	/**

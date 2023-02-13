@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.internal.database;
 
+import nz.co.gregs.dbvolution.utility.TableSet;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -87,6 +88,7 @@ public class ClusterDetails implements Serializable {
 
 	private final static Random RANDOM = new Random();
 	private boolean preferredDatabaseRequired;
+	private boolean stillRunning = true;
 
 	public ClusterDetails(String label) {
 		this.clusterLabel = label;
@@ -218,7 +220,8 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized DBRow[] getRequiredAndTrackedTables() {
-		var tables = new ArrayList<DBRow>();
+		var tables = new TableSet();
+
 		tables.addAll(requiredTables);
 		tables.addAll(trackedTables);
 		return tables.toArray(new DBRow[]{});
@@ -659,7 +662,7 @@ public class ClusterDetails implements Serializable {
 	public void waitUntilSynchronised() {
 		synchronisingLock.lock();
 		try {
-			while (isNotSynchronized()) {
+			while (isNotSynchronized() && stillRunning) {
 				allDatabasesAreSynchronised.await(1, TimeUnit.SECONDS);
 			}
 		} catch (InterruptedException ex) {
@@ -680,7 +683,7 @@ public class ClusterDetails implements Serializable {
 				if (timeoutInMilliseconds > 0) {
 					aDatabaseHasBeenSynchronised.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS);
 				} else {
-					while (clusterContains(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY) {
+					while (clusterContains(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY && stillRunning) {
 						aDatabaseHasBeenSynchronised.await(100, TimeUnit.MILLISECONDS);
 					}
 				}
@@ -706,8 +709,10 @@ public class ClusterDetails implements Serializable {
 		DBDatabase[] addedDBs;
 		addedDBs = members.getDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED);
 		for (DBDatabase db : addedDBs) {
-			//Do The Synchronising...
-			synchronizeSecondaryDatabase(db);
+			if (stillRunning) {
+				//Do The Synchronising...
+				synchronizeSecondaryDatabase(db);
+			}
 		}
 	}
 
@@ -736,9 +741,10 @@ public class ClusterDetails implements Serializable {
 									LOG.log(Level.FINEST, "{0} INCLUDES TABLE: {1}", new Object[]{clusterLabel, tableName});
 									// Make sure it exists in the new database
 									if (secondary.tableExists(table) == true) {
-										LOG.log(Level.FINEST, "{0} REMOVING FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+										LOG.log(Level.FINEST, "{0} REMOVING DATA FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
 										secondary.preventDroppingOfTables(false);
-										secondary.dropTableNoExceptions(table);
+										secondary.dropTable(table);
+										LOG.log(Level.FINEST, "{0} REMOVED DATA FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
 									}
 									LOG.log(Level.FINEST, "{0} CREATING ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
 									secondary.createTable(table);
@@ -785,7 +791,8 @@ public class ClusterDetails implements Serializable {
 				}
 			} catch (NoAvailableDatabaseException except) {
 				// must be the first database
-			} catch (Exception exc) {proceedWithSynchronization = false;
+			} catch (Exception exc) {
+				proceedWithSynchronization = false;
 				LOG.severe(exc.getLocalizedMessage());
 				exc.printStackTrace();
 			} catch (Throwable throwable) {
@@ -797,6 +804,8 @@ public class ClusterDetails implements Serializable {
 				LOG.log(Level.FINEST, "{0} START SYNCHRONISING ACTIONS ON: {1}", new Object[]{clusterLabel, secondaryLabel});
 				synchronizeActions(secondary);
 			}
+		}catch(Exception exc){
+			members.setUnsynchronised(secondary);
 		} finally {
 			releaseTemplateDatabase(template);
 		}
@@ -895,5 +904,9 @@ public class ClusterDetails implements Serializable {
 
 	public DBDatabase[] getDatabasesForReconnecting() {
 		return members.getDatabases(DBDatabaseCluster.Status.QUARANTINED, DBDatabaseCluster.Status.DEAD);
+	}
+
+	public void shutdown() {
+		this.stillRunning = false;
 	}
 }

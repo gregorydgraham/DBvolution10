@@ -37,18 +37,16 @@ public class UpdateTest extends AbstractTest {
 		Marque insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
 		insertedRow.individualAllocationsAllowed.setValue("Y");
 		String sqlForUpdate = marquesTable.update(insertedRow).get(0).getSQLStatements(database).get(0);
-		final String testableQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4);");
-		final String testableSQLServerQueryString1 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);");
-		final String testableSQLServerQueryString2 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4);");
-		final String testableOracleQueryString = testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4)");
-		
+		final String[] possibleStrings = {
+			testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4);"),
+			testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);"),
+			testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4);"),
+			testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4)"),
+			testableSQL("update marque set \"intindallocallowed\" = 'y' where (uid_marque = 4);")
+		};
+
 		assertThat(testableSQL(sqlForUpdate),
-				isOneOf(
-						testableQueryString,
-						testableSQLServerQueryString1,
-						testableSQLServerQueryString2,
-						testableOracleQueryString
-				));
+				isOneOf(possibleStrings));
 //        marquesTable.update(insertedRow);
 		insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
 		assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
