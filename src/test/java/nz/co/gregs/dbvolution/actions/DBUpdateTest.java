@@ -60,6 +60,8 @@ public class DBUpdateTest extends AbstractTest {
 		final LinkCarCompanyAndLogo got = foundLinks.get(0);
 		got.fkCarCompany.setValue(2);
 		DBActionList updateActions = database.update(got);
+		assertThat(got.fkCarCompany.getValue(), is(2L));
+		assertThat(got.fkCarCompany.hasChanged(), is(false));
 		assertThat(updateActions.size(), is(1));
 		assertThat(updateActions.get(0), instanceOf(DBUpdateSimpleTypesUsingAllColumns.class));
 
@@ -71,6 +73,8 @@ public class DBUpdateTest extends AbstractTest {
 		assertThat(revertActionList.get(0), instanceOf(DBUpdateToPreviousValues.class));
 
 		revertActionList.execute(database);
+		assertThat(example.fkCarCompany.getValue(), is(1L));
+		assertThat(example.fkCarCompany.hasChanged(), is(false));
 		foundLinks = database.get(example);
 		assertThat(foundLinks.size(), is(1));
 		database.delete(example);
