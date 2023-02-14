@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.internal.h2.*;
+import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
@@ -49,7 +50,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	private static SimpleDateFormat getStringToDateFormat() {
 		return new SimpleDateFormat(DATE_FORMAT_STR);
 	}
-	
+
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		if (date == null) {
@@ -99,7 +100,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	@Override
 	public String formatColumnName(String columnName) {
-		return "\""+columnName.toUpperCase().replaceAll("\"", "\"\"")+"\"";
+		return "\"" + columnName.toUpperCase().replaceAll("\"", "\"\"") + "\"";
 	}
 
 	@Override
@@ -239,7 +240,6 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 //	public String getDefaultTimeZoneMinute() {
 //		return "extract(timezone_minute from current_timestamp(9))";
 //	}
-
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " DAY_OF_WEEK(" + dateSQL + ")";
@@ -271,7 +271,7 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	public String doBooleanArrayTransform(Boolean[] bools) {
 		SeparatedString result = SeparatedStringBuilder.byCommaSpace().withPrefix("ARRAY[").withSuffix("]");
 		for (Boolean c : bools) {
-				result.add(c.toString().toUpperCase());
+			result.add(c.toString().toUpperCase());
 		}
 		return result.toString();
 	}
@@ -729,7 +729,19 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	@Override
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
-		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION,GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
+		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION, GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
 	}
 
+	private static final Regex DUPLICATE_COLUMN_EXCEPTION
+			= Regex
+					.startingAnywhere()
+					.literalCaseInsensitive("Duplicate column name \"")
+					.anyCharacterExcept("\"").atLeastOnce()
+					.literal("\";")
+					.toRegex();
+
+	@Override
+	public boolean isDuplicateColumnException(Exception exc) {
+		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
+	}
 }
