@@ -35,12 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,13 +99,6 @@ public class DBDropTable extends DBAction {
 		return execute2(db);
 	}
 
-//	public DBActionList execute2(DBDatabase db) throws SQLException {
-//		DBActionList actions = prepareActionList(db);
-//		prepareRollbackData(db, actions);
-//		executeOnStatement(db);
-//		return actions;
-//	}
-
 	@Override
 	protected DBActionList prepareActionList(DBDatabase db) throws AccidentalBlankQueryException, SQLException, UnableToInstantiateDBRowSubclassException {
 		DBRow table = getRow();
@@ -118,25 +109,5 @@ public class DBDropTable extends DBAction {
 
 	@Override
 	protected void prepareRollbackData(DBDatabase db, DBActionList actions) throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException, UnableToInstantiateDBRowSubclassException {
-		for (DBAction act : actions) {
-			if (act instanceof DBDropTable) {
-				DBDropTable drop = (DBDropTable) act;
-				drop.savedRows.clear();
-				DBRow table = drop.getRow();
-				DBRow example = DBRow.getDBRow(table.getClass());
-				if (db.tableExists(example)) {
-					if (db.getDBTable(example).count() < 1000) {
-						try {
-							List<DBRow> rowsToBeDeleted = db.getDBTable(example).setBlankQueryAllowed(true).getAllRows();
-							for (DBRow deletingRow : rowsToBeDeleted) {
-								drop.savedRows.add(DBRow.copyDBRow(deletingRow));
-							}
-						} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
-							LOG.warn("EXCEPTION OCCURRED WHILE PREPARING ROLLBACK: rollback data will not be available.", e);
-						}
-					}
-				}
-			}
-		}
 	}
 }
