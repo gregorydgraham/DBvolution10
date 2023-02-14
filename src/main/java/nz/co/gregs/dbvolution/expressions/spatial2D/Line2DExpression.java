@@ -765,12 +765,8 @@ public class Line2DExpression extends Spatial2DExpression<com.vividsolutions.jts
 	 * <p>
 	 * Line2D values with less than 3 points will return NULL values.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a polygon2d value
 	 */
-	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
 		throw new UnsupportedOperationException("Line2DExpression does not support polygon2DResult(String) yet.");
 	}

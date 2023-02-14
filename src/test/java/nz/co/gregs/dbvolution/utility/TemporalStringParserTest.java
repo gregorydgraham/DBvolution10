@@ -105,9 +105,6 @@ public class TemporalStringParserTest {
 
 	@Test
 	public void testOracleZuluDate() throws Exception {
-//		String oracleZuluDate = "2011-04-01 12:02:03.0 +00:00";
-//		final String simplePattern = "yyyy-MM-dd HH:mm:ss.S XXX"; /*Works for +00:00, +01:00*/
-//		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(simplePattern);
 		String oracleZuluDate = "2011-04-01 12:02:03.0 +1:00";
 		OffsetDateTime parsed = TemporalStringParser.toOffsetDateTime(oracleZuluDate);
 		assertThat(parsed, is(OffsetDateTime.of(2011, 4, 1, 12, 2, 3, 0, ZoneOffset.ofHours(1))));

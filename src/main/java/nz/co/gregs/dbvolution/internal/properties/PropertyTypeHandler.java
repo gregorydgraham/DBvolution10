@@ -32,18 +32,14 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  *
  * <p>
  * This class handles the majority of the type support logic that is exposed by
- * the {@link PropertyWrapperDefinition} class, which just delegates to this class.
+ * the {@link PropertyWrapperDefinition} class, which just delegates to this
+ * class.
  *
  * <p>
  * This class behaves correctly when no {@link DBAdaptType} property is present.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Malcolm Lett
  */
-// TODO: this class could also handle implicit type adaptors where the target object's properties
-// are simple types, and we need to automatically convert between DBv data types.
 class PropertyTypeHandler<BASETYPE> implements Serializable {
 
 	private static final long serialVersionUID = 1l;
@@ -290,13 +286,8 @@ class PropertyTypeHandler<BASETYPE> implements Serializable {
 	 * <p>
 	 * Make sure to keep this in sync with {@link #literalTypeOf}.
 	 *
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a QDT the should work
 	 */
-	// FIXME: change to require exact matches, rather than 'instance of'
 	private static Class<? extends QueryableDatatype<?>> inferredQDTTypeForSimpleType(Class<?> simpleType) {
 		if (simpleType.equals(String.class)) {
 			return DBString.class;
@@ -454,7 +445,6 @@ class PropertyTypeHandler<BASETYPE> implements Serializable {
 			Object externalValue = javaProperty.get(target);
 
 			// convert
-			// TODO think this still needs some last-minute type checks
 			return (QueryableDatatype<BASETYPE>) syncer.setInternalQDTFromExternalSimpleValue(externalValue);
 		} // get via type adaptor and QDT java property
 		else if (typeAdaptor != null) {
@@ -494,7 +484,6 @@ class PropertyTypeHandler<BASETYPE> implements Serializable {
 			syncer.setInternalQueryableDatatype(dbvValue);
 			Object externalValue = syncer.getExternalSimpleValueFromInternalQDT();
 
-			// TODO think this still needs some last-minute type checks
 			javaProperty.set(target, externalValue);
 		} // set via type adaptor and QDT java property
 		else if (typeAdaptor != null) {

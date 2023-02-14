@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.*;
+/* TODO: upgrade BurningWave */
 import org.burningwave.core.assembler.ComponentContainer;
 import org.burningwave.core.assembler.ComponentSupplier;
 import static org.burningwave.core.assembler.StaticComponentContainer.Constructors;

@@ -181,6 +181,8 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).is(line));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		/* TODO */
+		/* but: was <0> */
 		assertThat(allRows.size(), is(1));
 		assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
@@ -262,7 +264,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		final LineTestTable lineTestTable = new LineTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).hasMagnitude().not());
-		
+
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		assertThat(allRows.size(), is(3));
 	}
@@ -460,14 +462,9 @@ public class Line2DExpressionTest extends AbstractTest {
 		MultiPoint2DExpression crossingLine = MultiPoint2DExpression.value(coordinateA, coordinateB, coordinateC);
 		dbQuery.setBlankQueryAllowed(true);
 
-		dbQuery.addCondition(
-				// this the value given by JTS
-				// TODO move off JTS to something that gives the correct result
-				lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D))
-						// this is the correct value
-						.or(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(7.0 / 3, 10.0 / 3))));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
 		dbQuery.addExpressionColumn(crossingLine, lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).asExpressionColumn());
-		
+
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
 		assertThat(allRows.size(), is(2));

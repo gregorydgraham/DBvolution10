@@ -719,7 +719,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		return super.dropTable(tableRow);
 	}
 
-	/*TODO: convert to use DBAction to improve cluster implementation */
 	@Override
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 		boolean finished = false;
@@ -760,7 +759,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		} while (!finished);
 	}
 
-	/*TODO: convert to use DBAction to improve cluster implementation */
 	@Override
 	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		boolean finished = false;

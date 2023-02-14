@@ -218,13 +218,13 @@ public class InterfaceInfo {
 	private static List<Type> ancestorTypesOf(Class<?> child) {
 		List<Type> ancestors = new ArrayList<Type>();
 
-		// get "extends xxx"
+		// get the class that the child class directly extends
 		Type supertype = child.getGenericSuperclass();
 		if (supertype != null && !Object.class.equals(supertype)) {
 			ancestors.add(supertype);
 		}
 
-		// get all "implements yyy"
+		// get all the interfaces that the class implements
 		Type[] interfaces = child.getGenericInterfaces();
 		if (interfaces != null) {
 			ancestors.addAll(Arrays.asList(interfaces));

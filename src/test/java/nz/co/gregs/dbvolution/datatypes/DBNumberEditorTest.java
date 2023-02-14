@@ -46,7 +46,6 @@ public class DBNumberEditorTest {
 		String format = "";
 		DBNumberEditor instance = new DBNumberEditor();
 		instance.setFormat(format);
-		// TODO review the generated test code and remove the default call to fail.
 	}
 
 	/**

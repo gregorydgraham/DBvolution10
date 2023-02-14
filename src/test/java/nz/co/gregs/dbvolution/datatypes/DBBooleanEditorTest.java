@@ -46,7 +46,6 @@ public class DBBooleanEditorTest {
 		String format = "";
 		DBBooleanEditor instance = new DBBooleanEditor();
 		instance.setFormat(format);
-		// TODO review the generated test code and remove the default call to fail.
 	}
 
 	/**
@@ -57,13 +56,11 @@ public class DBBooleanEditorTest {
 		String text = "true";
 		DBBooleanEditor instance = new DBBooleanEditor();
 		instance.setAsText(text);
-		// TODO review the generated test code and remove the default call to fail.
 		assertThat((Boolean) ((QueryableDatatype) instance.getValue()).getLiteralValue(), is(true));
 
 		text = "";
 		instance = new DBBooleanEditor();
 		instance.setAsText(text);
-		// TODO review the generated test code and remove the default call to fail.
 		assertThat((Boolean) ((QueryableDatatype) instance.getValue()).getLiteralValue(), nullValue());
 	}
 

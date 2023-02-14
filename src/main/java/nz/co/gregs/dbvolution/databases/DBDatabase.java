@@ -2338,7 +2338,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 	}
 
-	/*TODO: convert to use DBAction to improve cluster implementation */
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
 		executeDBAction(new DBAddMissingColumnsToTable(table));
 	}

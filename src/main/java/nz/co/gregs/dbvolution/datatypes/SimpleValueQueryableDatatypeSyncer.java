@@ -57,7 +57,6 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 		Object internalValue = getToInternalSimpleTypeAdaptor().convert(externalValue);
 		QueryableDatatype<?> internalQDT = getInternalQueryableDatatype();
 		if (internalValue == null) {
-			// TODO complete this
 			internalQDT.setLiteralValue(null);
 			internalQDT.setDefined(false);
 			internalQDT.setOperator(null);

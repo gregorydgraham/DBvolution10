@@ -643,7 +643,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				final DBBoolean bool = (DBBoolean) col;
 				final DBExpression[] exprns = bool.getColumnExpression();
 				if (exprns.length > 0) {
-					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
+					for (DBExpression expr : exprns) {
 						if (expr instanceof BooleanExpression) {
 							return ((BooleanExpression) expr).ifTrueFalseNull(1, 0, null).bracket();
 						}
@@ -712,7 +712,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				final DBBoolean bool = (DBBoolean) col;
 				final DBExpression[] exprns = bool.getColumnExpression();
 				if (exprns.length > 0) {
-					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
+					for (DBExpression expr : exprns) {
 						if (expr instanceof BooleanExpression) {
 							return ((BooleanExpression) expr).ifTrueFalseNull(1, 0, null).bracket();
 						} else {

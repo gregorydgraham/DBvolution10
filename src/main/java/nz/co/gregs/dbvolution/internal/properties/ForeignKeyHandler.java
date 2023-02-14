@@ -2,7 +2,6 @@ package nz.co.gregs.dbvolution.internal.properties;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import nz.co.gregs.dbvolution.DBRow;
@@ -27,13 +26,8 @@ import static org.simmetrics.builders.StringMetricBuilder.with;
  * This class behaves correctly when no {@link DBForeignKey} annotation is
  * present.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Malcolm Lett
  */
-// TODO if referenced property has differing case of column name,
-// need to throw exception during a deferred validation step once database case-ness is known.
 class ForeignKeyHandler<FOREIGNROW extends DBRow,FOREIGNBASETYPE> implements Serializable {
 
 	private static final long serialVersionUID = 1l;
