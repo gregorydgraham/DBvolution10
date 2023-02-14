@@ -7197,6 +7197,10 @@ public abstract class DBDefinition implements Serializable {
 		return matches;
 	}
 
+	public boolean isDuplicateColumnException(Exception exc) {
+		return false;
+	}
+
 	public static enum GroupByClauseMethod {
 		GROUPBYEXPRESSION,
 		SELECTEXPRESSION,
