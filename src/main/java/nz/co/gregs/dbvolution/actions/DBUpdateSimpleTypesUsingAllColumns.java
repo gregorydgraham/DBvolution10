@@ -15,14 +15,16 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  * Provides support for the abstract concept of updating rows without primary
@@ -32,9 +34,6 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
@@ -43,6 +42,19 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 	
 	DBUpdateSimpleTypesUsingAllColumns(DBRow row) {
 		super(row);
+	}
+
+	@Override
+	public DBActionList execute(DBDatabase db) throws SQLException {
+		DBRow table = originalRow;
+		DBActionList actions = new DBActionList(new DBUpdateSimpleTypesUsingAllColumns(table));
+		try (DBStatement statement = db.getDBStatement()) {
+			for (String sql : getSQLStatements(db)) {
+				statement.execute("Update row", QueryIntention.UPDATE_ROW, sql);
+			}
+		}
+		refetchIfClusterRequires(db, originalRow);
+		return actions;
 	}
 
 	@Override

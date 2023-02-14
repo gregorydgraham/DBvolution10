@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
@@ -59,6 +60,15 @@ public class DBCreateTable extends DBAction {
 	public <R extends DBRow> DBCreateTable(R row, boolean includeForeignKeyClauses) {
 		super(row, QueryIntention.CREATE_TABLE);
 		this.includeForeignKeyClauses = includeForeignKeyClauses;
+	}
+
+	public static DBActionList createTable(DBDatabase db, boolean includeFKs, DBRow... tables) throws NoAvailableDatabaseException, SQLException {
+		DBActionList actions = new DBActionList();
+		for (DBRow row : tables) {
+			DBCreateTable act = new DBCreateTable(row, includeFKs);
+			actions.addAll(db.executeDBAction(act));
+		}
+		return actions;
 	}
 
 	@Override

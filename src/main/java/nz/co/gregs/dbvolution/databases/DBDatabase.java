@@ -624,22 +624,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 		return changes;
 	}
-
-	protected DBActionList updateAnyway(List<DBRow> rows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (DBRow row : rows) {
-			actions.addAll(updateAnyway(row));
-		}
-		refetch(rows);
-		return actions;
-	}
-
-	protected DBActionList updateAnyway(DBRow row) throws SQLException {
-		DBActionList actions = new DBActionList();
-		actions.addAll(DBUpdateForcedOnSimpleTypesUsingPrimaryKey.updateAnyway(this, row));
-		return actions;
-	}
-
+	
 	/**
 	 *
 	 * Deletes DBRows using the correct tables automatically
@@ -686,12 +671,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList update(DBRow... rows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (DBRow row : rows) {
-			actions.addAll(this.getDBTable(row).update(row));
-		}
-		refetch(rows);
-		return actions;
+		return DBUpdate.update(this, rows);
 	}
 
 	/**
@@ -706,14 +686,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList update(Collection<? extends DBRow> listOfRowsToUpdate) throws SQLException {
-		DBActionList actions = new DBActionList();
-		if (listOfRowsToUpdate.size() > 0) {
-			for (DBRow row : listOfRowsToUpdate) {
-				actions.addAll(this.getDBTable(row).update(row));
-			}
-		}
-		refetch(listOfRowsToUpdate);
-		return actions;
+		return DBUpdate.update(this, listOfRowsToUpdate);
 	}
 
 	/**
@@ -1027,8 +1000,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * equivalent to script.implement(this);
 	 *
 	 * @param script the script to execute and commit
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList provided by the script
 	 * @throws Exception any exception can be thrown by a DBScript
 	 */
@@ -1193,9 +1164,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	/**
 	 * Indicates whether SQL will be printed before it is executed.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the printSQLBeforeExecuting
 	 */
@@ -1400,26 +1368,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		createTable(newTableRow, true);
 	}
 
-	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
-		DBCreateTable create = new DBCreateTable(newTableRow, includeForeignKeyClauses);
-		List<String> sqlStatements = create.getSQLStatements(this);
-		String sql = SeparatedStringBuilder
-				.byLines()
-				.addAll(sqlStatements)
-				.toString();
-		return sql;
-	}
-
 	@Override
 	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-		DBActionList changes = new DBActionList();
-		DBCreateTable create = new DBCreateTable(newTableRow, includeForeignKeyClauses);
-		changes.add(create);
-
-		executeDBAction(create);
-
-		return changes;
-
+		return DBCreateTable.createTable(this, includeForeignKeyClauses, newTableRow);
 	}
 
 	/**
@@ -1444,27 +1395,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param newTableRow the table that needs foreign key constraints
 	 * @throws SQLException the database has had an issue.
 	 */
-	/*TODO: convert to use DBAction to improve cluster implementation */
+	/*TODONE: convert to use DBAction to improve cluster implementation */
 	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-		if (this.definition.supportsAlterTableAddConstraint()) {
-			var fields = newTableRow.getColumnPropertyWrappers();
-			List<String> fkClauses = new ArrayList<>();
-			for (var field : fields) {
-				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-					final String alterTableAddForeignKeyStatement = definition.getAlterTableAddForeignKeyStatement(newTableRow, field);
-					if (!alterTableAddForeignKeyStatement.isEmpty()) {
-						fkClauses.add(alterTableAddForeignKeyStatement);
-					}
-				}
-			}
-			if (fkClauses.size() > 0) {
-				try (DBStatement statement = getDBStatement()) {
-					for (String fkClause : fkClauses) {
-						statement.execute("CREATE FOREIGN KEY", QueryIntention.CREATE_FOREIGN_KEY, fkClause);
-					}
-				}
-			}
-		}
+		executeDBAction(new DBCreateForeignKeys(newTableRow));
 	}
 
 	/**
@@ -1489,26 +1422,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * removed
 	 * @throws SQLException database exceptions
 	 */
-	/*TODO: convert to use DBAction to improve cluster implementation */
+	/*TODONE: convert to use DBAction to improve cluster implementation */
 	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-
-		var fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<>();
-		for (var field : fields) {
-			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-				final String alterTableDropForeignKeyStatement = definition.getAlterTableDropForeignKeyStatement(newTableRow, field);
-				if (!alterTableDropForeignKeyStatement.isEmpty()) {
-					fkClauses.add(alterTableDropForeignKeyStatement);
-				}
-			}
-		}
-		if (fkClauses.size() > 0) {
-			try (DBStatement statement = getDBStatement()) {
-				for (String fkClause : fkClauses) {
-					statement.execute("REMOVE FK CONSTRAINTS", QueryIntention.DROP_FOREIGN_KEY, fkClause);
-				}
-			}
-		}
+		executeDBAction(new DBDropForeignKeys(newTableRow));
 	}
 
 	/**
@@ -1530,28 +1446,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param newTableRow the data model's version of the table that needs indexes
 	 * @throws SQLException database exceptions
 	 */
-	/*TODO: convert to use DBAction to improve cluster implementation */
+	/*TODONE: convert to use DBAction to improve cluster implementation */
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
-
-		var fields = newTableRow.getColumnPropertyWrappers();
-		List<String> indexClauses = new ArrayList<>();
-		for (var field : fields) {
-			final QueryableDatatype<?> qdt = field.getQueryableDatatype();
-			if (field.isColumn() && !qdt.hasColumnExpression() && !(qdt instanceof DBLargeObject)) {
-				String indexClause = definition.getIndexClauseForCreateTable(field);
-				if (!indexClause.isEmpty()) {
-					indexClauses.add(indexClause);
-				}
-			}
-		}
-		//Create indexes
-		if (indexClauses.size() > 0) {
-			try (DBStatement statement = getDBStatement()) {
-				for (String indexClause : indexClauses) {
-					statement.execute("CREATE INDEX ON FIELD", QueryIntention.CREATE_INDEX, indexClause);
-				}
-			}
-		}
+		DBCreateIndexesOnAllFields.createIndexes(this, newTableRow);
 	}
 
 	/**
@@ -1582,24 +1479,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		executeDBAction(drop);
 
 		return changes;
-
-//		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
-//		preventAccidentalDDLDuringTransaction("DBDatabase.dropTable()");
-//		if (preventAccidentalDroppingOfTables) {
-//			throw new AccidentalDroppingOfTableException();
-//		}
-//		StringBuilder sqlScript = new StringBuilder();
-//		final String dropTableStart = definition.getDropTableStart();
-//		final String formatTableName = definition.formatTableName(tableRow);
-//		final String endSQLStatement = definition.endSQLStatement();
-//
-//		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
-//		String sqlString = sqlScript.toString();
-//		try ( DBStatement dbStatement = getDBStatement()) {
-//			dbStatement.execute("DROP TABLE", QueryIntention.DROP_TABLE, sqlString);
-//			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
-//		}
-//		preventAccidentalDroppingOfTables = true;
 	}
 
 	/**
@@ -1751,28 +1630,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			executeDBAction(new DBDropDatabase(databaseName));
 		}
 	}
-//		preventAccidentalDDLDuringTransaction("DBDatabase.dropDatabase()");
-//		if (preventAccidentalDroppingOfTables) {
-//			throw new AccidentalDroppingOfTableException();
-//		}
-//		if (preventAccidentalDroppingDatabase) {
-//			throw new AccidentalDroppingOfDatabaseException();
-//		}
-//
-//		String dropStr = getDefinition().getDropDatabase(databaseName);
-//
-//		printSQLIfRequested(dropStr);
-//		LOG.debug(dropStr);
-//		if (doIt) {
-//			try {
-//				this.doTransaction(new DBRawSQLTransaction(dropStr));
-//			} catch (SQLException | ExceptionThrownDuringTransaction ex) {
-//				throw new UnableToDropDatabaseException(ex);
-//			}
-//		}
-//		preventAccidentalDroppingOfTables = true;
-//		preventAccidentalDroppingDatabase = true;
-//	}
 
 	/**
 	 * Returns the database name if one was supplied.
@@ -1788,7 +1645,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param databaseName	databaseName
 	 */
-	/* TODO - can this be final?*/
 	public synchronized void setDatabaseName(String databaseName) {
 		getSettings().setDatabaseName(databaseName);
 	}
@@ -2033,20 +1889,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	/**
-	 * Called after DROP TABLE to allow the DBDatabase to clean up any extra
-	 * objects created with the table.
-	 *
-	 * @param <R> DBRow type
-	 * @param dbStatement statement for executing the changes, don't close it!
-	 * @param tableRow tableRow
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-//	@SuppressWarnings("empty-statement")
-//	@Override
-//	public <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
-//		;
-//	}
-	/**
 	 * Used by DBStatement to release the connection back into the connection
 	 * pool.
 	 *
@@ -2283,9 +2125,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private void refetch(DBRow[] rows) {
-		for (DBRow row : rows) {
-			refetch(row);
-		}
+		refetch(Arrays.asList(rows));
 	}
 
 	private <R extends DBRow> void refetch(R originalRow) {
@@ -2392,13 +2232,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return action.execute(this);
 	}
 
-//	public DBActionList executeDBAction(DBInsert action) throws SQLException, NoAvailableDatabaseException {
-//		return action.execute(this);
-//	}
-//
-//	public DBActionList executeDBAction(DBUpdate action) throws SQLException, NoAvailableDatabaseException {
-//		return action.execute(this);
-//	}
 	public void setQuietExceptionsPreference(boolean b) {
 		this.quietExceptionsPreference = b;
 	}
@@ -2418,7 +2251,14 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return query.toSQLString(this);
 	}
 
-	/*TODO: convert to use DBQuery to improve cluster implementation */
+	/**
+	 * Checks for the existence of the table on the database.
+	 *
+	 * @param table
+	 * @return true if the table exists on the database, for clusters it is only
+	 * true if the table exists on all databases in the cluster
+	 * @throws SQLException
+	 */
 	@Override
 	@SuppressFBWarnings(
 			value = "REC_CATCH_EXCEPTION",
@@ -2434,7 +2274,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
-	/*TODO: convert to use DBQuery to improve cluster implementation */
 	private boolean checkTableExistsViaQuery(DBRow table) throws NoAvailableDatabaseException {
 		boolean tableExists;
 		String testQuery = getDefinition().getTableExistsSQL(table);
@@ -2458,7 +2297,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
-	/*TODO: convert to use DBQuery to improve cluster implementation */
 	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
 		boolean tableExists = false;
 		try (DBStatement dbStatement = getDBStatement()) {
@@ -2471,7 +2309,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
-	boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
+	public boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
 		return tableExists(DBRow.getDBRow(tab));
 	}
 
@@ -2502,69 +2340,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	/*TODO: convert to use DBAction to improve cluster implementation */
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
-
-		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
-		String testQuery = definition.getTableStructureQuery(table, getDBTable(table));
-		try (DBStatement dbStatement = getDBStatement()) {
-			var dets = new StatementDetails("CHECK TABLE STRUCTURE FOR " + table.getTableName(), QueryIntention.CHECK_TABLE_STRUCTURE, testQuery, dbStatement);
-			try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
-				if (resultSet != null) {
-					ResultSetMetaData metaData = resultSet.getMetaData();
-					var columnPropertyWrappers = table.getColumnPropertyWrappers();
-					for (var columnPropertyWrapper : columnPropertyWrappers) {
-						if (!columnPropertyWrapper.hasColumnExpression()) {
-							int columnCount = metaData.getColumnCount();
-							boolean foundColumn = false;
-							for (int i = 1; i <= columnCount && !foundColumn; i++) {
-								String columnName = definition.formatColumnName(metaData.getColumnName(i));
-								String formattedPropertyColumnName = definition.formatColumnName(columnPropertyWrapper.columnName());
-
-								/*Postgres returns a lowercase column name in the meta data so use case-insensitive check*/
-								if (columnName.equalsIgnoreCase(formattedPropertyColumnName)) {
-									foundColumn = true;
-								}
-							}
-							if (!foundColumn) {
-								// We collect all the changes and process them later because SQLite doesn't like processing them imediately
-								newColumns.add(columnPropertyWrapper);
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception ex) {
-			LOG.warn("Error occurred while adding columns to required table", ex);
-			// Theoretically this should only need to catch an SQLException 
-			// but databases throw allsorts of weird exceptions
-		}
-		for (var newColumn : newColumns) {
-			alterTableAddColumn(table, newColumn);
-		}
-	}
-
-	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
-		try {
-			executeDBAction(new DBAlterTableAddColumn(existingTable, columnPropertyWrapper));
-		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabase.class
-					.getName()).log(Level.SEVERE, null, ex);
-		}
-//		preventDDLDuringTransaction("DBDatabase.alterTable()");
-//
-//		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
-//
-//		try (DBStatement dbStatement = getDBStatement()) {
-//			try {
-//				dbStatement.execute("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString);
-//			} catch (SQLException ex) {
-//				Logger.getLogger(DBDatabase.class
-//						.getName()).log(Level.SEVERE, null, ex);
-//			}
-//
-//		} catch (SQLException ex) {
-//			Logger.getLogger(DBDatabase.class
-//					.getName()).log(Level.SEVERE, null, ex);
-//		}
+		executeDBAction(new DBAddMissingColumnsToTable(table));
 	}
 
 	/**
