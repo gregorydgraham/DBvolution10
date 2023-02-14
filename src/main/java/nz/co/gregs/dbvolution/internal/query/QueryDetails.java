@@ -399,7 +399,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private synchronized List<String> getSQLForCountInternal(QueryDetails details, QueryOptions options) {
 
 		if (!options.getQueryDefinition().supportsFullOuterJoinNatively()) {
-			final List<String> sqlForQueryInternal = getSQLForQueryInternal(new QueryState(details), QueryType.SELECT, options);
+			QueryOptions innerSelectOptions = options.copy();
+			innerSelectOptions.setUseStarInsteadOfColumns(true);
+			final List<String> sqlForQueryInternal = getSQLForQueryInternal(new QueryState(details), QueryType.SELECT, innerSelectOptions);
 			String endStatement = options.getQueryDefinition().endSQLStatement();
 			RegexReplacement removeTrailingSemiColons = Regex.empty().literal(";").literal(" ").optionalMany().endOfTheString().toRegex().replaceWith().literal("");
 			return sqlForQueryInternal
@@ -680,7 +682,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					sqlList.add(assembleSQLQuery(defn, selectClause, fromClause, whereClause, rawSQLClauseFinal, "", havingClause, orderByClauseFinal, options, queryState));
 				}
 
-			} else if (queryType == QueryType.COUNT) {
+			} else if (queryType == QueryType.COUNT||options.isUseStarInsteadOfColumns()) {
 				setSelectSQLClause(defn.countStarClause());
 				sqlList.add(defn.beginSelectStatement()
 						+ defn.countStarClause() + LINE_SEP
