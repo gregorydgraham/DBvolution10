@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
+import nz.co.gregs.regexi.Regex;
 import org.joda.time.Period;
 
 /**
@@ -352,7 +353,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	}
 
 	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT_WITH_MILLISECONDS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-	
+
 	@Override
 	public boolean supportsRetrievingLastInsertedRowViaSQL() {
 		return true;
@@ -1085,6 +1086,17 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	@Override
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return true;
+	}
+
+	private static final Regex DUPLICATE_COLUMN_EXCEPTION
+			= Regex
+					.startingAnywhere()
+					.literalCaseInsensitive("duplicate column name: ")
+					.toRegex();
+
+	@Override
+	public boolean isDuplicateColumnException(Exception exc) {
+		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
 	}
 
 }
