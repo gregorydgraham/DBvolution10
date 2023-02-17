@@ -67,6 +67,7 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.utility.LoopVariable;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
+import nz.co.gregs.dbvolution.utility.RegularProcess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -323,11 +324,34 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void initDatabase(DBDatabase[] databases) {
-		for (DBDatabase database : databases) {
-			addDatabaseWithoutWaiting(database);
-		}
+		initDatabaseMembers(databases);
 		setDefinition(new ClusterDatabaseDefinition());
-		getDetails().synchronizeSecondaryDatabases();
+		SynchroniserProcess synchroniserProcess = new SynchroniserProcess();
+		addRegularProcess(synchroniserProcess);
+
+	}
+
+	private void initDatabaseMembers(DBDatabase[] databases) {
+		LinkedList<DBDatabase> listedDatabases = new LinkedList<DBDatabase>(Arrays.asList(databases));
+		boolean done = false;
+		while (!done && listedDatabases.size() > 0) {
+			DBDatabase firstDB = listedDatabases.get(0);
+			if (firstDB != null) {
+				try {
+					listedDatabases.remove(firstDB);
+					addDatabaseAndWait(firstDB);
+					for (DBDatabase database : listedDatabases) {
+						addDatabaseWithoutWaiting(database);
+					}
+					done = true;
+				} catch (SQLException exc) {
+					LOG.warn("Exception while trying to init cluster with database "+firstDB.getLabel()+":"+firstDB.getJdbcURL(), exc);
+					exc.printStackTrace();
+				}
+			} else {
+				done = true;
+			}
+		}
 	}
 
 	/**
@@ -952,10 +976,13 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
-		preventAccidentalDDLDuringTransaction(action);
-		preventAccidentalDroppingOfDatabases(action);
-		preventAccidentalDroppingOfTables(action);
-		return executeDBActionOnClusterMembers(action);
+		if (!details.isShuttingDown()) {
+			preventAccidentalDDLDuringTransaction(action);
+			preventAccidentalDroppingOfDatabases(action);
+			preventAccidentalDroppingOfTables(action);
+			return executeDBActionOnClusterMembers(action);
+		}
+		return new DBActionList();
 	}
 
 	private DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, DBRuntimeException, SQLException {
@@ -1010,7 +1037,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		final DBDatabase workingDB = getReadyDatabase();
 		workingDB.setQuietExceptionsPreference(this.getQuietExceptionsPreference());
-		HandlerAdvice advice = HandlerAdvice.REQUERY;
+		HandlerAdvice advice;
 		try {
 			// set oracle compatibility 
 			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString() || !getDefinition().canProduceNullStrings());
@@ -1472,7 +1499,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			LOG.info(this.getLabel() + " RECONNECTION FAILED FOR DATABASE: " + quarantee.getLabel());
 			LOG.info(this.getLabel() + " DEAD DATABASE: " + quarantee.getLabel());
 			deadDatabase(quarantee, ex);
-			str.append("").append(quarantee.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
+			str.append("").append(quarantee.getLabel()).append(" DEAD: ").append(ex.getLocalizedMessage());
 		} finally {
 			str.append("\n");
 		}
@@ -1658,7 +1685,8 @@ public class DBDatabaseCluster extends DBDatabase {
 		 *
 		 * @return an auto-rebuild and reconnect configuration
 		 * @deprecated despite the method name, this will also start the cluster.
-		 * Use {@link #autoRebuildReconnectAndStart() } instead
+		 * Use {@link #autoRebuildReconnectAndStart()
+		 * } instead
 		 */
 		@Deprecated
 		public static Configuration autoRebuildAndReconnect() {
@@ -1790,6 +1818,20 @@ public class DBDatabaseCluster extends DBDatabase {
 		 */
 		public Configuration withAutoConnect() {
 			return new Configuration(this.useAutoRebuild, this.useAutoReconnect, this.useAutoStart, true);
+		}
+	}
+
+	private class SynchroniserProcess extends RegularProcess {
+
+		private static final long serialVersionUID = 1L;
+
+		public SynchroniserProcess() {
+		}
+
+		@Override
+		public String process() throws Exception {
+			getDetails().synchronizeSecondaryDatabases();
+			return "Finished Synchronising Databases";
 		}
 	}
 }

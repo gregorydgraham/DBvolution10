@@ -141,13 +141,14 @@ public class DBInsert extends DBAction {
 	}
 
 	@Override
-	public DBActionList execute(DBDatabase db) throws SQLException {
+	public DBActionList execute(DBDatabase db) throws SQLException, DBSQLException {
 		final DBDefinition defn = db.getDefinition();
 		DBRow table = originalRow;
 		final DBInsert newInsert = new DBInsert(table);
 		DBActionList actions = new DBActionList(newInsert);
+		int successfulInsertAt = 0;
 
-		try ( DBStatement statement = db.getDBStatement()) {
+		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				StatementDetails statementDetails = new StatementDetails("INSERT ROW", QueryIntention.INSERT_ROW, sql, statement);
 				if (defn.supportsGeneratedKeys()) {
@@ -156,6 +157,7 @@ public class DBInsert extends DBAction {
 						if (primaryKeys == null || primaryKeys.isEmpty()) {
 							// There are no primary keys so execute and move on.
 							executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
+							successfulInsertAt = 1;
 						} else {
 							boolean allPKsHaveBeenSet = true;
 							for (QueryableDatatype<?> primaryKey : primaryKeys) {
@@ -164,6 +166,7 @@ public class DBInsert extends DBAction {
 							if (allPKsHaveBeenSet) {
 								// The primary key has already been sorted for us so execute and move on.
 								executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
+								successfulInsertAt = 2;
 							} else {
 								if (primaryKeys.size() == 1) {
 									QueryableDatatype<?> primaryKey = primaryKeys.get(0);
@@ -172,21 +175,26 @@ public class DBInsert extends DBAction {
 									if (pkIndex == null || primaryKeyColumnName == null) {
 										// We can't find the PK so just execute and move on.
 										executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
+										successfulInsertAt = 3;
+
 									} else {
 										// There is a PK, it's not set, and we can find it, so we need to get it's value...
 										if (primaryKeyColumnName.isEmpty()) {
 											// Not sure of the column name, so ask for the keys and cross fingers.
 											statementDetails = statementDetails.withGeneratedKeys();
 											executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
+											successfulInsertAt = 4;
+
 										} else {
 											// execute and ask for the column specifically, also cross fingers.
 											statementDetails = statementDetails
 													.withNamedPKColumn(db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName));
 											executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
+											successfulInsertAt = 5;
 											pkIndex = 1;
 										}
 										if (primaryKey.hasBeenSet() == false) {
-											try ( ResultSet generatedKeysResultSet = statement.getGeneratedKeys()) {
+											try (ResultSet generatedKeysResultSet = statement.getGeneratedKeys()) {
 												while (generatedKeysResultSet.next()) {
 													final Long pkValue = generatedKeysResultSet.getLong(pkIndex);
 													if (pkValue > 0) {
@@ -209,6 +217,7 @@ public class DBInsert extends DBAction {
 					} catch (SQLException sqlex) {
 						try {
 							executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
+							successfulInsertAt = 6;
 						} catch (SQLException ex) {
 							throw new DBSQLException(db, sql, sqlex);
 						}
@@ -216,6 +225,7 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
+						successfulInsertAt = 7;
 						updatePrimaryKeyByRetreivingLastInsert(statement, defn, table);
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException ex) {
@@ -250,14 +260,14 @@ public class DBInsert extends DBAction {
 			if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 				String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 				var dets = new StatementDetails("RETRIEVE LAST INSERT", QueryIntention.RETRIEVE_LAST_INSERT, retrieveSQL, statement);
-				try ( ResultSet rs = statement.executeQuery(dets)) {
+				try (ResultSet rs = statement.executeQuery(dets)) {
 					if (rs != null) {
 						for (var primaryKeyWrapper : primaryKeyWrappers) {
 							var definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 							QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
 							QueryableDatatype<?> rowPK = definition.getQueryableDatatype(table);
 
-							if (originalPK.hasBeenSet() == false) {
+							if (originalPK.isDefined()== false) {
 								if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
 									final long generatedPK = rs.getLong(1);
 									setPrimaryKeyGenerated(generatedPK);
@@ -285,19 +295,34 @@ public class DBInsert extends DBAction {
 		}
 	}
 
-	private void executeStatementAndHandleIntegrityConstraintViolation(final DBStatement statement, StatementDetails statementDetails, DBDatabase db, DBRow table) throws SQLException {
+	private void executeStatementAndHandleIntegrityConstraintViolation(final DBStatement statement, StatementDetails statementDetails, DBDatabase db, DBRow row) throws SQLException {
 		try {
 			statement.execute(statementDetails);
-		} catch (java.sql.SQLIntegrityConstraintViolationException alreadyExists) {
-			db.delete(table);
-			statement.execute(statementDetails);
+		} catch (Exception alreadyExists) {
+			if (db.getDefinition().isPrimaryKeyAlreadyExistsException(alreadyExists)) {
+				db.print(db.getDBTable(DBRow.getDBRow(row.getClass())).setBlankQueryAllowed(true).getAllRows());
+				db.delete(row);
+				statement.execute(statementDetails);
+			} else {
+				throw alreadyExists;
+			}
 		}
 	}
 
 	private void updateSequenceIfNecessary(final DBDefinition defn, DBDatabase db, String sql, DBRow table, final DBStatement statement) throws SQLException {
 		if (primaryKeyWasGenerated && defn.requiresSequenceUpdateAfterManualInsert()) {
 			final String sequenceUpdateSQL = defn.getSequenceUpdateSQL(table.getTableName(), table.getPrimaryKeyColumnNames().get(0), primaryKeyGenerated);
-			statement.execute("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE, sequenceUpdateSQL);
+			try {
+				statement.execute("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE, sequenceUpdateSQL);
+			} catch (SQLException ex1) {
+				LOG.warn("FAILED TO UPDATE SEQUENCE - RETRYING: ", ex1);
+				try {
+					statement.execute("UPDATE SEQUENCE", QueryIntention.UPDATE_SEQUENCE, sequenceUpdateSQL);
+				} catch (Exception ex2) {
+					LOG.warn("RETRY FAILED: ", ex2);
+					throw ex1;
+				}
+			}
 		}
 	}
 

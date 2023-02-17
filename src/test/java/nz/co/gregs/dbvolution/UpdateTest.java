@@ -42,7 +42,8 @@ public class UpdateTest extends AbstractTest {
 			testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);"),
 			testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4);"),
 			testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4)"),
-			testableSQL("update marque set \"intindallocallowed\" = 'y' where (uid_marque = 4);")
+			testableSQL("update marque set \"intindallocallowed\" = 'y' where (uid_marque = 4);"),
+			testableSQL("update marque set \"intindallocallowed\" = 'y' where (\"uid_marque\" = 4);")
 		};
 
 		assertThat(testableSQL(sqlForUpdate),
@@ -66,12 +67,16 @@ public class UpdateTest extends AbstractTest {
 		final String updateQueryStr2 = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4893059);");
 		final String updateQueryStr3 = testableSQL("update [marque] set intindallocallowed = n'y' where (uid_marque = 4893059);");
 		final String updateQueryStrOracle = testableSQL("update marque set intindallocallowed = 'y' where (uid_marque = 4893059)");
+		final String updateQueryWithQuotedColumns = testableSQL("update marque set \"intindallocallowed\" = 'y' where (uid_marque = 4893059);");
+		final String updateQueryWithQuotedColumnsBothTimes = testableSQL("update marque set \"intindallocallowed\" = 'y' where (\"uid_marque\" = 4893059);");
 		assertThat(testableSQL(sqlForUpdate),
 				isOneOf(
 						updateQueryStr1,
 						updateQueryStr2,
 						updateQueryStr3,
-						updateQueryStrOracle
+						updateQueryStrOracle,
+						updateQueryWithQuotedColumns,
+						updateQueryWithQuotedColumnsBothTimes
 				));
 		marquesTable.update(peugeot);
 		Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);

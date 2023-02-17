@@ -313,7 +313,7 @@ public abstract class AbstractTest {
 			} else if ((database instanceof MSSQLServerDB)) {
 				return trimStr
 						.replaceAll("\\[", "")
-						.replaceAll("]", "")
+						.replaceAll("\\]", "")
 						.replaceAll(" *;", "");
 			} else {
 				return trimStr;

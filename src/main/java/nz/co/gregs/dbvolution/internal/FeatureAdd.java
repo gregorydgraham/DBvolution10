@@ -89,7 +89,6 @@ public interface FeatureAdd {
 				} catch (Exception ex) {
 					final ExceptionDuringDatabaseFeatureSetup setupException = new ExceptionDuringDatabaseFeatureSetup("FAILED TO ADD FEATURE: " + featureName(), ex);
 					LOGGER.log(Level.SEVERE, "" + setupException.getMessage());
-					setupException.printStackTrace();
 					throw setupException;
 				}
 			}

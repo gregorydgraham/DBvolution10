@@ -173,34 +173,47 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		final DBDatabaseClusterTestTable2 testTable = new DBDatabaseClusterTestTable2();
 
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			// check that the table was automatically created, as all required tables should be
 			Assert.assertTrue(cluster.tableExists(testTable));
-			cluster.addTrackedTable(testTable);
-			final DBTable<DBDatabaseClusterTestTable2> query = cluster
-					.getDBTable(testTable)
-					.setBlankQueryAllowed(true);
+			final DBTable<DBDatabaseClusterTestTable2> query
+					= cluster
+							.getDBTable(testTable)
+							.setBlankQueryAllowed(true);
 			final List<DBDatabaseClusterTestTable2> allRows = query.getAllRows();
 
+			// clear any old data, there shouldn't be any but you never know
 			cluster.delete(allRows);
+			// check that the data is NOT in the cluster
+			assertThat(cluster.getDBTable(testTable).count(), is(0l));
+			// check that the data is NOT in the actual database
+			assertThat(database.getDBTable(testTable).count(), is(0l));
 
+			// make some data
 			Date firstDate = new Date();
 			Date secondDate = new Date();
 			List<DBDatabaseClusterTestTable2> data = createData2(firstDate, secondDate);
-
+			// insert the data we going to use
 			cluster.insert(data);
-
+			// check that the data is in the cluster
 			assertThat(cluster.getDBTable(testTable).count(), is(22l));
+			// check that the data is in the actual database
 			assertThat(database.getDBTable(testTable).count(), is(22l));
 
+			// create a completely new database
 			H2MemoryDB soloDB = H2MemoryDB.createANewRandomDatabase();
-
+			// check that it automatically gets the required table
 			Assert.assertTrue(soloDB.tableExists(testTable));
+			// check that it DOES NOT have the data
 			assertThat(soloDB.getDBTable(testTable).count(), is(0l));
 
+			// add it to the database and give it a chance to catch up
 			cluster.addDatabase(soloDB);
 			cluster.waitUntilDatabaseIsSynchronised(soloDB);
 
+			// check that the cluster still the data
 			assertThat(cluster.getDBTable(testTable).count(), is(22l));
 			assertThat(database.getDBTable(testTable).count(), is(22l));
+			// check that the new database has gained the data
 			assertThat(soloDB.getDBTable(testTable).count(), is(22l));
 
 			cluster.removeDatabase(soloDB);
@@ -649,7 +662,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			cluster.setLabel("testDatabaseRemovedAfterErrorInCreateTable");
 
 			cluster.createTableNoExceptions(new TableThatDoesExistOnTheCluster());
-			
+
 			final H2MemorySettingsBuilder settings
 					= new H2MemorySettingsBuilder()
 							.setLabel("testDatabaseRemovedAfterErrorInCreateTable")
@@ -980,6 +993,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					nameOfCluster, DBDatabaseCluster.Configuration.fullyManual().withAutoConnect().withAutoStart()
 			);
 			System.out.println("" + cluster.getClusterStatus());
+			cluster.waitUntilSynchronised();
 			assertThat(cluster.size(), is(2));
 			final DBDatabase[] dbsInCluster = cluster.getDatabases();
 			List<String> databases = new ArrayList<>();

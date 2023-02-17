@@ -744,4 +744,16 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	public boolean isDuplicateColumnException(Exception exc) {
 		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
 	}
+
+	@Override
+	public boolean isPrimaryKeyAlreadyExistsException(Exception alreadyExists) {
+		Throwable exc = alreadyExists;
+		while (exc != null) {
+			if (exc instanceof org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException) {
+				return true;
+			}
+			exc = exc.getCause();
+		}
+		return super.isPrimaryKeyAlreadyExistsException(alreadyExists);
+	}
 }

@@ -492,7 +492,7 @@ public class DataModelTest extends AbstractTest {
 
 		// Store the number found for use later
 		final int numberOfClassesFound = foundKeys.size();
-		
+
 		boolean allClassesKnown = true;
 		for (String knownString : knownKeys) {
 			if (!foundKeys.contains(knownString)) {
@@ -692,16 +692,15 @@ public class DataModelTest extends AbstractTest {
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
 		for (Method creator : dbDatabaseCreationMethods) {
 			creator.setAccessible(true);
-			try {
-				if (database instanceof SQLiteDB) {
+			if (database instanceof SQLiteDB) {
+				try {
 					DBDatabase db = (DBDatabase) creator.invoke(null);
+				} catch (Exception ex) {
+					System.out.println("EXCEPTION: " + ex.getClass().getCanonicalName());
+					System.out.println("EXCEPTION: " + ex.getMessage());
+					System.out.println("EXCEPTION: " + ex.getLocalizedMessage());
+					fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 				}
-			} catch (Exception ex) {
-				System.out.println("EXCEPTION: " + ex.getClass().getCanonicalName());
-				System.out.println("EXCEPTION: " + ex.getMessage());
-				System.out.println("EXCEPTION: " + ex.getLocalizedMessage());
-				ex.printStackTrace();
-				fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
 		assertThat(dbDatabaseCreationMethods.size(), is(3));

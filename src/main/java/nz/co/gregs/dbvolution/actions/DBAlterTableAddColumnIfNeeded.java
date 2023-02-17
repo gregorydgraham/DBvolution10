@@ -88,8 +88,8 @@ public class DBAlterTableAddColumnIfNeeded extends DBAction {
 		try {
 			executeOnStatement(db);
 		} catch (Exception exc) {
- 			if (!db.getDefinition().isDuplicateColumnException(exc)) {
-				exc.printStackTrace();
+			if (!db.getDefinition().isDuplicateColumnException(exc)) {
+				throw exc;
 			}
 		}
 		return actions;

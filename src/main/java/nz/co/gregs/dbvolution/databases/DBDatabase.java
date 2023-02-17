@@ -48,11 +48,8 @@ import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.NamedDatabaseCapableSettingsBuilder;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.RegularProcess;
 import org.apache.commons.logging.Log;
@@ -63,7 +60,6 @@ import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
@@ -624,7 +620,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		}
 		return changes;
 	}
-	
+
 	/**
 	 *
 	 * Deletes DBRows using the correct tables automatically
@@ -2229,6 +2225,12 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		preventAccidentalDroppingOfDatabases(action);
 		preventAccidentalDroppingOfTables(action);
 		preventAccidentalDeletingAllRowsFromTable(action);
+		if (quietExceptionsPreference) {
+			try {
+				return action.execute(this);
+			} catch (SQLException acceptableException) {
+			}
+		}
 		return action.execute(this);
 	}
 

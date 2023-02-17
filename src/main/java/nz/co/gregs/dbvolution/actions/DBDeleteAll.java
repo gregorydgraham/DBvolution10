@@ -76,25 +76,6 @@ public class DBDeleteAll extends DBDelete {
 		DBActionList actions = new DBActionList(deleteAction);
 		return actions;
 	}
-	
-	
-
-//	@Override
-//	public DBActionList execute(DBDatabase db) throws SQLException {
-//		DBRow table = getRow();
-//		final DBDeleteAll deleteAction = new DBDeleteAll(table);
-//		DBActionList actions = new DBActionList(deleteAction);
-//		List<DBRow> rowsToBeDeleted = db.getDBTable(table).setBlankQueryAllowed(true).getAllRows();
-//		for (DBRow deletingRow : rowsToBeDeleted) {
-//			deleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
-//		}
-//		try (DBStatement statement = db.getDBStatement()) {
-//			for (String sql : getSQLStatements(db)) {
-//				statement.execute("BULK DELETE", QueryIntention.BULK_DELETE,sql);
-//			}
-//		}
-//		return actions;
-//	}
 
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
@@ -125,7 +106,7 @@ public class DBDeleteAll extends DBDelete {
 	}
 
 	@Override
-	protected DBActionList getActions() {//DBRow row) {
+	protected DBActionList getActions() {
 		return new DBActionList(new DBDeleteAll(getRow()));
 	}
 

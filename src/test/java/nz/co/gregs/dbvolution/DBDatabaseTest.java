@@ -141,7 +141,7 @@ public class DBDatabaseTest extends AbstractTest {
 			database.createOrUpdateTable(newColumntable);
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(newColumntable);
-		} catch (Exception ex) {
+		} catch (SQLException | AccidentalDroppingOfTableException | AutoCommitActionDuringTransactionException ex) {
 			ex.printStackTrace();
 		}
 		assertThat(database.tableExists(originalColumnTable), is(false));

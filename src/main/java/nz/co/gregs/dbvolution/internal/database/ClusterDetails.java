@@ -156,9 +156,14 @@ public class ClusterDetails implements Serializable {
 
 			if (quietExceptions) {
 			} else {
-				LOG.log(Level.WARNING, "QUARANTINING: {0}", database.getLabel());
-				LOG.log(Level.WARNING, "QUARANTINING: {0}", database.getJdbcURL());
-				LOG.log(Level.WARNING, "QUARANTINING: {0}", except.getLocalizedMessage());
+				LOG.log(Level.WARNING, "QUARANTINING: DATABASE LABEL {0}", database.getLabel());
+				LOG.log(Level.WARNING, "QUARANTINING: JDBCURL {0}", database.getJdbcURL());
+				Throwable e = except;
+				while (e != null) {
+					LOG.log(Level.WARNING, "QUARANTINING: EXCEPTION {0}", except.getClass().getCanonicalName());
+					LOG.log(Level.WARNING, "QUARANTINING: MESSAGE {0}", except.getLocalizedMessage());
+					e = e.getCause();
+				}
 			}
 			database.setLastException(except);
 			members.setQuarantined(database);
@@ -432,7 +437,6 @@ public class ClusterDetails implements Serializable {
 					DBRow dbRow = DBRow.getDBRow(trackedTableClass);
 					trackedTables.add(dbRow);
 				} catch (ClassNotFoundException ex) {
-					ex.printStackTrace();
 					LOG.log(
 							Level.SEVERE,
 							"Tracked Table {0} requested but not found while trying to rebuild cluster {1}",
@@ -624,19 +628,15 @@ public class ClusterDetails implements Serializable {
 				}
 			}
 			if (StringCheck.isNotEmptyNorNull(encodedSettings)) {
-				try {
-					final DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
-					List<DatabaseConnectionSettings> decodedSettings = settings.getClusterHosts();
-					for (DatabaseConnectionSettings host : decodedSettings) {
-						try {
-							final DBDatabase db = host.createDBDatabase();
-							databases.add(db);
-						} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-							Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
-						}
+				final DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
+				List<DatabaseConnectionSettings> decodedSettings = settings.getClusterHosts();
+				for (DatabaseConnectionSettings host : decodedSettings) {
+					try {
+						final DBDatabase db = host.createDBDatabase();
+						databases.add(db);
+					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+						Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
 					}
-				} catch (Exception exc) {
-					exc.printStackTrace();
 				}
 			}
 		}
@@ -701,17 +701,19 @@ public class ClusterDetails implements Serializable {
 
 	private boolean isEligibleForSynchronizing(DBDatabase database) {
 		final DBDatabaseCluster.Status statusOfDatabase = getStatusOf(database);
-		final boolean notQuarantined = statusOfDatabase != DBDatabaseCluster.Status.QUARANTINED;
-		return clusterContains(database) && (notQuarantined || configuration.isUseAutoReconnect());
+		final boolean notDead = statusOfDatabase != DBDatabaseCluster.Status.DEAD;
+		return clusterContains(database) && (notDead || configuration.isUseAutoReconnect());
 	}
 
 	public void synchronizeSecondaryDatabases() {
-		DBDatabase[] addedDBs;
-		addedDBs = members.getDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED);
-		for (DBDatabase db : addedDBs) {
-			if (stillRunning) {
-				//Do The Synchronising...
-				synchronizeSecondaryDatabase(db);
+		if (stillRunning) {
+			DBDatabase[] addedDBs;
+			addedDBs = members.getDatabases(DBDatabaseCluster.Status.UNSYNCHRONISED);
+			for (DBDatabase db : addedDBs) {
+				if (stillRunning) {
+					//Do The Synchronising...
+					synchronizeSecondaryDatabase(db);
+				}
 			}
 		}
 	}
@@ -767,7 +769,6 @@ public class ClusterDetails implements Serializable {
 												} catch (SQLException ex) {
 													proceedWithSynchronization = false;
 													LOG.log(Level.SEVERE, "QUARANTINING DATABASE {0}: {1}", new Object[]{secondaryLabel, ex.getLocalizedMessage()});
-													ex.printStackTrace();
 													quarantineDatabaseAutomatically(secondary, ex);
 													//exit the loop, to avoid unnecessary tests
 													break;
@@ -793,18 +794,16 @@ public class ClusterDetails implements Serializable {
 				// must be the first database
 			} catch (Exception exc) {
 				proceedWithSynchronization = false;
-				LOG.severe(exc.getLocalizedMessage());
-				exc.printStackTrace();
+				LOG.log(Level.SEVERE, "Exception during synchronising: {0}", exc.getLocalizedMessage());
 			} catch (Throwable throwable) {
 				proceedWithSynchronization = false;
-				LOG.severe(throwable.getLocalizedMessage());
-				throwable.printStackTrace();
+				LOG.log(Level.SEVERE, "Throwable during synchronising: {0}", throwable.getLocalizedMessage());
 			}
 			if (proceedWithSynchronization) {
 				LOG.log(Level.FINEST, "{0} START SYNCHRONISING ACTIONS ON: {1}", new Object[]{clusterLabel, secondaryLabel});
 				synchronizeActions(secondary);
 			}
-		}catch(Exception exc){
+		} catch (Exception exc) {
 			members.setUnsynchronised(secondary);
 		} finally {
 			releaseTemplateDatabase(template);
@@ -908,5 +907,9 @@ public class ClusterDetails implements Serializable {
 
 	public void shutdown() {
 		this.stillRunning = false;
+	}
+
+	public boolean isShuttingDown() {
+		return !stillRunning;
 	}
 }

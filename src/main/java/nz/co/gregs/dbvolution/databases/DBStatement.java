@@ -609,7 +609,6 @@ public class DBStatement implements AutoCloseable {
 					break;
 			}
 		} catch (Exception exc) {
-//			exc.printStackTrace();
 			throw exc;
 		}
 		return DBDatabase.ResponseToException.NOT_HANDLED;

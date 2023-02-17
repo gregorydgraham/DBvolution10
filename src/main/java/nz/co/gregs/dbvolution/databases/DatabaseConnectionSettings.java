@@ -110,7 +110,7 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
  *
  * @author Gregory Graham
  */
-public class DatabaseConnectionSettings implements Serializable{
+public class DatabaseConnectionSettings implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -122,8 +122,8 @@ public class DatabaseConnectionSettings implements Serializable{
 	private String username = "";
 	private String password = "";
 	private String schema = "";
-	private final Map<String, String> extras = new HashMap<>();
-	private final List<String> clusterHosts = new ArrayList<String>();
+	private final HashMap<String, String> extras = new HashMap<>();
+	private final ArrayList<String> clusterHosts = new ArrayList<String>();
 	private String dbdatabase = "";
 	private String label = "";
 	private DataSource dataSource = null;
@@ -136,6 +136,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	public static DatabaseConnectionSettings newSettings() {
 		return new DatabaseConnectionSettings();
 	}
+	private String encoded;
 
 	public DatabaseConnectionSettings() {
 		super();
@@ -175,27 +176,40 @@ public class DatabaseConnectionSettings implements Serializable{
 	 *
 	 * @return encoded settings suitable for decoding.
 	 */
-	public String encode() {
-		SeparatedString encoder = getEncoder();
-		encoder.addAll(
-				StringCheck.check(getDbdatabaseClass()),
-				StringCheck.check(getHost()),
-				StringCheck.check(getPort()),
-				StringCheck.check(getInstance()),
-				StringCheck.check(getDatabaseName()),
-				StringCheck.check(getSchema()),
-				StringCheck.check(getUrl()),
-				StringCheck.check(getUsername()),
-				StringCheck.check(getPassword()),
-				StringCheck.check(getLabel()),
-				StringCheck.check(getFilename()),
-				StringCheck.check(encodeClusterHosts(getClusterHosts())),
-				StringCheck.check(encodeExtras(getExtras())));
-		return encoder.encode();
+	public synchronized String encode() {
+		if (StringCheck.isEmptyOrNull(encoded)) {
+
+			List<DatabaseConnectionSettings> hosts = getClusterHosts();
+			String encodedHosts = encodeClusterHosts(hosts);
+
+			Map<String, String> gotExtras = getExtras();
+			String encodedExtras = encodeExtras(gotExtras);
+
+			SeparatedString encoder = getEncoder();
+			encoder.add(StringCheck.check(getDbdatabaseClass()));
+			encoder.add(StringCheck.check(getHost()));
+			encoder.add(StringCheck.check(getPort()));
+			encoder.add(StringCheck.check(getInstance()));
+			encoder.add(StringCheck.check(getDatabaseName()));
+			encoder.add(StringCheck.check(getSchema()));
+			encoder.add(StringCheck.check(getUrl()));
+			encoder.add(StringCheck.check(getUsername()));
+			encoder.add(StringCheck.check(getPassword()));
+			encoder.add(StringCheck.check(getLabel()));
+			encoder.add(StringCheck.check(getFilename()));
+			encoder.add(StringCheck.check(encodedHosts));
+			encoder.add(StringCheck.check(encodedExtras));
+
+			encoded = encoder.encode();
+		}
+		return encoded;
 	}
 
 	private static SeparatedString getEncoder() {
-		return SeparatedStringBuilder.forSeparator(FIELD_SEPARATOR).withEscapeChar("\\").withPrefix("DATABASECONNECTIONSETTINGS: ");
+		return SeparatedStringBuilder
+				.forSeparator(FIELD_SEPARATOR)
+				.withEscapeChar("\\")
+				.withPrefix("DATABASECONNECTIONSETTINGS: ");
 	}
 
 	private static SeparatedString getToStringer() {
@@ -204,9 +218,10 @@ public class DatabaseConnectionSettings implements Serializable{
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
+		SeparatedString encoder = getEncoder();
+		List<String> decoded = encoder.decode(encodedSettings);
+		String[] data = decoded.toArray(new String[0]);
 
-		String[] data = getEncoder().decode(encodedSettings).toArray(new String[]{});
-//		String[] data = encodedSettings.split("DATABASECONNECTIONSETTINGS: ")[1].split(FIELD_SEPARATOR);
 		if (data.length > 0) {
 			settings.setDbdatabaseClass(data[0]);
 			if (data.length > 1) {
@@ -629,6 +644,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public void merge(DatabaseConnectionSettings settings) {
+		clearCachedValues();
 		copySimpleFields(settings);
 		this.mergeExtras(settings.getExtras());
 	}
@@ -746,6 +762,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setUrl(String url) {
+		clearCachedValues();
 		this.url = url == null ? "" : url;
 		return this;
 	}
@@ -755,6 +772,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setHost(String host) {
+		clearCachedValues();
 		this.host = host == null ? "" : host;
 		return this;
 	}
@@ -764,6 +782,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setPort(String port) {
+		clearCachedValues();
 		this.port = port == null ? "" : port;
 		return this;
 	}
@@ -773,6 +792,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setInstance(String instance) {
+		clearCachedValues();
 		this.instance = instance == null ? "" : instance;
 		return this;
 	}
@@ -782,6 +802,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setDatabaseName(String database) {
+		clearCachedValues();
 		this.database = database == null ? "" : database;
 		return this;
 	}
@@ -791,6 +812,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setUsername(String username) {
+		clearCachedValues();
 		this.username = username == null ? "" : username;
 		return this;
 	}
@@ -800,6 +822,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setPassword(String password) {
+		clearCachedValues();
 		this.password = password == null ? "" : password;
 		return this;
 	}
@@ -809,6 +832,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setSchema(String schema) {
+		clearCachedValues();
 		this.schema = schema == null ? "" : schema;
 		return this;
 	}
@@ -827,6 +851,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return the extras
 	 */
 	public final DatabaseConnectionSettings setExtras(Map<String, String> newExtras) {
+		clearCachedValues();
 		extras.clear();
 		if (newExtras != null && !newExtras.isEmpty()) {
 			extras.putAll(newExtras);
@@ -842,6 +867,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return the extras
 	 */
 	public final DatabaseConnectionSettings mergeExtras(Map<String, String> newExtras) {
+		clearCachedValues();
 		if (newExtras != null && !newExtras.isEmpty()) {
 			extras.putAll(newExtras);
 		}
@@ -855,6 +881,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return the extras
 	 */
 	public final DatabaseConnectionSettings addExtras(Map<String, String> newExtras) {
+		clearCachedValues();
 		if (newExtras != null && !newExtras.isEmpty()) {
 			extras.putAll(newExtras);
 		}
@@ -890,10 +917,12 @@ public class DatabaseConnectionSettings implements Serializable{
 
 	public static String encodeClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
 		SeparatedString csv = clusterHostEncoder();
-		clusterHosts.forEach((each) -> {
-			csv.add(each.encode());
-		});
-		return csv.toString();
+		for (DatabaseConnectionSettings clusterHost : clusterHosts) {
+			String encoded = clusterHost.encode();
+			csv.add(encoded);
+		}
+		String result = csv.toString();
+		return result;
 	}
 
 	public static List<DatabaseConnectionSettings> decodeClusterHosts(String clusterHosts) {
@@ -905,13 +934,14 @@ public class DatabaseConnectionSettings implements Serializable{
 				DatabaseConnectionSettings decodedHost = decode(host);
 				results.add(decodedHost);
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("Error while decoding cluster hosts: " + e.getMessage());
 			}
 		}
 		return results;
 	}
 
 	public final DatabaseConnectionSettings setDbdatabaseClass(String canonicalNameOfADBDatabaseSubclass) {
+		clearCachedValues();
 		this.dbdatabase = canonicalNameOfADBDatabaseSubclass;
 		return this;
 	}
@@ -930,6 +960,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return this instance
 	 */
 	public final DatabaseConnectionSettings setLabel(String label) {
+		clearCachedValues();
 		this.label = label;
 		return this;
 	}
@@ -944,10 +975,11 @@ public class DatabaseConnectionSettings implements Serializable{
 	 * @return the label set for the database
 	 */
 	public final String getLabel() {
-		return this.label;
+		return label;
 	}
 
 	public final DatabaseConnectionSettings setDataSource(DataSource ds) {
+		clearCachedValues();
 		dataSource = ds;
 		return this;
 	}
@@ -957,6 +989,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public final DatabaseConnectionSettings setProtocol(String protocol) {
+		clearCachedValues();
 		this.protocol = protocol;
 		return this;
 	}
@@ -966,6 +999,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public final DatabaseConnectionSettings setDefaultExtras(Map<String, String> defaultConfigurationExtras) {
+		clearCachedValues();
 		defaultConfigurationExtras.forEach((t, u) -> {
 			this.extras.putIfAbsent(t, u);
 		});
@@ -973,11 +1007,13 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public final DatabaseConnectionSettings addExtra(String tag, String value) {
+		clearCachedValues();
 		this.extras.put(tag, value);
 		return this;
 	}
 
 	public final DatabaseConnectionSettings setFilename(String filename) {
+		clearCachedValues();
 		this.filename = filename;
 		return this;
 	}
@@ -987,16 +1023,23 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public final List<DatabaseConnectionSettings> getClusterHosts() {
-		return clusterHosts.stream().map(s -> DatabaseConnectionSettings.decode(s)).collect(Collectors.toList());
+		ArrayList<DatabaseConnectionSettings> settings = new ArrayList<>();
+		for (String clusterHost : clusterHosts) {
+			var decoded = DatabaseConnectionSettings.decode(clusterHost);
+			settings.add(decoded);
+		}
+		return settings;
 	}
 
 	public final DatabaseConnectionSettings setClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+		clearCachedValues();
 		this.clusterHosts.clear();
 		addAllClusterHosts(clusterHosts);
 		return this;
 	}
 
 	public final void addClusterHost(DatabaseConnectionSettings clusterHost) {
+		clearCachedValues();
 		if (clusterHost != null) {
 			final String newHost = clusterHost.encode();
 			if (!clusterHosts.contains(newHost)) {
@@ -1006,6 +1049,7 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public final void addAllClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
+		clearCachedValues();
 		if (clusterHosts != null) {
 			for (DatabaseConnectionSettings clusterHost : clusterHosts) {
 				this.addClusterHost(clusterHost);
@@ -1014,7 +1058,10 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public static String encodeExtras(Map<String, String> extras) {
-		return extrasEncoder().addAll(extras).encode();
+		SeparatedString encoder = extrasEncoder();
+		SeparatedString added = encoder.addAll(extras);
+		String encoded = added.encode();
+		return encoded;
 	}
 
 	public static Map<String, String> decodeExtras(String extras) {
@@ -1030,10 +1077,16 @@ public class DatabaseConnectionSettings implements Serializable{
 	}
 
 	public boolean removeClusterHost(DatabaseConnectionSettings settings) {
+		clearCachedValues();
 		return this.clusterHosts.remove(settings.encode());
 	}
 
 	public String removeExtra(String key) {
+		clearCachedValues();
 		return this.extras.remove(key);
+	}
+
+	private void clearCachedValues() {
+		encoded = null;
 	}
 }

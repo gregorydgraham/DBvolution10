@@ -62,13 +62,20 @@ public class StringCheck {
 	 * @return the empty string or the first non-null non-empty value
 	 */
 	public static String check(String initialValue, String... defaultValues) {
-		if (isNotEmptyNorNull(initialValue)) {
-			return initialValue;
-		}
-		for (String value : defaultValues) {
-			if (isNotEmptyNorNull(value)) {
-				return value;
+		try {
+			if (isNotEmptyNorNull(initialValue)) {
+				return initialValue;
 			}
+			if (defaultValues != null) {
+				for (String value : defaultValues) {
+					if (isNotEmptyNorNull(value)) {
+						return value;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 		return "";
 	}

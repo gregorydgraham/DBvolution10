@@ -55,6 +55,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -7198,6 +7199,17 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public boolean isDuplicateColumnException(Exception exc) {
+		return false;
+	}
+
+	public boolean isPrimaryKeyAlreadyExistsException(Exception alreadyExists) {
+		Throwable exc = alreadyExists;
+		while (exc != null) {
+			if (exc instanceof SQLIntegrityConstraintViolationException) {
+				return true;
+			}
+			exc = exc.getCause();
+		}
 		return false;
 	}
 
