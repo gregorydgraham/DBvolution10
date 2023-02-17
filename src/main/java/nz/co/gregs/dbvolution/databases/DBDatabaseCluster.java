@@ -64,7 +64,6 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
-import nz.co.gregs.dbvolution.utility.LoopVariable;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.RegularProcess;
@@ -117,7 +116,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private boolean requeryPermitted = true;
-	private LoopVariable startup = new LoopVariable();
+	private boolean startupIsNeeded = true;
 
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException {
 		super(builder);
@@ -256,10 +255,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void startupCluster() {
-		if (startup.isNeeded()) {
+		if (startupIsNeeded) {
 			addReconnectionProcessor();
 			addCleaner();
-			startup.done();
+			startupIsNeeded=false;
 		}
 	}
 
@@ -286,7 +285,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public boolean isStarted() {
-		return startup.hasHappened();
+		return startupIsNeeded==false;
 	}
 
 	public DBDatabaseCluster(String clusterLabel) throws SQLException {
