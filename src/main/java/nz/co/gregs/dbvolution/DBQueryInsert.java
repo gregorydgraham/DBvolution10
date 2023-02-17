@@ -99,9 +99,6 @@ import nz.co.gregs.dbvolution.query.*;
  * migration.insertAllRows();
  * </code>
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author gregorygraham
  * @param <M> the table that the query will insert into.
  */
@@ -109,7 +106,7 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 
 	private final DBDatabase database;
 	private final M mapper;
-	private final List<DBRow> optionalTables = new ArrayList<>();
+	private final ArrayList<DBRow> optionalTables = new ArrayList<>();
 
 	public DBQueryInsert(DBDatabase db, M migrationMapper) {
 		this.database = db;
