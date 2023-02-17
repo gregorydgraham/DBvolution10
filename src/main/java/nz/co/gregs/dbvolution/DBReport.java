@@ -170,8 +170,6 @@ public class DBReport extends RowDefinition {
 	 * @param database database
 	 * @param exampleReport exampleReport
 	 * @param extraExamples
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -185,7 +183,7 @@ public class DBReport extends RowDefinition {
 		reportRows = getReportsFromQueryResults(allRows, exampleReport);
 		return reportRows;
 	}
-	private final List<DBRow> optionalTables = new ArrayList<DBRow>();
+	private final ArrayList<DBRow> optionalTables = new ArrayList<DBRow>();
 
 	@Override
 	public String toString() {
