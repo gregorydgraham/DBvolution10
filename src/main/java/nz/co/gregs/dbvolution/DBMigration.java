@@ -25,7 +25,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	private static final long serialVersionUID = 1L;
 
 	private final M mapper;
-	private final List<DBRow> optionalTables = new ArrayList<>();
+	private final ArrayList<DBRow> optionalTables = new ArrayList<>();
 	private final DBDatabase database;
 	
 	private final ArrayList<SortProvider> sortColumns = new ArrayList<>();
