@@ -193,7 +193,7 @@ public class OracleCompatibilityTest extends AbstractTest {
 				= database
 						.getDBTable(marque)
 						.setReturnEmptyStringForNullString(true)
-						.setPrintSQLBeforeExecution(true)
+						.setPrintSQLBeforeExecution(false)
 						.setBlankQueryAllowed(true)
 						.setSortOrder(marque.column(marque.individualAllocationsAllowed)
 								.ascending()
