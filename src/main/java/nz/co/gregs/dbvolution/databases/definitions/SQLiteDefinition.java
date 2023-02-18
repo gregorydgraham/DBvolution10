@@ -1099,4 +1099,18 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
 	}
 
+	Regex DUPLICATE_PK_VALUE = Regex
+			.empty()
+			.literalCaseInsensitive("Abort due to constraint violation (UNIQUE constraint failed:")
+			.toRegex();
+
+	@Override
+	public boolean isPrimaryKeyAlreadyExistsException(Exception alreadyExists) {
+		if (DUPLICATE_PK_VALUE.matchesWithinString(alreadyExists.getMessage())) {
+			return true;
+		} else {
+			return super.isPrimaryKeyAlreadyExistsException(alreadyExists);
+		}
+	}
+
 }
