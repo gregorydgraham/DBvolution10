@@ -178,12 +178,6 @@ public class DBDatabaseHandle extends DBDatabase {
 	}
 
 	@Override
-	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement,
-			TR tableRow) throws SQLException {
-		wrappedDatabase.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
-	}
-
-	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		wrappedDatabase.dropTableNoExceptions(tableRow);
 	}
@@ -215,8 +209,8 @@ public class DBDatabaseHandle extends DBDatabase {
 	}
 
 	@Override
-	public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-		wrappedDatabase.createTable(newTableRow, includeForeignKeyClauses);
+	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		return wrappedDatabase.createTable(newTableRow, includeForeignKeyClauses);
 	}
 
 	@Override
@@ -232,6 +226,11 @@ public class DBDatabaseHandle extends DBDatabase {
 	@Override
 	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
 		return wrappedDatabase.getDefinition();
+	}
+
+	@Override
+	public void deleteAllRowsFromTable(DBRow table) throws SQLException {
+		wrappedDatabase.deleteAllRowsFromTable(table);
 	}
 
 }

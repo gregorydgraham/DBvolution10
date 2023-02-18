@@ -42,7 +42,7 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 
 	private static final long serialVersionUID = 1;
-	private final Map<Object, QueryableDatatype<?>> expressionColumnValues = new LinkedHashMap<>();
+	private final LinkedHashMap<Object, QueryableDatatype<?>> expressionColumnValues = new LinkedHashMap<>();
 	private transient final QueryDetails baseQuery;
 
 	public DBQueryRow(QueryDetails queryThatThisRowWasGeneratedFor) {

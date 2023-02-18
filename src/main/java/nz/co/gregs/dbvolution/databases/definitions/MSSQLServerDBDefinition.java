@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -36,6 +35,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
+import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.separatedstring.SeparatedString;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 import org.apache.commons.lang3.ArrayUtils;
@@ -137,10 +137,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean prefersDatesReadAsStrings() {
 		return true;
 	}
-
-	//'2019-06-11 23:09:06.1075250 +12:00'
-	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n XXX");
-	DateTimeFormatter DATETIMEFORMATTER_WITHOUT_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
 
 	@Override
 	public String formatTableName(DBRow table) {
@@ -647,7 +643,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				final DBBoolean bool = (DBBoolean) col;
 				final DBExpression[] exprns = bool.getColumnExpression();
 				if (exprns.length > 0) {
-					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
+					for (DBExpression expr : exprns) {
 						if (expr instanceof BooleanExpression) {
 							return ((BooleanExpression) expr).ifTrueFalseNull(1, 0, null).bracket();
 						}
@@ -716,7 +712,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				final DBBoolean bool = (DBBoolean) col;
 				final DBExpression[] exprns = bool.getColumnExpression();
 				if (exprns.length > 0) {
-					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
+					for (DBExpression expr : exprns) {
 						if (expr instanceof BooleanExpression) {
 							return ((BooleanExpression) expr).ifTrueFalseNull(1, 0, null).bracket();
 						} else {
@@ -1382,5 +1378,20 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean supportsDateRepeatDatatypeFunctions() {
 		return false;
 	}
-	
+
+	private static final Regex DUPLICATE_COLUMN_EXCEPTION
+			= Regex
+					.startingAnywhere()
+					.literalCaseInsensitive("Column names in each table must be unique. Column name '")//Column names in each table must be unique. Column name 'name' in table 'RequiredTableShouldBeCreatedAutomatically' is specified more than once.
+					.anyCharacterExcept("'").atLeastOnce()
+					.literalCaseInsensitive("' in table '")
+					.anyCharacterExcept("'").atLeastOnce()
+					.literalCaseInsensitive("' is specified more than once.")
+					.toRegex();
+
+	@Override
+	public boolean isDuplicateColumnException(Exception exc) {
+		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
+	}
+
 }

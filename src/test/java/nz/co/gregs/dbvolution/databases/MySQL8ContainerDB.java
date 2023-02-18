@@ -92,8 +92,7 @@ public class MySQL8ContainerDB extends MySQLDB {
 					ContainerUtils.getContainerSettings(new MySQLSettingsBuilder(), container, label)
 			);
 		} catch (Throwable exc) {
-			LOG.warn("FAILED TO CREATE MySQL:" + tag);
-			exc.printStackTrace();
+			LOG.warn("FAILED TO CREATE MySQL:" + tag, exc);
 			container = null;
 			dbdatabase = null;
 		}

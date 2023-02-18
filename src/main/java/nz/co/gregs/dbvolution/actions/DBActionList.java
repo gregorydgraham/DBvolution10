@@ -60,7 +60,7 @@ public class DBActionList extends ArrayList<DBAction> {
 	 * @param actions the list of actions to include in this DBActionList
 	 */
 	public DBActionList(DBAction... actions) {
-		super();
+		super(0);
 		this.addAll(Arrays.asList(actions));
 	}
 

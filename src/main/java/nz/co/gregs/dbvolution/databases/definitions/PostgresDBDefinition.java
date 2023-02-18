@@ -58,6 +58,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String getCreateDatabase(String databaseName) throws UnsupportedOperationException {
+		return "CREATE DATABASE '" + databaseName + "';";
+	}
+
+	@Override
 	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
 		return primaryKeyColumnName.toLowerCase();
 	}

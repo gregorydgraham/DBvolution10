@@ -486,6 +486,30 @@ public class DBStatement implements AutoCloseable {
 	 * to retrieve the result, and getMoreResults to move to any subsequent
 	 * result(s).
 	 *
+	 *
+	 * @param queryIntention the expected outcome of this execution
+	 * @param sql the actual SQL to execute
+	 * @throws SQLException Database exceptions may be thrown
+	 */
+	public void execute(QueryIntention queryIntention, String sql) throws SQLException {
+		execute(new StatementDetails(queryIntention.toString(), queryIntention, sql, this));
+	}
+
+	/**
+	 * Executes the given SQL statement, which may return multiple results.
+	 *
+	 * <p>
+	 * In some (uncommon) situations, a single SQL statement may return multiple
+	 * result sets and/or update counts. Normally you can ignore this unless you
+	 * are (1) executing a stored procedure that you know may return multiple
+	 * results or (2) you are dynamically executing an unknown SQL string.
+	 *
+	 * <p>
+	 * The execute method executes an SQL statement and indicates the form of the
+	 * first result. You must then use the methods getResultSet or getUpdateCount
+	 * to retrieve the result, and getMoreResults to move to any subsequent
+	 * result(s).
+	 *
 	 * @param details the full details of the query including the SQL to be
 	 * executed
 	 *
@@ -552,7 +576,7 @@ public class DBStatement implements AutoCloseable {
 						return;
 					}
 				} catch (Exception ex) {
-					throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
+					throw new SQLException("Failed To Add Support On "+database.getJdbcURL()+" For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
 				}
 			}
 			try {
@@ -585,7 +609,6 @@ public class DBStatement implements AutoCloseable {
 					break;
 			}
 		} catch (Exception exc) {
-//			exc.printStackTrace();
 			throw exc;
 		}
 		return DBDatabase.ResponseToException.NOT_HANDLED;

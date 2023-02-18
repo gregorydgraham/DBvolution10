@@ -48,11 +48,8 @@ import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.NamedDatabaseCapableSettingsBuilder;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.RegularProcess;
 import org.apache.commons.logging.Log;
@@ -113,6 +110,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private transient ScheduledFuture<?> regularThreadPoolFuture;
 	private boolean hasCreatedRequiredTables = false;
 	private boolean quietExceptionsPreference = false;
+	private boolean preventAccidentalDeletingAllRowFromTable = true;
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -344,7 +342,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return statement;
 	}
 
-	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+	protected synchronized DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (!terminated) {
 			DBConnection connection = getConnection();
 			try {
@@ -460,7 +458,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			}
 			synchronized (this) {
 				if (needToAddDatabaseSpecificFeatures) {
-					try ( DBStatement createStatement = connection.createDBStatement()) {
+					try (DBStatement createStatement = connection.createDBStatement()) {
 						try {
 							addDatabaseSpecificFeatures(createStatement.getInternalStatement());
 						} catch (ExceptionDuringDatabaseFeatureSetup exceptionDuringDBCreation) {
@@ -623,21 +621,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return changes;
 	}
 
-	protected DBActionList updateAnyway(List<DBRow> rows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (DBRow row : rows) {
-			actions.addAll(updateAnyway(row));
-		}
-		refetch(rows);
-		return actions;
-	}
-
-	protected DBActionList updateAnyway(DBRow row) throws SQLException {
-		DBActionList actions = new DBActionList();
-		actions.addAll(DBUpdateForcedOnSimpleTypesUsingPrimaryKey.updateAnyway(this, row));
-		return actions;
-	}
-
 	/**
 	 *
 	 * Deletes DBRows using the correct tables automatically
@@ -650,22 +633,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		DBActionList changes = new DBActionList();
 		for (DBRow row : rows) {
 			changes.addAll(this.getDBTable(row).delete(row));
-		}
-		return changes;
-	}
-
-	/**
-	 *
-	 * Deletes DBRows using the correct tables automatically
-	 *
-	 * @param rows a list of DBRows
-	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException database exceptions
-	 */
-	public final DBActionList deleteAll(DBRow... rows) throws SQLException {
-		DBActionList changes = new DBActionList();
-		for (DBRow row : rows) {
-			changes.addAll(this.getDBTable(row).deleteAll(row));
 		}
 		return changes;
 	}
@@ -700,12 +667,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList update(DBRow... rows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (DBRow row : rows) {
-			actions.addAll(this.getDBTable(row).update(row));
-		}
-		refetch(rows);
-		return actions;
+		return DBUpdate.update(this, rows);
 	}
 
 	/**
@@ -720,14 +682,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList update(Collection<? extends DBRow> listOfRowsToUpdate) throws SQLException {
-		DBActionList actions = new DBActionList();
-		if (listOfRowsToUpdate.size() > 0) {
-			for (DBRow row : listOfRowsToUpdate) {
-				actions.addAll(this.getDBTable(row).update(row));
-			}
-		}
-		refetch(listOfRowsToUpdate);
-		return actions;
+		return DBUpdate.update(this, listOfRowsToUpdate);
 	}
 
 	/**
@@ -1041,8 +996,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * equivalent to script.implement(this);
 	 *
 	 * @param script the script to execute and commit
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList provided by the script
 	 * @throws Exception any exception can be thrown by a DBScript
 	 */
@@ -1207,9 +1160,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	/**
 	 * Indicates whether SQL will be printed before it is executed.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the printSQLBeforeExecuting
 	 */
@@ -1414,103 +1364,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		createTable(newTableRow, true);
 	}
 
-	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
-		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper<?, ?, ?>>(), new ArrayList<PropertyWrapper<?, ?, ?>>());
-	}
-
-	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper<?, ?, ?>> pkFields, List<PropertyWrapper<?, ?, ?>> spatial2DFields) {
-		StringBuilder sqlScript = new StringBuilder();
-		String lineSeparator = System.getProperty("line.separator");
-		// table name
-
-		sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow)).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
-
-		// columns
-		String sep = "";
-		String nextSep = definition.getCreateTableColumnsSeparator();
-		var fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<>();
-		for (var field : fields) {
-			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-				String colName = field.columnName();
-				sqlScript
-						.append(sep)
-						.append(definition.formatColumnName(colName))
-						.append(definition.getCreateTableColumnsNameAndTypeSeparator())
-						.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
-				sep = nextSep + lineSeparator;
-
-				if (field.isPrimaryKey()) {
-					pkFields.add(field);
-				}
-				if (field.isSpatial2DType()) {
-					spatial2DFields.add(field);
-				}
-				String fkClause = definition.getForeignKeyClauseForCreateTable(field);
-				if (!fkClause.isEmpty()) {
-					fkClauses.add(fkClause);
-				}
-			}
-		}
-
-		if (includeForeignKeyClauses) {
-			for (String fkClause : fkClauses) {
-				sqlScript.append(sep).append(fkClause);
-				sep = nextSep + lineSeparator;
-			}
-		}
-
-		// primary keys
-		if (definition.prefersTrailingPrimaryKeyDefinition()) {
-			String pkStart = lineSeparator + definition.getCreateTablePrimaryKeyClauseStart();
-			String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
-			String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
-			String pkSep = pkStart;
-			for (var field : pkFields) {
-				sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
-				pkSep = pkMiddle;
-			}
-			if (!pkSep.equalsIgnoreCase(pkStart)) {
-				sqlScript.append(pkEnd);
-			}
-		}
-
-		//finish
-		sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
-		return sqlScript.toString();
-	}
-
 	@Override
-	public void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-
-		preventDDLDuringTransaction("DBDatabase.createTable()");
-
-		List<PropertyWrapper<?, ?, ?>> pkFields = new ArrayList<>();
-		List<PropertyWrapper<?, ?, ?>> spatial2DFields = new ArrayList<>();
-
-		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
-		try ( DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute("CREATE TABLE", QueryIntention.CREATE_TABLE, sqlString);
-
-			//Oracle style trigger based auto-increment keys
-			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
-				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
-				for (String sql : triggerBasedIdentitySQL) {
-					try {
-						dbStatement.execute("CREATE IDENTITY TRIGGER FOR NEW TABLE", QueryIntention.CREATE_TRIGGER_BASED_IDENTITY, sql);
-					} catch (Exception sqlex) {
-						sqlex.printStackTrace();
-					}
-				}
-			}
-
-			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() > 0) {
-				List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
-				for (String sql : triggerBasedIdentitySQL) {
-					dbStatement.execute("CREATE NEW SPACIAL INDEXES", QueryIntention.CREATE_TRIGGER, sql);
-				}
-			}
-		}
+	public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		return DBCreateTable.createTable(this, includeForeignKeyClauses, newTableRow);
 	}
 
 	/**
@@ -1535,26 +1391,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param newTableRow the table that needs foreign key constraints
 	 * @throws SQLException the database has had an issue.
 	 */
+	/*TODONE: convert to use DBAction to improve cluster implementation */
 	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-		if (this.definition.supportsAlterTableAddConstraint()) {
-			var fields = newTableRow.getColumnPropertyWrappers();
-			List<String> fkClauses = new ArrayList<>();
-			for (var field : fields) {
-				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-					final String alterTableAddForeignKeyStatement = definition.getAlterTableAddForeignKeyStatement(newTableRow, field);
-					if (!alterTableAddForeignKeyStatement.isEmpty()) {
-						fkClauses.add(alterTableAddForeignKeyStatement);
-					}
-				}
-			}
-			if (fkClauses.size() > 0) {
-				try ( DBStatement statement = getDBStatement()) {
-					for (String fkClause : fkClauses) {
-						statement.execute("CREATE FOREIGN KEY", QueryIntention.CREATE_FOREIGN_KEY, fkClause);
-					}
-				}
-			}
-		}
+		executeDBAction(new DBCreateForeignKeys(newTableRow));
 	}
 
 	/**
@@ -1579,25 +1418,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * removed
 	 * @throws SQLException database exceptions
 	 */
+	/*TODONE: convert to use DBAction to improve cluster implementation */
 	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-
-		var fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<>();
-		for (var field : fields) {
-			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-				final String alterTableDropForeignKeyStatement = definition.getAlterTableDropForeignKeyStatement(newTableRow, field);
-				if (!alterTableDropForeignKeyStatement.isEmpty()) {
-					fkClauses.add(alterTableDropForeignKeyStatement);
-				}
-			}
-		}
-		if (fkClauses.size() > 0) {
-			try ( DBStatement statement = getDBStatement()) {
-				for (String fkClause : fkClauses) {
-					statement.execute("REMOVE FK CONSTRAINTS", QueryIntention.DROP_FOREIGN_KEY, fkClause);
-				}
-			}
-		}
+		executeDBAction(new DBDropForeignKeys(newTableRow));
 	}
 
 	/**
@@ -1619,27 +1442,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @param newTableRow the data model's version of the table that needs indexes
 	 * @throws SQLException database exceptions
 	 */
+	/*TODONE: convert to use DBAction to improve cluster implementation */
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
-
-		var fields = newTableRow.getColumnPropertyWrappers();
-		List<String> indexClauses = new ArrayList<>();
-		for (var field : fields) {
-			final QueryableDatatype<?> qdt = field.getQueryableDatatype();
-			if (field.isColumn() && !qdt.hasColumnExpression() && !(qdt instanceof DBLargeObject)) {
-				String indexClause = definition.getIndexClauseForCreateTable(field);
-				if (!indexClause.isEmpty()) {
-					indexClauses.add(indexClause);
-				}
-			}
-		}
-		//Create indexes
-		if (indexClauses.size() > 0) {
-			try ( DBStatement statement = getDBStatement()) {
-				for (String indexClause : indexClauses) {
-					statement.execute("CREATE INDEX ON FIELD", QueryIntention.CREATE_INDEX, indexClause);
-				}
-			}
-		}
+		DBCreateIndexesOnAllFields.createIndexes(this, newTableRow);
 	}
 
 	/**
@@ -1658,26 +1463,18 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * 1 Database exceptions may be thrown
 	 *
 	 * @param tableRow tableRow
+	 * @return a list of all actions that have been executed
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public synchronized void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
-		LOG.debug("DROPPING TABLE: " + tableRow.getTableName());
-		preventDDLDuringTransaction("DBDatabase.dropTable()");
-		if (preventAccidentalDroppingOfTables) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		StringBuilder sqlScript = new StringBuilder();
-		final String dropTableStart = definition.getDropTableStart();
-		final String formatTableName = definition.formatTableName(tableRow);
-		final String endSQLStatement = definition.endSQLStatement();
+	@Override
+	public synchronized DBActionList dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
+		DBActionList changes = new DBActionList();
+		DBDropTable drop = new DBDropTable(tableRow);
+		changes.add(drop);
 
-		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
-		String sqlString = sqlScript.toString();
-		try ( DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute("DROP TABLE", QueryIntention.DROP_TABLE, sqlString);
-			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
-		}
-		preventAccidentalDroppingOfTables = true;
+		executeDBAction(drop);
+
+		return changes;
 	}
 
 	/**
@@ -1825,27 +1622,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * If you're lucky...
 	 */
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
-		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
-		if (preventAccidentalDroppingOfTables) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		if (preventAccidentalDroppingDatabase) {
-			throw new AccidentalDroppingOfDatabaseException();
-		}
-
-		String dropStr = getDefinition().getDropDatabase(databaseName);
-
-		printSQLIfRequested(dropStr);
-		LOG.debug(dropStr);
 		if (doIt) {
-			try {
-				this.doTransaction(new DBRawSQLTransaction(dropStr));
-			} catch (SQLException | ExceptionThrownDuringTransaction ex) {
-				throw new UnableToDropDatabaseException(ex);
-			}
+			executeDBAction(new DBDropDatabase(databaseName));
 		}
-		preventAccidentalDroppingOfTables = true;
-		preventAccidentalDroppingDatabase = true;
 	}
 
 	/**
@@ -1862,7 +1641,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 *
 	 * @param databaseName	databaseName
 	 */
-	/* TODO - can this be final?*/
 	public synchronized void setDatabaseName(String databaseName) {
 		getSettings().setDatabaseName(databaseName);
 	}
@@ -1931,9 +1709,9 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
 
-	protected synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
-		if (isInATransaction) {
-			throw new AutoCommitActionDuringTransactionException(message);
+	public synchronized void preventAccidentalDDLDuringTransaction(DBAction action) throws AutoCommitActionDuringTransactionException {
+		if (isInATransaction && action.getIntent().isDDL()) {
+			throw new AutoCommitActionDuringTransactionException(action.getClass().getSimpleName());
 		}
 	}
 
@@ -1979,6 +1757,14 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	public synchronized boolean getPreventAccidentalDroppingOfDatabases() {
 		return this.preventAccidentalDroppingDatabase;
+	}
+
+	public synchronized void preventAccidentalDroppingOfDatabases(DBAction action) throws AccidentalDroppingOfDatabaseException {
+		if (preventAccidentalDroppingDatabase && action.getIntent().isDropDatabase()) {
+			throw new AccidentalDroppingOfDatabaseException();
+		} else {
+			preventAccidentalDroppingDatabase = true;
+		}
 	}
 
 	/**
@@ -2096,21 +1882,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		if (FREE_CONNECTIONS.isEmpty()) {
 			getSettings().setPassword(password);
 		}
-	}
-
-	/**
-	 * Called after DROP TABLE to allow the DBDatabase to clean up any extra
-	 * objects created with the table.
-	 *
-	 * @param <R> DBRow type
-	 * @param dbStatement statement for executing the changes, don't close it!
-	 * @param tableRow tableRow
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-	@SuppressWarnings("empty-statement")
-	@Override
-	public <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
-		;
 	}
 
 	/**
@@ -2350,9 +2121,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private void refetch(DBRow[] rows) {
-		for (DBRow row : rows) {
-			refetch(row);
-		}
+		refetch(Arrays.asList(rows));
 	}
 
 	private <R extends DBRow> void refetch(R originalRow) {
@@ -2386,6 +2155,31 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	public boolean supportsPolygonDatatype() {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public synchronized void preventAccidentalDroppingOfTables(DBAction action) throws AccidentalDroppingOfTableException {
+		if (preventAccidentalDroppingOfTables && action.getIntent().isDropTable()) {
+			throw new AccidentalDroppingOfTableException();
+		} else {
+			preventAccidentalDroppingOfTables = true;
+		}
+	}
+
+	public synchronized void preventAccidentalDeletingAllRowsFromTable(DBAction action) throws AccidentalDroppingOfTableException {
+		if (preventAccidentalDeletingAllRowFromTable && action.getIntent().isDeleteAllRows()) {
+			throw new AccidentalDeletingAllRowsFromTableException();
+		} else {
+			preventAccidentalDeletingAllRowFromTable = true;
+		}
+	}
+
+	public void setPreventAccidentalDeletingAllRowsFromTable(boolean b) {
+		preventAccidentalDeletingAllRowFromTable = b;
+	}
+
+	@Override
+	public void deleteAllRowsFromTable(DBRow table) throws SQLException {
+		executeDBAction(new DBDeleteAll(table));
 	}
 
 	public static enum ResponseToException {
@@ -2427,14 +2221,16 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
-		return action.execute(this);
-	}
-
-	public DBActionList executeDBAction(DBInsert action) throws SQLException, NoAvailableDatabaseException {
-		return action.execute(this);
-	}
-
-	public DBActionList executeDBAction(DBUpdate action) throws SQLException, NoAvailableDatabaseException {
+		preventAccidentalDDLDuringTransaction(action);
+		preventAccidentalDroppingOfDatabases(action);
+		preventAccidentalDroppingOfTables(action);
+		preventAccidentalDeletingAllRowsFromTable(action);
+		if (quietExceptionsPreference) {
+			try {
+				return action.execute(this);
+			} catch (SQLException acceptableException) {
+			}
+		}
 		return action.execute(this);
 	}
 
@@ -2457,6 +2253,14 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return query.toSQLString(this);
 	}
 
+	/**
+	 * Checks for the existence of the table on the database.
+	 *
+	 * @param table
+	 * @return true if the table exists on the database, for clusters it is only
+	 * true if the table exists on all databases in the cluster
+	 * @throws SQLException
+	 */
 	@Override
 	@SuppressFBWarnings(
 			value = "REC_CATCH_EXCEPTION",
@@ -2475,7 +2279,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private boolean checkTableExistsViaQuery(DBRow table) throws NoAvailableDatabaseException {
 		boolean tableExists;
 		String testQuery = getDefinition().getTableExistsSQL(table);
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			var dets = new StatementDetails("CHECK FOR TABLE " + table.getTableName(), QueryIntention.CHECK_TABLE_EXISTS, testQuery, dbStatement);
 			ResultSet results = dbStatement.executeQuery(dets);
 			if (results != null) {
@@ -2497,7 +2301,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
 		boolean tableExists = false;
-		try ( DBStatement dbStatement = getDBStatement()) {
+		try (DBStatement dbStatement = getDBStatement()) {
 			DBConnection conn = dbStatement.getConnection();
 			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
 			if (rset.next()) {
@@ -2507,7 +2311,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
-	boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
+	public boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
 		return tableExists(DBRow.getDBRow(tab));
 	}
 
@@ -2537,63 +2341,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private synchronized void addMissingColumnsToTable(DBRow table) throws SQLException {
-
-		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
-		String testQuery = definition.getTableStructureQuery(table, getDBTable(table));
-		try ( DBStatement dbStatement = getDBStatement()) {
-			var dets = new StatementDetails("CHECK TABLE STRUCTURE FOR " + table.getTableName(), QueryIntention.CHECK_TABLE_STRUCTURE, testQuery, dbStatement);
-			try ( ResultSet resultSet = dbStatement.executeQuery(dets)) {
-				if (resultSet != null) {
-					ResultSetMetaData metaData = resultSet.getMetaData();
-					var columnPropertyWrappers = table.getColumnPropertyWrappers();
-					for (var columnPropertyWrapper : columnPropertyWrappers) {
-						if (!columnPropertyWrapper.hasColumnExpression()) {
-							int columnCount = metaData.getColumnCount();
-							boolean foundColumn = false;
-							for (int i = 1; i <= columnCount && !foundColumn; i++) {
-								String columnName = definition.formatColumnName(metaData.getColumnName(i));
-								String formattedPropertyColumnName = definition.formatColumnName(columnPropertyWrapper.columnName());
-
-								/*Postgres returns a lowercase column name in the meta data so use case-insensitive check*/
-								if (columnName.equalsIgnoreCase(formattedPropertyColumnName)) {
-									foundColumn = true;
-								}
-							}
-							if (!foundColumn) {
-								// We collect all the changes and process them later because SQLite doesn't like processing them imediately
-								newColumns.add(columnPropertyWrapper);
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception ex) {
-			LOG.warn("Error occurred while adding columns to required table", ex);
-			// Theoretically this should only need to catch an SQLException 
-			// but databases throw allsorts of weird exceptions
-		}
-		for (var newColumn : newColumns) {
-			alterTableAddColumn(table, newColumn);
-		}
-	}
-
-	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
-		preventDDLDuringTransaction("DBDatabase.alterTable()");
-
-		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
-
-		try ( DBStatement dbStatement = getDBStatement()) {
-			try {
-				dbStatement.execute("ADD A COLUMN TO A TABLE", QueryIntention.ADD_COLUMN_TO_TABLE, sqlString);
-			} catch (SQLException ex) {
-				Logger.getLogger(DBDatabase.class
-						.getName()).log(Level.SEVERE, null, ex);
-			}
-
-		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabase.class
-					.getName()).log(Level.SEVERE, null, ex);
-		}
+		executeDBAction(new DBAddMissingColumnsToTable(table));
 	}
 
 	/**

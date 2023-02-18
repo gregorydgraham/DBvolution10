@@ -17,17 +17,13 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -169,22 +165,6 @@ public class Oracle11XEDB extends OracleDB {
 	@Deprecated
 	public Oracle11XEDB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new Oracle11XEDBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
-	}
-
-	@Override
-	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
-
-		if (tableRow.getPrimaryKeys() != null) {
-			DBDefinition definition = getDefinition();
-			final String formattedTableName = definition.formatTableName(tableRow);
-			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
-			for (String primaryKeyColumnName : primaryKeyColumnNames) {
-				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
-				final String sql = "DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName);
-				dbStatement.execute("Drop sequence", QueryIntention.DROP_SEQUENCE, sql);
-			}
-		}
-		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 	}
 
 	@Override

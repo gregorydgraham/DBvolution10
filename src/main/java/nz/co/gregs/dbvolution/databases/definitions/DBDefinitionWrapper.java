@@ -31,7 +31,6 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.*;
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -45,7 +44,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -877,8 +875,8 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
-	public List<String> dropTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
-		return base.dropTriggerBasedIdentitySQL(db, table, column);
+	public List<String> dropTriggerBasedIdentitySQL(String table, String column) {
+		return base.dropTriggerBasedIdentitySQL(table, column);
 	}
 
 	@Override

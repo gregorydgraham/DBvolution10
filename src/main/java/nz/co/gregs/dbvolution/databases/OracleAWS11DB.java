@@ -17,11 +17,8 @@ package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.databases.settingsbuilders.OracleAWS11SettingsBuilder;
 import java.sql.SQLException;
-import java.util.List;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWS11DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 
@@ -136,22 +133,6 @@ public class OracleAWS11DB extends OracleAWSDB {
 	@Deprecated
 	public OracleAWS11DB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new OracleAWS11DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
-	}
-
-	@Override
-	public <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
-
-		if (tableRow.getPrimaryKeys() != null) {
-			DBDefinition definition = getDefinition();
-			final String formattedTableName = definition.formatTableName(tableRow);
-			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
-			for (String primaryKeyColumnName : primaryKeyColumnNames) {
-				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
-				final String sql = "DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName);
-				dbStatement.execute("Drop sequence", QueryIntention.CREATE_SEQUENCE, sql);
-			}
-		}
-		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 	}
 
 	@Override

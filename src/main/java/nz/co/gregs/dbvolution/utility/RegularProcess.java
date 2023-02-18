@@ -34,7 +34,6 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -198,10 +197,16 @@ public abstract class RegularProcess implements Serializable {
 	}
 
 	public final boolean canRun() {
-		if (!stopped && this.dbDatabase == null) {
-			LOG.warn(this.getClass().getSimpleName() + " has not had setDatabase(DBDatabase) called and can not process.");
+		boolean canRun = true;
+		if (stopped){
+				LOG.warn("This database is stopped and "+this.getClass().getSimpleName() + " can not process.");
+				canRun = false;
 		}
-		return this.dbDatabase != null;
+		if (this.dbDatabase == null) {
+			LOG.warn(this.getClass().getSimpleName() + " has not had setDatabase(DBDatabase) called and can not process.");
+			canRun = false;
+		}
+		return canRun;
 	}
 
 	public String getLastResult() {

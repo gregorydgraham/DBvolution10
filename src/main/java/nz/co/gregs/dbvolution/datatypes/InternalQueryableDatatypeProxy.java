@@ -52,8 +52,6 @@ public class InternalQueryableDatatypeProxy<BASETYPE> {
 	 */
 	public void setValue(Object obj) {
 		try {
-			// TODO what type checking can/should be done here?
-			//internalQDT.setValue(internalValue);
 			if (obj == null) {
 				qdt.setToNull();
 			} else {
@@ -76,8 +74,6 @@ public class InternalQueryableDatatypeProxy<BASETYPE> {
 	 */
 	public void setValueFromDatabase(Object obj) {
 		try {
-			// TODO what type checking can/should be done here?
-			//internalQDT.setValue(internalValue);
 			if (obj == null) {
 				qdt.setToNull();
 			} else {

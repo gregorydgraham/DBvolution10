@@ -556,7 +556,6 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 	}
 
-	// TODO Investigate need for "part_id"
 	public static class PartsWithoutTableName extends DBRow {
 
 		private static final long serialVersionUID = 1L;

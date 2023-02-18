@@ -36,6 +36,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionExcepti
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
+@Deprecated
 public class DBStatementCluster extends DBStatement {
 
 	private final DBDatabaseCluster databaseCluster;

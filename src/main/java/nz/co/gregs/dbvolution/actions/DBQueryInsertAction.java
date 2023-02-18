@@ -53,7 +53,7 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 	 * @param examples extra examples used to reduce the source data set.
 	 */
 	public DBQueryInsertAction(DBQueryInsert<R> migration, DBRow resultRow, DBRow... examples) {
-		super(resultRow);
+		super(resultRow, QueryIntention.INSERT_QUERY);
 		sourceMigration = migration;
 		extraExamples = examples;
 	}

@@ -576,7 +576,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 				final DBBoolean bool = (DBBoolean) col;
 				final DBExpression[] exprns = bool.getColumnExpression();
 				if (exprns.length > 0) {
-					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
+					for (DBExpression expr : exprns) {
 						if (expr instanceof BooleanExpression) {
 							return ((BooleanExpression) expr).ifThenElse(1, 0).bracket();
 						} else {

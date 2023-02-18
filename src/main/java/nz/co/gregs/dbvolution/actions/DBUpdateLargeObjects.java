@@ -40,7 +40,6 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,7 +68,15 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	 * @param row the row to be updated
 	 */
 	protected DBUpdateLargeObjects(DBRow row) {
-		super(row);
+		super(row, QueryIntention.UPDATE_ROW_WITH_LARGE_OBJECT);
+	}
+	/**
+	 * Creates a DBUpdateLargeObjects action for the supplied row.
+	 *
+	 * @param row the row to be updated
+	 */
+	protected DBUpdateLargeObjects(DBRow row, QueryIntention intent) {
+		super(row, intent);
 	}
 
 	@Override

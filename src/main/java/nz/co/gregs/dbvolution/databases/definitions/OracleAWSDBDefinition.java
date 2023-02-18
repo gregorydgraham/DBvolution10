@@ -21,7 +21,9 @@ import nz.co.gregs.dbvolution.internal.oracle.aws.LineSegment2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.aws.Line2DFunctions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
+import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
@@ -36,15 +38,12 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
  * {@link  Oracle12DBDefinition} to provide the full set of features required to
  * use an Oracle database.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class OracleAWSDBDefinition extends OracleDBDefinition {
 
 	public static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBPoint2D) {
@@ -395,6 +394,13 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String first) {
 		return "" + MultiPoint2DFunctions.MAXX + "(" + first + ")";
+	}
+
+	@Override
+	public List<String> getSQLToDropAnyAssociatedDatabaseObjects(DBRow tableRow) {
+		ArrayList<String> result = new ArrayList<>(0);
+		result.addAll(getSQLToDropAnyTriggerBasedPrimaryKeyObject(tableRow));
+		return result;
 	}
 
 }

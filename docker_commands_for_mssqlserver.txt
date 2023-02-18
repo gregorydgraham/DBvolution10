@@ -19,6 +19,8 @@ docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServ
 
 -- Apple silicon (while SQLServer isn't available for ARM chips)
 docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=Password23' -p 1433:1433 --name sqlserver_container -d mcr.microsoft.com/azure-sql-edge
+-- CLR isn't available in Azure Edge, but TTHor has done something for ARM64 maybe it'll work
+docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d tthor/sqlserver-arm
 
 -- Start the container in winter
 docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d mcr.microsoft.com/mssql/server

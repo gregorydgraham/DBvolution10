@@ -20,10 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 
 /**
  * Supplies supports for the abstract concept of deleting rows based on an
@@ -33,16 +32,13 @@ import nz.co.gregs.dbvolution.internal.query.StatementDetails;
  * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBDeleteAll extends DBDelete {
 
 	private static final long serialVersionUID = 1l;
 	
-	private final List<DBRow> savedRows = new ArrayList<DBRow>();
+	private final ArrayList<DBRow> savedRows = new ArrayList<DBRow>();
 
 	/**
 	 * Creates a DBDeleteByExample action for the supplied example DBRow on the
@@ -51,12 +47,12 @@ public class DBDeleteAll extends DBDelete {
 	 * @param <R> the table affected
 	 * @param row the example to be deleted
 	 */
-	protected <R extends DBRow> DBDeleteAll(R row) {
-		super(row);
+	public <R extends DBRow> DBDeleteAll(R row) {
+		super(row,QueryIntention.BULK_DELETE);
 	}
 
 	private <R extends DBRow> DBDeleteAll(DBDatabase db, R row) throws SQLException {
-		super(row);
+		this(row);
 		List<R> gotRows = db.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
 		for (R gotRow : gotRows) {
 			savedRows.add(DBRow.copyDBRow(gotRow));
@@ -65,18 +61,19 @@ public class DBDeleteAll extends DBDelete {
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
+		return execute2(db);
+	}
+
+	@Override
+	protected void prepareRollbackData(DBDatabase db, DBActionList actions) throws SQLException, DBRuntimeException {
+		//
+	}
+
+	@Override
+	protected DBActionList prepareActionList(DBDatabase db) throws SQLException, DBRuntimeException {
 		DBRow table = getRow();
 		final DBDeleteAll deleteAction = new DBDeleteAll(table);
 		DBActionList actions = new DBActionList(deleteAction);
-		List<DBRow> rowsToBeDeleted = db.getDBTable(table).setBlankQueryAllowed(true).getAllRows();
-		for (DBRow deletingRow : rowsToBeDeleted) {
-			deleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
-		}
-		try (DBStatement statement = db.getDBStatement()) {
-			for (String sql : getSQLStatements(db)) {
-				statement.execute("BULK DELETE", QueryIntention.BULK_DELETE,sql);
-			}
-		}
 		return actions;
 	}
 
@@ -109,7 +106,7 @@ public class DBDeleteAll extends DBDelete {
 	}
 
 	@Override
-	protected DBActionList getActions() {//DBRow row) {
+	protected DBActionList getActions() {
 		return new DBActionList(new DBDeleteAll(getRow()));
 	}
 
@@ -124,8 +121,6 @@ public class DBDeleteAll extends DBDelete {
 	 * @param db the target database
 	 * @param row the row to be deleted
 	 * @throws SQLException Database actions can throw SQLException
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the list of actions required to delete all the rows.
 	 */
 	@Override

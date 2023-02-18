@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.regexi.Regex;
 
 /**
  * Defines the features of the MySQL database that differ from the standard
@@ -764,5 +765,18 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doFormatAsDateRepeatSeconds(String numericSQL) {
 		return "REGEXP_REPLACE(concat('',"+numericSQL+",  ''),'0+$','0')";
+	}
+
+	private static final Regex DUPLICATE_COLUMN_EXCEPTION
+			= Regex
+					.startingAnywhere()
+					.literalCaseInsensitive("Duplicate column name '")
+					.anyCharacterExcept("'").atLeastOnce()
+					.literal("' :")
+					.toRegex();
+
+	@Override
+	public boolean isDuplicateColumnException(Exception exc) {
+		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
 	}
 }

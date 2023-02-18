@@ -16,9 +16,11 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException;
 
@@ -38,7 +40,19 @@ public abstract class DBUpdate extends DBAction {
 	 * @param row the row to be updated
 	 */
 	public <R extends DBRow> DBUpdate(R row) {
-		super(row);
+		super(row, QueryIntention.UPDATE_ROW);
+	}
+
+	/**
+	 * Creates a DBUpdate action for the row supplied.
+	 *
+	 * @param <R> the table affected
+	 * @param row the row to be updated
+	 * @param intent the specific intention of this action, a description of what
+	 * is expected to occur
+	 */
+	public <R extends DBRow> DBUpdate(R row, QueryIntention intent) {
+		super(row, intent);
 	}
 
 	/**
@@ -50,17 +64,37 @@ public abstract class DBUpdate extends DBAction {
 	 * changes to the row.
 	 *
 	 * @param db the target database
-	 * @param row the row to be updated
+	 * @param rows the rows to be updated
 	 * @return a DBActionList of updates that have been executed.
 	 * @throws SQLException database exceptions
 	 */
-	public static DBActionList update(DBDatabase db, DBRow row) throws SQLException {
-		DBActionList updates = getUpdates(row);
-		for (DBAction act : updates) {
-			db.executeDBAction(act);
+	public static DBActionList update(DBDatabase db, DBRow... rows) throws SQLException {
+		DBActionList actions = new DBActionList();
+		for (DBRow row : rows) {
+			DBActionList updates = getUpdates(row);
+			for (DBAction act : updates) {
+				actions.addAll(db.executeDBAction(act));
+			}
+			row.setSimpleTypesToUnchanged();
 		}
-		row.setSimpleTypesToUnchanged();
-		return updates;
+		return actions;
+	}
+
+	/**
+	 * Executes required update actions for the row and returns a
+	 * {@link DBActionList} of those actions.
+	 *
+	 * The original rows are not changed by this method, or any DBUpdate method.
+	 * Use {@link DBRow#setSimpleTypesToUnchanged() } if you need to ignore the
+	 * changes to the row.
+	 *
+	 * @param db the target database
+	 * @param rows the rows to be updated
+	 * @return a DBActionList of updates that have been executed.
+	 * @throws SQLException database exceptions
+	 */
+	public static DBActionList update(DBDatabase db, Collection<? extends DBRow> rows) throws SQLException {
+		return update(db, rows.toArray(new DBRow[0]));
 	}
 
 	/**

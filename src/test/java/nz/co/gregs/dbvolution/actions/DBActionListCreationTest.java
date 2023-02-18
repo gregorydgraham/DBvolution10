@@ -65,6 +65,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		final String microsoftUpdateSQL = "UPDATE [MARQUE] SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
 		final String oracleUpdateSQL = "UPDATE OO1081299805 SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999";
 		final String oracleUpdateSQL2 = "update marque set uid_marque = 1 where uid_marque = 99999";
+		final String standardUpdateWithQuotedColumns = "update marque set \"uid_marque\" = 1 where \"uid_marque\" = 99999;"; 
 		final String actualUpdateSQL = this.testableSQLWithoutColumnAliases(revertStrings.get(0));
 
 		assertThat(actualUpdateSQL,
@@ -72,7 +73,8 @@ public class DBActionListCreationTest extends AbstractTest {
 						is(this.testableSQLWithoutColumnAliases(standardUpdateSQL)),
 						is(this.testableSQLWithoutColumnAliases(microsoftUpdateSQL)),
 						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL)),
-						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL2))
+						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL2)),
+						is(this.testableSQLWithoutColumnAliases(standardUpdateWithQuotedColumns))
 				));
 	}
 
@@ -318,12 +320,14 @@ public class DBActionListCreationTest extends AbstractTest {
 		final String microsoftSQL = "UPDATE [MARQUE] SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
 		final String oracleSQL = "update __1081299805 set uid_marque = 1 where uid_marque = 99999";
 		final String oracleStandardSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999";
+		final String withQuotedColumns = "update marque set \"uid_marque\" = 1 where \"uid_marque\" = 99999;";
 		assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
 				anyOf(
 						is(this.testableSQLWithoutColumnAliases(standardSQL)),
 						is(this.testableSQLWithoutColumnAliases(microsoftSQL)),
 						is(this.testableSQLWithoutColumnAliases(oracleSQL)),
-						is(this.testableSQLWithoutColumnAliases(oracleStandardSQL))
+						is(this.testableSQLWithoutColumnAliases(oracleStandardSQL)),
+						is(this.testableSQLWithoutColumnAliases(withQuotedColumns))
 				)
 		);
 	}

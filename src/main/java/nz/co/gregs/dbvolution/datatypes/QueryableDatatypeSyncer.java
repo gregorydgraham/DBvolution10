@@ -82,11 +82,9 @@ public class QueryableDatatypeSyncer implements Serializable {
 		try {
 			this.internalQdt = internalQdtType.getConstructor().newInstance();
 		} catch (InstantiationException e) {
-			// TODO produce a better error message that is consistent with how this is handled elsewhere
 			throw new DBRuntimeException("Instantiation error creating internal "
 					+ internalQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException|IllegalArgumentException | InvocationTargetException e) {
-			// TODO produce a better error message that is consistent with how this is handled elsewhere
 			throw new DBRuntimeException("Access error creating internal "
 					+ internalQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);
 		}
@@ -95,9 +93,6 @@ public class QueryableDatatypeSyncer implements Serializable {
 	/**
 	 * supplies the QDT used internally, that is the QDT the represents the
 	 * database's view of the data.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the internal QDT.
 	 */
@@ -214,8 +209,6 @@ public class QueryableDatatypeSyncer implements Serializable {
 	 */
 	protected static final void setQDTValueUsingDangerousReflection(QueryableDatatype<?> internalQDT, Object internalValue) {
 		try {
-			// TODO what type checking can/should be done here?
-			//internalQDT.setValue(internalValue);
 			if (internalValue == null) {
 				internalQDT.setToNull();
 			} else {
@@ -364,11 +357,9 @@ public class QueryableDatatypeSyncer implements Serializable {
 			try {
 				return targetQdtType.getConstructor().newInstance();
 			} catch (InstantiationException e) {
-				// TODO produce a better error message that is consistent with how this is handled elsewhere
 				throw new DBRuntimeException("Instantiation error creating internal "
 						+ targetQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);
 			} catch (IllegalAccessException|NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
-				// TODO produce a better error message that is consistent with how this is handled elsewhere
 				throw new DBRuntimeException("Access error creating internal "
 						+ targetQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);
 			}

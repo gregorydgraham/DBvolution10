@@ -173,7 +173,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"(\",\"\").replace(\")\",\"\").replace(\"MULTIPOINT \", \"LINESTRING (\")+\")\";"),
+	ASLINE2D("String", "String multipoint", "return multipoint==null?null:multipoint.replace(\"(\",\"\").replace(\")\",\"\").replace(\"MULTIPOINT \", \"LINESTRING (\")+\")\";"),
 	/**
 	 *
 	 */

@@ -324,12 +324,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <p>
 	 * MultiPoint2d values with less than 3 points will return NULL values.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a polygon2d value
 	 */
-	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
 		return this;
 	}

@@ -44,8 +44,10 @@ public class DatabaseList implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient final Map<String, DBDatabase> databaseMap = Collections.synchronizedMap(new HashMap<String, DBDatabase>());
-	private transient final Map<String, DBDatabaseCluster.Status> statusMap = Collections.synchronizedMap(new HashMap<String, DBDatabaseCluster.Status>(0));
+	/* TODO combine these into one list of a data object */
+	private final Map<String, DBDatabase> databaseMap = Collections.synchronizedMap(new HashMap<String, DBDatabase>());
+	private final Map<String, DBDatabaseCluster.Status> statusMap = Collections.synchronizedMap(new HashMap<String, DBDatabaseCluster.Status>(0));
+	private final Map<String, Integer> quarantineCountMap = Collections.synchronizedMap(new HashMap<String, Integer>(0));
 
 	public synchronized int size() {
 		return databaseMap.size();
@@ -131,6 +133,12 @@ public class DatabaseList implements Serializable {
 	private synchronized void set(DBDatabase db, DBDatabaseCluster.Status status) {
 		if (statusMap.containsKey(getKey(db))) {
 			statusMap.put(getKey(db), status);
+			if (QUARANTINED.equals(status)) {
+				incrementQuarantineCount(db);
+			}
+			if (READY.equals(status)) {
+				clearQuarantineCount(db);
+			}
 		}
 	}
 
@@ -167,7 +175,7 @@ public class DatabaseList implements Serializable {
 	}
 
 	public synchronized DBDatabase[] getDatabases() {
-		return databaseMap.values().toArray(new DBDatabase[]{});
+		return databaseMap.values().toArray(new DBDatabase[0]);
 	}
 
 	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase statusOfThisDatabase) {
@@ -213,5 +221,29 @@ public class DatabaseList implements Serializable {
 
 	public synchronized boolean areAllReady() {
 		return countDatabases(DBDatabaseCluster.Status.READY) == databaseMap.size();
+	}
+
+	private void incrementQuarantineCount(DBDatabase db) {
+		String key = getKey(db);
+		Integer currentValue = quarantineCountMap.get(key);
+		quarantineCountMap.put(key, currentValue + 1);
+	}
+
+	private void clearQuarantineCount(DBDatabase db) {
+		String key = getKey(db);
+		quarantineCountMap.put(key, 0);
+	}
+
+	public boolean isDead(DBDatabase db) {
+		if (DEAD.equals(getStatusOf(db))) {
+			return true;
+		}
+		String key = getKey(db);
+		Integer currentValue = quarantineCountMap.get(key);
+		if(currentValue >= 3){
+			setDead(db);
+			return true;
+		}
+		return false;
 	}
 }

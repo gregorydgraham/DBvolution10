@@ -752,14 +752,6 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
-		List<String> result = new ArrayList<>();
-		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column) + "");
-		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
-		return result;
-	}
-
-	@Override
 	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
 		return "ALTER TABLE " + formatTableName(existingTable) + " ADD " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
 	}
@@ -888,4 +880,56 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doFormatAsDateRepeatSeconds(String numericSQL) {
 		return "to_char(" + numericSQL + ", 'fm90.099999999')";
 	}
+	
+	@Override
+	public List<String> getSQLToDropAnyAssociatedDatabaseObjects(DBRow tableRow) {
+		ArrayList<String> result = new ArrayList<>(0);
+		result.addAll(getSQLToDropAnyTriggerBasedPrimaryKeyObject(tableRow));
+		result.addAll(removeSpatialMetadata(tableRow));
+		return result;
+	}
+
+	protected List<String> getSQLToDropAnyTriggerBasedPrimaryKeyObject(DBRow tableRow) {
+		var fields = tableRow.getColumnPropertyWrappers();
+		List<String> triggerBasedIdentitySQL = new ArrayList<>();
+		if (prefersTriggerBasedIdentities()) {
+			List<PropertyWrapper<?, ?, ?>> pkFields = new ArrayList<>();
+			for (var field : fields) {
+				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+					if (field.isPrimaryKey()) {
+						pkFields.add(field);
+					}
+				}
+			}
+			if (pkFields.size() == 1) {
+				triggerBasedIdentitySQL = dropTriggerBasedIdentitySQL(formatTableName(tableRow), formatColumnName(pkFields.get(0).columnName()));
+			}
+		}
+		return triggerBasedIdentitySQL;
+	}
+
+	@Override
+	public List<String> dropTriggerBasedIdentitySQL(String table, String column) {
+		List<String> result = new ArrayList<>();
+		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column) + "");
+		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
+		return result;
+	}
+	
+	/**
+	 * Allows the database to remove any spatial metadata that might exist for a
+	 * table during DROP TABLE.
+	 *
+	 * @param tableRow the object defining the table to have it's spatial
+	 * meta-data removed.
+	 * @return a list of the SQL required to remove the spatial metadata
+	 */
+	protected ArrayList<String> removeSpatialMetadata(DBRow tableRow) {
+		final String formattedTableName = formatTableName(tableRow);
+		final String sql = "DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'";
+		ArrayList<String> result = new ArrayList<>();
+		result.add(sql);
+		return result;
+	}
+
 }

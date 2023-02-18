@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Provides support for the abstract concept of deleting rows based on a primary
@@ -40,7 +39,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 
 	private static final long serialVersionUID = 1l;
 
-	private final List<DBRow> savedRows = new ArrayList<>();
+	private final ArrayList<DBRow> savedRows = new ArrayList<>();
 
 	/**
 	 * Creates a DBDeleteByPrimaryKey action for the supplied example DBRow on the
@@ -50,11 +49,11 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	 * @param row the row to be deleted
 	 */
 	protected <R extends DBRow> DBDeleteByPrimaryKey(R row) {
-		super(row);
+		super(row, QueryIntention.DELETE_ROW);
 	}
 
 	private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
-		super(row);
+		this(row);
 		DBRow example = DBRow.getPrimaryKeyExample(row);
 		List<DBRow> gotRows = db.get(example);
 		for (DBRow gotRow : gotRows) {
@@ -136,4 +135,4 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
 		return new DBActionList(new DBDeleteByPrimaryKey(db, row));
 	}
-}
+	}

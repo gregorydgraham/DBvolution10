@@ -20,10 +20,11 @@ import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
@@ -58,6 +59,8 @@ public abstract class DBAction implements Serializable {
 	final DBRow row;
 	private RefetchRequirement refetchStatus = RefetchRequirement.REFETCH;
 
+	protected final QueryIntention intention;
+
 	/**
 	 * Standard action constructor.
 	 *
@@ -66,14 +69,21 @@ public abstract class DBAction implements Serializable {
 	 *
 	 * @param <R> the table that this action applies to.
 	 * @param row the row or example that this action applies to.
+	 * @param intent the specific intention of this action, a description of what
+	 * is expected to occur
 	 */
-	public <R extends DBRow> DBAction(R row) {
+	public <R extends DBRow> DBAction(R row, QueryIntention intent) {
 		super();
 		if (row != null) {
 			this.row = DBRow.copyDBRow(row);
 		} else {
 			this.row = row;
 		}
+		this.intention = intent;
+	}
+
+	public QueryIntention getIntent() {
+		return intention;
 	}
 
 	/**
@@ -98,7 +108,7 @@ public abstract class DBAction implements Serializable {
 	 *
 	 * @return the row
 	 */
-	protected DBRow getRow() {
+	public DBRow getRow() {
 		return DBRow.copyDBRow(row);
 	}
 
@@ -185,13 +195,7 @@ public abstract class DBAction implements Serializable {
 					}
 				}
 			}
-		} catch (SQLException ex) {
-			LOG.fatal(null, ex);
-		} catch (UnexpectedNumberOfRowsException ex) {
-			LOG.fatal(null, ex);
-		} catch (AccidentalBlankQueryException ex) {
-			LOG.fatal(null, ex);
-		} catch (NoAvailableDatabaseException ex) {
+		} catch (UnexpectedNumberOfRowsException | SQLException | DBRuntimeException ex) {
 			LOG.fatal(null, ex);
 		}
 	}
@@ -206,6 +210,29 @@ public abstract class DBAction implements Serializable {
 
 	protected void setRefetchStatus(RefetchRequirement refetchStatus) {
 		this.refetchStatus = refetchStatus;
+	}
+
+	protected void executeOnStatement(DBDatabase db) throws SQLException {
+		try (final DBStatement statement = db.getDBStatement()) {
+			for (String sql : getSQLStatements(db)) {
+				statement.execute(getIntent(), sql);
+			}
+		}
+	}
+
+	public DBActionList execute2(DBDatabase db) throws SQLException {
+		DBActionList actions = prepareActionList(db);
+		prepareRollbackData(db, actions);
+		executeOnStatement(db);
+		return actions;
+	}
+
+	protected DBActionList prepareActionList(DBDatabase db) throws SQLException, DBRuntimeException {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	protected void prepareRollbackData(DBDatabase db, DBActionList actions) throws SQLException, DBRuntimeException {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public static enum RefetchRequirement {

@@ -55,6 +55,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -1609,12 +1610,29 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * @param databaseName	databaseName
 	 *
+	 * <p>
+	 * Unsupported for most databases</p>
 	 *
 	 * @return the default implementation does not support dropping databases.
 	 *
 	 */
 	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("DROP DATABASE is not supported by this DBDatabase implementation");
+	}
+
+	/**
+	 * Provides the SQL statement required to create the named database.
+	 *
+	 * @param databaseName	databaseName
+	 *
+	 * <p>
+	 * Unsupported by most databases</p>
+	 *
+	 * @return the default implementation does not support dropping databases.
+	 *
+	 */
+	public String getCreateDatabase(String databaseName) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("CREATE DATABASE is not supported by this DBDatabase implementation");
 	}
 
 	/**
@@ -2409,7 +2427,7 @@ public abstract class DBDefinition implements Serializable {
 		return new ArrayList<>();
 	}
 
-	public List<String> dropTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
+	public List<String> dropTriggerBasedIdentitySQL(String table, String column) {
 		return new ArrayList<>();
 	}
 
@@ -2783,8 +2801,8 @@ public abstract class DBDefinition implements Serializable {
 		}
 	}
 	private static final String[] STANDARD_DATETIME_PARSER_FORMATS = new String[]{"uuuu-MM-dd[ ]['T'][HH:mm:ss][.][S][S][S][S][S][S][S][S][S][ ][VV]", "uuuu-MM-dd HH:mm:ss.SSSSSS[ ]VV", "uuuu-MM-dd HH:mm:ss.SSSSSSX"};
-	
-	private static SimpleDateFormat getSimpleDateFormat(){
+
+	private static SimpleDateFormat getSimpleDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	}
 
@@ -6444,7 +6462,8 @@ public abstract class DBDefinition implements Serializable {
 	 * @param sql input SQL expression that produces a number
 	 *
 	 *
-	 * @return the input SQL transformed to produce the log base 10 of the SQL's value.
+	 * @return the input SQL transformed to produce the log base 10 of the SQL's
+	 * value.
 	 */
 	public String doLogBase10NumberTransform(String sql) {
 		return "log10(" + sql + ")";
@@ -7155,6 +7174,43 @@ public abstract class DBDefinition implements Serializable {
 
 	public GroupByClauseMethod[] preferredGroupByClauseMethod() {
 		return new GroupByClauseMethod[]{GroupByClauseMethod.GROUPBYEXPRESSION, GroupByClauseMethod.SELECTEXPRESSION, GroupByClauseMethod.ALIAS, GroupByClauseMethod.INDEX};
+	}
+
+	public List<String> getSQLToDropAnyAssociatedDatabaseObjects(DBRow tableRow) {
+		return new ArrayList<>(0);
+	}
+
+	private static final Regex TABLE_NOT_FOUND = Regex
+			.startingAnywhere()
+			.literalCaseInsensitive("table")
+			.space().doublequote()
+			.anythingButThis("\"")
+			.atLeastOnce()
+			.doublequote().space()
+			.literalCaseInsensitive("not found")
+			.toRegex();
+
+	public boolean exceptionIsTableNotFound(Exception e) {
+		boolean matches = TABLE_NOT_FOUND.matchesWithinString(e.getMessage());
+		if (!matches) {
+			TABLE_NOT_FOUND.testAgainst(e.getMessage());
+		}
+		return matches;
+	}
+
+	public boolean isDuplicateColumnException(Exception exc) {
+		return false;
+	}
+
+	public boolean isPrimaryKeyAlreadyExistsException(Exception alreadyExists) {
+		Throwable exc = alreadyExists;
+		while (exc != null) {
+			if (exc instanceof SQLIntegrityConstraintViolationException) {
+				return true;
+			}
+			exc = exc.getCause();
+		}
+		return false;
 	}
 
 	public static enum GroupByClauseMethod {

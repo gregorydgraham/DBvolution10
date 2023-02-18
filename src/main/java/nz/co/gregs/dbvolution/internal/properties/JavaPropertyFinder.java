@@ -112,12 +112,8 @@ class JavaPropertyFinder {
 	/**
 	 * Gets the field-based properties.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of JavaProperty
 	 */
-	// TODO: this may not be able to handle inheritance of protected/default fields
 	private List<JavaProperty<?>> getFields(Class<?> clazz) {
 		Class<?> theClass = clazz;
 		List<JavaProperty<?>> properties = new ArrayList<JavaProperty<?>>();
@@ -155,7 +151,6 @@ class JavaPropertyFinder {
 							// (plus set accessible)
 							if (filter.acceptField(field)) {
 								// make accessible
-								// TODO: pretty sure there's exception types that need to be caught on this call
 								field.setAccessible(true);
 
 								properties.add(new JavaField<>(field));

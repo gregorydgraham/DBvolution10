@@ -47,7 +47,6 @@ public class DBDateEditorTest {
 		String format = "";
 		DBDateEditor instance = new DBDateEditor();
 		instance.setFormat(format);
-		// TODO review the generated test code and remove the default call to fail.
 	}
 
 	/**

@@ -23,10 +23,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
- * @author greg
+ * @author Greogry Graham
  */
 public class QueryOptions implements Serializable {
 
@@ -44,6 +41,7 @@ public class QueryOptions implements Serializable {
 	private QueryType queryType = QueryType.SELECT;
 	private boolean printSQLBeforeExecution = false;
 	private boolean requireEmptyStringForNullString = false;
+	private boolean useStarInsteadOfColumns = false;
 
 	private String rawSQL = null;
 
@@ -58,26 +56,29 @@ public class QueryOptions implements Serializable {
 
 	public QueryOptions(QueryOptions opts) {
 		super();
-		setBlankQueryAllowed(opts.isBlankQueryAllowed());
-		setCartesianJoinAllowed(opts.isCartesianJoinAllowed());
-		setCreatingNativeQuery(opts.isCreatingNativeQuery());
-		setMatchAllConditions(opts.isMatchAllConditions());
-		setMatchAllRelationships(opts.matchAnyRelationship);
-		setPageIndex(opts.getPageIndex());
-		setQueryDatabase(opts.getQueryDatabase());
-		setQueryType(opts.getQueryType());
-		setRowLimit(opts.getRowLimit());
-		setSortColumns(opts.getSortColumns());
-		setUseANSISyntax(opts.isUseANSISyntax());
-		setRequireEmptyStringForNullString(opts.getRequireEmptyStringForNullString());
+		matchAll = opts.matchAll;
+		rowLimit = opts.rowLimit;
+		pageIndex = opts.pageIndex;
+		sortColumns = new SortProvider[opts.sortColumns.length];
+		System.arraycopy(opts.sortColumns, 0, sortColumns, 0, opts.sortColumns.length);
+		blankQueryAllowed = opts.blankQueryAllowed;
+		cartesianJoinAllowed = opts.cartesianJoinAllowed;
+		useANSISyntax = opts.useANSISyntax;
+		matchAnyRelationship = opts.matchAnyRelationship;
+		queryIsNativeQuery = opts.queryIsNativeQuery;
+		queryType = opts.queryType;
+		printSQLBeforeExecution = opts.printSQLBeforeExecution;
+		requireEmptyStringForNullString = opts.requireEmptyStringForNullString;
+		useStarInsteadOfColumns = opts.useStarInsteadOfColumns;
+		rawSQL = opts.rawSQL;
+		timeoutInMilliseconds = opts.timeoutInMilliseconds;
+		label = opts.label;
+		workingDefinition = opts.workingDefinition;
 	}
 
 	/**
 	 * Indicates whether this query will use AND rather than OR to add the
 	 * conditions.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if criteria should be collected using AND
 	 */
@@ -88,9 +89,6 @@ public class QueryOptions implements Serializable {
 	/**
 	 * Indicates whether this query will use OR rather than AND to add the
 	 * conditions.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if criteria should be collected using OR
 	 */
@@ -120,9 +118,6 @@ public class QueryOptions implements Serializable {
 	 * <p>
 	 * The value will be -1 if no row limit is set.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the rowLimit
 	 */
 	public int getRowLimit() {
@@ -137,8 +132,6 @@ public class QueryOptions implements Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the sortColumns
 	 */
@@ -154,8 +147,6 @@ public class QueryOptions implements Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the blankQueryAllowed
 	 */
@@ -171,8 +162,6 @@ public class QueryOptions implements Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the useANSISyntax
 	 */
@@ -188,8 +177,6 @@ public class QueryOptions implements Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the cartesianJoinAllowed
 	 */
@@ -217,10 +204,6 @@ public class QueryOptions implements Serializable {
 	 * <p>
 	 * The first item on the page will be (pageindex*rowlimit) , and the first
 	 * item on the next page will be ((pageindex+1)*rowlimit).
-	 *
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the pageIndex
 	 */
@@ -264,52 +247,16 @@ public class QueryOptions implements Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the matchAllRelationship
 	 */
 	public boolean isMatchAllRelationships() {
 		return !matchAnyRelationship;
 	}
-
-//	/**
-//	 * Clones this QueryOptions
-//	 *
-//	 * <p style="color: #F90;">Support DBvolution at
-//	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-//	 *
-//	 * @return very similar QueryOptions
-//	 */
-//	public QueryOptions copy() {
-//		try {
-//			return this.clone();
-//		} catch (CloneNotSupportedException ex) {
-//			Logger.getLogger(QueryOptions.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-//		return new QueryOptions();
-//	}
-//
-//	@Override
-//	protected QueryOptions clone() throws CloneNotSupportedException {
-//		super.clone();
-//		QueryOptions opts = new QueryOptions();
-//		opts.matchAll = this.matchAll;
-//		opts.rowLimit = this.rowLimit;
-//		opts.sortColumns = Arrays.asList(this.sortColumns).toArray(sortColumns);
-//		opts.pageIndex = this.pageIndex;
-//		opts.blankQueryAllowed = this.blankQueryAllowed;
-//		opts.cartesianJoinAllowed = this.cartesianJoinAllowed;
-//		opts.useANSISyntax = this.useANSISyntax;
-//		opts.matchAnyRelationship = this.matchAnyRelationship;
-//		return opts;
-//	}
+	
 	/**
 	 * Used while simulating OUTER JOIN to indicate that the simulation is
 	 * occurring.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the query is native, FALSE otherwise
 	 */
@@ -339,7 +286,7 @@ public class QueryOptions implements Serializable {
 
 	public final void setQueryDatabase(DBDatabase db) {
 		queryDatabase = db;
-		workingDefinition=null;
+		workingDefinition = null;
 		getQueryDefinition();
 	}
 
@@ -355,14 +302,6 @@ public class QueryOptions implements Serializable {
 			}
 		}
 		return workingDefinition;
-	}
-
-	private void setMatchAllConditions(boolean matchAllConditions) {
-		this.matchAll = matchAllConditions;
-	}
-
-	private void setMatchAllRelationships(boolean matchAnyRelationship) {
-		this.matchAnyRelationship = matchAnyRelationship;
 	}
 
 	public void setPrintSQLBeforeExecution(boolean b) {
@@ -418,5 +357,18 @@ public class QueryOptions implements Serializable {
 
 	public int getTimeoutInMilliseconds() {
 		return this.timeoutInMilliseconds;
+	}
+
+	public boolean isUseStarInsteadOfColumns() {
+		return useStarInsteadOfColumns;
+	}
+
+	public final void setUseStarInsteadOfColumns(boolean useStarInsteadOfColumns) {
+		this.useStarInsteadOfColumns = useStarInsteadOfColumns;
+	}
+
+	public QueryOptions copy() {
+		QueryOptions queryOptions = new QueryOptions(this);
+		return queryOptions;
 	}
 }

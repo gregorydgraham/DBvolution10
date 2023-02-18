@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
 /**
  * Provides support for the abstract concept of deleting rows based on a defined
@@ -40,7 +39,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 
 	private static final long serialVersionUID = 1l;
 	
-	private final List<DBRow> savedRows = new ArrayList<>();
+	private final ArrayList<DBRow> savedRows = new ArrayList<>();
 
 	/**
 	 * Creates a DBDeleteUsingAllColumns action for the supplied example DBRow on
@@ -50,11 +49,11 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 	 * @param row the row to be deleted
 	 */
 	protected <R extends DBRow> DBDeleteUsingAllColumns(R row) {
-		super(row);
+		super(row, QueryIntention.DELETE_ROW);
 	}
 
 	private <R extends DBRow> DBDeleteUsingAllColumns(DBDatabase db, R row) throws SQLException {
-		super(row);
+		this(row);
 		List<R> gotRows = db.get(row);
 		for (R gotRow : gotRows) {
 			savedRows.add(gotRow);

@@ -16,9 +16,8 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  * checking, meaningful error messages, and automatic casting between number
  * types.
  */
-// TODO exceptions need to reference the field the type adaptor is on
-public class SafeOneWaySimpleTypeAdaptor implements Serializable{
-	
+public class SafeOneWaySimpleTypeAdaptor implements Serializable {
+
 	private static final long serialVersionUID = 1l;
 
 	private static final Log log = LogFactory.getLog(SafeOneWaySimpleTypeAdaptor.class);

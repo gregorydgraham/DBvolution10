@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,7 +53,7 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	 * @param examples extra examples used to reduce the source data set.
 	 */
 	public DBMigrationAction(DBMigration<R> migration, DBRow resultRow, DBRow... examples) {
-		super(resultRow);
+		super(resultRow, QueryIntention.MIGRATION);
 		sourceMigration = migration;
 		extraExamples = examples;
 	}
@@ -91,7 +92,7 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBActionList actions = new DBActionList(new DBMigrationAction<>(sourceMigration, getRow(), extraExamples));
 
-		try ( DBStatement statement = db.getDBStatement()) {
+		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				try {
 					statement.execute("MIGRATION INSERT", QueryIntention.BULK_INSERT, sql);
@@ -122,33 +123,35 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 			// BLOBS are not inserted normally so don't include them
 			if (prop.isColumn()) {
 				final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
-				if (!(qdt instanceof DBLargeObject)) {
-					//support for inserting empty rows in a table with an autoincrementing pk
-					if (!prop.isAutoIncrement()) {
-						allColumns
-								.append(allColumnSeparator)
-								.append(" ")
-								.append(defn.formatColumnName(prop.columnName()));
-						allColumnSeparator = defn.getValuesClauseColumnSeparator();
-						// add the value
-						allValues
-								.append(allValuesSeparator)
-								.append(qdt.toSQLString(database.getDefinition()));
-						allValuesSeparator = defn.getValuesClauseValueSeparator();
-					}
-					if (qdt.hasBeenSet()) {
-						// nice normal columns
-						// Add the column
-						allChangedColumns
-								.append(columnSeparator)
-								.append(" ")
-								.append(defn.formatColumnName(prop.columnName()));
-						columnSeparator = defn.getValuesClauseColumnSeparator();
-						// add the value
-						allSetValues
-								.append(valuesSeparator)
-								.append(qdt.toSQLString(database.getDefinition()));
-						valuesSeparator = defn.getValuesClauseValueSeparator();
+				if (qdt != null) {
+					if (!(qdt instanceof DBLargeObject)) {
+						//support for inserting empty rows in a table with an autoincrementing pk
+						if (!prop.isAutoIncrement()) {
+							allColumns
+									.append(allColumnSeparator)
+									.append(" ")
+									.append(defn.formatColumnName(prop.columnName()));
+							allColumnSeparator = defn.getValuesClauseColumnSeparator();
+							// add the value
+							allValues
+									.append(allValuesSeparator)
+									.append(qdt.toSQLString(database.getDefinition()));
+							allValuesSeparator = defn.getValuesClauseValueSeparator();
+						}
+						if (qdt.hasBeenSet()) {
+							// nice normal columns
+							// Add the column
+							allChangedColumns
+									.append(columnSeparator)
+									.append(" ")
+									.append(defn.formatColumnName(prop.columnName()));
+							columnSeparator = defn.getValuesClauseColumnSeparator();
+							// add the value
+							allSetValues
+									.append(valuesSeparator)
+									.append(qdt.toSQLString(database.getDefinition()));
+							valuesSeparator = defn.getValuesClauseValueSeparator();
+						}
 					}
 				}
 			}
