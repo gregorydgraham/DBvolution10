@@ -146,7 +146,7 @@ public class DBInsert extends DBAction {
 		DBRow table = originalRow;
 		final DBInsert newInsert = new DBInsert(table);
 		DBActionList actions = new DBActionList(newInsert);
-		int successfulInsertAt = 0;
+		int successfulInsertAt;
 
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
@@ -267,7 +267,7 @@ public class DBInsert extends DBAction {
 							QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
 							QueryableDatatype<?> rowPK = definition.getQueryableDatatype(table);
 
-							if (originalPK.isDefined()== false) {
+							if (originalPK.isDefined() == false) {
 								if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
 									final long generatedPK = rs.getLong(1);
 									setPrimaryKeyGenerated(generatedPK);
