@@ -17,8 +17,10 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
+import java.sql.SQLException;
 import java.text.*;
 import java.util.*;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -28,8 +30,10 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.utility.StringCheck;
+import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 
 /**
@@ -70,9 +74,9 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	protected String formatNameForDatabase(final String sqlObjectName) {
 		if (!(RESERVED_WORD_LIST.contains(sqlObjectName.toUpperCase()))) {
-			return super.formatNameForDatabase(sqlObjectName);
+			return sqlObjectName.toLowerCase();
 		} else {
-			return formatNameForDatabase("p" + super.formatNameForDatabase(sqlObjectName));
+			return ("p" + sqlObjectName).toLowerCase();
 		}
 	}
 
@@ -949,7 +953,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
 		String formattedTableName = StringCheck.substring(tableName, 0, 29);
 		String formattedColumnName = StringCheck.substring(columnName, 0, 29);
-		final String result = "ALTER SEQUENCE " + formattedTableName + "_" + formattedColumnName + "_seq RESTART WITH " + (primaryKeyGenerated + 1) + ";";
+		final String result = "ALTER SEQUENCE IF EXISTS " + formattedTableName + "_" + formattedColumnName + "_seq RESTART WITH " + (primaryKeyGenerated + 1) + ";";
 		return result;
 	}
 
@@ -1107,4 +1111,34 @@ public class PostgresDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	private static final Regex DUPLICATE_ROW_EXCEPTION
+			= Regex
+					.startingAnywhere()
+					.beginOrGroup()
+					.literalCaseInsensitive("duplicate key value violates unique constraint")
+					.or()
+					.literalCaseInsensitive("ERROR: column \"")
+					.anyCharacterExcept('"').oneOrMore()
+					.literalCaseInsensitive("\" of relation \"")
+					.anyCharacterExcept('"').oneOrMore()
+					.literalCaseInsensitive("\" already exists")
+					.endOrGroup()
+					.toRegex();
+
+	@Override
+	public boolean isPrimaryKeyAlreadyExistsException(Exception alreadyExists) {
+		Throwable exc = alreadyExists;
+		while (exc != null) {
+			if ((exc instanceof SQLException) && DUPLICATE_ROW_EXCEPTION.matchesWithinString(exc.getMessage())) {
+				return true;
+			}
+			exc = exc.getCause();
+		}
+		return false;
+	}
+
+	@Override
+	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
+		return "ALTER TABLE IF EXISTS " + formatTableName(existingTable) + " ADD COLUMN IF NOT EXISTS " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
+	}
 }
