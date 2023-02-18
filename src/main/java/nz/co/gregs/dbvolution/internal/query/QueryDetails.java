@@ -50,6 +50,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.RegexReplacement;
 import nz.co.gregs.separatedstring.SeparatedString;
@@ -378,15 +379,22 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private synchronized void getResultSetCount(DBDatabase db) throws SQLException {
 		long result = 0L;
-		try ( DBStatement dbStatement = db.getDBStatement()) {
+		try (DBStatement dbStatement = db.getDBStatement()) {
 			final List<String> sqlForCount = getSQLForCountInternal(this, options);
 			for (String sql : sqlForCount) {
 				printSQLIfRequired(sql);
 				var dets = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, dbStatement);
-				try ( ResultSet resultSet = dbStatement.executeQuery(dets)) {
+				try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
 					if (resultSet != null) {
 						while (resultSet.next()) {
-							result = resultSet.getLong(1);
+							String strValue = resultSet.getString(1);
+							if (StringCheck.isEmptyOrNull(strValue)) {
+								// SQLite throws a number format error occasionally because of empty string
+								result = 0;
+							} else {
+								long aLong = resultSet.getLong(1);
+								result = aLong;
+							}
 						}
 					}
 					break;// we have successfully run the count so stop
@@ -682,7 +690,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					sqlList.add(assembleSQLQuery(defn, selectClause, fromClause, whereClause, rawSQLClauseFinal, "", havingClause, orderByClauseFinal, options, queryState));
 				}
 
-			} else if (queryType == QueryType.COUNT||options.isUseStarInsteadOfColumns()) {
+			} else if (queryType == QueryType.COUNT || options.isUseStarInsteadOfColumns()) {
 				setSelectSQLClause(defn.countStarClause());
 				sqlList.add(defn.beginSelectStatement()
 						+ defn.countStarClause() + LINE_SEP
@@ -1221,11 +1229,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 		boolean successfulQuery = false;
 		for (String sql : sqlOptions) {
 			final DBDatabase queryDatabase = options.getQueryDatabase();
-			try ( DBStatement dbStatement = queryDatabase.getDBStatement()) {
+			try (DBStatement dbStatement = queryDatabase.getDBStatement()) {
 				printSQLIfRequired(sql);
 				final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, dbStatement);
 				statementDetails.setIgnoreExceptions(this.isQuietExceptions());
-				try ( ResultSet resultSet = getResultSetForSQL(dbStatement, statementDetails, sql)) {
+				try (ResultSet resultSet = getResultSetForSQL(dbStatement, statementDetails, sql)) {
 					if (resultSet != null) {
 						DBQueryRow queryRow;
 						while (resultSet.next()) {
