@@ -1620,6 +1620,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	 * @throws AccidentalDroppingOfDatabaseException Terrible!
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 * If you're lucky...
+	 * @throws java.sql.SQLException
 	 */
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
 		if (doIt) {
@@ -2116,38 +2117,6 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	private void checkForTimezoneIssues() throws SQLException {
 	}
 
-	private void refetch(Collection<? extends DBRow> listOfRowsToRefetch) {
-		listOfRowsToRefetch.stream().filter(t -> t != null).forEach(t -> refetch(t));
-	}
-
-	private void refetch(DBRow[] rows) {
-		refetch(Arrays.asList(rows));
-	}
-
-	private <R extends DBRow> void refetch(R originalRow) {
-		try {
-			if (originalRow.hasAutomaticValueFields()) {
-				if (originalRow.getPrimaryKeys().size() > 0) {
-					R example = DBRow.getPrimaryKeyExample(originalRow);
-					List<DBRow> got = get(1L, example);
-					var newRow = got.get(0);
-					var props = originalRow.getColumnPropertyWrappers();
-					props.stream()
-							.filter(p -> p != null)
-							.forEach(p -> p.copyFromRowToOtherRow(newRow, originalRow));
-				}
-			}
-		} catch (SQLException ex) {
-			LOG.fatal(null, ex);
-		} catch (UnexpectedNumberOfRowsException ex) {
-			LOG.fatal(null, ex);
-		} catch (AccidentalBlankQueryException ex) {
-			LOG.fatal(null, ex);
-		} catch (NoAvailableDatabaseException ex) {
-			LOG.fatal(null, ex);
-		}
-	}
-
 	@Override
 	public void handleErrorDuringExecutingSQL(DBDatabase suspectDatabase, Throwable sqlException, String sqlString) {
 		;
@@ -2256,7 +2225,19 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	/**
 	 * Checks for the existence of the table on the database.
 	 *
-	 * @param table
+	 * @param table the class of the table to check for
+	 * @return true if the table exists on the database, for clusters it is only
+	 * true if the table exists on all databases in the cluster
+	 * @throws SQLException
+	 */
+	public boolean tableExists(Class<? extends DBRow> table) throws SQLException {
+		return tableExists(DBRow.getDBRow(table));
+	}
+
+	/**
+	 * Checks for the existence of the table on the database.
+	 *
+	 * @param table the table to check for
 	 * @return true if the table exists on the database, for clusters it is only
 	 * true if the table exists on all databases in the cluster
 	 * @throws SQLException
@@ -2266,7 +2247,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 			value = "REC_CATCH_EXCEPTION",
 			justification = "Database vendors throw all sorts of silly exceptions")
 	public boolean tableExists(DBRow table) throws SQLException {
-		boolean tableExists = false;
+		boolean tableExists;
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
 			tableExists = checkTableExistsViaMetaData(table);
@@ -2301,18 +2282,19 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 
 	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
 		boolean tableExists = false;
-		try (DBStatement dbStatement = getDBStatement()) {
-			DBConnection conn = dbStatement.getConnection();
-			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
-			if (rset.next()) {
-				tableExists = true;
-			}
+		ResultSet rset = getMetaDataForTable(table);
+		if (rset.next()) {
+			tableExists = true;
 		}
 		return tableExists;
 	}
 
-	public boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
-		return tableExists(DBRow.getDBRow(tab));
+	private ResultSet getMetaDataForTable(DBRow table) throws SQLException {
+		try (DBStatement dbStatement = getDBStatement()) {
+			DBConnection conn = dbStatement.getConnection();
+			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
+			return rset;
+		}
 	}
 
 	private void createRequiredTables() throws SQLException {
