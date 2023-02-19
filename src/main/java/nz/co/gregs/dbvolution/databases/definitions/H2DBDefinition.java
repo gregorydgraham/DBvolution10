@@ -745,11 +745,17 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
 	}
 
+	private static final Regex PRIMARY_KEY_ALREADY_EXISTS = Regex
+			.empty()
+			.literalCaseInsensitive("Unique index or primary key violation:")
+			.toRegex();
+
 	@Override
 	public boolean isPrimaryKeyAlreadyExistsException(Exception alreadyExists) {
 		Throwable exc = alreadyExists;
 		while (exc != null) {
-			if (exc instanceof org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException) {
+			if ((exc instanceof org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException)
+					|| PRIMARY_KEY_ALREADY_EXISTS.matchesWithinString(exc.getMessage())) {
 				return true;
 			}
 			exc = exc.getCause();
