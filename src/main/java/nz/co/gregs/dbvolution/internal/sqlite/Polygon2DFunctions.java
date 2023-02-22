@@ -443,14 +443,19 @@ public class Polygon2DFunctions {
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-				Polygon firstPoly = getPolygon(value_text(0));
-				Polygon secondPoly = getPolygon(value_text(1));
-				if (firstPoly == null || secondPoly == null) {
+				if (args() < 2) {
+					System.out.println("ERROR: Equals() must be called with 2 arguments");
 					result();
 				} else {
-					firstPoly.normalize();
-					secondPoly.normalize();
-					result(firstPoly.toText().equals(secondPoly.toText()) ? 1 : 0);
+					Polygon firstPoly = getPolygon(value_text(0));
+					Polygon secondPoly = getPolygon(value_text(1));
+					if (firstPoly == null || secondPoly == null) {
+						result();
+					} else {
+						firstPoly.normalize();
+						secondPoly.normalize();
+						result(firstPoly.toText().equals(secondPoly.toText()) ? 1 : 0);
+					}
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
