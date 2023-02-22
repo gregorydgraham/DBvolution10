@@ -85,14 +85,10 @@ public class DBQuery implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
-	/**
-	 * The default timeout value used to prevent accidental long running queries
-	 */
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
 	private transient QueryGraph queryGraph;
 	private transient JFrame queryGraphFrame = null;
-	private boolean ignoreExceptions;
 
 	public QueryDetails getQueryDetails() {
 		return details;
@@ -291,7 +287,8 @@ public class DBQuery implements Serializable {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return details.getSQLForQuery(database);
+		details.setQueryType(QueryType.SELECT);
+		return database.getSQLForDBQuery(details);
 	}
 
 	/**
@@ -310,6 +307,7 @@ public class DBQuery implements Serializable {
 	 *
 	 */
 	public void printSQLForQuery() {
+		details.setQueryType(QueryType.SELECT);
 		System.out.println(details.getLabel() + ": " + getSQLForQuery());
 	}
 
@@ -690,9 +688,6 @@ public class DBQuery implements Serializable {
 	 * Clears all the settings and collections within this instance and set it
 	 * back to a blank state
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return this DBQuery instance.
 	 */
 	public DBQuery clear() {
@@ -708,9 +703,6 @@ public class DBQuery implements Serializable {
 	 * {@link #getSQLForCount() count query} for this instance and retrieves the
 	 * number of rows that would have been returned had
 	 * {@link #getAllRows()  getAllRows()} been called.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the number of rows that have or will be retrieved. Database
 	 * exceptions may be thrown
