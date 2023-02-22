@@ -169,12 +169,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	 * foreign key provided to the traverse "down" the tree from the results of
 	 * the current query thru all the rows that reference the current rows.
 	 *
-	 *
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return A linked List
+	 * @return A linked List containing the rows found
 	 *
 	 */
 	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> details) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
