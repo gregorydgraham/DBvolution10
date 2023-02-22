@@ -45,7 +45,6 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	public static final long serialVersionUID = 1L;
 
 	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
-//	private static final String H2_DATE_FORMAT_INCLUDING_TIMEZONE = "yyyy-M-d HH:mm:ss.SSSSSSSSS Z";//2017-02-18 18:59:59.000 +10:00
 
 	private static SimpleDateFormat getStringToDateFormat() {
 		return new SimpleDateFormat(DATE_FORMAT_STR);
@@ -761,5 +760,11 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 			exc = exc.getCause();
 		}
 		return super.isPrimaryKeyAlreadyExistsException(alreadyExists);
+	}
+
+	@Override
+	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
+		return "ALTER TABLE IF EXISTS " + tableName + " ON COLUMN IF EXISTS " + columnName + " RESTART WITH " + (primaryKeyGenerated + 1);
+		
 	}
 }
