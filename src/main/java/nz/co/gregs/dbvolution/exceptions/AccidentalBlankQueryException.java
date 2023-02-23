@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.DBQuery;
  *
  * @author Gregory Graham
  */
-public class AccidentalBlankQueryException extends RuntimeException {
+public class AccidentalBlankQueryException extends DBRuntimeException {
 
 	static final long serialVersionUID = 1l;
 
