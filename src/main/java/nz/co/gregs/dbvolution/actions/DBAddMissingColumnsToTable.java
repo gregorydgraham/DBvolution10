@@ -30,12 +30,17 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBConnection;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -50,7 +55,6 @@ public class DBAddMissingColumnsToTable extends DBAction {
 
 	private static final long serialVersionUID = 1L;
 	private static final Log LOG = LogFactory.getLog(DBAddMissingColumnsToTable.class);
-
 
 	public <R extends DBRow> DBAddMissingColumnsToTable(DBRow table) {
 		super(table, QueryIntention.ADD_MISSING_COLUMNS_TO_TABLE);
@@ -79,16 +83,24 @@ public class DBAddMissingColumnsToTable extends DBAction {
 	}
 
 	@Override
-	protected DBActionList prepareActionList(DBDatabase db) throws AccidentalBlankQueryException, SQLException, UnableToInstantiateDBRowSubclassException {
+	protected DBActionList prepareActionList(DBDatabase database) throws AccidentalBlankQueryException, SQLException, UnableToInstantiateDBRowSubclassException {
 
 		DBActionList actions = new DBActionList();
 
 		List<PropertyWrapper<?, ?, ?>> newColumns = new ArrayList<>();
 		DBRow table = getRow();
+		HashMap<String, ColumnStructure> existingColumns = getColumnStructureViaMetaData(database, table);
+
 		var columnPropertyWrappers = table.getColumnPropertyWrappers();
 		for (var columnPropertyWrapper : columnPropertyWrappers) {
-			if (columnPropertyWrapper!=null && !columnPropertyWrapper.hasColumnExpression()) {
-				newColumns.add(columnPropertyWrapper);
+			if (columnPropertyWrapper != null && !columnPropertyWrapper.hasColumnExpression()) {
+				String columnName = columnPropertyWrapper.columnName();
+				DBDefinition definition = database.getDefinition();
+				String formattedColumnName = definition.formatColumnName(columnName);
+				ColumnStructure got = existingColumns.get(formattedColumnName);
+				if (got == null) {
+					newColumns.add(columnPropertyWrapper);
+				}
 			}
 		}
 		for (var newColumn : newColumns) {
@@ -102,4 +114,62 @@ public class DBAddMissingColumnsToTable extends DBAction {
 	protected void prepareRollbackData(DBDatabase db, DBActionList actions) {
 		// with any real database attempting this is absurd
 	}
+
+	private HashMap<String, ColumnStructure> getColumnStructureViaMetaData(DBDatabase database, DBRow table) throws SQLException {
+
+		HashMap<String, ColumnStructure> structures = new HashMap<>(0);
+		ResultSet columns = getMetaDataForTable(database, table);
+		while (columns.next()) {
+			String columnName = columns.getString("COLUMN_NAME");
+			ColumnStructure column = new ColumnStructure(
+					Integer.getInteger(columns.getString("COLUMN_SIZE")),
+					columns.getString("DATA_TYPE"),
+					"YES".equals(columns.getString("IS_NULLABLE")),
+					"YES".equals(columns.getString("IS_AUTOINCREMENT")));
+			structures.put(columnName, column);
+		}
+		return structures;
+	}
+
+	private ResultSet getMetaDataForTable(DBDatabase database, DBRow table) throws SQLException {
+		try (DBStatement dbStatement = database.getDBStatement()) {
+			DBConnection conn = dbStatement.getConnection();
+			DBDefinition definition = database.getDefinition();
+			String formattedTableName = definition.formatTableName(table);
+			ResultSet rset = conn.getMetaData().getColumns(null, null, formattedTableName, null);
+			return rset;
+		}
+	}
+
+	public static class ColumnStructure {
+
+		private final Integer size;
+		private final String datatype;
+		private final boolean isNullable;
+		private final boolean isAutoIncrement;
+
+		public ColumnStructure(Integer size, String datatype, boolean isNullable, boolean isAutoIncrement) {
+			this.size = size;
+			this.datatype = datatype;
+			this.isNullable = isNullable;
+			this.isAutoIncrement = isAutoIncrement;
+		}
+
+		public Integer getSize() {
+			return size;
+		}
+
+		public String getDatatype() {
+			return datatype;
+		}
+
+		public boolean isIsNullable() {
+			return isNullable;
+		}
+
+		public boolean isIsAutoIncrement() {
+			return isAutoIncrement;
+		}
+
+	};
 }

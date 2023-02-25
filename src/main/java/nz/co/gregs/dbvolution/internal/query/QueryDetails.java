@@ -50,6 +50,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.ColumnAspects;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.RegexReplacement;
 import nz.co.gregs.separatedstring.SeparatedString;
@@ -85,13 +86,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 	private String rawSQLClause = "";
 	private List<DBQueryRow> results = new ArrayList<>();
-	private final List<String> resultSQL = new ArrayList<>();
+	private final ArrayList<String> resultSQL = new ArrayList<>();
 	private int resultsPageIndex = 0;
 	private Integer resultsRowLimit = -1;
 	private Long queryCount = null;
 	private transient QueryGraph queryGraph;
 	private SortProvider[] sortOrderColumns;
-	private List<DBQueryRow> currentPage;
+	private transient List<DBQueryRow> currentPage;
 	private String label = "UNLABELLED";
 	private boolean quietExceptions = false;
 	private boolean databaseQuietExceptionsPreference = false;
@@ -306,6 +307,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 */
 	public synchronized void setRawSQLClause(String rawSQLClause) {
 		this.rawSQLClause = rawSQLClause;
+		this.options.setRawSQL(rawSQLClause);
 	}
 
 	/**
@@ -376,20 +378,31 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return queryCount;
 	}
 
-	private synchronized void getResultSetCount(DBDatabase db) throws SQLException {
+	private synchronized void getResultSetCount() throws SQLException {
 		long result = 0L;
-		try ( DBStatement dbStatement = db.getDBStatement()) {
+		try (DBStatement dbStatement = getOptions().getQueryDatabase().getDBStatement()) {
 			final List<String> sqlForCount = getSQLForCountInternal(this, options);
 			for (String sql : sqlForCount) {
 				printSQLIfRequired(sql);
 				var dets = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, dbStatement);
-				try ( ResultSet resultSet = dbStatement.executeQuery(dets)) {
+				try (ResultSet resultSet = dbStatement.executeQuery(dets)) {
 					if (resultSet != null) {
-						while (resultSet.next()) {
-							result = resultSet.getLong(1);
+						if (resultSet.next()) {
+							String strValue = resultSet.getString(1);
+							if (StringCheck.isEmptyOrNull(strValue)) {
+								// SQLite throws a number format error occasionally because of empty string
+								result = 0;
+							} else {
+								long aLong = resultSet.getLong(1);
+								result = aLong;
+							}
 						}
 					}
 					break;// we have successfully run the count so stop
+				}catch(Exception exc){
+					System.out.println("EXCEPTION DURING COUNT: caught in "+this.getClass().getSimpleName());
+					exc.printStackTrace();
+					throw exc;
 				}
 			}
 		}
@@ -682,7 +695,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					sqlList.add(assembleSQLQuery(defn, selectClause, fromClause, whereClause, rawSQLClauseFinal, "", havingClause, orderByClauseFinal, options, queryState));
 				}
 
-			} else if (queryType == QueryType.COUNT||options.isUseStarInsteadOfColumns()) {
+			} else if (queryType == QueryType.COUNT || options.isUseStarInsteadOfColumns()) {
 				setSelectSQLClause(defn.countStarClause());
 				sqlList.add(defn.beginSelectStatement()
 						+ defn.countStarClause() + LINE_SEP
@@ -1105,7 +1118,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	public synchronized String getSQLForQuery(DBDatabase db) {
-		QueryType queryType = getOptions().getQueryType();
+		QueryType queryType = options.getQueryType();
 		getOptions().setQueryType(QueryType.GENERATESQLFORSELECT);
 		prepareForQuery(db, options);
 		String sql = getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, getOptions()).get(0);
@@ -1129,7 +1142,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final QueryType queryType = currentOptions.getQueryType();
 		switch (queryType) {
 			case COUNT:
-				getResultSetCount(db);
+				getResultSetCount();
 				break;
 			case ROWSFORPAGE:
 				getAllRowsForPage(currentOptions);
@@ -1138,7 +1151,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				this.setResultSQL(getSQLForQueryInternal(new QueryState(this), QueryType.SELECT, currentOptions));
 				break;
 			case GENERATESQLFORCOUNT:
-				this.setResultSQL(QueryDetails.this.getSQLForCountInternal(this, currentOptions));
+				this.setResultSQL(getSQLForCountInternal(this, currentOptions));
 				break;
 			case SELECT:
 				fillResultSetInternal(currentOptions);
@@ -1221,11 +1234,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 		boolean successfulQuery = false;
 		for (String sql : sqlOptions) {
 			final DBDatabase queryDatabase = options.getQueryDatabase();
-			try ( DBStatement dbStatement = queryDatabase.getDBStatement()) {
+			try (DBStatement dbStatement = queryDatabase.getDBStatement()) {
 				printSQLIfRequired(sql);
 				final StatementDetails statementDetails = new StatementDetails(getLabel(), QueryIntention.SIMPLE_SELECT_QUERY, sql, dbStatement);
 				statementDetails.setIgnoreExceptions(this.isQuietExceptions());
-				try ( ResultSet resultSet = getResultSetForSQL(dbStatement, statementDetails, sql)) {
+				try (ResultSet resultSet = getResultSetForSQL(dbStatement, statementDetails, sql)) {
 					if (resultSet != null) {
 						DBQueryRow queryRow;
 						while (resultSet.next()) {
@@ -1685,6 +1698,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	public void addExpressionColumn(Object identifyingObject, QueryableDatatype<?> expressionToAdd) {
 		expressionColumns.put(identifyingObject, expressionToAdd);
+	}
+
+	@Override
+	public void setQueryDatabase(DBDatabase db) {
+		this.getOptions().setQueryDatabase(db);
+	}
+
+	@Override
+	public DBDatabase getWorkingDatabase() {
+		return this.getOptions().getQueryDatabase();
 	}
 
 	private static class OrderByClause {

@@ -300,7 +300,6 @@ public class DBInsert extends DBAction {
 			statement.execute(statementDetails);
 		} catch (Exception alreadyExists) {
 			if (db.getDefinition().isPrimaryKeyAlreadyExistsException(alreadyExists)) {
-				db.print(db.getDBTable(DBRow.getDBRow(row.getClass())).setBlankQueryAllowed(true).getAllRows());
 				db.delete(row);
 				statement.execute(statementDetails);
 			} else {

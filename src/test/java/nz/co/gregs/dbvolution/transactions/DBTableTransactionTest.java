@@ -94,7 +94,8 @@ public class DBTableTransactionTest extends AbstractTest {
 						myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
 
 						marques.insert(myTableRows);
-
+						
+						// should cause an AccidentalBlankQueryException, and rollback the transaction 
 						marques.getAllRows();
 						return marques;
 					} catch (Exception ex) {

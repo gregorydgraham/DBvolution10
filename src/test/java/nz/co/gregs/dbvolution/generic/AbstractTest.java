@@ -109,12 +109,16 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
-			final DBDatabaseCluster cluster = new DBDatabaseCluster("testOpenSourceCluster", DBDatabaseCluster.Configuration.autoStart(),
-					H2MemoryTestDB.getFromSettings("h2memory"),
-					getSQLiteDBFromSystem("open"),
-					new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase(),
-					new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
-			);
+			PostgresDB postgresDB = new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase();
+			final DBDatabaseCluster cluster = 
+					new DBDatabaseCluster(
+							"testOpenSourceCluster", 
+							DBDatabaseCluster.Configuration.autoStart(),
+							H2MemoryTestDB.getFromSettings("h2memory"),
+							getSQLiteDBFromSystem("open"), 
+							postgresDB,
+							new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
+					);
 			cluster.setLabel("ClusteredDB-H2+SQLite+Postgres+MySQL");
 			cluster.waitUntilSynchronised();
 			databases.add(new Object[]{cluster.getLabel(), cluster});

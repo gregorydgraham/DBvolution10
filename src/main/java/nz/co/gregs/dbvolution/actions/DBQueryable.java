@@ -63,6 +63,8 @@ public interface DBQueryable {
 
 	public String toSQLString(DBDatabase db);
 
+	public void setQueryDatabase(DBDatabase db);
+
 	public void setReturnEmptyStringForNullString(boolean produceEmptyStringsForNull);
 
 	public boolean getReturnEmptyStringForNullString();
@@ -72,5 +74,7 @@ public interface DBQueryable {
 	public boolean getDatabaseQuietExceptionsPreference();
 
 	boolean isQuietExceptions();
+
+	public DBDatabase getWorkingDatabase();
 
 }

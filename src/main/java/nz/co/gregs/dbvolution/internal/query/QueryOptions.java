@@ -49,6 +49,7 @@ public class QueryOptions implements Serializable {
 	private int timeoutInMilliseconds = DEFAULT_TIMEOUT_IN_MILLISECONDS;
 	private String label = "UNLABELLED QUERY";
 	private DBDefinition workingDefinition;
+	private DBDatabase queryDatabase;
 
 	public QueryOptions() {
 		super();
@@ -253,7 +254,7 @@ public class QueryOptions implements Serializable {
 	public boolean isMatchAllRelationships() {
 		return !matchAnyRelationship;
 	}
-	
+
 	/**
 	 * Used while simulating OUTER JOIN to indicate that the simulation is
 	 * occurring.
@@ -282,12 +283,14 @@ public class QueryOptions implements Serializable {
 		this.queryType = queryType;
 	}
 
-	private DBDatabase queryDatabase;
-
 	public final void setQueryDatabase(DBDatabase db) {
-		queryDatabase = db;
-		workingDefinition = null;
-		getQueryDefinition();
+		if (queryDatabase == null) {
+			queryDatabase = db;
+			workingDefinition = null;
+			getQueryDefinition();
+		}else if (!db.equals(queryDatabase)){
+			throw new IllegalArgumentException("Attempt to reset database in query detected!");
+		}
 	}
 
 	public DBDatabase getQueryDatabase() {

@@ -197,14 +197,13 @@ public abstract class RegularProcess implements Serializable {
 	}
 
 	public final boolean canRun() {
-		boolean canRun = true;
-		if (stopped){
-				LOG.warn("This database is stopped and "+this.getClass().getSimpleName() + " can not process.");
-				canRun = false;
-		}
-		if (this.dbDatabase == null) {
-			LOG.warn(this.getClass().getSimpleName() + " has not had setDatabase(DBDatabase) called and can not process.");
-			canRun = false;
+		boolean canRun = false;
+		if (stopped) {
+			LOG.warn("This database is stopped and " + this.getClass().getSimpleName() + " can not proceed.");
+		} else if (this.dbDatabase == null) {
+			LOG.warn(this.getClass().getSimpleName() + " has not had setDatabase(DBDatabase) called and can not proceed.");
+		} else {
+			canRun = true;
 		}
 		return canRun;
 	}
@@ -232,12 +231,12 @@ public abstract class RegularProcess implements Serializable {
 			return simpleName;
 		}
 	}
-	
-	public void setSimpleName(String simpleName){
+
+	public void setSimpleName(String simpleName) {
 		this.simpleName = simpleName;
 	}
-	
-	public void clearSimpleName(){
+
+	public void clearSimpleName() {
 		this.simpleName = null;
 	}
 

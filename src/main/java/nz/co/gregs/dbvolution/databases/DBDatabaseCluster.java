@@ -258,7 +258,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		if (startupIsNeeded) {
 			addReconnectionProcessor();
 			addCleaner();
-			startupIsNeeded=false;
+			startupIsNeeded = false;
 		}
 	}
 
@@ -285,7 +285,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public boolean isStarted() {
-		return startupIsNeeded==false;
+		return startupIsNeeded == false;
 	}
 
 	public DBDatabaseCluster(String clusterLabel) throws SQLException {
@@ -344,7 +344,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					}
 					done = true;
 				} catch (SQLException exc) {
-					LOG.warn("Exception while trying to init cluster with database "+firstDB.getLabel()+":"+firstDB.getJdbcURL(), exc);
+					LOG.warn("Exception while trying to init cluster with database " + firstDB.getLabel() + ":" + firstDB.getJdbcURL(), exc);
 					exc.printStackTrace();
 				}
 			} else {
@@ -1034,7 +1034,10 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
-		final DBDatabase workingDB = getReadyDatabase();
+		DBDatabase workingDB = query.getWorkingDatabase();
+		if (workingDB == null) {
+			workingDB = getReadyDatabase();
+		}
 		workingDB.setQuietExceptionsPreference(this.getQuietExceptionsPreference());
 		HandlerAdvice advice;
 		try {
@@ -1047,7 +1050,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		} catch (SQLException e) {
 			advice = handleExceptionDuringQuery(e, workingDB);
 			if (advice.equals(HandlerAdvice.REQUERY) && requeryPermitted()) {
-				return executeDBQuery(query);
+				return workingDB.executeDBQuery(query);
 			} else {
 				getDetails().quarantineDatabaseAutomatically(workingDB, e);
 				throw e;

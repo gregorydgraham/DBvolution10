@@ -36,12 +36,16 @@ package nz.co.gregs.dbvolution.utility;
  */
 public class IntegerUtil {
 
-	public static boolean isOdd(int index) {
-		return index % 2 != 0;
+	public static boolean isOdd(int x) {
+		// checks the first bit of the integer
+		// if its 1, then the integer must be an odd number
+		return ( (x & 1) == 1 );
 	}
 
-	public static boolean isEven(int index) {
-		return index % 2 == 0;
+	public static boolean isEven(int x) {
+		// checks the first bit of the integer
+		// if its 0, then the integer must be an even number
+		return ( (x & 1) == 0 );
 	}
 
 	private IntegerUtil() {

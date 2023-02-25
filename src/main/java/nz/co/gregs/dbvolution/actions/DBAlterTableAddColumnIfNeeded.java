@@ -55,7 +55,7 @@ public class DBAlterTableAddColumnIfNeeded extends DBAction {
 	private final PropertyWrapper<?, ?, ?> columnPropertyWrapper;
 
 	public <R extends DBRow> DBAlterTableAddColumnIfNeeded(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
-		super(null, QueryIntention.ALTER_TABLE_ADD_COLUMN);
+		super(existingTable, QueryIntention.ALTER_TABLE_ADD_COLUMN);
 		this.existingTable = existingTable;
 		this.columnPropertyWrapper = columnPropertyWrapper;
 	}

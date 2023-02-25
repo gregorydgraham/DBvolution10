@@ -161,7 +161,8 @@ public class ClusterDetails implements Serializable {
 				Throwable e = except;
 				while (e != null) {
 					LOG.log(Level.WARNING, "QUARANTINING: EXCEPTION {0}", except.getClass().getCanonicalName());
-					LOG.log(Level.WARNING, "QUARANTINING: MESSAGE {0}", except.getLocalizedMessage());
+					LOG.log(Level.WARNING, "QUARANTINING: MESSAGE {0}", except.getMessage());
+					LOG.log(Level.WARNING, "QUARANTINING: LOCALIZED {0}", except.getLocalizedMessage());
 					e = e.getCause();
 				}
 			}
@@ -233,16 +234,16 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public void setTrackedTables(Collection<DBRow> rows) {
-		synchronized (trackedTables) {
-			trackedTables.clear();
-			trackedTables.addAll(rows);
+		trackedTables.clear();
+		for (DBRow row : rows) {
+			addTrackedTable(row);
 		}
 		saveTrackedTables();
 	}
 
 	public void addTrackedTable(DBRow row) {
 		synchronized (trackedTables) {
-			trackedTables.add(row);
+			trackedTables.add(DBRow.getDBRow(row.getClass()));
 		}
 		saveTrackedTables();
 	}
@@ -742,6 +743,7 @@ public class ClusterDetails implements Serializable {
 					if (!template.getSettings().equals(secondary.getSettings())) {
 						LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
 						copyTemplateActionQueueToSecondary(template, secondary);
+						// TODO change to use a queue of tables so we can re-try tables that require another table to exist
 						for (DBRow table : getRequiredAndTrackedTables()) {
 							final String tableName = table.getTableName();
 							if (proceedWithSynchronization) {
