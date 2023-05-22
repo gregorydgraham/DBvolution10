@@ -17,12 +17,14 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
@@ -31,6 +33,8 @@ import nz.co.gregs.dbvolution.internal.h2.*;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.regexi.Regex;
 import org.h2.jdbc.JdbcException;
+import org.h2.jdbc.JdbcResultSet;
+import org.h2.result.SimpleResult;
 
 /**
  * Stores all the required functionality to use an H2 database.
@@ -227,6 +231,7 @@ public class H2DB extends DBDatabase {
 	private final static Regex BROKEN_CONNECTION_PATTERN = Regex.startingAnywhere().literal("Connection is broken: \"session closed\"").toRegex();
 	private final static Regex ALREADY_CLOSED_PATTERN = Regex.startingAnywhere().literal("The object is already closed").toRegex();
 	private final static Regex DROPPING_NONEXISTENT_TABLE_PATTERN = Regex.startingAnywhere().literal("Table \"").beginNamedCapture("table").noneOfTheseCharacters("\"").oneOrMore().endNamedCapture().literal("\" not found; SQL statement:").anyCharacter().optionalMany().literal("DROP TABLE ").namedBackReference("table").toRegex();
+	private final static Regex TABLE_NOT_FOUND_WHILE_CHECKING_EXISTENCE_PATTERN = Regex.startingAnywhere().literal("Table \"").noneOfTheseCharacters("\"").oneOrMore().literal("\" not found").anyCharacterIncludingLineEnd().optionalMany().literal("SQL statement:").anyCharacterIncludingLineEnd().optionalMany().literal("SELECT COUNT(").star().literal(")").toRegex();
 	private final static Regex CREATING_EXISTING_TABLE_PATTERN = Regex.startingAnywhere().literal("Table \"").anythingButThis("\"").oneOrMore().literal("\" already exists; SQL statement:").toRegex();
 
 	@Override
@@ -240,10 +245,12 @@ public class H2DB extends DBDatabase {
 					return ResponseToException.REPLACECONNECTION;
 				} else if (DROPPING_NONEXISTENT_TABLE_PATTERN.matchesWithinString(message)) {
 					return ResponseToException.SKIPQUERY;
+				} else if (QueryIntention.CHECK_TABLE_EXISTS.equals(intent) && TABLE_NOT_FOUND_WHILE_CHECKING_EXISTENCE_PATTERN.matchesWithinString(message)) {
+					return ResponseToException.SKIPQUERY;
 				} else if (CREATING_EXISTING_TABLE_PATTERN.matchesWithinString(message)) {
 					return ResponseToException.SKIPQUERY;
 				} else {
-					try ( DBStatement statement = getConnection().createDBStatement()) {
+					try (DBStatement statement = getConnection().createDBStatement()) {
 						if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
 								|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
 							String[] split = message.split("[\" ]+");

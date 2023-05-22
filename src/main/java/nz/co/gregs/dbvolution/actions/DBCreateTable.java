@@ -191,4 +191,15 @@ public class DBCreateTable extends DBAction {
 
 		return sqlList;
 	}
+
+	@Override
+	protected void executeOnStatement(DBDatabase db, DBActionList actions) throws SQLException {
+		try {
+			super.executeOnStatement(db, actions);
+		} catch (SQLException except) {
+			if (!db.getDefinition().exceptionIsTableFound(except)) {
+				throw except;
+			}
+		}
+	}
 }

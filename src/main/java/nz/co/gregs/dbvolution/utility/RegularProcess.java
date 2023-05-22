@@ -99,6 +99,10 @@ public abstract class RegularProcess implements Serializable {
 	 */
 	public abstract String process() throws Exception;
 
+	public final boolean isDueToRun() {
+		return hasExceededTimeLimit();
+	}
+
 	public final boolean hasExceededTimeLimit() {
 		return nextRun.isBefore(Instant.now());
 	}

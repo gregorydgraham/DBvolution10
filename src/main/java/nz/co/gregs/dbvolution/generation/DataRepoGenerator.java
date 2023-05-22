@@ -450,8 +450,14 @@ class DataRepoGenerator {
 			case Types.BLOB:
 			case Types.ARRAY:
 			case Types.SQLXML:
+				Class<? extends QueryableDatatype<?>> customBinaryType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
+				if (customBinaryType != null) {
+					value = customBinaryType;
+					break;
+				} else {
 				value = DBLargeBinary.class;
-				break;
+					break;
+				}
 			default:
 				throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: " + columnType, columnType);
 		}

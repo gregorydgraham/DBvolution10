@@ -378,9 +378,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return queryCount;
 	}
 
-	private synchronized void getResultSetCount() throws SQLException {
+	private synchronized void getResultSetCount(QueryOptions options) throws SQLException {
 		long result = 0L;
-		try (DBStatement dbStatement = getOptions().getQueryDatabase().getDBStatement()) {
+		try (DBStatement dbStatement = options.getQueryDatabase().getDBStatement()) {
 			final List<String> sqlForCount = getSQLForCountInternal(this, options);
 			for (String sql : sqlForCount) {
 				printSQLIfRequired(sql);
@@ -429,8 +429,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	protected synchronized List<String> getSQLForQueryInternal(QueryState queryState, QueryType queryType, QueryOptions options) {
 		try {
 			List<String> sqlList = new ArrayList<>();
-			final List<DBRow> allQueryTablesList = allQueryTables;
-			final int allQueryTablesListSize = allQueryTablesList.size();
+			final int allQueryTablesListSize = allQueryTables.size();
 
 			initialiseQueryGraph();
 
@@ -1142,7 +1141,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final QueryType queryType = currentOptions.getQueryType();
 		switch (queryType) {
 			case COUNT:
-				getResultSetCount();
+				getResultSetCount(currentOptions);
 				break;
 			case ROWSFORPAGE:
 				getAllRowsForPage(currentOptions);
@@ -1215,7 +1214,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final DBDefinition defn = options.getQueryDefinition();
 
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(options) && getRawSQLClause().isEmpty()) {
-			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), willCreateBlankQuery(options), getRawSQLClause().isEmpty());
+			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), willCreateBlankQuery(options), getRawSQLClause().isEmpty(),sqlOptions);
 		}
 
 		if (!options.isCartesianJoinAllowed()
@@ -1255,7 +1254,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				break;// we've successfully run the sql so carry on
 			} catch (SQLException e) {
 				if (isQuietExceptions() == false) {
-					errorMessages.add("ERRORS REPORTED FOR QUERY: " + sql);
+					errorMessages.add("ERRORS REPORTED FOR QUERY ON DATABASE "+options.getQueryDatabase().getJdbcURL()+": " + sql);
 					StackTraceElement[] trace = e.getStackTrace();
 					System.out.println("" + e.getMessage());
 					System.out.println("" + e.getLocalizedMessage());

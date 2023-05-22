@@ -40,8 +40,8 @@ import org.junit.Test;
  */
 public class DBDatabaseGetTest extends AbstractTest {
 
-	Marque myTableRow = new Marque();
-	List<Marque> myTableRows = new ArrayList<>();
+//	Marque myTableRow = new Marque();
+//	List<Marque> myTableRows = new ArrayList<>();
 
 	public DBDatabaseGetTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
@@ -165,7 +165,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		literalQuery.individualAllocationsAllowed.excludedValues((String) null);
 		List<Marque> gotMarques = database.get(literalQuery);
 
-		final Long fullTableCount = database.getDBTable(new Marque()).count();
+ 		final Long fullTableCount = database.getDBTable(new Marque()).count();
 
 		final boolean notOracle = database.supportsDifferenceBetweenNullAndEmptyString();
 

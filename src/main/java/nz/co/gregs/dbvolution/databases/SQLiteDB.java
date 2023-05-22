@@ -128,9 +128,9 @@ public class SQLiteDB extends DBDatabase {
 						.setPassword(password)
 		);
 	}
-	
+
 	@Override
-	 public Connection getConnectionFromDriverManager() throws SQLException {
+	public Connection getConnectionFromDriverManager() throws SQLException {
 		SQLiteConfig config = new SQLiteConfig();
 		config.enableCaseSensitiveLike(true);
 		Connection connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
@@ -173,12 +173,15 @@ public class SQLiteDB extends DBDatabase {
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
-		if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_ALREADY_EXISTS.matchesWithinString(exp.getMessage())) {
+		String message = exp.getMessage();
+		if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_ALREADY_EXISTS.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
-		}else if(intent.is(QueryIntention.CHECK_TABLE_EXISTS) && TABLE_DOESNT_EXIST_REGEX.matchesWithinString(exp.getMessage())) {
-			return ResponseToException.SKIPQUERY;
+		} else if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
+			if (TABLE_DOESNT_EXIST_REGEX.matchesWithinString(message)) {
+				return ResponseToException.SKIPQUERY;
+			}
 		}
-		return super.addFeatureToFixException(exp, intent,details);
+		return super.addFeatureToFixException(exp, intent, details);
 	}
 
 	@Override

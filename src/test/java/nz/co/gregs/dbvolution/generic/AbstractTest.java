@@ -99,6 +99,7 @@ public abstract class AbstractTest {
 					);
 			cluster.setLabel("ClusteredDB-H2+SQLite");
 			cluster.waitUntilSynchronised();
+			cluster.setFailOnQuarantine(true);
 			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
@@ -306,7 +307,7 @@ public abstract class AbstractTest {
 	public String testableSQLWithoutColumnAliases(String str) {
 		if (str != null) {
 			String trimStr = REMOVE_COMMENTS.replaceAll(str);
-			System.out.println("STR: "+trimStr);
+//			System.out.println("STR: "+trimStr);
 			trimStr = trimStr
 					.trim()
 					.replaceAll(" [dD][bB][_0-9]+", "")

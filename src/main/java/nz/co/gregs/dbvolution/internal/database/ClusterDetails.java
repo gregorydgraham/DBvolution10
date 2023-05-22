@@ -28,6 +28,8 @@
  */
 package nz.co.gregs.dbvolution.internal.database;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import nz.co.gregs.dbvolution.utility.TableSet;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -89,13 +91,24 @@ public class ClusterDetails implements Serializable {
 	private final static Random RANDOM = new Random();
 	private boolean preferredDatabaseRequired;
 	private boolean stillRunning = true;
+	private final PropertyChangeSupport propertyChangeSupport;
 
 	public ClusterDetails(String label) {
 		this.clusterLabel = label;
+		propertyChangeSupport = new PropertyChangeSupport(this);
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		propertyChangeSupport.addPropertyChangeListener(pcl);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener pcl) {
+		propertyChangeSupport.removePropertyChangeListener(pcl);
 	}
 
 	public final synchronized boolean add(DBDatabase databaseToAdd) {
 		if (databaseToAdd != null) {
+			propertyChangeSupport.firePropertyChange("new member", null, databaseToAdd);
 			DBDatabase database = databaseToAdd;
 			final boolean clusterSupportsDifferenceBetweenNullAndEmptyString = getSupportsDifferenceBetweenNullAndEmptyString();
 			boolean databaseSupportsDifferenceBetweenNullAndEmptyString = database.supportsDifferenceBetweenNullAndEmptyString();
@@ -151,25 +164,31 @@ public class ClusterDetails implements Serializable {
 		if (clusterContains(database)) {
 			if (hasTooFewReadyDatabases() && members.isReady(database)) {
 				// Unable to quarantine the only remaining database
+				propertyChangeSupport.firePropertyChange("failed to quarantine member", null, database);
 				throw new UnableToRemoveLastDatabaseFromClusterException();
 			}
 
 			if (quietExceptions) {
 			} else {
 				LOG.log(Level.WARNING, "QUARANTINING: DATABASE LABEL {0}", database.getLabel());
-				LOG.log(Level.WARNING, "QUARANTINING: JDBCURL {0}", database.getJdbcURL());
+				LOG.log(Level.WARNING, "QUARANTINE INFO: JDBCURL {0}", database.getJdbcURL());
 				Throwable e = except;
 				while (e != null) {
-					LOG.log(Level.WARNING, "QUARANTINING: EXCEPTION {0}", except.getClass().getCanonicalName());
-					LOG.log(Level.WARNING, "QUARANTINING: MESSAGE {0}", except.getMessage());
-					LOG.log(Level.WARNING, "QUARANTINING: LOCALIZED {0}", except.getLocalizedMessage());
+					LOG.log(Level.WARNING, "QUARANTINE INFO: EXCEPTION {0}", except.getClass().getCanonicalName());
+					LOG.log(Level.WARNING, "QUARANTINE INFO: MESSAGE {0}", except.getMessage());
+					LOG.log(Level.WARNING, "QUARANTINE INFO: LOCALIZED {0}", except.getLocalizedMessage());
 					e = e.getCause();
 				}
 			}
 			database.setLastException(except);
 			members.setQuarantined(database);
 			queuedActions.remove(database);
+			propertyChangeSupport.firePropertyChange("quarantined member", null, database);
 			setAuthoritativeDatabase();
+			if (database instanceof DBDatabaseCluster) {
+				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
+				cluster.setHasQuarantined(true);
+			}
 		}
 	}
 
@@ -177,6 +196,7 @@ public class ClusterDetails implements Serializable {
 		if (clusterContains(database)) {
 			if (hasTooFewReadyDatabases() && members.isReady(database)) {
 				// Unable to quarantine the only remaining database
+				propertyChangeSupport.firePropertyChange("last member can not die", null, database);
 				throw new UnableToRemoveLastDatabaseFromClusterException();
 			}
 
@@ -189,6 +209,7 @@ public class ClusterDetails implements Serializable {
 			database.setLastException(except);
 			members.setDead(database);
 			queuedActions.remove(database);
+			propertyChangeSupport.firePropertyChange("member has died", null, database);
 			setAuthoritativeDatabase();
 		}
 	}
@@ -196,9 +217,11 @@ public class ClusterDetails implements Serializable {
 	public synchronized boolean removeDatabase(DBDatabase databaseToRemove) {
 		DBDatabase database = databaseToRemove;
 		if (hasTooFewReadyDatabases() && members.isReady(database)) {
+			propertyChangeSupport.firePropertyChange("unable to remove last member", null, database);
 			throw new UnableToRemoveLastDatabaseFromClusterException();
 		} else {
 			members.remove(database);
+			propertyChangeSupport.firePropertyChange("removed database", null, database);
 			setAuthoritativeDatabase();
 			saveClusterSettingsToPrefs();
 			checkSupportForDifferenceBetweenNullAndEmptyString();
@@ -234,55 +257,59 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public void setTrackedTables(Collection<DBRow> rows) {
+		ArrayList<DBRow> oldValue = new ArrayList<>(trackedTables);
 		trackedTables.clear();
+		propertyChangeSupport.firePropertyChange("cleared tracked tables", oldValue, trackedTables);
 		for (DBRow row : rows) {
-			addTrackedTable(row);
+			addTrackedTable(row, false);
 		}
 		saveTrackedTables();
 	}
 
 	public void addTrackedTable(DBRow row) {
+		addTrackedTable(row, true);
+	}
+
+	private void addTrackedTable(DBRow row, boolean saveTablesAutomatically) {
 		synchronized (trackedTables) {
 			trackedTables.add(DBRow.getDBRow(row.getClass()));
+			propertyChangeSupport.firePropertyChange("added tracked table", null, row);
 		}
-		saveTrackedTables();
+		if (saveTablesAutomatically) {
+			saveTrackedTables();
+		}
 	}
 
 	public void addTrackedTables(Collection<DBRow> rows) {
-		synchronized (trackedTables) {
-			trackedTables.addAll(rows);
+		for (DBRow row : rows) {
+			addTrackedTable(row, false);
 		}
 		saveTrackedTables();
 	}
 
 	public void removeTrackedTable(DBRow row) {
+		removeTrackedTable(row, true);
+	}
+
+	private void removeTrackedTable(DBRow row, boolean andSave) {
 		synchronized (trackedTables) {
 			trackedTables.remove(row);
+			propertyChangeSupport.firePropertyChange("removed tracked table", null, row);
 		}
-		saveTrackedTables();
+		if (andSave) {
+			saveTrackedTables();
+		}
 	}
 
 	public void removeTrackedTables(Collection<DBRow> rows) {
-		synchronized (trackedTables) {
-			trackedTables.removeAll(rows);
+		for (DBRow row : rows) {
+			removeTrackedTable(row, false);
 		}
 		saveTrackedTables();
 	}
 
-	public synchronized void readyDatabase(DBDatabase databaseToReady) throws SQLException {
-		DBDatabase secondary = databaseToReady;
-		try {
-			if (hasReadyDatabases()) {
-				DBDatabase readyDatabase = getRandomReadyDatabase();
-				if (readyDatabase != null) {
-					secondary.setPrintSQLBeforeExecuting(readyDatabase.getPrintSQLBeforeExecuting());
-					secondary.setBatchSQLStatementsWhenPossible(readyDatabase.getBatchSQLStatementsWhenPossible());
-				}
-			}
-		} catch (NoAvailableDatabaseException ex) {
-
-		}
-		members.setReady(secondary);
+	private synchronized void readyDatabase(DBDatabase databaseToReady) {
+		members.setReady(databaseToReady);
 		setAuthoritativeDatabase();
 		signalThatADatabaseHasBeenSynchronised();
 		signalReadyDatabaseIsAvailable();
@@ -659,8 +686,7 @@ public class ClusterDetails implements Serializable {
 			return members.getDatabases(
 					DBDatabaseCluster.Status.READY,
 					DBDatabaseCluster.Status.QUARANTINED,
-					DBDatabaseCluster.Status.DEAD).length
-					== members.size();
+					DBDatabaseCluster.Status.DEAD).length == members.size();
 		}
 	}
 
@@ -695,10 +721,6 @@ public class ClusterDetails implements Serializable {
 					while (clusterContains(database) && getStatusOf(database) != DBDatabaseCluster.Status.READY && stillRunning) {
 						aDatabaseHasBeenSynchronised.await(100, TimeUnit.MILLISECONDS);
 					}
-				}
-				DBDatabaseCluster.Status status = getStatusOf(database);
-				if (status.equals(DBDatabaseCluster.Status.READY)) {
-					return;
 				}
 			}
 		} catch (InterruptedException ex) {
@@ -846,6 +868,17 @@ public class ClusterDetails implements Serializable {
 				while (queue != null && !queue.isEmpty()) {
 					DBAction action = queue.remove();
 					db.executeDBAction(action);
+				}
+				try {
+					if (hasReadyDatabases()) {
+						DBDatabase readyDatabase = getRandomReadyDatabase();
+						if (readyDatabase != null) {
+							db.setPrintSQLBeforeExecuting(readyDatabase.getPrintSQLBeforeExecuting());
+							db.setBatchSQLStatementsWhenPossible(readyDatabase.getBatchSQLStatementsWhenPossible());
+						}
+					}
+				} catch (NoAvailableDatabaseException ex) {
+
 				}
 				readyDatabase(db);
 			} catch (SQLException e) {

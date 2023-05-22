@@ -48,7 +48,6 @@ public class QueryOptions implements Serializable {
 	private final int DEFAULT_TIMEOUT_IN_MILLISECONDS = 10000;
 	private int timeoutInMilliseconds = DEFAULT_TIMEOUT_IN_MILLISECONDS;
 	private String label = "UNLABELLED QUERY";
-	private DBDefinition workingDefinition;
 	private DBDatabase queryDatabase;
 
 	public QueryOptions() {
@@ -74,7 +73,7 @@ public class QueryOptions implements Serializable {
 		rawSQL = opts.rawSQL;
 		timeoutInMilliseconds = opts.timeoutInMilliseconds;
 		label = opts.label;
-		workingDefinition = opts.workingDefinition;
+		queryDatabase = opts.queryDatabase;
 	}
 
 	/**
@@ -286,9 +285,7 @@ public class QueryOptions implements Serializable {
 	public final void setQueryDatabase(DBDatabase db) {
 		if (queryDatabase == null) {
 			queryDatabase = db;
-			workingDefinition = null;
-			getQueryDefinition();
-		}else if (!db.equals(queryDatabase)){
+		} else if (!db.equals(queryDatabase)) {
 			throw new IllegalArgumentException("Attempt to reset database in query detected!");
 		}
 	}
@@ -297,12 +294,14 @@ public class QueryOptions implements Serializable {
 		return queryDatabase;
 	}
 
-	public DBDefinition getQueryDefinition() {
-		if (workingDefinition == null) {
-			workingDefinition = getQueryDatabase().getDefinition();
-			if (getRequireEmptyStringForNullString()) {
-				workingDefinition = workingDefinition.getOracleCompatibleVersion();
-			}
+	public synchronized DBDefinition getQueryDefinition() {
+		DBDatabase db = getQueryDatabase();
+		if (db == null) {
+			return null;
+		}
+		DBDefinition workingDefinition = db.getDefinition();
+		if (getRequireEmptyStringForNullString()) {
+			workingDefinition = workingDefinition.getOracleCompatibleVersion();
 		}
 		return workingDefinition;
 	}
