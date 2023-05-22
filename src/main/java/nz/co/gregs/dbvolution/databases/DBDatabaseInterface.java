@@ -143,4 +143,6 @@ interface DBDatabaseInterface {
 
 	void deleteAllRowsFromTable(DBRow table) throws SQLException;
 
+	boolean supportsMetaDataFully();
+
 }
