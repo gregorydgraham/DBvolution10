@@ -2151,6 +2151,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		executeDBAction(new DBDeleteAll(table));
 	}
 
+	@Override
 	public boolean supportsMetaDataFully() {
 		return false;
 	}
