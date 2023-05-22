@@ -418,7 +418,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		return new PostgresSettingsBuilder();
 	}
 
+	@Override
 	public boolean supportsMetaDataFully() {
-		return false;
+		return true;
 	}
 }
