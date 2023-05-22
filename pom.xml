@@ -822,7 +822,7 @@
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
 								<testMySQL>true</testMySQL>
-								<testPostgres>true</testPostgres>
+								<testPostgresSQL>true</testPostgresSQL>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -846,7 +846,7 @@
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
 								<testMySQL>true</testMySQL>
-								<testPostgres>true</testPostgres>
+								<testPostgresSQL>true</testPostgresSQL>
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
 								<testFullCluster>true</testFullCluster>
@@ -922,7 +922,7 @@
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testH2BlankDB>true</testH2BlankDB>
-								<testPostgres>true</testPostgres>
+								<testPostgresSQL>true</testPostgresSQL>
 								<testMySQL>true</testMySQL>
 								<testOracleXE>true</testOracleXE>
 								<testMSSQLServer>true</testMSSQLServer>
@@ -1272,7 +1272,7 @@
 						<version>3.0.0-M5</version>
 						<configuration>
 							<systemPropertyVariables>
-								<testPostgres>true</testPostgres>
+								<testPostgresSQL>true</testPostgresSQL>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
