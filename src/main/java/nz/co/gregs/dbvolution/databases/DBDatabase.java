@@ -2257,7 +2257,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		return tableExists;
 	}
 
-	private boolean checkTableExistsViaQuery(DBRow table) throws NoAvailableDatabaseException {
+	protected boolean checkTableExistsViaQuery(DBRow table) throws NoAvailableDatabaseException {
 		boolean tableExists;
 		String testQuery = getDefinition().getTableExistsSQL(table);
 		try (DBStatement dbStatement = getDBStatement()) {
@@ -2281,10 +2281,23 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	}
 
 	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
-		boolean tableExists = false;
+//		boolean tableExists = false;
 		ResultSet rset = getMetaDataForTable(table);
+		return checkMetaDataForTable(table, rset);
+//		if (rset.next()) {
+//			tableExists = true;
+//		}
+//		return tableExists;
+	}
+
+	protected boolean checkMetaDataForTable(DBRow table, ResultSet rset) throws SQLException {
+		boolean tableExists = false;
+		rset.beforeFirst();
 		if (rset.next()) {
-			tableExists = true;
+			// found the header row, lets check for the data row
+			if (rset.next()) {
+				tableExists = true;
+			}
 		}
 		return tableExists;
 	}
@@ -2407,11 +2420,18 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 	@Override
 	public synchronized void stop() {
 		terminated = true;
+		LOG.info("STOPPING: " + this.getLabel());
+		LOG.info("STOPPING: Regular Processors");
 		for (RegularProcess regularProcessor : getRegularProcessors()) {
 			LOG.info("STOPPING: " + regularProcessor.getSimpleName());
 			regularProcessor.stop();
 		}
-		LOG.info("STOPPING: " + this.getLabel());
+		LOG.info("STOPPING: Regular Processor");
+		if (regularThreadPoolFuture != null) {
+			regularThreadPoolFuture.cancel(true);
+			regularThreadPoolFuture = null;
+		}
+
 		try {
 			if (transactionStatement != null) {
 				try {
@@ -2508,7 +2528,7 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		@Override
 		public void run() {
 			for (RegularProcess process : getRegularProcessors()) {
-				if (process.canRun() && process.hasExceededTimeLimit()) {
+				if (process.canRun() && process.isDueToRun()) {
 					try {
 						if (process.preprocess()) {
 							process.setLastResult(process.process());

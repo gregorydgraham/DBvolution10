@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -23,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.regexi.Regex;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
@@ -145,15 +147,21 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 		return 3306;
 	}
 
-	private final static Regex FUNCTION_DOES_NOT_EXISTS = Regex.startingAnywhere().literal("FUNCTION ").noneOfThisCharacter(' ').atLeastOnce().literal(" does not exist").toRegex();
+	private final static Regex FUNCTION_DOES_NOT_EXIST = Regex.startingAnywhere().literal("FUNCTION ").noneOfThisCharacter(' ').atLeastOnce().literal(" does not exist").toRegex();
 	private final static Regex TABLE_ALREADY_EXISTS = Regex.startingAnywhere().literal("Table ").charactersWrappedBy('\'').literal(" already exists").toRegex();
+	private final static Regex TABLE_DOES_NOT_EXIST = Regex.startingAnywhere().literal("Table ").noneOfThisCharacter(' ').atLeastOnce().literal(" does not exist").toRegex();
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
-		if (TABLE_ALREADY_EXISTS.matchesEntireString(exp.getMessage())) {
+		String message = exp.getMessage();
+		if (TABLE_ALREADY_EXISTS.matchesEntireString(message)) {
 			return ResponseToException.SKIPQUERY;
-		} else if (intent.is(QueryIntention.DROP_FUNCTION) && FUNCTION_DOES_NOT_EXISTS.matchesEntireString(exp.getMessage())) {
+		} else if (intent.is(QueryIntention.DROP_FUNCTION) && FUNCTION_DOES_NOT_EXIST.matchesEntireString(message)) {
 			return ResponseToException.SKIPQUERY;
+		} else if (QueryIntention.CHECK_TABLE_EXISTS.equals(intent)) {
+			if (TABLE_DOES_NOT_EXIST.matchesWithinString(message)) {
+				return ResponseToException.SKIPQUERY;
+			}
 		}
 		return super.addFeatureToFixException(exp, intent, details);
 	}
@@ -172,5 +180,10 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 			logger.log(Level.INFO, "Failed to get connection metadata information to set the database definition");
 			logger.log(Level.INFO, null, ex);
 		}
+	}
+
+	@Override
+	protected boolean checkMetaDataForTable(DBRow table, ResultSet rset) throws SQLException {
+		return super.checkMetaDataForTable(table, rset);
 	}
 }

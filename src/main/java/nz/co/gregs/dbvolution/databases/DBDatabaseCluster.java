@@ -52,17 +52,7 @@ import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.DBDatabaseClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
-import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
-import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
-import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
-import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
@@ -117,6 +107,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private boolean requeryPermitted = true;
 	private boolean startupIsNeeded = true;
+	private boolean failOnQuarantine = false;
+	private boolean hasQuarantined = false;
 
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException {
 		super(builder);
@@ -189,6 +181,23 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public synchronized void setRequeryPermitted(boolean requeryAllowed) {
 		requeryPermitted = requeryAllowed;
+	}
+
+	public void setFailOnQuarantine(boolean b) {
+		failOnQuarantine = b;
+	}
+
+	private void failOnQuarantine() {
+		if (failOnQuarantine && hasQuarantined) {
+			throw new ClusterHasQuarantinedADatabaseException();
+		}
+	}
+
+	public void setHasQuarantined(boolean b) {
+		hasQuarantined = b;
+		if (failOnQuarantine) {
+			throw new ClusterHasQuarantinedADatabaseException();
+		}
 	}
 
 	public static enum Status {
@@ -648,6 +657,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public void quarantineDatabase(DBDatabase database, Throwable except) throws UnableToRemoveLastDatabaseFromClusterException {
 		getDetails().quarantineDatabase(database, except);
+		hasQuarantined = true;
 	}
 
 	private void deadDatabase(DBDatabase database, Throwable except) throws UnableToRemoveLastDatabaseFromClusterException {
@@ -976,6 +986,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		if (!details.isShuttingDown()) {
+			failOnQuarantine();
 			preventAccidentalDDLDuringTransaction(action);
 			preventAccidentalDroppingOfDatabases(action);
 			preventAccidentalDroppingOfTables(action);
@@ -984,7 +995,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return new DBActionList();
 	}
 
-	private DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, DBRuntimeException, SQLException {
+	private synchronized DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, DBRuntimeException, SQLException {
 		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
@@ -1042,7 +1053,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		HandlerAdvice advice;
 		try {
 			// set oracle compatibility 
-			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString() || !getDefinition().canProduceNullStrings());
+			query.setReturnEmptyStringForNullString(query.getReturnEmptyStringForNullString() || !workingDB.getDefinition().canProduceNullStrings());
 			// hand the job down to the next layer
 			return workingDB.executeDBQuery(query);
 		} catch (AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException errorWithTheQueryException) {
@@ -1639,7 +1650,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		 * the TrackedTable list will also be rebuilt.</p>
 		 *
 		 * <p>
-		 * Auto-rebuild will automatically reload the tracked table, connect to the
+		 * Auto-rebuild will automatically reload the tracked tables, connect to the
 		 * authoritative database of the previous instance of this cluster, and
 		 * reload the data for the tracked and required tables.
 		 *

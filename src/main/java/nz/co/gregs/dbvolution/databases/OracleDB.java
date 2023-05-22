@@ -152,6 +152,10 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 			return ResponseToException.SKIPQUERY;
 		} else if ((intent.is(QueryIntention.DROP_TABLE) && TABLE_DOES_NOT_EXIST.matchesWithinString(message))) {
 			return ResponseToException.SKIPQUERY;
+		} else if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
+			if (TABLE_DOES_NOT_EXIST.matchesWithinString(message)) {
+				return ResponseToException.SKIPQUERY;
+			}
 		} else if (TABLE_ALREADY_EXISTS.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
 		} else if (TRIGGER_DOES_NOT_EXIST.matchesWithinString(message)) {
@@ -163,7 +167,6 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 
 		return super.addFeatureToFixException(exp, intent, details);
 	}
-
 
 	@Override
 	public Integer getDefaultPort() {

@@ -7192,9 +7192,23 @@ public abstract class DBDefinition implements Serializable {
 
 	public boolean exceptionIsTableNotFound(Exception e) {
 		boolean matches = TABLE_NOT_FOUND.matchesWithinString(e.getMessage());
-		if (!matches) {
-			TABLE_NOT_FOUND.testAgainst(e.getMessage());
-		}
+//		if (!matches) {
+//			TABLE_NOT_FOUND.testAgainst(e.getMessage());
+//		}
+		return matches;
+	}
+
+	private static final Regex TABLE_FOUND_REGEX = Regex
+			.startingAnywhere()
+			.doublequote().space()
+			.literalCaseInsensitive("already exists")
+			.toRegex();
+
+	public boolean exceptionIsTableFound(Exception e) {
+		boolean matches = TABLE_FOUND_REGEX.matchesWithinString(e.getMessage());
+//		if (!matches) {
+//			TABLE_FOUND_REGEX.testAgainst(e.getMessage());
+//		}
 		return matches;
 	}
 

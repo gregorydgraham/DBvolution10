@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
+import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 
 /**
@@ -35,10 +36,17 @@ public class AccidentalBlankQueryException extends DBRuntimeException {
 	 */
 	public AccidentalBlankQueryException() {
 		super("Accidental Blank Query Aborted: ensure you have added all the required tables, defined all the criteria, and are using the correct allowBlankQueries() setting.");
+		super.fillInStackTrace();
 	}
 
-	public AccidentalBlankQueryException(boolean blankQueryAllowed, boolean willCreateBlankQuery, boolean hasNoRawSQL) {
-		super("Accidental Blank Query Aborted: ensure you have added all the required tables, defined all the criteria, and are using the correct allowBlankQueries() setting: BlankQueryAllowed?" + blankQueryAllowed + " willCreateBlankQuery?" + willCreateBlankQuery + " hasNoRawSQL?" + hasNoRawSQL);
+	public AccidentalBlankQueryException(boolean blankQueryAllowed, boolean willCreateBlankQuery, boolean hasNoRawSQL, List<String> sqlOptions) {
+		super("Accidental Blank Query Aborted: ensure you have added all the required tables, "
+				+ "defined all the criteria, and are using the correct allowBlankQueries() setting: "
+				+ "BlankQueryAllowed?" + blankQueryAllowed 
+				+ " willCreateBlankQuery?" + willCreateBlankQuery 
+				+ " hasNoRawSQL?" + hasNoRawSQL 
+				+ " SQL: "+System.lineSeparator() + sqlOptions.get(0));
+		super.fillInStackTrace();
 	}
 
 }

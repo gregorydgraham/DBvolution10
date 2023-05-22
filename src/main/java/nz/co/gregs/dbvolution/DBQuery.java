@@ -527,20 +527,24 @@ public class DBQuery implements Serializable {
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> arrayList = new ArrayList<>();
-		final QueryOptions options = details.getOptions();
-		if (details.needsResults(options)) {
-			details.setQueryType(QueryType.SELECT);
-			database.executeDBQuery(details);
-		}
-		if (!details.getResults().isEmpty()) {
-			for (DBQueryRow row : details.getResults()) {
-				final R found = row.get(exemplar);
-				if (found != null) { // in case there are no items of the exemplar
-					if (!arrayList.contains(found)) {
-						arrayList.add(found);
+		try {
+			final QueryOptions options = details.getOptions();
+			if (details.needsResults(options)) {
+				details.setQueryType(QueryType.SELECT);
+				database.executeDBQuery(details);
+			}
+			if (!details.getResults().isEmpty()) {
+				for (DBQueryRow row : details.getResults()) {
+					final R found = row.get(exemplar);
+					if (found != null) { // in case there are no items of the exemplar
+						if (!arrayList.contains(found)) {
+							arrayList.add(found);
+						}
 					}
 				}
 			}
+		} catch (SQLException sqlex) {
+			throw sqlex;
 		}
 		return arrayList;
 	}

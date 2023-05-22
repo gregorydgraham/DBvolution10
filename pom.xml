@@ -1346,7 +1346,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.49</version>
+			<version>8.0.33</version>
 			<scope>compile</scope>
 		</dependency>		
 		<dependency>
@@ -1593,7 +1593,7 @@
 		<dependency>
 			<groupId>nz.co.gregs</groupId>
 			<artifactId>regexi</artifactId>
-			<version>3.5</version>
+			<version>3.8</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

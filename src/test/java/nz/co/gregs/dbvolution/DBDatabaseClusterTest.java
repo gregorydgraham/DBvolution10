@@ -61,11 +61,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
-import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.looper.Looper;
 import org.hamcrest.Matchers;
@@ -130,7 +126,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				cluster.addDatabase(slowSynchingDB);
 				assertThat(cluster.getDatabaseStatus(slowSynchingDB), not(DBDatabaseCluster.Status.READY));
 				assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
-				
+
 				Looper looper = Looper.loopUntilSuccessOrLimit(5);
 				looper.loop(
 						(index) -> {
@@ -242,6 +238,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	public synchronized void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
 			assertThat(cluster.size(), is(1));
+
+			cluster.setFailOnQuarantine(false);
 
 			cluster.addTrackedTable(new Marque());
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
@@ -588,20 +586,23 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public synchronized void testDatabaseRemovedAfterErrorInDelete() throws SQLException {
+	public synchronized void testDatabaseRemovedAfterErrorInDelete() throws ClusterHasQuarantinedADatabaseException, SQLException {
 		try (DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
 			cluster.setLabel("testDatabaseRemovedAfterErrorInDelete");
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
-			cluster.addDatabase(soloDB2);
+			cluster.addDatabaseAndWait(soloDB2);
+			assertThat(cluster.size(), is(2));
+			cluster.setFailOnQuarantine(false);
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
-			tab.pkid.permittedValues(1);
+			tab.pkid.setValue(1);
 			try {
 				// avoid printing lots of exceptions
 				cluster.setQuietExceptionsPreference(true);
 				// do the actual action we're trying to test
 				cluster.delete(tab);
-			} catch (SQLException e) {
+			} catch (Exception exc) {
+				// we expect something to go wrong
 			} finally {
 				cluster.setQuietExceptionsPreference(false);
 			}

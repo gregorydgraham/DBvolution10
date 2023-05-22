@@ -351,6 +351,10 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			return ResponseToException.SKIPQUERY;
 		} else if (intent.is(QueryIntention.CHECK_TABLE_EXISTS) && NONEXISTENT_TABLE_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
+		} else if (QueryIntention.CHECK_TABLE_EXISTS.equals(intent)) {
+			if (NONEXISTENT_TABLE_PATTERN.matchesWithinString(message)) {
+				return ResponseToException.SKIPQUERY;
+			}
 		} else if (UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN.matchesWithinString(message)) {
 			return ResponseToException.SKIPQUERY;
 		}

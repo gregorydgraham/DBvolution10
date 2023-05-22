@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.*;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.RegexReplacement;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
@@ -97,6 +99,7 @@ public abstract class AbstractTest {
 					);
 			cluster.setLabel("ClusteredDB-H2+SQLite");
 			cluster.waitUntilSynchronised();
+			cluster.setFailOnQuarantine(true);
 			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
@@ -110,14 +113,14 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
 			PostgresDB postgresDB = new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase();
-			final DBDatabaseCluster cluster = 
-					new DBDatabaseCluster(
-							"testOpenSourceCluster", 
+			final DBDatabaseCluster cluster
+					= new DBDatabaseCluster(
+							"testOpenSourceCluster",
 							DBDatabaseCluster.Configuration.autoStart(),
 							H2MemoryTestDB.getFromSettings("h2memory"),
-							getSQLiteDBFromSystem("open"), 
+							getSQLiteDBFromSystem("open"),
 							postgresDB,
-							new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase()
+							new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").setDatabaseName("dbvcluster").getDBDatabase()
 					);
 			cluster.setLabel("ClusteredDB-H2+SQLite+Postgres+MySQL");
 			cluster.waitUntilSynchronised();
@@ -268,7 +271,13 @@ public abstract class AbstractTest {
 
 	public String testableSQL(String str) {
 		if (str != null) {
-			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase().replaceAll(", ", ",");
+			String trimStr = REMOVE_COMMENTS.replaceAll(str);
+			trimStr = trimStr
+					.trim()
+					.replaceAll("[ \\r\\n]+", " ")
+					.replaceAll(" +", " ")
+					.toLowerCase()
+					.replaceAll(", ", ",");
 			if ((database instanceof OracleDB) || (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll("\"", "")
@@ -293,9 +302,13 @@ public abstract class AbstractTest {
 		}
 	}
 
+	private static final RegexReplacement REMOVE_COMMENTS = Regex.startingAnywhere().literal("/").asterisk().anyCharacterExcept('*').asterisk().literal("/").replaceWith().nothing();
+
 	public String testableSQLWithoutColumnAliases(String str) {
 		if (str != null) {
-			String trimStr = str
+			String trimStr = REMOVE_COMMENTS.replaceAll(str);
+//			System.out.println("STR: "+trimStr);
+			trimStr = trimStr
 					.trim()
 					.replaceAll(" [dD][bB][_0-9]+", "")
 					.replaceAll("[ \\r\\n]+", " ")

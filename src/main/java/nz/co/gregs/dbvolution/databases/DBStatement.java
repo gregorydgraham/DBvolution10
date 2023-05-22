@@ -20,6 +20,8 @@ import java.sql.*;
 import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.databases.DBDatabase.ResponseToException;
+import static nz.co.gregs.dbvolution.databases.DBDatabase.ResponseToException.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -122,14 +124,14 @@ public class DBStatement implements AutoCloseable {
 		} finally {
 			timer.noLongerRequired();
 		}
-			return queryResult;
+		return queryResult;
 	}
 
 	private ResultSet executeQueryWithInternalStatement(StatementDetails details) throws SQLException {
 		return getInternalStatement().executeQuery(details.getSql());
 	}
 
-	private ResultSet addFeatureAndAttemptQueryAgain(StatementDetails details) throws Exception, LoopDetectedInRecursiveSQL {
+	private ResultSet addFeatureAndAttemptQueryAgain(StatementDetails details) throws SQLException, Exception, LoopDetectedInRecursiveSQL {
 		ResultSet executeQuery;
 		final Exception exp = details.getException();
 		final String sql = details.getSql();
@@ -382,16 +384,20 @@ public class DBStatement implements AutoCloseable {
 	 * to work with those databases.
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
-		database.discardConnection(connection);
-		connection = database.getConnection();
-		if (internalStatement != null) {
-			try {
-				internalStatement.close();
-			} catch (SQLException exp) {
-				LOG.debug(this, exp);
+		try {
+			database.discardConnection(connection);
+			connection = database.getConnection();
+			if (internalStatement != null) {
+				try {
+					internalStatement.close();
+				} catch (SQLException exp) {
+					LOG.debug(this, exp);
+				}
+				internalStatement = null;
+				getInternalStatement();
 			}
-			internalStatement = null;
-			getInternalStatement();
+		} catch (SQLException sqlex) {
+			throw sqlex;
 		}
 	}
 
@@ -576,7 +582,7 @@ public class DBStatement implements AutoCloseable {
 						return;
 					}
 				} catch (Exception ex) {
-					throw new SQLException("Failed To Add Support On "+database.getJdbcURL()+" For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
+					throw new SQLException("Failed To Add Support On " + database.getJdbcURL() + " For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
 				}
 			}
 			try {
@@ -591,20 +597,20 @@ public class DBStatement implements AutoCloseable {
 		}
 	}
 
-	public DBDatabase.ResponseToException handleResponseFromFixingException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
+	public ResponseToException handleResponseFromFixingException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		details.setDBStatement(this);
 		try {
-			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp, intent, details);
+			ResponseToException response = database.addFeatureToFixException(exp, intent, details);
 			switch (response) {
+				case SKIPQUERY:
+					return SKIPQUERY;
+				case REQUERY:
+					return REQUERY;
 				case REPLACECONNECTION:
 					replaceBrokenConnection();
-					return DBDatabase.ResponseToException.REQUERY;
-				case SKIPQUERY:
-					return DBDatabase.ResponseToException.SKIPQUERY;
+					return REQUERY;
 				case EMULATE_RECURSIVE_QUERY:
 					throw new LoopDetectedInRecursiveSQL();
-				case REQUERY:
-					return DBDatabase.ResponseToException.REQUERY;
 				default:
 					break;
 			}
@@ -1115,10 +1121,10 @@ public class DBStatement implements AutoCloseable {
 	 * @throws java.sql.SQLException database errors
 	 */
 	protected synchronized Statement getInternalStatement() throws SQLException {
-		if (connection==null){
+		if (connection == null) {
 			replaceBrokenConnection();
 		}
-		if (connection.isClosed()){
+		if (connection.isClosed()) {
 			replaceBrokenConnection();
 		}
 		if (this.internalStatement == null) {
@@ -1161,8 +1167,7 @@ public class DBStatement implements AutoCloseable {
 			.add(INSUFFICIENT_MEMORY_REGEX)
 			.add(STATEMENT_BROKEN_REGEX)
 			.add(STATEMENT_CLOSED_REGEX)
-			.endOrGroup().toRegex()
-			;
+			.endOrGroup().toRegex();
 
 	private boolean checkForBrokenConnection(Exception originalExc, String sql) throws SQLException {
 		Throwable exp = originalExc;

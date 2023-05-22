@@ -779,4 +779,18 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean isDuplicateColumnException(Exception exc) {
 		return DUPLICATE_COLUMN_EXCEPTION.matchesWithinString(exc.getMessage());
 	}
+
+	/**
+	 * Indicates whether this database distinguishes between upper and lowercase
+	 * letters in column names.
+	 *
+	 *
+	 *
+	 *
+	 * @return the default implementation returns FALSE.
+	 */
+	@Override
+	public boolean isColumnNamesCaseSensitive() {
+		return true;
+	}
 }

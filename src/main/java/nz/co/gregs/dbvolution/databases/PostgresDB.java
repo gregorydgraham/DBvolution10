@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
+import nz.co.gregs.regexi.Regex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -423,12 +424,29 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @return the suggested response to this exception
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
+	//ERROR: relation "marque" already exists : Original Query: CREATE TABLE
+	private static final Regex TABLE_EXISTS = Regex.startingAnywhere()
+			.literal("ERROR: relation ")
+			.doublequote().anyCharacterExcept('"').doublequote()
+			.literal(" already exists").toRegex();
+	private static final Regex TABLE_DOES_NOT_EXIST = Regex.startingAnywhere()
+			.literal("ERROR: relation ")
+			.doublequote().anyCharacterExcept('"').doublequote()
+			.literal(" does not exist").toRegex();
+
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {
 		if ((exp instanceof org.postgresql.util.PSQLException)) {
 			String message = exp.getMessage();
-			if (intent.is(QueryIntention.CREATE_TABLE) && message.matches("ERROR: relation \"[^\"]*\" already exists.*")) {
+			if (intent.is(QueryIntention.CREATE_TABLE) && TABLE_EXISTS.matchesWithinString(message)) { //message.matches("ERROR: relation \"[^\"]*\" already exists.*")) {
 				return ResponseToException.SKIPQUERY;
+			} else if (intent.is(QueryIntention.CHECK_TABLE_EXISTS)) {
+				if (TABLE_DOES_NOT_EXIST.matchesWithinString(message)) {
+					//message.matches("ERROR: relation \"[^\"]*\" does not exist.*")) {
+					return ResponseToException.SKIPQUERY;
+				} else {
+					throw exp;
+				}
 			} else {
 				throw exp;
 			}
