@@ -2151,6 +2151,10 @@ public abstract class DBDatabase implements DBDatabaseInterface, Serializable, C
 		executeDBAction(new DBDeleteAll(table));
 	}
 
+	public boolean supportsMetaDataFully() {
+		return false;
+	}
+
 	public static enum ResponseToException {
 		REPLACECONNECTION(),
 		REQUERY(),

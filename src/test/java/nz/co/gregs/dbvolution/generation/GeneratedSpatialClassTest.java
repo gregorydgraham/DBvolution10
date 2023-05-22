@@ -30,7 +30,7 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 
 	@Test
 	public void testGetSchema() throws SQLException, IOException {
-		if ((database instanceof MySQLDB) || (database instanceof PostgresDB)) {
+		if (database.supportsMetaDataFully()) {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());
