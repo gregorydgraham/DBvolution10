@@ -17,14 +17,12 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
@@ -33,8 +31,6 @@ import nz.co.gregs.dbvolution.internal.h2.*;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.regexi.Regex;
 import org.h2.jdbc.JdbcException;
-import org.h2.jdbc.JdbcResultSet;
-import org.h2.result.SimpleResult;
 
 /**
  * Stores all the required functionality to use an H2 database.
