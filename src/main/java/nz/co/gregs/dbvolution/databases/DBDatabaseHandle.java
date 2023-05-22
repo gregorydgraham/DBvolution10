@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +42,7 @@ import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
+import nz.co.gregs.dbvolution.databases.DBDatabase.ResponseToException;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
@@ -66,7 +68,7 @@ import nz.co.gregs.dbvolution.internal.query.StatementDetails;
  *
  * @author gregorygraham
  */
-public class DBDatabaseHandle extends DBDatabase {
+public class DBDatabaseHandle implements DBDatabaseInterface {
 
 	private static final long serialVersionUID = 1L;
 
@@ -199,7 +201,6 @@ public class DBDatabaseHandle extends DBDatabase {
 
 	@Override
 	public void stop() {
-		super.stop();
 		wrappedDatabase.stop();
 	}
 
@@ -231,6 +232,21 @@ public class DBDatabaseHandle extends DBDatabase {
 	@Override
 	public void deleteAllRowsFromTable(DBRow table) throws SQLException {
 		wrappedDatabase.deleteAllRowsFromTable(table);
+	}
+
+	@Override
+	public List<DBAction> dropTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+		return wrappedDatabase.dropTable(newTableRow);
+	}
+
+	@Override
+	public void handleErrorDuringExecutingSQL(DBDatabase suspectDatabase, Throwable sqlException, String sqlString) {
+		wrappedDatabase.handleErrorDuringExecutingSQL(suspectDatabase, sqlException, sqlString);
+	}
+
+	@Override
+	public boolean supportsMetaDataFully() {
+		return wrappedDatabase.supportsMetaDataFully();
 	}
 
 }
