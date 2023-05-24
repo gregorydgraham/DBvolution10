@@ -51,6 +51,7 @@ public class MariaClusterDBSettingsBuilder
 		ClusterCapableSettingsBuilder<MariaClusterDBSettingsBuilder, MariaClusterDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public String getDefaultDriverName() {

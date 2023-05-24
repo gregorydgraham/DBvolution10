@@ -39,6 +39,8 @@ public class JavaDBMemorySettingsBuilder
 		extends AbstractJavaDBSettingsBuilder<JavaDBMemorySettingsBuilder, JavaDBMemoryDB>
 		implements UniqueDatabaseCapableSettingsBuilder<JavaDBMemorySettingsBuilder, JavaDBMemoryDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public DatabaseConnectionSettings setDefaultsInternal(DatabaseConnectionSettings settings) {
 		super.setDefaultsInternal(settings);

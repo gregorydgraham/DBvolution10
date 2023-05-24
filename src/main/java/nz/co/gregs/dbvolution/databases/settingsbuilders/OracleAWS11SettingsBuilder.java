@@ -39,6 +39,8 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWS11DBDefinition;
  * @author gregorygraham
  */
 public class OracleAWS11SettingsBuilder extends AbstractOracleSettingsBuilder<OracleAWS11SettingsBuilder, OracleAWS11DB> {
+
+	private static final long serialVersionUID = 1L;
 	
 	public OracleAWS11SettingsBuilder() {
 	}

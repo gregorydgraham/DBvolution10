@@ -49,6 +49,7 @@ public class MySQLMXJDBSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQ
 			put("server.initialize-user", "true");
 		}
 	};
+	private static final long serialVersionUID = 1L;
 	
 	@Override
 	public String getDefaultDriverName() {

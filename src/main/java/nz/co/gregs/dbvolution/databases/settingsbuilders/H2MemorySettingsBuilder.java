@@ -42,6 +42,8 @@ public class H2MemorySettingsBuilder
 		implements
 		UniqueDatabaseCapableSettingsBuilder<H2MemorySettingsBuilder, H2MemoryDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getDefaultDriverName() {
 		return H2MemoryDB.DRIVER_NAME;

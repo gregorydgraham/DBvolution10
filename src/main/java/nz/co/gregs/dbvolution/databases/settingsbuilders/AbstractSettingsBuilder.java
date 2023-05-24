@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -44,7 +45,9 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
  * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
  * @param <DATABASE> the class returned by {@link SettingsBuilder#getDBDatabase}
  */
-public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> implements SettingsBuilder<SELF, DATABASE> {
+public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> implements SettingsBuilder<SELF, DATABASE>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private DatabaseConnectionSettings storedSettingsInAbstractURLInterpreter;
 

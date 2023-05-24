@@ -41,6 +41,8 @@ import nz.co.gregs.dbvolution.databases.definitions.MSSQLServer2012DBDefinition;
 public class MSSQLServer2012SettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServer2012SettingsBuilder, MSSQLServer2012DB>
 implements InstanceCapableSettingsBuilder<MSSQLServer2012SettingsBuilder, MSSQLServer2012DB>{
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<MSSQLServer2012DB> generatesURLForDatabase() {
 		return MSSQLServer2012DB.class;

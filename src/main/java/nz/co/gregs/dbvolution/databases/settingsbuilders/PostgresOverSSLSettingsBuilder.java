@@ -46,6 +46,7 @@ public class PostgresOverSSLSettingsBuilder extends AbstractPostgresSettingsBuil
 			put("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
 		}
 	};
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {

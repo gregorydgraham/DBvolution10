@@ -52,6 +52,7 @@ public class NuoDBSettingsBuilder extends AbstractVendorSettingsBuilder<NuoDBSet
 		ClusterCapableSettingsBuilder<NuoDBSettingsBuilder, NuoDB> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	private static final long serialVersionUID = 1L;
 	private final List<DatabaseConnectionSettings> clusterHost = new ArrayList<>(0);
 
 	@Override

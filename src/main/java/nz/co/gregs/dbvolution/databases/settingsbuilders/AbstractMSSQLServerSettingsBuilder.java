@@ -52,6 +52,7 @@ public abstract class AbstractMSSQLServerSettingsBuilder<SELF extends AbstractMS
 		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Map<String, String> getDefaultConfigurationExtras() {

@@ -37,6 +37,8 @@ public class H2FileSettingsBuilder extends AbstractH2SettingsBuilder<H2FileSetti
 		implements FileBasedSettingsBuilder<H2FileSettingsBuilder, H2FileDB>,
 		NamedDatabaseCapableSettingsBuilder<H2FileSettingsBuilder, H2FileDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<H2FileDB> generatesURLForDatabase() {
 		return H2FileDB.class;

@@ -66,6 +66,7 @@ public abstract class AbstractMySQLSettingsBuilder<SELF extends AbstractMySQLSet
 			put("useSSL", "false");
 		}
 	};
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public String getDefaultDriverName() {

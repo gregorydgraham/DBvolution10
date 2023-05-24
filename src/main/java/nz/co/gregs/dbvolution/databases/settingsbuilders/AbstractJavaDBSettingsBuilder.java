@@ -56,6 +56,7 @@ public abstract class AbstractJavaDBSettingsBuilder<SELF extends AbstractJavaDBS
 			put("create", "true");
 		}
 	};
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public String getDefaultDriverName() {

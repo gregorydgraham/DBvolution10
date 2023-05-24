@@ -38,6 +38,8 @@ import nz.co.gregs.dbvolution.databases.PostgresDB;
  */
 public class PostgresSettingsBuilder extends AbstractPostgresSettingsBuilder<PostgresSettingsBuilder, PostgresDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<PostgresDB> generatesURLForDatabase() {
 		return PostgresDB.class;

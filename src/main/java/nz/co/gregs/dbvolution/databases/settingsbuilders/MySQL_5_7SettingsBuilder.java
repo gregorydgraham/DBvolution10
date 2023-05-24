@@ -36,6 +36,8 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 
 public class MySQL_5_7SettingsBuilder extends AbstractMySQLSettingsBuilder<MySQL_5_7SettingsBuilder, MySQLDB_5_7> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String getDefaultDriverName() {
 		return MySQLDB_5_7.MYSQLDRIVERNAME;

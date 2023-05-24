@@ -40,6 +40,8 @@ public class H2SharedSettingsBuilder extends AbstractH2SettingsBuilder<H2SharedS
 		ProtocolCapableSettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>,
 		NamedDatabaseCapableSettingsBuilder<H2SharedSettingsBuilder, H2SharedDB>{
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public String encodeHost(DatabaseConnectionSettings settings) {
 		String hostname = StringCheck.check(settings.getHost(), "localhost");
