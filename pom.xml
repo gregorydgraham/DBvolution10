@@ -1372,7 +1372,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-mxj</artifactId>
 			<version>5.0.12</version>
@@ -1383,7 +1383,7 @@
 					<artifactId>mysql-connector-java</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
