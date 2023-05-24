@@ -39,9 +39,10 @@ import nz.co.gregs.dbvolution.internal.query.StatementDetails;
  *
  * @author Gregory Graham
  */
-public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
+public class MySQLDB extends DBDatabaseImplementation implements SupportsPolygonDatatype {
 
-	public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
+	public final static String MYSQLDRIVERNAME = "com.mysql.cj.jdbc.Driver";
+	//public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 	private static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 3306;
 

@@ -22,9 +22,6 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLMXJDBSettingsBuild
 /**
  * DBDatabase tweaked for the MySQL MXJ Database.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class MySQLMXJDB extends MySQLDB {
@@ -90,14 +87,7 @@ public class MySQLMXJDB extends MySQLDB {
 						.addExtra("server.basedir", databaseDir)
 						.setUsername(username)
 						.setPassword(password)
-//				"jdbc:mysql:mxj://" + server + ":" + port + "/" + databaseName
-//				+ "?" + "server.basedir=" + databaseDir
-//				+ "&" + "createDatabaseIfNotExist=true"
-//				+ "&" + "server.initialize-user=true",
-//				username,
-//				password
 						);
-//		setDatabaseName(databaseName);
 	}
 
 	@Override

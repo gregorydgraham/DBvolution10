@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Gregory Graham
  */
-public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
+public class PostgresDB extends DBDatabaseImplementation implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1l;
 

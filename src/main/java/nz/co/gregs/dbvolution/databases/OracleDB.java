@@ -37,7 +37,7 @@ import nz.co.gregs.regexi.Regex;
  * @see Oracle11XEDB
  * @see Oracle12DB
  */
-public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype {
+public abstract class OracleDB extends DBDatabaseImplementation implements SupportsPolygonDatatype {
 
 	public static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 	public static final long serialVersionUID = 1l;

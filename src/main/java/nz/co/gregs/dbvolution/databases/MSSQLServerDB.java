@@ -38,7 +38,7 @@ import nz.co.gregs.regexi.Match;
  * @author Malcolm Lett
  * @author Gregory Graham
  */
-public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype {
+public class MSSQLServerDB extends DBDatabaseImplementation implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1l;
 

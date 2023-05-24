@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
  *
  * @author Gregory Graham
  */
-public class InformixDB extends DBDatabase {
+public class InformixDB extends DBDatabaseImplementation {
 
 	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
 	public static final long serialVersionUID = 1l;

@@ -28,9 +28,6 @@ import nz.co.gregs.dbvolution.internal.oracle.xe.*;
 /**
  * Implements support for version 11 and prior of the Oracle database.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  * @see OracleDB
  * @see Oracle12DB

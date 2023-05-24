@@ -37,7 +37,7 @@ import org.h2.jdbc.JdbcException;
  *
  * @author Gregory Graham
  */
-public class H2DB extends DBDatabase {
+public class H2DB extends DBDatabaseImplementation {
 
 	private static final long serialVersionUID = 1l;
 	public static final String DRIVER_NAME = "org.h2.Driver";

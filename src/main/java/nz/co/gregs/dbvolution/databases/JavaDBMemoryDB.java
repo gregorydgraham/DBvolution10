@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
  *
  * @author gregory.graham
  */
-public class JavaDBMemoryDB extends DBDatabase {
+public class JavaDBMemoryDB extends DBDatabaseImplementation {
 
 	public static final long serialVersionUID = 1l;
 	public static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";

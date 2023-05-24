@@ -66,10 +66,13 @@ public class QueryGraphEdgeLabelTransformerTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marque);
 		QueryGraphEdgeLabelTransformer instance = new QueryGraphEdgeLabelTransformer(dbQuery);
 		String result = instance.transform(v);
-		assertThat(result.toLowerCase(), 
-				anyOf(
-						containsString("fk_carcompany = 2"), 
-						containsString("\"fk_carcompany\" = 2")
+		String unquotedVersion = "fk_carcompany = 2";
+		String doubleQuotedVersion = "\"fk_carcompany\" = 2";
+		String mysqlVersion = "`fk_carcompany` = 2";
+		assertThat(result.toLowerCase(),
+				anyOf(containsString(unquotedVersion),
+						containsString(doubleQuotedVersion),
+						containsString(mysqlVersion)
 				)
 		);
 	}

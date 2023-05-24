@@ -278,7 +278,8 @@ public abstract class AbstractTest {
 					.replaceAll("[ \\r\\n]+", " ")
 					.replaceAll(" +", " ")
 					.toLowerCase()
-					.replaceAll(", ", ",");
+					.replaceAll(", ", ",")
+					.replaceAll("`", "");
 			if ((database instanceof OracleDB) || (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll("\"", "")
@@ -314,6 +315,7 @@ public abstract class AbstractTest {
 					.replaceAll(" [dD][bB][_0-9]+", "")
 					.replaceAll("[ \\r\\n]+", " ")
 					.replaceAll(", ", ",")
+					.replaceAll("`", "")
 					.toLowerCase();
 			if ((database instanceof OracleDB)
 					|| (database instanceof JavaDB)) {

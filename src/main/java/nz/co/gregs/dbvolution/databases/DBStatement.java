@@ -20,8 +20,8 @@ import java.sql.*;
 import nz.co.gregs.dbvolution.exceptions.LoopDetectedInRecursiveSQL;
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.databases.DBDatabase.ResponseToException;
-import static nz.co.gregs.dbvolution.databases.DBDatabase.ResponseToException.*;
+import nz.co.gregs.dbvolution.databases.DBDatabaseImplementation.ResponseToException;
+import static nz.co.gregs.dbvolution.databases.DBDatabaseImplementation.ResponseToException.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -134,12 +134,11 @@ public class DBStatement implements AutoCloseable {
 	private ResultSet addFeatureAndAttemptQueryAgain(StatementDetails details) throws SQLException, Exception, LoopDetectedInRecursiveSQL {
 		ResultSet executeQuery;
 		final Exception exp = details.getException();
-		final String sql = details.getSql();
 		final QueryIntention intent = details.getIntention();
-		if (!checkForBrokenConnection(exp, sql)) {
+		if (!checkForBrokenConnection(exp)) {
 			try {
-				DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
-				if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+				ResponseToException response = handleResponseFromFixingException(exp, intent, details);
+				if (response.equals(SKIPQUERY)) {
 					return null;
 				}
 			} catch (LoopDetectedInRecursiveSQL loop) {
@@ -154,8 +153,8 @@ public class DBStatement implements AutoCloseable {
 				}
 				Exception ex1 = exp;
 				while (!ex1.getMessage().equals(ex.getMessage())) {
-					DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
-					if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+					ResponseToException response = handleResponseFromFixingException(exp, intent, details);
+					if (response.equals(ResponseToException.SKIPQUERY)) {
 						return null;
 					}
 				}
@@ -575,10 +574,10 @@ public class DBStatement implements AutoCloseable {
 			// discard as we've tried to drop something that doesn't exist and that's ok
 			LOG.info("Attempted to drop an entity that doesn't exist - continuing: " + exp.getMessage());
 		} else {
-			if (!checkForBrokenConnection(exp, sql)) {
+			if (!checkForBrokenConnection(exp)) {
 				try {
-					DBDatabase.ResponseToException response = handleResponseFromFixingException(exp, intent, details);
-					if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+					ResponseToException response = handleResponseFromFixingException(exp, intent, details);
+					if (response.equals(ResponseToException.SKIPQUERY)) {
 						return;
 					}
 				} catch (Exception ex) {
@@ -617,7 +616,7 @@ public class DBStatement implements AutoCloseable {
 		} catch (Exception exc) {
 			throw exc;
 		}
-		return DBDatabase.ResponseToException.NOT_HANDLED;
+		return NOT_HANDLED;
 	}
 
 	/**
@@ -1169,7 +1168,7 @@ public class DBStatement implements AutoCloseable {
 			.add(STATEMENT_CLOSED_REGEX)
 			.endOrGroup().toRegex();
 
-	private boolean checkForBrokenConnection(Exception originalExc, String sql) throws SQLException {
+	private boolean checkForBrokenConnection(Exception originalExc) throws SQLException {
 		Throwable exp = originalExc;
 		while (exp != null) {
 			String message = exp.getMessage();

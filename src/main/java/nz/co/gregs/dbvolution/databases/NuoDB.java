@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
  *
  * @author Gregory Graham
  */
-public class NuoDB extends DBDatabase {
+public class NuoDB extends DBDatabaseImplementation {
 
 	public static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
 	public static final long serialVersionUID = 1l;
