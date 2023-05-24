@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 
 import org.junit.Test;
@@ -30,12 +28,12 @@ public class GeneratedSpatialClass extends AbstractTest {
 
 	@Test
 	public void testGetSchema() throws SQLException {
-		if ((database instanceof MySQLDB) || (database instanceof PostgresDB)) {
+		if (database.supportsMetaDataFully()) {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());
 			int classesTested = 0;
-//			List<DBTableClass> generateSchema;
+
 			List<String> testClassNames = Arrays.asList(new String[]{"Spatialgen"});
 			List<String> testClasses = new ArrayList<String>();
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n"
@@ -70,7 +68,7 @@ public class GeneratedSpatialClass extends AbstractTest {
 					+ "}\n"
 					+ "");
 			var generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
-//			System.out.println("Everything is OK");
+
 			for (DBTableClass dbcl : generateSchema.getTables()) {
 				if (testClassNames.contains(dbcl.getClassName())) {
 					classesTested++;

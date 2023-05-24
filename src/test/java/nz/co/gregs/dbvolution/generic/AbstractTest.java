@@ -73,7 +73,8 @@ public abstract class AbstractTest {
 		if (databases.isEmpty()) {
 			getDatabasesFromSettings();
 			databases.forEach(database -> {
-				System.out.println("Processing: Database " + database[0] + " = " + ((DBDatabase) database[1]).getJdbcURL());
+				System.out.print("Processing: Database " + database[0]);
+				System.out.println(" = " + ((DBDatabase) database[1]).getJdbcURL());
 			});
 		}
 		return databases;
@@ -277,7 +278,8 @@ public abstract class AbstractTest {
 					.replaceAll("[ \\r\\n]+", " ")
 					.replaceAll(" +", " ")
 					.toLowerCase()
-					.replaceAll(", ", ",");
+					.replaceAll(", ", ",")
+					.replaceAll("`", "");
 			if ((database instanceof OracleDB) || (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll("\"", "")
@@ -313,6 +315,7 @@ public abstract class AbstractTest {
 					.replaceAll(" [dD][bB][_0-9]+", "")
 					.replaceAll("[ \\r\\n]+", " ")
 					.replaceAll(", ", ",")
+					.replaceAll("`", "")
 					.toLowerCase();
 			if ((database instanceof OracleDB)
 					|| (database instanceof JavaDB)) {

@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -119,6 +120,29 @@ public class MySQLDBDefinition extends DBDefinition {
 			default:
 				return null;
 		}
+	}
+
+	/**
+	 * Formats the table name correctly for this database.
+	 *
+	 * <p>
+	 * Used wherever a table alias is inappropriate, for instance UPDATE
+	 * statements.
+	 *
+	 * @param table	table
+	 *
+	 *
+	 * @return a string of the table name formatted for this database definition
+	 */
+	@Override
+	public String formatTableName(DBRow table) {
+		return "`" + table.getTableName() + "`";
+	}
+
+	@Override
+
+	public String formatColumnName(String columnName) {
+		return "`" + columnName + "`";
 	}
 
 	@Override
@@ -764,7 +788,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doFormatAsDateRepeatSeconds(String numericSQL) {
-		return "REGEXP_REPLACE(concat('',"+numericSQL+",  ''),'0+$','0')";
+		return "REGEXP_REPLACE(concat(''," + numericSQL + ",  ''),'0+$','0')";
 	}
 
 	private static final Regex DUPLICATE_COLUMN_EXCEPTION

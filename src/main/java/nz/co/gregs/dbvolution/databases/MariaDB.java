@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
  *
  * @author Gregory Graham
  */
-public class MariaDB extends DBDatabase {
+public class MariaDB extends DBDatabaseImplementation {
 
 	public final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 	public static final long serialVersionUID = 1l;

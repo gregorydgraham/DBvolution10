@@ -71,7 +71,16 @@ public class DBEnumTest extends AbstractTest {
 				IntEnum.SHIPPING_MANIFEST_RECORD);
 
 		String sqlFragment = database.getDBQuery(rowExemplar).getSQLForQuery();
-		assertThat(sqlFragment.toLowerCase(), anyOf(containsString("c_5 in ( 2, 1)"),containsString("\"c_5\" in ( 2, 1)")));
+		String unquotedVersion = "c_5 in ( 2, 1)";
+		String doubleQuotedVersion = "\"c_5\" in ( 2, 1)";
+		String mysqlVersion = "`c_5` in ( 2, 1)";
+		assertThat(sqlFragment.toLowerCase(),
+				anyOf(
+						containsString(unquotedVersion),
+						containsString(doubleQuotedVersion),
+						containsString(mysqlVersion)
+				)
+		);
 	}
 
 	@Test
@@ -82,7 +91,16 @@ public class DBEnumTest extends AbstractTest {
 				IntEnum.SHIPPING_MANIFEST_RECORD.getCode());
 
 		String sqlFragment = database.getDBQuery(rowExemplar).getSQLForQuery();
-		assertThat(sqlFragment.toLowerCase(), anyOf(containsString("c_5 in ( 2, 1)"),containsString("\"c_5\" in ( 2, 1)")));
+		String unquotedVersion = "c_5 in ( 2, 1)";
+		String doubleQuotedVersion = "\"c_5\" in ( 2, 1)";
+		String mysqlVersion = "`c_5` in ( 2, 1)";
+		assertThat(sqlFragment.toLowerCase(),
+				anyOf(
+						containsString(unquotedVersion),
+						containsString(doubleQuotedVersion),
+						containsString(mysqlVersion)
+				)
+		);
 	}
 
 	@Test

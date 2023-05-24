@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.lang.reflect.Field;
@@ -20,7 +21,7 @@ import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.query.*;
 
-public class DBMigration<M extends DBRow> extends RowDefinition {
+public class DBMigration<M extends DBRow> extends RowDefinition implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 

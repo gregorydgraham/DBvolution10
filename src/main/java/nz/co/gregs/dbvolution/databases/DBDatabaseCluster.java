@@ -52,6 +52,7 @@ import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.DBDatabaseClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
@@ -97,7 +98,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author gregorygraham
  */
-public class DBDatabaseCluster extends DBDatabase {
+public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	static final private Log LOG = LogFactory.getLog(DBDatabaseCluster.class);
 
@@ -158,11 +159,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		throw new UnsupportedOperationException("DBDatabaseCluster does not support getDefaultPort() yet.");
 	}
 
-	@Override
-	public DBDatabaseClusterSettingsBuilder getURLInterpreter() {
-		return new DBDatabaseClusterSettingsBuilder();
-	}
-
 	public void waitUntilSynchronised() {
 		getDetails().waitUntilSynchronised();
 	}
@@ -198,6 +194,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		if (failOnQuarantine) {
 			throw new ClusterHasQuarantinedADatabaseException();
 		}
+	}
+
+	@Override
+	public SettingsBuilder<?, ?> getURLInterpreter() {
+		return new DBDatabaseClusterSettingsBuilder();
 	}
 
 	public static enum Status {
@@ -412,7 +413,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public static DBDatabaseCluster randomAutomaticCluster(DBDatabase databases) throws SQLException {
 		final String dbName = getRandomClusterName();
-		return new DBDatabaseCluster(dbName, Configuration.autoRebuildAndReconnect(), databases);
+		return new DBDatabaseCluster(dbName, Configuration.autoRebuildReconnectAndStart(), databases);
 	}
 
 	private static String getRandomClusterName() {
@@ -901,62 +902,33 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException {
+	public synchronized <V> V doTransaction(DBTransaction<V> transaction, Boolean commit) throws SQLException {
 		V result = null;
 		boolean rollbackAll = false;
-		List<DBDatabase> transactionDatabases = new ArrayList<>();
+		List<IncompleteTransaction<V>> partials = new ArrayList<>();
 		try {
 			final DBDatabase[] readyDatabases = getDetails().getReadyDatabases();
 			for (DBDatabase database : readyDatabases) {
 				synchronized (database) {
-					DBDatabase db;
-					db = database.clone();
-					transactionDatabases.add(db);
-					V returnValues = null;
-					db.transactionStatement = db.getDBTransactionStatement();
-					try {
-						db.isInATransaction = true;
-						db.transactionConnection = db.transactionStatement.getConnection();
-						db.transactionConnection.setAutoCommit(false);
-						try {
-							returnValues = dbTransaction.doTransaction(db);
-							if (!commit) {
-								try {
-									db.transactionConnection.rollback();
-								} catch (SQLException rollbackFailed) {
-									discardConnection(db.transactionConnection);
-								}
-							}
-						} catch (ExceptionThrownDuringTransaction ex) {
-							try {
-								db.transactionConnection.rollback();
-							} catch (SQLException excp) {
-								LOG.warn("Exception Occurred During Rollback: " + ex.getMessage());
-							}
-							throw ex;
-						}
-					} finally {
+					IncompleteTransaction<V> partial = database.doTransactionWithoutCompleting(transaction);
+					partials.add(partial);
+					result = partial.getResults();
+					if (!commit) {
+						// we're testing the transaction so rollback immediately
+						partial.rollback();
 					}
-					result = returnValues;
 				}
 			}
 		} catch (Exception exc) {
 			rollbackAll = true;
 		} finally {
-			for (DBDatabase db : transactionDatabases) {
-				synchronized (db) {
-					if (commit) {
-						if (rollbackAll) {
-							db.transactionConnection.rollback();
-						} else {
-							db.transactionConnection.commit();
-						}
+			for (IncompleteTransaction<V> partial : partials) {
+				if (commit) {
+					if (rollbackAll) {
+						partial.rollback();
+					} else {
+						partial.commit();
 					}
-					db.isInATransaction = false;
-					db.transactionStatement.transactionFinished();
-					db.discardConnection(db.transactionConnection);
-					db.transactionConnection = null;
-					db.transactionStatement = null;
 				}
 			}
 		}
@@ -1313,7 +1285,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	/**
-	 * Stops the cluster without effecting the contained databases.
+	 * Stops the cluster without altering the contained databases.
 	 *
 	 * <p>
 	 * To stop all databases in the cluster as well as the cluster use

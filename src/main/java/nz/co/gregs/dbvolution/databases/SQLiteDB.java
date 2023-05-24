@@ -35,7 +35,7 @@ import nz.co.gregs.regexi.Regex;
  *
  * @author Gregory Graham
  */
-public class SQLiteDB extends DBDatabase {
+public class SQLiteDB extends DBDatabaseImplementation {
 
 	public static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;

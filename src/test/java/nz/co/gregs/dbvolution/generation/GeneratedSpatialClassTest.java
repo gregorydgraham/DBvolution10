@@ -10,8 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
@@ -30,7 +28,7 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 
 	@Test
 	public void testGetSchema() throws SQLException, IOException {
-		if ((database instanceof MySQLDB) || (database instanceof PostgresDB)) {
+		if (database.supportsMetaDataFully()) {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());
@@ -95,6 +93,9 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 
 			database.preventDroppingOfTables(false);
 			database.dropTable(new Spatialgen());
+		}else{
+			System.out.print("NOT IMPLEMENTED: schema generation for "+database.getLabel()+" has not been implemented");
+			System.out.println(" ("+database.getJdbcURL()+")");
 		}
 	}
 }

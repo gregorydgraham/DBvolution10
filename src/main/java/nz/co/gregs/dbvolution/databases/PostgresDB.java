@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Gregory Graham
  */
-public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
+public class PostgresDB extends DBDatabaseImplementation implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1l;
 
@@ -62,33 +62,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	private boolean postGISTopologyAlreadyTried = false;
 	private boolean postGISAlreadyTried = false;
 	private boolean postGISInstalled = false;
-//	private final PostgresSettingsBuilder urlProcessor = new PostgresSettingsBuilder();
 
-	/**
-	 *
-	 * Provides a convenient constructor for DBDatabases that have configuration
-	 * details hardwired or are able to automatically retrieve the details.
-	 *
-	 * <p>
-	 * This constructor creates an empty DBDatabase with only the default
-	 * settings, in particular with no driver, URL, username, password, or
-	 * {@link DBDefinition}
-	 *
-	 * <p>
-	 * Most programmers should not call this constructor directly. Instead you
-	 * should define a no-parameter constructor that supplies the details for
-	 * creating an instance using a more complete constructor.
-	 *
-	 * <p>
-	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
-	 *
-	 * @see DBDefinition
-	 */
-//	protected PostgresDB() {
-//		super();
-//	}
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
@@ -99,8 +73,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		super(
 				new PostgresSettingsBuilder().setDataSource(ds)
 		);
-
-//		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, ds);
 	}
 
 	/**
@@ -164,7 +136,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 				.setDatabaseName(databaseName)
 				.setUsername(username)
 				.setPassword(password)
-		//hostname, port, databaseName, username, password 
 		);
 	}
 
@@ -194,7 +165,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 				.setUsername(username)
 				.setPassword(password)
 		);
-//		this.setDatabaseName(databaseName);
 	}
 
 	/**
@@ -223,11 +193,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 								password
 						)
 		);
-//		super(new PostgresDBDefinition(),
-//				POSTGRES_DRIVER_NAME,
-//				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
-//				username, password
-//		);
 	}
 
 	/**
@@ -249,17 +214,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
 	}
 
-//	@Override
-//	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		String url = settings.getUrl();
-//		return url != null && !url.isEmpty()
-//				? url
-//				: "jdbc:postgresql://"
-//				+ settings.getHost() + ":"
-//				+ settings.getPort() + "/"
-//				+ settings.getDatabaseName()
-//				+ settings.formatExtras("?", "=", "&", "");
-//	}
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -424,7 +378,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @return the suggested response to this exception
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
-	//ERROR: relation "marque" already exists : Original Query: CREATE TABLE
 	private static final Regex TABLE_EXISTS = Regex.startingAnywhere()
 			.literal("ERROR: relation ")
 			.doublequote().anyCharacterExcept('"').doublequote()
@@ -455,35 +408,18 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		}
 	}
 
-//	@Override
-//	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
-//		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split("\\?", 2)[1];
-//			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
-//		}
-//		set.setPort(noPrefix
-//				.split("/", 2)[0]
-//				.replaceAll("^[^:]*:+", ""));
-//		set.setHost(noPrefix
-//				.split("/", 2)[0]
-//				.split(":")[0]);
-//		set.setInstance(getExtras().get("instance"));
-//		set.setSchema("");
-//		return set;
-//	}
 	@Override
 	public Integer getDefaultPort() {
 		return 5432;
 	}
 
-//	@Override
-//	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
-//		return PostgresDB.class;
-//	}
 	@Override
 	public AbstractPostgresSettingsBuilder<?, ?> getURLInterpreter() {
 		return new PostgresSettingsBuilder();
+	}
+
+	@Override
+	public boolean supportsMetaDataFully() {
+		return true;
 	}
 }

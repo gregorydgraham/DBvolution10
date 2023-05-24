@@ -16,9 +16,12 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -37,30 +40,35 @@ public class ExistsExpressionTest extends AbstractTest {
 
 	@Test
 	public void testDBExistsOnMultipleTablesUsingDBQueries() throws SQLException {
-		
+
 		CarCompany carCompany = new CarCompany();
 		carCompany.uidCarCompany.permittedValues(3);
 		DBQuery existsTables
 				= database.getDBQuery()
 						.add(carCompany)
 						.add(new CompanyLogo());
-		if (database instanceof DBDatabaseCluster){
-			DBDatabaseCluster cluster = (DBDatabaseCluster)database;
-			System.out.println("CLUSTER: "+cluster.getClusterStatus());
+		if (database instanceof DBDatabaseCluster) {
+			DBDatabaseCluster cluster = (DBDatabaseCluster) database;
+			System.out.println("CLUSTER: " + cluster.getClusterStatus());
+			DBDatabase[] allDatabases = cluster.getDetails().getAllDatabases();
+			Arrays
+					.asList(allDatabases)
+					.stream()
+					.forEach((db) -> {
+						if (db instanceof MySQLDB) {
+							cluster.getDetails().setPreferredDatabase(db);
+						};
+					});
 		}
-//		if (!database.tableExists(carCompany)){
-			System.out.println(existsTables.getSQLForQuery());
-//		}
-		
+		System.out.println(existsTables.getSQLForQuery());
+
 		Marque marque = new Marque();
 		DBQuery outerQuery = database.getDBQuery(marque);
 
 		DBQuery marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
 
-//		if (!database.tableExists(carCompany)){
-			System.out.println(marquesQuery.getSQLForQuery());
-//		}		 
+		System.out.println(marquesQuery.getSQLForQuery());
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 

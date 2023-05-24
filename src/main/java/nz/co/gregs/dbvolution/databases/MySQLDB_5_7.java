@@ -28,12 +28,9 @@ import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 /**
  * A DBDatabase tweaked for MySQL databases
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
-public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
+public class MySQLDB_5_7 extends DBDatabaseImplementation implements SupportsPolygonDatatype {
 
 	public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 	private static final long serialVersionUID = 1l;

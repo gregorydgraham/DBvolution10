@@ -125,15 +125,12 @@ public abstract class DBScript {
 	 * @return the transaction required to run the script.
 	 */
 	public final DBTransaction<DBActionList> getDBTransaction() {
-		return new DBTransaction<DBActionList>() {
-			@Override
-			public DBActionList doTransaction(DBDatabase dbd) throws ExceptionThrownDuringTransaction {
-				try {
-					DBActionList revertScript = script(dbd);
-					return revertScript;
-				} catch (Exception ex) {
-					throw new ExceptionThrownDuringTransaction(ex);
-				}
+		return (DBDatabase db) -> {
+			try {
+				DBActionList revertScript = script(db);
+				return revertScript;
+			} catch (Exception ex) {
+				throw new ExceptionThrownDuringTransaction(ex);
 			}
 		};
 	}
