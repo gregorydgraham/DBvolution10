@@ -15,24 +15,10 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
-import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBConnection;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
-import nz.co.gregs.dbvolution.databases.DBStatement;
-import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 
 /**
  * Automatically generates Java files to be used in your data model.
@@ -222,12 +208,7 @@ class DataRepoGenerator {
 	 */
 	private static DataRepo parseObjectTypes(DBDatabase db, String packageName, Options options, String... dbObjectTypes) throws SQLException {
 
-		DBDatabase database = db;
-		while (db instanceof DBDatabaseCluster) {
-			database = ((DBDatabaseCluster) db).getReadyDatabase();
-		}
-
-		DataRepo datarepo = new DBDatabaseMetaData(database, dbObjectTypes, packageName, options).getDataRepo();
+		DataRepo datarepo = new DBDatabaseMetaData(db, dbObjectTypes, packageName, options).getDataRepo();
 
 		return datarepo;
 	}
