@@ -39,6 +39,8 @@ import nz.co.gregs.dbvolution.databases.JavaDB;
 public class JavaDBSettingsBuilder extends AbstractJavaDBSettingsBuilder<JavaDBSettingsBuilder, JavaDB>
 		implements ProtocolCapableSettingsBuilder<JavaDBSettingsBuilder, JavaDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<JavaDB> generatesURLForDatabase() {
 		return JavaDB.class;

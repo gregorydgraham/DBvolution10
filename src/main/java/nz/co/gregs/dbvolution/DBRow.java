@@ -1093,7 +1093,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Probably not useful in general use.
 	 *
 	 */
-	protected final void removeAllFieldsFromResults() {
+	public final void removeAllFieldsFromResults() {
 		setReturnFields(new Object[]{});
 	}
 

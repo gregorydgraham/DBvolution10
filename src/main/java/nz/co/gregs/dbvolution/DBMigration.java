@@ -82,7 +82,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition implements Seria
 		return new DBMigration<MAPPER>(database, migrationMapper);
 	}
 
-	private DBMigration<M> addTablesAndExpressions(DBQuery query) {
+	public DBMigration<M> addTablesAndExpressions(DBQuery query) {
 		Field[] fields = mapper.getClass().getFields();
 		if (fields.length == 0) {
 			throw new UnableToAccessDBMigrationFieldException(this, null);
@@ -469,7 +469,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition implements Seria
 	 *
 	 * @return the sortColumns
 	 */
-	protected SortProvider[] getSortColumns() {
+	public SortProvider[] getSortColumns() {
 		return sortColumns.toArray(new SortProvider[]{});
 	}
 
@@ -561,6 +561,25 @@ public class DBMigration<M extends DBRow> extends RowDefinition implements Seria
 
 	QueryDetails getQueryDetails() {
 		return this.getDBQuery().getQueryDetails();
+	}
+
+	public boolean getCartesianJoinsAllowed() {
+		return cartesian;
+	}
+
+	public boolean getBlankQueryAllowed() {
+		return blank;
+	}
+
+	public M getMapper() {
+		return mapper;
+	}
+	
+	public List<DBRow> getOptionalTables(){
+		if(optionalTables.isEmpty()){
+			return new ArrayList<DBRow>();
+		}
+		return Arrays.asList((DBRow[]) optionalTables.toArray());
 	}
 
 }

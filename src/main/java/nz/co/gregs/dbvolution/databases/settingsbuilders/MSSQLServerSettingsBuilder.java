@@ -39,6 +39,8 @@ import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 public class MSSQLServerSettingsBuilder extends AbstractMSSQLServerSettingsBuilder<MSSQLServerSettingsBuilder, MSSQLServerDB>
 		implements InstanceCapableSettingsBuilder<MSSQLServerSettingsBuilder, MSSQLServerDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<MSSQLServerDB> generatesURLForDatabase() {
 		return MSSQLServerDB.class;

@@ -38,6 +38,8 @@ import nz.co.gregs.dbvolution.databases.InformixDB;
  */
 public class InformixSettingsBuilder extends AbstractInformixSettingsBuilder<InformixSettingsBuilder, InformixDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<InformixDB> generatesURLForDatabase() {
 		return InformixDB.class;

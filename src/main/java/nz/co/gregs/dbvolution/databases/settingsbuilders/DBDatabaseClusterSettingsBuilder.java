@@ -47,6 +47,7 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	private static final long serialVersionUID = 1L;
 	private boolean useAutoRebuild = false;
 	private boolean useAutoReconnect = false;
 	private boolean useAutoStart = false;

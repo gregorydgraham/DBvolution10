@@ -37,6 +37,8 @@ import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 public class Informix11SettingsBuilder 
 		extends AbstractInformixSettingsBuilder<Informix11SettingsBuilder, Informix11DB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<Informix11DB> generatesURLForDatabase() {
 		return Informix11DB.class;

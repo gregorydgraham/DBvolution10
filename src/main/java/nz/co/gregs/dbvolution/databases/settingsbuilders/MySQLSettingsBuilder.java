@@ -38,6 +38,8 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
  */
 public class MySQLSettingsBuilder extends AbstractMySQLSettingsBuilder<MySQLSettingsBuilder, MySQLDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<MySQLDB> generatesURLForDatabase() {
 		return MySQLDB.class;

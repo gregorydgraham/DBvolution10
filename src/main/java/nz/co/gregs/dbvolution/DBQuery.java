@@ -1824,7 +1824,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @return this DBQuery instance
 	 */
-	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
+	public DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
 		details.addDBReportGroupByColumn(identifyingObject, expressionToAdd);
 		return this;
 	}

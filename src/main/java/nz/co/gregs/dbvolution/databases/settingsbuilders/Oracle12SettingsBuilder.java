@@ -40,6 +40,8 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
  */
 public class Oracle12SettingsBuilder extends AbstractOracleSettingsBuilder<Oracle12SettingsBuilder, Oracle12DB> {
 
+	private static final long serialVersionUID = 1L;
+
 	public Oracle12SettingsBuilder() {
 	}
 	

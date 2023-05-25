@@ -46,6 +46,8 @@ public abstract class AbstractVendorSettingsBuilder<SELF extends AbstractVendorS
 		extends AbstractSettingsBuilder<SELF, DATABASE> 
 		implements VendorSettingsBuilder<SELF, DATABASE> {
 
+	private static final long serialVersionUID = 1L;
+
 	private String driverName = getDefaultDriverName();
 	private DBDefinition definition = getDefaultDefinition();
 

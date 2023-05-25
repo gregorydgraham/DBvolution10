@@ -43,6 +43,8 @@ public class H2SettingsBuilder extends AbstractH2SettingsBuilder<H2SettingsBuild
 		ProtocolCapableSettingsBuilder<H2SettingsBuilder, H2DB>,
 		NamedDatabaseCapableSettingsBuilder<H2SettingsBuilder, H2DB>{
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Class<H2DB> generatesURLForDatabase() {
 		return H2DB.class;

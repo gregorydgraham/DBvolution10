@@ -40,6 +40,8 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
  */
 public class Oracle11XESettingsBuilder extends AbstractOracleSettingsBuilder<Oracle11XESettingsBuilder, Oracle11XEDB> {
 
+	private static final long serialVersionUID = 1L;
+
 	public Oracle11XESettingsBuilder() {
 	}
 	@Override

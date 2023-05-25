@@ -15,16 +15,20 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBMigration;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBMigrationFieldException;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,8 +88,59 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 				+ defn.beginInsertColumnList()
 				+ allColumns
 				+ defn.endInsertColumnList()
-				+ sourceMigration.getSQLForQuery(extraExamples));
+				+ getSQLForExtractionQuery(db));
 		return strs;
+	}
+
+	public String getSQLForExtractionQuery(DBDatabase database) {
+		DBQuery query = database.getDBQuery();
+		query.setBlankQueryAllowed(sourceMigration.getBlankQueryAllowed());
+		query.setCartesianJoinsAllowed(sourceMigration.getCartesianJoinsAllowed());
+		
+		addTablesAndExpressions(query);
+		query.addExtraExamples(extraExamples);
+		query.setSortOrder(sourceMigration.getSortColumns());
+		return query.getSQLForQuery();
+	}
+	
+	public void addTablesAndExpressions(DBQuery query) {
+		final DBRow mapper = sourceMigration.getMapper();
+		var optionalTables = sourceMigration.getOptionalTables();
+		Field[] fields = mapper.getClass().getFields();
+		if (fields.length == 0) {
+			throw new UnableToAccessDBMigrationFieldException(this, null);
+		}
+		for (Field field : fields) {
+			field.setAccessible(true);
+			final Object value;
+			try {
+				value = field.get(mapper);
+				if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
+					if (value instanceof DBRow) {
+						final DBRow dbRow = (DBRow) value;
+						dbRow.removeAllFieldsFromResults();
+						if (optionalTables.contains(dbRow)) {
+							query.addOptional(dbRow);
+						} else {
+							query.add(dbRow);
+						}
+					}
+				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
+					final QueryableDatatype<?> qdtValue = (QueryableDatatype) value;
+					if ((value instanceof QueryableDatatype) && qdtValue.hasColumnExpression()) {
+						query.addExpressionColumn(value, qdtValue);
+						final DBExpression[] columnExpressions = qdtValue.getColumnExpression();
+						for (DBExpression columnExpression : columnExpressions) {
+							if (!columnExpression.isAggregator()) {
+								query.addGroupByColumn(value, columnExpression);
+							}
+						}
+					}
+				}
+			} catch (IllegalArgumentException | IllegalAccessException ex) {
+				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
+			}
+		}
 	}
 
 	@Override
