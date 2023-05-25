@@ -676,8 +676,8 @@ public class DBDatabaseHandle implements DBDatabase {
 	}
 
 	@Override
-	public boolean supportsMetaDataFully() {
-		return wrappedDatabase.supportsMetaDataFully();
+	public boolean supportsGeometryTypesFullyInSchema() {
+		return wrappedDatabase.supportsGeometryTypesFullyInSchema();
 	}
 
 }

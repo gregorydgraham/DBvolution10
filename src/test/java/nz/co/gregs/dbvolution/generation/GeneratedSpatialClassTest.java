@@ -28,7 +28,8 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 
 	@Test
 	public void testGetSchema() throws SQLException, IOException {
-		if (database.supportsMetaDataFully()) {
+		if (database.supportsGeometryTypesFullyInSchema()) {
+			System.out.println("PROCESSING: "+database.getLabel());
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());
@@ -94,7 +95,7 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTable(new Spatialgen());
 		}else{
-			System.out.print("NOT IMPLEMENTED: schema generation for "+database.getLabel()+" has not been implemented");
+			System.out.print("NOT IMPLEMENTED: spatial schema generation for "+database.getLabel()+" has not been implemented");
 			System.out.println(" ("+database.getJdbcURL()+")");
 		}
 	}

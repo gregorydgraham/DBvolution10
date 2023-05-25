@@ -147,7 +147,7 @@ public interface DBDatabase {
 
 	void deleteAllRowsFromTable(DBRow table) throws SQLException;
 
-	boolean supportsMetaDataFully();
+	boolean supportsGeometryTypesFullyInSchema();
 
 	String getHost();
 

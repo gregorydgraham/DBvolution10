@@ -2162,7 +2162,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	}
 
 	@Override
-	public boolean supportsMetaDataFully() {
+	public boolean supportsGeometryTypesFullyInSchema() {
 		return false;
 	}
 

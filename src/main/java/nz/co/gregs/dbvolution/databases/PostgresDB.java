@@ -419,7 +419,7 @@ public class PostgresDB extends DBDatabaseImplementation implements SupportsPoly
 	}
 
 	@Override
-	public boolean supportsMetaDataFully() {
+	public boolean supportsGeometryTypesFullyInSchema() {
 		return true;
 	}
 }
