@@ -46,6 +46,8 @@ import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.connections.DBConnection;
+import nz.co.gregs.dbvolution.databases.connections.DBConnectionSingle;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.DBDatabaseClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.NamedDatabaseCapableSettingsBuilder;
@@ -378,6 +380,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * and MS SQLserver, in particular, need to be added to the path if you wish
 	 * to work with those databases.
 	 */
+	@Override
 	public synchronized DBConnection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (terminated) {
 			return null;
@@ -433,7 +436,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 					startServerIfRequired();
 					while (connection == null) {
 						try {
-							connection = new DBConnectionSingle(this, getConnectionFromDriverManager());
+							connection = getDatabaseSpecificDBConnection(getConnectionFromDriverManager());
 							DatabaseMetaData metaData = connection.getMetaData();
 							LOG.debug("DATABASE: " + metaData.getDatabaseProductName() + " - " + metaData.getDatabaseProductVersion());
 							LOG.debug("DATABASE: " + metaData.getDriverName() + " - " + metaData.getDriverVersion());
@@ -453,7 +456,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 					}
 				} else {
 					try {
-						connection = new DBConnectionSingle(this, getDataSource().getConnection());
+						connection = getDatabaseSpecificDBConnection(getDataSource().getConnection());
 					} catch (SQLException noConnection) {
 						throw new UnableToCreateDatabaseConnectionException(getDataSource(), noConnection);
 					}
@@ -476,6 +479,11 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		}
 		return null;
 	}
+
+	public DBConnection getDatabaseSpecificDBConnection(Connection connection) throws SQLException {
+		return new DBConnectionSingle(this, connection);
+	}
+	
 	private final int SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS;
 	private int MAX_CONNECTION_RETRIES = 6;
 

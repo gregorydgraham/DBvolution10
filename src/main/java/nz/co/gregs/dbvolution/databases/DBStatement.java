@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabaseImplementation.ResponseToException;
 import static nz.co.gregs.dbvolution.databases.DBDatabaseImplementation.ResponseToException.*;
+import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
