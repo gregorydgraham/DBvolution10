@@ -3982,8 +3982,8 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * @return default is ".*" so all tables are included.
 	 */
-	public String getSystemTableExclusionPattern() {
-		return ".*";
+	public Regex getSystemTableExclusionPattern() {
+		return Regex.startingAnywhere().anyCharacter().zeroOrMore().toRegex();
 	}
 
 	/**

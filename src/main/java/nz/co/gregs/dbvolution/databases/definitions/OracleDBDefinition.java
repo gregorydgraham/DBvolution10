@@ -432,8 +432,9 @@ public class OracleDBDefinition extends DBDefinition {
 	 * @return a pattern that will remove any system table.
 	 */
 	@Override
-	public String getSystemTableExclusionPattern() {
-		return "^[^$]*$";
+	public Regex getSystemTableExclusionPattern() {
+		return Regex.startingFromTheBeginning().excludeSet("$").zeroOrMore().endOfTheString().toRegex();
+//		return "^[^$]*$";
 	}
 
 	@Override
