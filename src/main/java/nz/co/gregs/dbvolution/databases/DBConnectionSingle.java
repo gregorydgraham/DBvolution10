@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 greg.
+ * Copyright 2017 Gregory Graham.
  *
  * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ 
@@ -49,13 +49,9 @@ import java.util.concurrent.Executor;
 
 /**
  *
- * @author greg
+ * @author Gregory Graham
  */
 public class DBConnectionSingle implements DBConnection {
-
-//	public static DBConnectionSingle wrap(Connection connectionFromDriverManager) {
-//		return new DBConnectionSingle(connectionFromDriverManager);
-//	}
 
 	private final Connection connection;
 	private final DBDatabase database;
@@ -67,8 +63,6 @@ public class DBConnectionSingle implements DBConnection {
 
 	@Override
 	public DBStatement createDBStatement() throws SQLException {
-//		return connection.createDBStatement();
-//		return database.getDBStatement();
 		return new DBStatement(database, this);
 	}
 
