@@ -108,7 +108,9 @@ public class DataRepo {
 	void compile(Options options) {
 		final List<DBTableClass> knownEntities = getAllKnownEntities();
 		DBRowSubclassGenerator.generate(knownEntities, options);
-		knownEntities.stream().forEach(t -> rows.add(t.getGeneratedInstance()));
+		for (DBTableClass t : knownEntities) {
+			rows.add(t.getGeneratedInstance());
+		}
 	}
 
 	public DBRow getInstanceForName(String className) {
