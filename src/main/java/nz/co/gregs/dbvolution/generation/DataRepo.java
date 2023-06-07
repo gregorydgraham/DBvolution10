@@ -44,20 +44,20 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DataRepo {
 
-	private final DBDatabase database;
+//	private final DBDatabase database;
 	private final List<DBTableClass> views = new ArrayList<DBTableClass>(0);
 	private final List<DBTableClass> tables = new ArrayList<DBTableClass>(0);
 	final List<DBRow> rows = new ArrayList<>(0);
-	private final String packageName;
+//	private final String packageName;
 
 	public static DataRepo getDataRepoFor(DBDatabase database, String packageName) throws SQLException, IOException {
 		var repo = DataRepoGenerator.generateClasses(database, packageName);
 		return repo;
 	}
+	private final Options options;
 
-	DataRepo(DBDatabase db, String packageName) {
-		this.database = db;
-		this.packageName = packageName;
+	public DataRepo(Options options) {
+		this.options = options.copy();
 	}
 
 	void addViews(List<DBTableClass> generatedViews) {
@@ -96,7 +96,7 @@ public class DataRepo {
 	}
 
 	public DBDatabase getDatabase() {
-		return database;
+		return options.getDBDatabase();
 	}
 
 	public List<DBRow> getRows() {
@@ -126,7 +126,7 @@ public class DataRepo {
 	 * @return the packageName
 	 */
 	public String getPackageName() {
-		return packageName;
+		return options.getPackageName();
 	}
 
 }

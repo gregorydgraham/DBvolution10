@@ -5,6 +5,9 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import java.util.Arrays;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+
 /*
  * @param fkRecog fkRecog an object that can recognize foreign key columns by
  * the column name and derive the related table
@@ -20,15 +23,30 @@ public class Options {
 	private ForeignKeyRecognisor fkRecog = new ForeignKeyRecognisor();
 	private Boolean trimCharColumns = false;
 	private Boolean includeForeignKeyColumnName = false;
+	private DBDatabase database;
+	private String packageName;
+	private String[] objectTypes;
 
 	public Options() {
 	}
 
-	public Options(Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) {
+	public static Options empty() {
+		return new Options();
+	}
+
+	public Options(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns, Boolean includeForeignKeyColumnName, String... objectTypes) {
+		this.database = database;
+		this.packageName = packageName;
 		this.versionNumber = versionNumber;
 		this.pkRecog = pkRecog;
 		this.fkRecog = fkRecog;
 		this.trimCharColumns = trimCharColumns;
+		this.includeForeignKeyColumnName = includeForeignKeyColumnName;
+		this.objectTypes = objectTypes;
+	}
+
+	public Options(Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) {
+		this(null, "", versionNumber, pkRecog, fkRecog, trimCharColumns, false, new String[0]);
 	}
 
 	/**
@@ -68,37 +86,88 @@ public class Options {
 
 	/**
 	 * @param versionNumber the versionNumber to set
+	 * @return this instance
 	 */
-	public void setVersionNumber(Long versionNumber) {
+	public Options setVersionNumber(Long versionNumber) {
 		this.versionNumber = versionNumber;
+		return this;
 	}
 
 	/**
 	 * @param pkRecog the pkRecog to set
+	 * @return this instance
 	 */
-	public void setPkRecog(PrimaryKeyRecognisor pkRecog) {
+	public Options setPkRecog(PrimaryKeyRecognisor pkRecog) {
 		this.pkRecog = pkRecog;
+		return this;
 	}
 
 	/**
 	 * @param fkRecog the fkRecog to set
+	 * @return this instance
 	 */
-	public void setFkRecog(ForeignKeyRecognisor fkRecog) {
+	public Options setFkRecog(ForeignKeyRecognisor fkRecog) {
 		this.fkRecog = fkRecog;
+		return this;
 	}
 
 	/**
 	 * @param trimCharColumns the trimCharColumns to set
+	 * @return this instance
 	 */
-	public void setTrimCharColumns(Boolean trimCharColumns) {
+	public Options setTrimCharColumns(Boolean trimCharColumns) {
 		this.trimCharColumns = trimCharColumns;
+		return this;
 	}
 
 	/**
 	 * @param includeForeignKeyColumnName the includeForeignKeyColumnName to set
+	 * @return this instance
 	 */
-	public void setIncludeForeignKeyColumnName(Boolean includeForeignKeyColumnName) {
+	public Options setIncludeForeignKeyColumnName(Boolean includeForeignKeyColumnName) {
 		this.includeForeignKeyColumnName = includeForeignKeyColumnName;
+		return this;
 	}
-	
+
+	public Options setDBDatabase(DBDatabase database) {
+		this.database = database;
+		return this;
+	}
+
+	public Options setPackageName(String packageName) {
+		this.packageName = packageName;
+		return this;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public DBDatabase getDBDatabase() {
+		return database;
+	}
+
+	public Options copy() {
+		Options opts = new Options(database, packageName, versionNumber, pkRecog, fkRecog, trimCharColumns, includeForeignKeyColumnName, objectTypes);
+		return opts;
+	}
+
+	public static Options copy(Options opts) {
+		Options newOpts = opts.copy();
+		return newOpts;
+	}
+
+	public Options setObjectTypes(String... dbObjectTypes) {
+		if (dbObjectTypes.length > 0) {
+			this.objectTypes = Arrays.copyOf(dbObjectTypes, dbObjectTypes.length);
+		} else {
+			this.objectTypes = new String[0];
+		}
+		return this;
+	}
+
+	public String[] getObjectTypes() {
+		return this.objectTypes;
+	}
+
 }

@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -12,8 +13,8 @@ import java.util.regex.Pattern;
  * @author gregorygraham
  */
 public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
-	
-	Pattern fkStartPattern = Pattern.compile("^[fF][kK]_");
+
+	static final Pattern FK_START_PATTERN = Pattern.compile("^[fF][kK]_");
 
 	public FKBasedFKRecognisor() {
 	}
@@ -28,7 +29,9 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 */
 	@Override
 	public boolean isForeignKeyColumn(String tableName, String columnName) {
-		return columnName.toLowerCase().startsWith("fk_");
+		String toLowerCase = columnName.toLowerCase();
+		boolean result = toLowerCase.startsWith("fk_");
+		return result;
 	}
 
 	/**
@@ -40,13 +43,15 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 */
 	@Override
 	public String getReferencedColumn(String tableName, String columnName) {
+		String result;
 		if (isForeignKeyColumn(tableName, columnName)) {
-			String strippedOfFK = "";
-			strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_").replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
-			return strippedOfFK;
+			Matcher matcher = FK_START_PATTERN.matcher(columnName);
+			String firstReplace = matcher.replaceAll("uid_");
+			result = firstReplace.replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
 		} else {
-			return null;
+			result = null;
 		}
+		return result;
 	}
 
 	/**
@@ -59,15 +64,18 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	@Override
 	public String getReferencedTable(String tableName, String columnName) {
 		if (isForeignKeyColumn(tableName, columnName)) {
-			String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
+			Matcher matcher = FK_START_PATTERN.matcher(columnName);
+			String strippedOfFK = matcher.replaceAll("");
 			if (strippedOfFK.matches("^[0-9_]+$")) {
-				return "T_" + strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
+				String replaceAll = strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
+				return "T_" + replaceAll;
 			} else {
-				return DataRepoGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
+				String replaceAll = strippedOfFK.replaceAll("_[0-9]+$", "");
+				return Utility.toClassCase(replaceAll);
 			}
 		} else {
 			return null;
 		}
 	}
-	
+
 }

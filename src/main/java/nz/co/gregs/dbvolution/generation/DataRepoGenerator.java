@@ -18,7 +18,14 @@ package nz.co.gregs.dbvolution.generation;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
 
 /**
  * Automatically generates Java files to be used in your data model.
@@ -91,9 +98,11 @@ class DataRepoGenerator {
 	 *
 	 */
 	static public DataRepo generateClasses(DBDatabase database, String packageName, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
-		Options opts = new Options();
-		opts.setVersionNumber(versionNumber);
-		return generateClasses(database, packageName, opts);
+		Options opts = Options.empty()
+				.setVersionNumber(versionNumber)
+				.setDBDatabase(database)
+				.setPackageName(packageName);
+		return generateClasses(opts);
 	}
 
 	/**
@@ -121,7 +130,16 @@ class DataRepoGenerator {
 	 * @throws java.io.IOException java.io.IOException
 	 */
 	static public DataRepo generateClasses(DBDatabase database, String packageName, Options options) throws SQLException, FileNotFoundException, IOException {
-		DataRepo repo = new DataRepo(database, packageName);
+		options.setDBDatabase(database);
+		options.setPackageName(packageName);
+		return generateClasses(options);
+	}
+
+	static private DataRepo generateClasses(Options options) throws SQLException, FileNotFoundException, IOException {
+		DBDatabase database = options.getDBDatabase();
+		String packageName = options.getPackageName();
+
+		DataRepo repo = new DataRepo(options);
 		String viewsPackage = packageName + ".views";
 		DataRepo parsedViews = parseViews(database, viewsPackage, options);
 		repo.addViews(parsedViews.getTables());
@@ -158,7 +176,11 @@ class DataRepoGenerator {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	private static DataRepo parseTables(DBDatabase database, String packageName, Options options) throws SQLException {
-		return parseObjectTypes(database, packageName, options, "TABLE");
+		Options opts = options.copy();
+		opts.setDBDatabase(database);
+		opts.setPackageName(packageName);
+		opts.setObjectTypes("TABLE");
+		return parseObjectTypes(opts);
 	}
 
 	/**
@@ -181,9 +203,13 @@ class DataRepoGenerator {
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	private static DataRepo parseViews(DBDatabase database, String packageName, Options options) throws SQLException {
-		final DataRepo dataRepo = new DataRepo(database, packageName);
-		dataRepo.addViews(parseObjectTypes(database, packageName, options, "VIEW").getTables());
+	private static DataRepo parseViews(DBDatabase database, String packageName, Options originalOptions) throws SQLException {
+		Options options = originalOptions.copy();
+		options.setDBDatabase(database);
+		options.setPackageName(packageName);
+		options.setObjectTypes("VIEW");
+		final DataRepo dataRepo = new DataRepo(options);
+		dataRepo.addViews(parseObjectTypes(options).getTables());
 		return dataRepo;
 	}
 
@@ -206,70 +232,93 @@ class DataRepoGenerator {
 	 * @return a List of DBTableClass instances representing the tables and views
 	 * found on the database 1 Database exceptions may be thrown
 	 */
-	private static DataRepo parseObjectTypes(DBDatabase db, String packageName, Options options, String... dbObjectTypes) throws SQLException {
-
-		DataRepo datarepo = new DBDatabaseMetaData(db, dbObjectTypes, packageName, options).getDataRepo();
+	private static DataRepo parseObjectTypes(Options options) throws SQLException {
+//		Options opts = Options
+//				.copy(options)
+//				.setDBDatabase(db)
+//				.setPackageName(packageName)
+//				.setObjectTypes(dbObjectTypes);
+		DataRepo datarepo = getDataRepo(options);
 
 		return datarepo;
 	}
 
-	/**
-	 *
-	 * returns a good guess at the java CLASS version of a DB field name.
-	 *
-	 * I.e. changes "_" into an uppercase letter.
-	 *
-	 * @param s	s
-	 *
-	 *
-	 * @return camel case version of the String
-	 */
-	static String toClassCase(String s) {
-		StringBuilder classCaseString = new StringBuilder("");
-		if (s == null) {
-			return null;
-		} else if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
-			classCaseString.append(s.toUpperCase());
-		} else {
-			String[] parts = s.split("[^a-zA-Z0-9]");
-			for (String part : parts) {
-				classCaseString.append(toProperCase(part));
+	public static DataRepo getDataRepo(Options opts) throws SQLException, NoAvailableDatabaseException {
+		DataRepo datarepo = new DataRepo(opts);
+
+		DBDatabase db = opts.getDBDatabase();
+
+		if (db != null) {
+
+			DBDatabaseMetaData metaData = db.getDBDatabaseMetaData(opts);
+			metaData.loadSchema();
+			String catalog = metaData.getCatalog();
+			String schema = metaData.getSchema();
+
+			List<TableMetaData> tables = metaData.getTables(catalog, schema);
+			for (TableMetaData table : tables) {
+				final String tableName = table.getTableName();
+				if (schema == null) {
+					schema = table.getSchema();
+				}
+				final String className = Utility.toClassCase(tableName);
+				DBTableClass dbTableClass = new DBTableClass(tableName, schema, opts.getPackageName(), className);
+				datarepo.addTable(dbTableClass);
+
+				List<TableMetaData.PrimaryKey> primaryKeys = table.getPrimaryKeys();
+				List<String> pkNames = new ArrayList<String>();
+				for (TableMetaData.PrimaryKey primaryKey : primaryKeys) {
+					pkNames.add(primaryKey.getName());
+				}
+				String classTableName = dbTableClass.getTableName();
+
+				List<TableMetaData.ForeignKey> foreignKeys = table.getForeignKeys(catalog, schema, classTableName);
+				Map<String, TableMetaData.ForeignKey> fkNames = new HashMap<>();
+				foreignKeys.stream()
+						.forEach((fk) -> {
+							fkNames.put(fk.getName(), fk);
+						});
+
+				List<TableMetaData.Column> columns = table.getColumns();
+				for (TableMetaData.Column col : columns) {
+					DBTableField dbTableField = new DBTableField();
+					dbTableClass.getFields().add(dbTableField);
+					dbTableField.columnName = col.getColumnName();
+					dbTableField.fieldName = Utility.toFieldCase(dbTableField.columnName);
+					dbTableField.referencedTable = col.getReferencedTable();
+					dbTableField.precision = col.getColumnSize();
+					dbTableField.comments = col.getRemarks();
+					dbTableField.isAutoIncrement = col.getIsAutoIncrement();
+					try {
+						dbTableField.sqlDataTypeInt = col.getDatatype();
+						dbTableField.sqlDataTypeName = col.getTypeName();
+						dbTableField.columnType = Utility.getQDTClassOfSQLType(db, dbTableField.sqlDataTypeName, dbTableField.sqlDataTypeInt, dbTableField.precision, opts.getTrimCharColumns());
+					} catch (UnknownJavaSQLTypeException ex) {
+						dbTableField.columnType = DBUnknownDatatype.class;
+						dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
+					}
+					if (pkNames.contains(dbTableField.columnName) 
+							|| (opts.getPkRecog()!=null &&opts.getPkRecog().isPrimaryKeyColumn(classTableName, dbTableField.columnName))
+							) {
+						dbTableField.isPrimaryKey = true;
+					}
+
+					TableMetaData.ForeignKey fk = fkNames.get(dbTableField.columnName);
+					ForeignKeyRecognisor fkRecog = opts.getFkRecog();
+					if (fk != null) {
+						dbTableField.isForeignKey = true;
+						dbTableField.referencesClass = Utility.toClassCase(fk.getPrimaryKeyTableName());
+						dbTableField.referencesField = fk.getPrimaryKeyColumnName();
+					} else if (fkRecog != null && fkRecog.isForeignKeyColumn(classTableName, dbTableField.columnName)) {
+						dbTableField.isForeignKey = true;
+						dbTableField.referencesField = fkRecog.getReferencedColumn(classTableName, dbTableField.columnName);
+						String fkTable = fkRecog.getReferencedTable(classTableName, dbTableField.columnName);
+						dbTableField.referencesClass = Utility.toClassCase(fkTable);
+					}
+				}
 			}
 		}
-		return classCaseString.toString();
-	}
-
-	/**
-	 *
-	 * Capitalizes the first letter of the string
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * @return Capitalizes the first letter of the string
-	 */
-	private static String toProperCase(String s) {
-		switch (s.length()) {
-			case 0:
-				return s;
-			case 1:
-				return s.toUpperCase();
-			default:
-				String firstChar = s.substring(0, 1);
-				String rest;
-				if (s.replaceAll("[^A-Z]", "").length() > 0
-						&& s.replaceAll("[^a-z]", "").length() > 0) {
-					rest = s.substring(1);//.toLowerCase();
-				} else {
-					rest = s.substring(1).toLowerCase();
-				}
-				if (firstChar.matches("[^a-zA-Z]")) {
-					return "_" + firstChar + rest;
-				} else {
-					return firstChar.toUpperCase() + rest;
-				}
-		}
+		return datarepo;
 	}
 
 }

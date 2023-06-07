@@ -33,16 +33,14 @@ package nz.co.gregs.dbvolution.generation;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.*;
-import nz.co.gregs.dbvolution.databases.DBConnection;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.connections.DBConnection;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
-import static nz.co.gregs.dbvolution.generation.DataRepoGenerator.toClassCase;
+import nz.co.gregs.regexi.Regex;
 
 /**
  *
@@ -51,282 +49,297 @@ import static nz.co.gregs.dbvolution.generation.DataRepoGenerator.toClassCase;
 public class DBDatabaseMetaData {
 
 	private final DBDatabase database;
-	private final String[] objectTypes;
 	private final String packageName;
 	private final Options options;
+//	private final List<TableMetaData> tablesWithinSchema = new ArrayList<>(0);
+	private List<TableMetaData> finalList;
+	private String catalog;
+	private String schema;
+	private boolean loaded = false;
 
-	public DBDatabaseMetaData(DBDatabase database, String[] dbObjectTypes, String packageName, Options options) {
-		this.database = database;
-		this.objectTypes = dbObjectTypes;
-		this.packageName = packageName;
-		this.options = options;
+	public DBDatabaseMetaData(Options options) {
+		this.database = options.getDBDatabase();
+		this.packageName = options.getPackageName();
+		this.options = options.copy();
 	}
 
-	public DataRepo getDataRepo() throws SQLException, NoAvailableDatabaseException {
-		DataRepo datarepo = new DataRepo(database, packageName);
-		try (DBStatement dbStatement = database.getDBStatement()) {
-			DBConnection connection = dbStatement.getConnection();
-			String catalog = connection.getCatalog();
-			String schema = null;
-			try {
-				//Method method = connection.getClass().getMethod("getSchema");
-				//schema = (String) method.invoke(connection);
-				schema = connection.getSchema();
-			} catch (java.sql.SQLFeatureNotSupportedException nope) {
-				// SOMEONE DIDN'T WRITE THEIR DRIVER PROPERLY
-			} catch (java.lang.AbstractMethodError exp) {
-				// NOT USING Java 1.7+ apparently
-			} catch (IllegalArgumentException ex) {
-				// NOT USING Java 1.7+ apparently
-			} catch (SecurityException ex) {
-				// NOT USING Java 1.7+ apparently
-			}
+	public void loadSchema() throws SQLException {
+		ArrayList<TableMetaData> tablesFound = new ArrayList<>(0);
+		DBDatabase db = this.database;
 
-			DatabaseMetaData metaData = connection.getMetaData();
-			try (ResultSet tables = metaData.getTables(catalog, schema, null, objectTypes)) {
-				while (tables.next()) {
-					final String tableName = tables.getString("TABLE_NAME");
-					if (schema == null) {
-						schema = tables.getString("TABLE_SCHEM");
-					}
-					if (tableName.matches(database.getDefinition().getSystemTableExclusionPattern())) {
-						final String className = toClassCase(tableName);
-						DBTableClass dbTableClass = new DBTableClass(tableName, schema, packageName, className);
+		// should be impossible but just in case
+		if (db != null) {
+			// we'll need these later...
+			DBDefinition definition = db.getDefinition();
+			Regex nonSystemTableRegex = definition.getSystemTableExclusionPattern();
 
-						ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
-						List<String> pkNames = new ArrayList<>();
-						try {
-							while (primaryKeysRS.next()) {
-								String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
-								pkNames.add(pkColumnName);
-							}
-						} finally {
-							primaryKeysRS.close();
-						}
-
-						ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.getTableName());
-						Map<String, String[]> fkNames = new HashMap<>();
-						try {
-							while (foreignKeysRS.next()) {
-								String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
-								String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
-								String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
-								fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
-							}
-						} finally {
-							foreignKeysRS.close();
-						}
-
-						try (ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null)) {
-							while (columns.next()) {
-								DBTableField dbTableField = new DBTableField();
-								dbTableField.columnName = columns.getString("COLUMN_NAME");
-								dbTableField.fieldName = toFieldCase(dbTableField.columnName);
-								try {
-									dbTableField.referencedTable = columns.getString("SCOPE_TABLE");
-								} catch (SQLException exp) {
-									; // MSSQLServer throws an exception on this
-								}
-								dbTableField.precision = columns.getInt("COLUMN_SIZE");
-								dbTableField.comments = columns.getString("REMARKS");
-								String isAutoIncr = null;
-								try {
-									isAutoIncr = columns.getString("IS_AUTOINCREMENT");
-								} catch (SQLException sqlex) {
-									;// SQLite-JDBC throws an exception when retrieving IS_AUTOINCREMENT
-								}
-								dbTableField.isAutoIncrement = isAutoIncr != null && isAutoIncr.equals("YES");
-								try {
-									dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
-									dbTableField.sqlDataTypeName = columns.getString("TYPE_NAME");
-									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(database, dbTableField, options.getTrimCharColumns());
-								} catch (UnknownJavaSQLTypeException ex) {
-									dbTableField.columnType = DBUnknownDatatype.class;
-									dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
-								}
-								if (pkNames.contains(dbTableField.columnName) || options.getPkRecog().isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
-									dbTableField.isPrimaryKey = true;
-								}
-
-								String[] pkData = fkNames.get(dbTableField.columnName);
-								if (pkData != null && pkData.length == 2) {
-									dbTableField.isForeignKey = true;
-									dbTableField.referencesClass = toClassCase(pkData[0]);
-									dbTableField.referencesField = pkData[1];
-								} else if (options.getFkRecog().isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
-									dbTableField.isForeignKey = true;
-									dbTableField.referencesField = options.getFkRecog().getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
-									dbTableField.referencesClass = toClassCase(options.getFkRecog().getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName));
-								}
-								if (!dbTableClass.getFields().contains(dbTableField)) {
-									dbTableClass.getFields().add(dbTableField);
-								}
-							}
-						}
-						if (!database.supportsGeometryTypesFullyInSchema()) {
-							dbTableClass = getGeometryTypesFromSchemaTables(database, dbStatement, connection,dbTableClass);
-						}
-						datarepo.addTable(dbTableClass);
-					}
+			try (DBStatement dbStatement = db.getDBStatement()) {
+				DBConnection connection = dbStatement.getConnection();
+				catalog = connection.getCatalog();
+				schema = null;
+				try {
+					//Method method = connection.getClass().getMethod("getSchema");
+					//schema = (String) method.invoke(connection);
+					schema = connection.getSchema();
+				} catch (java.sql.SQLFeatureNotSupportedException nope) {
+					// SOMEONE DIDN'T WRITE THEIR DRIVER PROPERLY
+				} catch (java.lang.AbstractMethodError exp) {
+					// NOT USING Java 1.7+ apparently
+				} catch (IllegalArgumentException ex) {
+					// NOT USING Java 1.7+ apparently
+				} catch (SecurityException ex) {
+					// NOT USING Java 1.7+ apparently
 				}
-			}
-			connectForeignKeyReferences(datarepo.getTables());
-		}
-		return datarepo;
-	}
 
-	private static void connectForeignKeyReferences(List<DBTableClass> dbTableClasses) {
-		List<String> dbTableClassNames = new ArrayList<>();
-
-		for (DBTableClass dbt : dbTableClasses) {
-			dbTableClassNames.add(dbt.getClassName());
-		}
-		for (DBTableClass dbt : dbTableClasses) {
-			for (DBTableField dbf : dbt.getFields()) {
-				if (dbf.isForeignKey) {
-					if (!dbTableClassNames.contains(dbf.referencesClass)) {
-						List<String> matchingNames = new ArrayList<>();
-						for (String name : dbTableClassNames) {
-							if (name.toLowerCase().startsWith(dbf.referencesClass.toLowerCase())) {
-								matchingNames.add(name);
-							}
+				DatabaseMetaData metaData = connection.getMetaData();
+				try (ResultSet tables = metaData.getTables(catalog, schema, null, options.getObjectTypes())) {
+					while (tables.next()) {
+						final String tableName = tables.getString("TABLE_NAME");
+						if (schema == null) {
+							schema = tables.getString("TABLE_SCHEM");
 						}
-						if (matchingNames.size() == 1) {
-							String properClassname = matchingNames.get(0);
-							dbf.referencesClass = properClassname;
+						boolean nonSystemTableCheck = nonSystemTableRegex.matchesEntireString(tableName);
+						if (nonSystemTableCheck) {
+							TableMetaData tableMetaData = new TableMetaData(schema, tableName);
+							tablesFound.add(tableMetaData);
+
+							List<TableMetaData.PrimaryKey> pkNames = new ArrayList<>();
+							try (ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, tableName)) {
+								while (primaryKeysRS.next()) {
+									String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
+									TableMetaData.PrimaryKey primaryKey = new TableMetaData.PrimaryKey(schema, tableName, pkColumnName);
+									pkNames.add(primaryKey);
+									tableMetaData.addPrimaryKey(primaryKey);
+								}
+							}
+
+							Map<String, TableMetaData.ForeignKey> fkNames = new HashMap<>();
+							try (ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, tableName)) {
+								while (foreignKeysRS.next()) {
+									String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
+									String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
+									String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
+									fkNames.put(fkColumnName, new TableMetaData.ForeignKey(tableName, fkColumnName, pkTableName, pkColumnName));
+								}
+							}
+
+							try (ResultSet columns = metaData.getColumns(catalog, schema, tableName, null)) {
+								while (columns.next()) {
+									TableMetaData.Column column = new TableMetaData.Column(schema, tableName);
+									tableMetaData.addColumn(column);
+									column.setColumnName(columns.getString("COLUMN_NAME"));
+									try {
+										column.setReferencedTable(columns.getString("SCOPE_TABLE"));
+									} catch (SQLException exp) {
+										; // MSSQLServer throws an exception on this
+									}
+									column.precision = columns.getInt("COLUMN_SIZE");
+									column.comments = columns.getString("REMARKS");
+									String isAutoIncr = null;
+									try {
+										isAutoIncr = columns.getString("IS_AUTOINCREMENT");
+									} catch (SQLException sqlex) {
+										;// SQLite-JDBC throws an exception when retrieving IS_AUTOINCREMENT
+									}
+									column.isAutoIncrement = isAutoIncr != null && isAutoIncr.equals("YES");
+									try {
+										column.sqlDataTypeInt = columns.getInt("DATA_TYPE");
+										column.sqlDataTypeName = columns.getString("TYPE_NAME");
+										column.columnType = Utility.getQDTClassOfSQLType(db, column.sqlDataTypeName, column.sqlDataTypeInt, column.precision, options.getTrimCharColumns());
+									} catch (UnknownJavaSQLTypeException ex) {
+										column.columnType = DBUnknownDatatype.class;
+										column.javaSQLDatatype = ex.getUnknownJavaSQLType();
+									}
+									Optional<TableMetaData.PrimaryKey> pkNameFound = pkNames.stream().filter((c) -> c.getName().equals(column.columnName)).findFirst();
+									boolean recogFound = options.getPkRecog().isPrimaryKeyColumn(tableName, column.columnName);
+									if (pkNameFound.isPresent() || recogFound) {
+										column.isPrimaryKey = true;
+										TableMetaData.PrimaryKey primaryKey = pkNameFound.orElse(new TableMetaData.PrimaryKey(schema, tableName, column.columnName));
+										tableMetaData.addPrimaryKey(primaryKey);
+										pkNames.add(primaryKey);
+									}
+
+									TableMetaData.ForeignKey fkData = fkNames.get(column.columnName);
+									if (fkData != null) {
+										column.isForeignKey = true;
+										column.referencesTableName = fkData.primaryKeyTableName;
+										column.referencesClass = Utility.toClassCase(fkData.primaryKeyTableName);
+										column.referencesField = fkData.primaryKeyColumnName;
+										tableMetaData.addForeignKey(fkData);
+									} else {
+										if (options.getFkRecog().isForeignKeyColumn(tableName, column.columnName)) {
+											column.isForeignKey = true;
+											column.referencesField = options.getFkRecog().getReferencedColumn(tableName, column.columnName);
+											column.referencesClass = Utility.toClassCase(options.getFkRecog().getReferencedTable(tableName, column.columnName));
+											TableMetaData.ForeignKey fk = new TableMetaData.ForeignKey(tableName, column.columnName, column.referencesTableName, column.referencesField);
+											tableMetaData.addForeignKey(fk);
+										}
+									}
+								}
+							}
 						}
 					}
 				}
 			}
 		}
+		finalList = List.copyOf(tablesFound);
+	}
+
+//	public DataRepo getDataRepo() throws SQLException, NoAvailableDatabaseException {
+//		DataRepo datarepo = new DataRepo(database, packageName);
+//
+//		DBDatabase db = this.database;
+//		while (db instanceof DBDatabaseCluster) {
+//			//There's an implicit assumption here that an actual RDBMS is in the cluster
+//			db = ((DBDatabaseCluster) db).getReadyDatabase();
+//		}
+//
+//		if (db != null) {
+//			// we'll need these later...
+//			DBDefinition definition = db.getDefinition();
+//			Regex nonSystemTableRegex = definition.getSystemTableExclusionPattern();
+//			
+//			try (DBStatement dbStatement = db.getDBStatement()) {
+//				connection = dbStatement.getConnection();
+//				String catalog = connection.getCatalog();
+//				String schema = null;
+//				try {
+//					//Method method = connection.getClass().getMethod("getSchema");
+//					//schema = (String) method.invoke(connection);
+//					schema = connection.getSchema();
+//				} catch (java.sql.SQLFeatureNotSupportedException nope) {
+//					// SOMEONE DIDN'T WRITE THEIR DRIVER PROPERLY
+//				} catch (java.lang.AbstractMethodError exp) {
+//					// NOT USING Java 1.7+ apparently
+//				} catch (IllegalArgumentException ex) {
+//					// NOT USING Java 1.7+ apparently
+//				} catch (SecurityException ex) {
+//					// NOT USING Java 1.7+ apparently
+//				}
+//
+//				DatabaseMetaData metaData = connection.getMetaData();
+//				try (ResultSet tables = metaData.getTables(catalog, schema, null, objectTypes)) {
+//					while (tables.next()) {
+//						final String tableName = tables.getString("TABLE_NAME");
+//						if (schema == null) {
+//							schema = tables.getString("TABLE_SCHEM");
+//						}
+//						if (nonSystemTableRegex.matchesEntireString(tableName)) {
+//							final String className = toClassCase(tableName);
+//							DBTableClass dbTableClass = new DBTableClass(tableName, schema, packageName, className);
+//
+//							ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
+//							List<String> pkNames = new ArrayList<>();
+//							try {
+//								while (primaryKeysRS.next()) {
+//									String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
+//									pkNames.add(pkColumnName);
+//								}
+//							} finally {
+//								primaryKeysRS.close();
+//							}
+//
+//							ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.getTableName());
+//							Map<String, String[]> fkNames = new HashMap<>();
+//							try {
+//								while (foreignKeysRS.next()) {
+//									String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
+//									String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
+//									String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
+//									fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
+//								}
+//							} finally {
+//								foreignKeysRS.close();
+//							}
+//
+//							try (ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null)) {
+//								while (columns.next()) {
+//									DBTableField dbTableField = new DBTableField();
+//									dbTableField.columnName = columns.getString("COLUMN_NAME");
+//									dbTableField.fieldName = toFieldCase(dbTableField.columnName);
+//									try {
+//										dbTableField.referencedTable = columns.getString("SCOPE_TABLE");
+//									} catch (SQLException exp) {
+//										; // MSSQLServer throws an exception on this
+//									}
+//									dbTableField.precision = columns.getInt("COLUMN_SIZE");
+//									dbTableField.comments = columns.getString("REMARKS");
+//									String isAutoIncr = null;
+//									try {
+//										isAutoIncr = columns.getString("IS_AUTOINCREMENT");
+//									} catch (SQLException sqlex) {
+//										;// SQLite-JDBC throws an exception when retrieving IS_AUTOINCREMENT
+//									}
+//									dbTableField.isAutoIncrement = isAutoIncr != null && isAutoIncr.equals("YES");
+//									try {
+//										dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
+//										dbTableField.sqlDataTypeName = columns.getString("TYPE_NAME");
+//										dbTableField.columnType = getQDTClassOfSQLType(db, dbTableField, options.getTrimCharColumns());
+//									} catch (UnknownJavaSQLTypeException ex) {
+//										dbTableField.columnType = DBUnknownDatatype.class;
+//										dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
+//									}
+//									if (pkNames.contains(dbTableField.columnName) || options.getPkRecog().isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
+//										dbTableField.isPrimaryKey = true;
+//									}
+//
+//									String[] pkData = fkNames.get(dbTableField.columnName);
+//									if (pkData != null && pkData.length == 2) {
+//										dbTableField.isForeignKey = true;
+//										dbTableField.referencesClass = toClassCase(pkData[0]);
+//										dbTableField.referencesField = pkData[1];
+//									} else if (options.getFkRecog().isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
+//										dbTableField.isForeignKey = true;
+//										dbTableField.referencesField = options.getFkRecog().getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
+//										dbTableField.referencesClass = toClassCase(options.getFkRecog().getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName));
+//									}
+//									if (!dbTableClass.getFields().contains(dbTableField)) {
+//										dbTableClass.getFields().add(dbTableField);
+//									}
+//								}
+//							}
+//							if (!db.supportsGeometryTypesFullyInSchema()) {
+//								dbTableClass = getGeometryTypesFromSchemaTables(db, dbStatement, connection, dbTableClass);
+//							}
+//							datarepo.addTable(dbTableClass);
+//						}
+//					}
+//				}
+//				connectForeignKeyReferences(datarepo.getTables());
+//			}
+//		}
+//		return datarepo;
+//	}
+	String getCatalog() {
+		return catalog;
+	}
+
+	String getSchema() {
+		return schema;
+	}
+
+	List<TableMetaData> getTables(String catalog, String schema) {
+		return finalList;
 	}
 
 	/**
-	 *
-	 * returns a good guess at the java field version of a DB field name.
-	 *
-	 * I.e. changes "_" into an uppercase letter.
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * @return Camel Case version of S
+	 * @return the database
 	 */
-	private static String toFieldCase(String s) {
-		String classClass = toClassCase(s);
-		String camelCaseString = classClass.substring(0, 1).toLowerCase() + classClass.substring(1);
-		camelCaseString = camelCaseString.replaceAll("[^a-zA-Z0-9_$]", "_");
-		if (JAVA_RESERVED_WORDS.contains(camelCaseString)) {
-			camelCaseString += "_";
-		}
-		return camelCaseString;
+	public DBDatabase getDatabase() {
+		return database;
 	}
-	private static final String[] JAVA_RESERVED_WORDS_ARRAY = new String[]{"null", "true", "false", "abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
-	private static final List<String> JAVA_RESERVED_WORDS = Arrays.asList(JAVA_RESERVED_WORDS_ARRAY);
 
 	/**
-	 *
-	 * Returns a string of the appropriate QueryableDatatype for the specified
-	 * SQLType
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * @return a string of the appropriate QueryableDatatype for the specified
-	 * SQLType
+	 * @return the packageName
 	 */
-	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(DBDatabase database, DBTableField column, Boolean trimCharColumns) throws UnknownJavaSQLTypeException {
-		int columnType = column.sqlDataTypeInt;
-		int precision = column.precision;
-		String typeName = column.sqlDataTypeName;
-
-		Class<? extends Object> value;
-		switch (columnType) {
-			case Types.BIT:
-				if (precision == 1) {
-					value = DBBoolean.class;
-				} else {
-					value = DBLargeBinary.class;
-				}
-				break;
-			case Types.TINYINT:
-			case Types.INTEGER:
-			case Types.BIGINT:
-			case Types.BOOLEAN:
-			case Types.ROWID:
-			case Types.SMALLINT:
-				if (precision == 1) {
-					value = DBBoolean.class;
-				} else {
-					value = DBInteger.class;
-				}
-				break;
-			case Types.DECIMAL:
-			case Types.DOUBLE:
-			case Types.FLOAT:
-			case Types.NUMERIC:
-			case Types.REAL:
-				value = DBNumber.class;
-				break;
-			case Types.CHAR:
-			case Types.NCHAR:
-				if (trimCharColumns) {
-					value = DBStringTrimmed.class;
-				} else {
-					value = DBString.class;
-				}
-				break;
-			case Types.VARCHAR:
-			case Types.NVARCHAR:
-			case Types.LONGNVARCHAR:
-			case Types.LONGVARCHAR:
-				value = DBString.class;
-				break;
-			case Types.DATE:
-			case Types.TIME:
-			case Types.TIMESTAMP:
-				value = DBDate.class;
-				break;
-			case Types.OTHER:
-				Class<? extends QueryableDatatype<?>> customType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
-				if (customType != null) {
-					value = customType;
-					break;
-				} else {
-					value = DBJavaObject.class;
-					break;
-				}
-			case Types.JAVA_OBJECT:
-				value = DBJavaObject.class;
-				break;
-			case Types.CLOB:
-			case Types.NCLOB:
-				value = DBLargeText.class;
-				break;
-			case Types.BINARY:
-			case Types.VARBINARY:
-			case Types.LONGVARBINARY:
-			case Types.BLOB:
-			case Types.ARRAY:
-			case Types.SQLXML:
-				Class<? extends QueryableDatatype<?>> customBinaryType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
-				if (customBinaryType != null) {
-					value = customBinaryType;
-					break;
-				} else {
-					value = DBLargeBinary.class;
-					break;
-				}
-			default:
-				throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: " + columnType, columnType);
-		}
-		return value;
+	public String getPackageName() {
+		return packageName;
 	}
 
-	private DBTableClass getGeometryTypesFromSchemaTables(DBDatabase database, DBStatement dbStatement, DBConnection connection, DBTableClass inwardTable) {
-		throw new UnsupportedOperationException("Not supported yet.");
+	/**
+	 * @return the options
+	 */
+	public Options getOptions() {
+		return options;
 	}
-
 }
