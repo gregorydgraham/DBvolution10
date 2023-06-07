@@ -1199,6 +1199,6 @@ public interface DBDatabase extends Serializable{
 
 	void setPreventAccidentalDeletingAllRowsFromTable(boolean b);
 
-	public DBDatabaseMetaData getDBDatabaseMetaData(Options options);
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException;
 
 }

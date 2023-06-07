@@ -2591,7 +2591,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	}
 
 	@Override
-	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) {
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException {
 		return new DBDatabaseMetaData(options);
 	}
 }

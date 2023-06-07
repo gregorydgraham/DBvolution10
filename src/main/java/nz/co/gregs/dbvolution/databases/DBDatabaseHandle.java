@@ -704,7 +704,7 @@ public class DBDatabaseHandle implements DBDatabase {
 	}
 
 	@Override
-	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) {
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options)  throws SQLException{
 		return wrappedDatabase.getDBDatabaseMetaData(options);
 	}
 

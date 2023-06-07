@@ -189,7 +189,12 @@ public class MySQLDB extends DBDatabaseImplementation implements SupportsPolygon
 	}
 
 	@Override
-	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) {
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options)  throws SQLException{
 		return new MySQLDBDatabaseMetaData(options);
+	}
+
+	@Override
+	public boolean supportsGeometryTypesFullyInSchema() {
+		return true;
 	}
 }

@@ -53,18 +53,18 @@ public class DBDatabaseMetaData {
 	private final DBDatabase database;
 	private final String packageName;
 	private final Options options;
-//	private final List<TableMetaData> tablesWithinSchema = new ArrayList<>(0);
 	private List<TableMetaData> finalList;
 	private String catalog;
 	private String schema;
 
-	public DBDatabaseMetaData(Options options) {
+	public DBDatabaseMetaData(Options options) throws SQLException {
 		this.database = options.getDBDatabase();
 		this.packageName = options.getPackageName();
 		this.options = options.copy();
+		loadSchema();
 	}
 
-	public void loadSchema() throws SQLException {
+	protected void loadSchema() throws SQLException {
 		ArrayList<TableMetaData> tablesFound = new ArrayList<>(0);
 		DBDatabase db = this.database;
 
@@ -79,8 +79,6 @@ public class DBDatabaseMetaData {
 				catalog = connection.getCatalog();
 				schema = null;
 				try {
-					//Method method = connection.getClass().getMethod("getSchema");
-					//schema = (String) method.invoke(connection);
 					schema = connection.getSchema();
 				} catch (java.sql.SQLFeatureNotSupportedException nope) {
 					// SOMEONE DIDN'T WRITE THEIR DRIVER PROPERLY
@@ -142,6 +140,7 @@ public class DBDatabaseMetaData {
 				}
 			}
 		}
+		postProcessing(options, tablesFound);
 		finalList = List.copyOf(tablesFound);
 	}
 
@@ -226,7 +225,7 @@ public class DBDatabaseMetaData {
 		return schema;
 	}
 
-	public List<TableMetaData> getTables(String catalog, String schema) {
+	public List<TableMetaData> getTables() {
 		return finalList;
 	}
 
@@ -249,5 +248,9 @@ public class DBDatabaseMetaData {
 	 */
 	public Options getOptions() {
 		return options;
+	}
+
+	protected void postProcessing(Options options, ArrayList<TableMetaData> tablesFound) {
+		// default operation is a null op
 	}
 }

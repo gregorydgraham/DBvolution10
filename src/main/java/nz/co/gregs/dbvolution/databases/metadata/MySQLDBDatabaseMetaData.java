@@ -30,14 +30,88 @@
  */
 package nz.co.gregs.dbvolution.databases.metadata;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+
 /**
  *
  * @author gregorygraham
  */
 public class MySQLDBDatabaseMetaData extends DBDatabaseMetaData {
 
-	public MySQLDBDatabaseMetaData(Options options) {
+	public MySQLDBDatabaseMetaData(Options options) throws SQLException {
 		super(options);
 	}
-	
+
+	@Override
+	protected void postProcessing(Options options, ArrayList<TableMetaData> tablesFound) {
+		DBDatabase database = options.getDBDatabase();
+		List<TableMetaData.Column> reqdColumns = new ArrayList<>(0);
+		for (TableMetaData table : tablesFound) {
+			for (TableMetaData.Column column : table.getColumns()) {
+				if (column.getTypeName().toUpperCase().equals("GEOMETRY")) {
+					reqdColumns.add(column);
+				}
+			}
+		}
+		if (reqdColumns.size() > 0) {
+			for (TableMetaData.Column reqdColumn : reqdColumns) {
+				STGeometryColumns example = new STGeometryColumns();
+				example.tableCatalog.setValue(getCatalog());
+				example.tableName.setValue(reqdColumn.tableName);
+				example.columnName.setValue(reqdColumn.columnName);
+				try {
+					database.setPrintSQLBeforeExecuting(true);
+					List<STGeometryColumns> got = database.get(1l, example);
+					reqdColumn.sqlDataTypeName = got.get(0).geometryTypeName.getValue();
+				} catch (SQLException | UnexpectedNumberOfRowsException | AccidentalBlankQueryException | NoAvailableDatabaseException ex) {
+					ex.printStackTrace();
+					Logger.getLogger(MySQLDBDatabaseMetaData.class.getName()).log(Level.SEVERE, null, ex);
+				}finally{
+					database.setPrintSQLBeforeExecuting(false);
+				}
+			}
+		}
+	}
+
+	@DBTableName(value = "ST_GEOMETRY_COLUMNS", schema = "information_schema")
+	public static class STGeometryColumns extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn("TABLE_CATALOG")
+		DBString tableCatalog = new DBString();
+
+		@DBColumn("TABLE_SCHEMA")
+		DBString tableSchema = new DBString();
+
+		@DBColumn("TABLE_NAME")
+		DBString tableName = new DBString();
+
+		@DBColumn("COLUMN_NAME")
+		DBString columnName = new DBString();
+
+		@DBColumn("SRS_NAME")
+		DBString srsName = new DBString();
+
+		@DBColumn("SRS_ID")
+		DBInteger srsID = new DBInteger();
+
+		@DBColumn("GEOMETRY_TYPE_NAME")
+		DBString geometryTypeName = new DBString();
+
+	}
+
 }

@@ -255,11 +255,10 @@ class DataRepoGenerator {
 		if (db != null) {
 
 			DBDatabaseMetaData metaData = db.getDBDatabaseMetaData(opts);
-			metaData.loadSchema();
 			String catalog = metaData.getCatalog();
 			String schema = metaData.getSchema();
 
-			List<TableMetaData> tables = metaData.getTables(catalog, schema);
+			List<TableMetaData> tables = metaData.getTables();
 			for (TableMetaData table : tables) {
 				final String tableName = table.getTableName();
 				if (schema == null) {

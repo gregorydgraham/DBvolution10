@@ -72,6 +72,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.generation.DataRepo;
 import nz.co.gregs.dbvolution.generation.deprecated.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
@@ -440,7 +441,13 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a string of the table name formatted for this database definition
 	 */
 	public String formatTableName(DBRow table) {
-		return formatNameForDatabase(table.getTableName());
+		String tableName = wrapNameForDatabase(formatNameForDatabase(table.getTableName()));
+		String schemaName = table.getSchemaName();
+		if (StringCheck.isNotEmptyNorNull(schemaName)) {
+			return wrapNameForDatabase(schemaName) + getSchemaAndTableSeparator() + tableName;
+		} else {
+			return tableName;
+		}
 	}
 
 	/**
@@ -7225,6 +7232,14 @@ public abstract class DBDefinition implements Serializable {
 			exc = exc.getCause();
 		}
 		return false;
+	}
+
+	public String getSchemaAndTableSeparator() {
+		return ".";
+	}
+
+	public String wrapNameForDatabase(String objectName) {
+		return objectName;
 	}
 
 	public static enum GroupByClauseMethod {
