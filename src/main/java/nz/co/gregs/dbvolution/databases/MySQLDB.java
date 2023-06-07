@@ -22,8 +22,6 @@ import java.util.logging.Logger;
 import nz.co.gregs.regexi.Regex;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.connections.DBConnection;
-import nz.co.gregs.dbvolution.databases.connections.DBConnectionMySQL8;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
@@ -185,10 +183,5 @@ public class MySQLDB extends DBDatabaseImplementation implements SupportsPolygon
 	@Override
 	protected boolean checkMetaDataForTable(DBRow table, ResultSet rset) throws SQLException {
 		return super.checkMetaDataForTable(table, rset);
-	}
-
-	@Override
-	public DBConnection getDatabaseSpecificDBConnection(Connection connection) throws SQLException {
-		return new DBConnectionMySQL8(this, connection);
 	}
 }
