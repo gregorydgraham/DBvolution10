@@ -49,7 +49,6 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.connections.DBConnectionSingle;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.DBDatabaseClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.NamedDatabaseCapableSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
@@ -61,6 +60,8 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.VendorSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
+import nz.co.gregs.dbvolution.generation.DBDatabaseMetaData;
+import nz.co.gregs.dbvolution.generation.Options;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 
@@ -483,7 +484,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	public DBConnection getDatabaseSpecificDBConnection(Connection connection) throws SQLException {
 		return new DBConnectionSingle(this, connection);
 	}
-	
+
 	private final int SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS;
 	private int MAX_CONNECTION_RETRIES = 6;
 
@@ -2160,6 +2161,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		}
 	}
 
+	@Override
 	public void setPreventAccidentalDeletingAllRowsFromTable(boolean b) {
 		preventAccidentalDeletingAllRowFromTable = b;
 	}
@@ -2586,5 +2588,10 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 */
 	protected ScheduledExecutorService getRegularThreadPool() {
 		return REGULAR_THREAD_POOL;
+	}
+
+	@Override
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) {
+		return new DBDatabaseMetaData(options);
 	}
 }
