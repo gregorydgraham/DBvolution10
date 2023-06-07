@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -51,6 +52,8 @@ import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.generation.DBDatabaseMetaData;
+import nz.co.gregs.dbvolution.generation.Options;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
@@ -58,7 +61,7 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
  *
  * @author gregorygraham
  */
-public interface DBDatabase {
+public interface DBDatabase extends Serializable{
 
 	public DBDefinition getDefinition() throws NoAvailableDatabaseException;
 
@@ -1195,5 +1198,7 @@ public interface DBDatabase {
 	}
 
 	void setPreventAccidentalDeletingAllRowsFromTable(boolean b);
+
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options);
 
 }
