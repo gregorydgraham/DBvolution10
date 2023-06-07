@@ -25,9 +25,12 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.MySQLSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
+import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
+import nz.co.gregs.dbvolution.databases.metadata.MySQLDBDatabaseMetaData;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractMySQLSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 
@@ -183,5 +186,10 @@ public class MySQLDB extends DBDatabaseImplementation implements SupportsPolygon
 	@Override
 	protected boolean checkMetaDataForTable(DBRow table, ResultSet rset) throws SQLException {
 		return super.checkMetaDataForTable(table, rset);
+	}
+
+	@Override
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) {
+		return new MySQLDBDatabaseMetaData(options);
 	}
 }

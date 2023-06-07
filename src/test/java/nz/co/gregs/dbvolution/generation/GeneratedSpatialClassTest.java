@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;

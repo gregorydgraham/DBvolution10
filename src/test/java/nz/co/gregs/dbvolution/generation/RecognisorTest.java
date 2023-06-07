@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.PrimaryKeyRecognisor;
+import nz.co.gregs.dbvolution.databases.metadata.ForeignKeyRecognisor;
 import static org.junit.Assert.*;
 import org.junit.Test;
 

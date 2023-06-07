@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.databases.metadata;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -40,6 +40,7 @@ import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
+import nz.co.gregs.dbvolution.generation.Utility;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
 
@@ -217,15 +218,15 @@ public class DBDatabaseMetaData {
 		}
 	}
 
-	String getCatalog() {
+	public String getCatalog() {
 		return catalog;
 	}
 
-	String getSchema() {
+	public String getSchema() {
 		return schema;
 	}
 
-	List<TableMetaData> getTables(String catalog, String schema) {
+	public List<TableMetaData> getTables(String catalog, String schema) {
 		return finalList;
 	}
 

@@ -5,6 +5,8 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.PrimaryKeyRecognisor;
+
 /**
  *
  * @author gregorygraham

@@ -28,7 +28,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.generation;
+package nz.co.gregs.dbvolution.databases.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class TableMetaData {
 	private final List<ForeignKey> foreignKeys = new ArrayList<>(0);
 	private final List<PrimaryKey> primaryKeys = new ArrayList<>(0);
 
-	TableMetaData(String schema, String tableName) {
+	public TableMetaData(String schema, String tableName) {
 		this.schema = schema;
 		this.tableName = tableName;
 	}
@@ -58,15 +58,15 @@ public class TableMetaData {
 		return schema;
 	}
 
-	List<PrimaryKey> getPrimaryKeys() {
+	public List<PrimaryKey> getPrimaryKeys() {
 		return primaryKeys;
 	}
 
-	List<ForeignKey> getForeignKeys(String catalog, String schema, String tableName) {
+	public List<ForeignKey> getForeignKeys(String catalog, String schema, String tableName) {
 		return foreignKeys;
 	}
 
-	List<Column> getColumns() {
+	public List<Column> getColumns() {
 		return columns;
 	}
 
@@ -187,23 +187,23 @@ public class TableMetaData {
 			return referencesTableName;
 		}
 
-		int getColumnSize() {
+		public int getColumnSize() {
 			return precision;
 		}
 
-		String getRemarks() {
+		public String getRemarks() {
 			return comments;
 		}
 
-		boolean getIsAutoIncrement() {
+		public boolean getIsAutoIncrement() {
 			return isAutoIncrement;
 		}
 
-		int getDatatype() {
+		public int getDatatype() {
 			return sqlDataTypeInt;
 		}
 
-		String getTypeName() {
+		public String getTypeName() {
 			return sqlDataTypeName;
 		}
 
@@ -211,7 +211,7 @@ public class TableMetaData {
 			this.columnName = columnName;
 		}
 
-		void setReferencedTable(String scopeTableName) {
+		public void setReferencedTable(String scopeTableName) {
 			this.referencesTableName = scopeTableName;
 		}
 	}

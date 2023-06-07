@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;

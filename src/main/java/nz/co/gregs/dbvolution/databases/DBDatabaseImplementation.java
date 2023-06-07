@@ -49,6 +49,7 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.connections.DBConnectionSingle;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.NamedDatabaseCapableSettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
@@ -60,8 +61,7 @@ import nz.co.gregs.dbvolution.databases.settingsbuilders.VendorSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.expressions.InstantExpression;
 import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
-import nz.co.gregs.dbvolution.generation.DBDatabaseMetaData;
-import nz.co.gregs.dbvolution.generation.Options;
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 

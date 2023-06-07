@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.ForeignKeyRecognisor;
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -23,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
+import nz.co.gregs.dbvolution.databases.metadata.TableMetaData;
 import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;

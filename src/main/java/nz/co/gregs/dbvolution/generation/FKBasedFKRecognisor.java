@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.ForeignKeyRecognisor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
