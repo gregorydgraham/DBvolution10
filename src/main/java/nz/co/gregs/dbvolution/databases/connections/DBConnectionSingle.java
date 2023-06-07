@@ -61,6 +61,10 @@ public class DBConnectionSingle implements DBConnection {
 		this.database = database; 
 		this.connection = connection;
 	}
+	
+	protected Connection getInternalConnection(){
+		return connection;
+	}
 
 	@Override
 	public DBStatement createDBStatement() throws SQLException {
