@@ -195,7 +195,7 @@ public abstract class DBAction implements Serializable {
 					}
 				}
 			}
-		} catch (UnexpectedNumberOfRowsException | SQLException | DBRuntimeException ex) {
+		} catch (SQLException | DBRuntimeException ex) {
 			LOG.fatal(null, ex);
 		}
 	}

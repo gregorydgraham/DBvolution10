@@ -161,6 +161,22 @@ public class StringCheck {
 	}
 
 	/**
+	 * Synonym for value != null &amp;&amp; !value.isEmpty() but a lot more
+	 * concise.
+	 *
+	 * @param values the source texts
+	 * @return TRUE if the source text is neither null nor empty
+	 */
+	public static boolean isNotEmptyNorNull(String... values) {
+		for (String value : values) {
+			if (isNotEmptyNorNull(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Synonym for value == null || value.isEmpty() but a lot more concise.
 	 *
 	 * @param value the source text
@@ -168,6 +184,21 @@ public class StringCheck {
 	 */
 	public static boolean isEmptyOrNull(String value) {
 		return value == null || value.isEmpty();
+	}
+
+	/**
+	 * Synonym for value == null || value.isEmpty() but a lot more concise.
+	 *
+	 * @param values the source texts
+	 * @return TRUE is the source text is either null or empty
+	 */
+	public static boolean isEmptyOrNull(String... values) {
+		for (String value : values) {
+			if (isEmptyOrNull(value)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static String substring(String tableName, int startIndex, int endIndex) {

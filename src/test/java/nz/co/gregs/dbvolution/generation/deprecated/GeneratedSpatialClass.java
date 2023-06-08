@@ -28,7 +28,7 @@ public class GeneratedSpatialClass extends AbstractTest {
 
 	@Test
 	public void testGetSchema() throws SQLException {
-		if (database.supportsMetaDataFully()) {
+		if (database.supportsGeometryTypesFullyInSchema()) {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());

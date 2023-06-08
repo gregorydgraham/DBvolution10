@@ -32,7 +32,7 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author gregorygraham
  */
-public class NoAvailableDatabaseException extends RuntimeException {
+public class NoAvailableDatabaseException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1l;
 }

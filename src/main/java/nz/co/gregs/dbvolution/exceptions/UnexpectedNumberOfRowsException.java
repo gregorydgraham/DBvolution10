@@ -22,7 +22,7 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author Gregory Graham
  */
-public class UnexpectedNumberOfRowsException extends Exception {
+public class UnexpectedNumberOfRowsException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1;
 	private long expectedRows;

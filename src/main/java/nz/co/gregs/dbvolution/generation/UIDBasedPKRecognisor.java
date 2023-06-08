@@ -5,12 +5,14 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.PrimaryKeyRecognisor;
+
 /**
  *
  * @author gregorygraham
  */
 public class UIDBasedPKRecognisor extends PrimaryKeyRecognisor {
-	
+
 	public UIDBasedPKRecognisor() {
 	}
 
@@ -23,7 +25,10 @@ public class UIDBasedPKRecognisor extends PrimaryKeyRecognisor {
 	 */
 	@Override
 	public boolean isPrimaryKeyColumn(String tableName, String columnName) {
-		return columnName.toLowerCase().equals("uid_" + tableName.toLowerCase());
+		if (columnName != null && tableName != null) {
+			return columnName.toLowerCase().equals("uid_" + tableName.toLowerCase());
+		}
+		return false;
 	}
-	
+
 }

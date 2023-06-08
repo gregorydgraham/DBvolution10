@@ -108,7 +108,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public Class<? extends QueryableDatatype<?>> getQueryableDatatypeClassForSQLDatatype(String typeName) {
-		switch (typeName) {
+		switch (typeName.toUpperCase()) {
 			case "POLYGON":
 				return DBPolygon2D.class;
 			case "LINESTRING":
@@ -136,7 +136,8 @@ public class MySQLDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String formatTableName(DBRow table) {
-		return "`" + table.getTableName() + "`";
+		return super.formatTableName(table);
+//		return "`" + table.getTableName() + "`";
 	}
 
 	@Override
@@ -816,5 +817,10 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public boolean isColumnNamesCaseSensitive() {
 		return true;
+	}
+
+	@Override
+	public String wrapNameForDatabase(String objectName) {
+		return "`"+objectName+"`";
 	}
 }

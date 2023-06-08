@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,16 +57,20 @@ public class DBRowSubclassGenerator {
 	private static void linkForeignKeys(DBTableClass dbt, List<String> dbTableClassNames) {
 		for (DBTableField dbf : dbt.getFields()) {
 			if (dbf.isForeignKey) {
-				if (!dbTableClassNames.contains(dbf.referencesClass)) {
-					List<String> matchingNames = new ArrayList<>();
-					for (String name : dbTableClassNames) {
-						if (name.toLowerCase().startsWith(dbf.referencesClass.toLowerCase())) {
-							matchingNames.add(name);
+				if (dbf.referencedTable == null || dbf.referencesClass == null || dbf.referencesField == null) {
+					System.out.println("INSUFFICIENT DATA FOR FOREIGN KEY");
+				} else {
+					if (!dbTableClassNames.contains(dbf.referencesClass)) {
+						List<String> matchingNames = new ArrayList<>();
+						for (String name : dbTableClassNames) {
+							if (name.toLowerCase().startsWith(dbf.referencesClass.toLowerCase())) {
+								matchingNames.add(name);
+							}
 						}
-					}
-					if (matchingNames.size() == 1) {
-						String properClassname = matchingNames.get(0);
-						dbf.referencesClass = properClassname;
+						if (matchingNames.size() == 1) {
+							String properClassname = matchingNames.get(0);
+							dbf.referencesClass = properClassname;
+						}
 					}
 				}
 			}
@@ -114,7 +119,7 @@ public class DBRowSubclassGenerator {
 				.addConstructor(FunctionSourceGenerator.create().addModifier(Modifier.PUBLIC).addBodyCode());
 		newDBRowClass.addField(
 				VariableSourceGenerator.create(Long.class,
-						 "serialVersionUID")
+						"serialVersionUID")
 						.addModifier(Modifier.PUBLIC).addModifier(Modifier.STATIC).addModifier(Modifier.FINAL)
 						.setValue(options.getVersionNumber() + "L")
 		);

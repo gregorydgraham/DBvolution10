@@ -127,7 +127,7 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String formatForColumnAlias(final String actualName) {
 		String formattedName = REMOVE_DOTS.replaceAll(actualName);
-		return "DB" +REMOVE_HYPHENS.replaceAll(""+formattedName.hashCode()) + "";
+		return "DB" + REMOVE_HYPHENS.replaceAll("" + formattedName.hashCode()) + "";
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String getIfNullFunctionName() {
-		return "NVL"; 
+		return "NVL";
 	}
 
 	@Override
@@ -424,17 +424,17 @@ public class OracleDBDefinition extends DBDefinition {
 
 	/**
 	 * Creates a pattern that will exclude system tables during DBRow class
-	 * generation i.e. {@link DataRepo}.
-	 *
+	 * generation i.e. {@link DBTableClassGenerator}.
+	 * 
 	 * <p>
-	 * By default this method returns null as system tables are not a problem for
-	 * most databases.
+	 * For Oracle databases this pattern is "^[^$]*$".</p>
 	 *
-	 * @return a regexp pattern
+	 * @return a pattern that will remove any system table.
 	 */
 	@Override
-	public String getSystemTableExclusionPattern() {
-		return "^[^$]*$";
+	public Regex getSystemTableExclusionPattern() {
+		return Regex.startingFromTheBeginning().excludeSet("$").zeroOrMore().endOfTheString().toRegex();
+//		return "^[^$]*$";
 	}
 
 	@Override
@@ -880,7 +880,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doFormatAsDateRepeatSeconds(String numericSQL) {
 		return "to_char(" + numericSQL + ", 'fm90.099999999')";
 	}
-	
+
 	@Override
 	public List<String> getSQLToDropAnyAssociatedDatabaseObjects(DBRow tableRow) {
 		ArrayList<String> result = new ArrayList<>(0);
@@ -915,7 +915,7 @@ public class OracleDBDefinition extends DBDefinition {
 		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
 		return result;
 	}
-	
+
 	/**
 	 * Allows the database to remove any spatial metadata that might exist for a
 	 * table during DROP TABLE.

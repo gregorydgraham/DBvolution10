@@ -32,6 +32,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.ArrayList;
+import nz.co.gregs.dbvolution.databases.connections.DBConnection;
+import nz.co.gregs.dbvolution.databases.connections.DBConnectionCluster;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;

@@ -15,13 +15,12 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.tools.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -354,8 +353,8 @@ public class DataRepoGeneratorTest {
 				+ "	} \n"
 				+ "\n"
 				+ "}");
-		final Options options = new Options();
-		options.setIncludeForeignKeyColumnName(true);
+		final Options options = Options.empty()
+				.setIncludeForeignKeyColumnName(true);
 		var generateSchema = DataRepoGenerator.generateClasses(database, "nz.co.gregs.dbvolution.generation", options);
 		for (DBTableClass dbcl : generateSchema.getTables()) {
 			if (testClassNames.contains(dbcl.getClassName())) {
@@ -524,89 +523,62 @@ public class DataRepoGeneratorTest {
 				+ "\n"
 				+ "}");
 
-		Options options = new Options();
-		options.setPkRecog(new UIDBasedPKRecognisor());
-		options.setFkRecog(new FKBasedFKRecognisor());
+		Options options = Options.empty()
+				.setPkRecog(new UIDBasedPKRecognisor())
+				.setFkRecog(new FKBasedFKRecognisor());
 		var generateSchema = DataRepoGenerator.generateClasses(database, "nz.co.gregs.dbvolution.generation", options);
-		for (DBTableClass dbcl : generateSchema.getTables()) {
-			if (testClassNames.contains(dbcl.getClassName())) {
-				classesTested++;
-				boolean found = false;
-				for (String str : testGetSchemaWithRecognisorTestClasses) {
-					if (str.contains(dbcl.getClassName())) {
-						final String testcaseLowercase = str.replaceAll("[ \n\r\t]*", "").toLowerCase();
-						final String sourceLowerCase = dbcl.getJavaSource().replaceAll("[ \n\r\t]*", "").toLowerCase();
-						if (testcaseLowercase.equals(sourceLowerCase)) {
-							found = true;
+		if (generateSchema != null) {
+			for (DBTableClass dbcl : generateSchema.getTables()) {
+				if (dbcl != null && testClassNames.contains(dbcl.getClassName())) {
+					classesTested++;
+					boolean found = false;
+					for (String str : testGetSchemaWithRecognisorTestClasses) {
+						if (str != null && str.contains(dbcl.getClassName())) {
+							final String testcaseLowercase = str.replaceAll("[ \n\r\t]*", "").toLowerCase();
+							final String sourceLowerCase = dbcl.getJavaSource().replaceAll("[ \n\r\t]*", "").toLowerCase();
+							if (testcaseLowercase != null && sourceLowerCase != null && testcaseLowercase.equals(sourceLowerCase)) {
+								found = true;
+							}
 						}
 					}
+					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 				}
-				assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
 			}
 		}
 		assertThat(classesTested, is(4));
 	}
 
-	/**
-	 * A file object used to represent source coming from a string.
-	 */
-	public class JavaSourceFromString extends SimpleJavaFileObject {
-
-		/**
-		 * The source code of this "file".
-		 */
-		final String code;
-
-		/**
-		 * Constructs a new JavaSourceFromString.
-		 *
-		 * @param name the name of the compilation unit represented by this file
-		 * object
-		 * @param code the source code for the compilation unit represented by this
-		 * file object
-		 */
-		JavaSourceFromString(String name, String code) {
-			super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension),
-					Kind.SOURCE);
-			this.code = code;
-		}
-
-		@Override
-		public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-			return code;
-		}
-	}
-
+	
 	@Test
 	public void testToClassCase() {
 		String test = "T_31";
 		String expected = "T_31";
-		String result = DataRepoGenerator.toClassCase(test);
+		String result = Utility.toClassCase(test);
 		assertEquals(result, expected);
 
 		test = "T_3_1";
 		expected = "T_3_1";
-		result = DataRepoGenerator.toClassCase(test);
+		result = Utility.toClassCase(test);
 		assertEquals(result, expected);
 
 		test = "car_company";
 		expected = "CarCompany";
-		result = DataRepoGenerator.toClassCase(test);
+		result = Utility.toClassCase(test);
 		assertEquals(result, expected);
 
 		test = "CAR_COMPANY";
 		expected = "CarCompany";
-		result = DataRepoGenerator.toClassCase(test);
+		result = Utility.toClassCase(test);
 		assertThat(result, is(expected));
 
 		test = "CARCOMPANY";
 		expected = "Carcompany";
-		result = DataRepoGenerator.toClassCase(test);
+		result = Utility.toClassCase(test);
 		assertThat(result, is(expected));
 
 		test = "CarCompany";
 		expected = "CarCompany";
-		result = DataRepoGenerator.toClassCase(test);
+		result = Utility.toClassCase(test);
 		assertThat(result, is(expected));
 	}
 

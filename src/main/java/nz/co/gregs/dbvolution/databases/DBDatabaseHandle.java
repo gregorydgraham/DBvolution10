@@ -50,9 +50,12 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabaseImplementation.ResponseToException;
+import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
@@ -676,8 +679,33 @@ public class DBDatabaseHandle implements DBDatabase {
 	}
 
 	@Override
-	public boolean supportsMetaDataFully() {
-		return wrappedDatabase.supportsMetaDataFully();
+	public boolean supportsGeometryTypesFullyInSchema() {
+		return wrappedDatabase.supportsGeometryTypesFullyInSchema();
+	}
+
+	@Override
+	public void print(List<?> rows) {
+		wrappedDatabase.print(rows);
+	}
+
+	@Override
+	public <MAPPER extends DBRow> DBMigration<MAPPER> getDBMigration(MAPPER mapper) {
+		return wrappedDatabase.getDBMigration(mapper);
+	}
+
+	@Override
+	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
+		return wrappedDatabase.getRows(report, examples);
+	}
+
+	@Override
+	public <R extends DBRow> long getCount(R exampleRow) throws SQLException, AccidentalCartesianJoinException {
+		return wrappedDatabase.getCount(exampleRow);
+	}
+
+	@Override
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options)  throws SQLException{
+		return wrappedDatabase.getDBDatabaseMetaData(options);
 	}
 
 }

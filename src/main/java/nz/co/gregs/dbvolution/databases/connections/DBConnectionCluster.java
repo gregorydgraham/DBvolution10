@@ -26,8 +26,9 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases;
+package nz.co.gregs.dbvolution.databases.connections;
 
+import nz.co.gregs.dbvolution.databases.*;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -50,12 +51,11 @@ import java.util.concurrent.Executor;
  *
  * @author greg
  */
-class DBConnectionCluster implements DBConnection {
+public class DBConnectionCluster implements DBConnection {
 
 	private final DBDatabaseCluster databaseCluster;
 	
 	public DBConnectionCluster(DBDatabaseCluster cluster) {
-//		super(cluster);
 		this.databaseCluster = cluster;
 	}
 

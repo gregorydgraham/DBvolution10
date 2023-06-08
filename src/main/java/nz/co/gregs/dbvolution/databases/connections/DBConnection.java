@@ -26,8 +26,9 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases;
+package nz.co.gregs.dbvolution.databases.connections;
 
+import nz.co.gregs.dbvolution.databases.*;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;

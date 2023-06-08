@@ -55,6 +55,7 @@ import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.regexi.Regex;
 import org.joda.time.Period;
 
 /**
@@ -1325,7 +1326,7 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
-	public String getSystemTableExclusionPattern() {
+	public Regex getSystemTableExclusionPattern() {
 		return base.getSystemTableExclusionPattern();
 	}
 

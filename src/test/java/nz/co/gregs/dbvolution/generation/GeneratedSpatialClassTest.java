@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 
 	@Test
 	public void testGetSchema() throws SQLException, IOException {
-		if (database.supportsMetaDataFully()) {
+		if (database.supportsGeometryTypesFullyInSchema()) {
+			System.out.println("PROCESSING: "+database.getLabel());
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());
@@ -82,7 +84,7 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 						if (dbcl.getJavaSource().equals(str)) {
 							found = true;
 						}else{
-							System.out.println("ERROR DURING GENERATION: source:"+dbcl.getJavaSource()+"=/=expects:"+str);
+							System.out.println("ERROR DURING GENERATION:\nEXPECTED:"+str+"\n=/=\nSOURCE:\n"+dbcl.getJavaSource());
 						}
 						assertThat(dbcl.getJavaSource(), is(str));
 					}
@@ -94,7 +96,7 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTable(new Spatialgen());
 		}else{
-			System.out.print("NOT IMPLEMENTED: schema generation for "+database.getLabel()+" has not been implemented");
+			System.out.print("NOT IMPLEMENTED: spatial schema generation for "+database.getLabel()+" has not been implemented");
 			System.out.println(" ("+database.getJdbcURL()+")");
 		}
 	}

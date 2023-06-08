@@ -30,11 +30,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBConnection;
+import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.regexi.Regex;
 
 /**
  * Automatically generates Java files to be used in your data model.
@@ -310,7 +312,9 @@ public class DBTableClassGenerator {
 					if (schema == null) {
 						schema = tables.getString("TABLE_SCHEM");
 					}
-					if (tableName.matches(database.getDefinition().getSystemTableExclusionPattern())) {
+					DBDefinition definition = database.getDefinition();
+					Regex systemTableExclusionPattern = definition.getSystemTableExclusionPattern();
+					if (systemTableExclusionPattern.matchesEntireString(tableName)) {
 						final String className = toClassCase(tableName);
 						DBTableClass dbTableClass = new DBTableClass(tableName, schema, packageName, className);
 
