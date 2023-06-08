@@ -23,6 +23,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
+import nz.co.gregs.dbvolution.databases.metadata.H2DBDatabaseMetaData;
+import nz.co.gregs.dbvolution.databases.metadata.Options;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.AbstractH2SettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2FileSettingsBuilder;
@@ -310,5 +313,15 @@ public class H2DB extends DBDatabaseImplementation {
 	@Override
 	public AbstractH2SettingsBuilder<?, ?> getURLInterpreter() {
 		return URL_PROCESSOR;
+	}
+
+	@Override
+	public boolean supportsGeometryTypesFullyInSchema() {
+		return true;
+	}
+
+	@Override
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException {
+		return new H2DBDatabaseMetaData(options);
 	}
 }

@@ -33,34 +33,36 @@ public enum DataTypes implements DBVFeature {
 	/**
 	 *
 	 */
-	DATEREPEAT("DBV_DATEREPEAT", "VARCHAR(100)", DateRepeatFunctions.values()),
+	DATEREPEAT("DBV_DATEREPEAT", "VARCHAR(100)", "DATEREPEAT", DateRepeatFunctions.values()),
 	/**
 	 *
 	 */
-	POINT2D("DBV_POINT2D", "VARCHAR(2000)", Point2DFunctions.values()),
+	POINT2D("DBV_POINT2D", "VARCHAR(2000)", "POINT", Point2DFunctions.values()),
 	/**
 	 *
 	 */
-	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values()),
+	LINE2D("DBV_LINE2D", "VARCHAR(2001)", "LINESTRING", Line2DFunctions.values()),
 	/**
 	 *
 	 */
-	LINESEGMENT2D("DBV_LINESEGMENT2D", "VARCHAR(2001)", LineSegment2DFunctions.values()),
+	LINESEGMENT2D("DBV_LINESEGMENT2D", "VARCHAR(2001)", "LINESTRING", LineSegment2DFunctions.values()),
 	/**
 	 *
 	 */
-	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values()),
+	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", "POLYGON", Polygon2DFunctions.values()),
 	/**
 	 *
 	 */
-	MULTIPOINT2D("DBV_MULTIPOINT2D", "VARCHAR(2003)", MultiPoint2DFunctions.values());
+	MULTIPOINT2D("DBV_MULTIPOINT2D", "VARCHAR(2003)", "MULTIPOINT", MultiPoint2DFunctions.values());
 	private final String datatype;
 	private final String actualType;
+	private final String conceptualType;
 //	private final DBVFeature[] functions;
 
-	DataTypes(String datatype, String actualType, DBVFeature[] functions) {
+	DataTypes(String datatype, String actualType, String conceptualType, DBVFeature[] functions) {
 		this.datatype = datatype;
 		this.actualType = actualType;
+		this.conceptualType = conceptualType;
 //		this.functions = functions;
 	}
 
@@ -104,6 +106,20 @@ public enum DataTypes implements DBVFeature {
 	@Override
 	public String alias() {
 		return toString();
+	}
+
+	/**
+	 * @return the actualType
+	 */
+	public String getActualType() {
+		return actualType;
+	}
+
+	/**
+	 * @return the conceptualType
+	 */
+	public String getConceptualType() {
+		return conceptualType;
 	}
 
 }
