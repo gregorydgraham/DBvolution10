@@ -39,13 +39,15 @@ import java.util.List;
  */
 public class TableMetaData {
 
-	private final String tableName;
+	private final String catalog;
 	private final String schema;
+	private final String tableName;
 	private final List<Column> columns = new ArrayList<>(0);
 	private final List<ForeignKey> foreignKeys = new ArrayList<>(0);
 	private final List<PrimaryKey> primaryKeys = new ArrayList<>(0);
 
-	public TableMetaData(String schema, String tableName) {
+	public TableMetaData(String catalog, String schema, String tableName) {
+		this.catalog = catalog;
 		this.schema = schema;
 		this.tableName = tableName;
 	}
@@ -78,8 +80,12 @@ public class TableMetaData {
 		foreignKeys.add(fkData);
 	}
 
-	void addColumn(Column col) {
+	public void addColumn(Column col) {
 		columns.add(col);
+	}
+
+	public String getCatalog() {
+		return catalog;
 	}
 
 	public static class ForeignKey {
@@ -150,6 +156,7 @@ public class TableMetaData {
 
 	public static class Column {
 
+		final String catalog;
 		final String schema;
 		final String tableName;
 		String columnName;
@@ -166,11 +173,15 @@ public class TableMetaData {
 		String referencesField;
 		String referencesTableName;
 
-		Column(String schema, String tableName) {
+		Column(String catalog, String schema, String tableName) {
+			this.catalog = catalog;
 			this.schema = schema;
 			this.tableName = tableName;
 		}
 
+		public String getCatalog() {
+			return catalog;
+		}
 
 		public String getSchema() {
 			return schema;

@@ -84,7 +84,7 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 						if (dbcl.getJavaSource().equals(str)) {
 							found = true;
 						}else{
-							System.out.println("ERROR DURING GENERATION: source:"+dbcl.getJavaSource()+"=/=expects:"+str);
+							System.out.println("ERROR DURING GENERATION:\nEXPECTED:"+str+"\n=/=\nSOURCE:\n"+dbcl.getJavaSource());
 						}
 						assertThat(dbcl.getJavaSource(), is(str));
 					}

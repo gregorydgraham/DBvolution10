@@ -41,9 +41,8 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 
 /**
  *
@@ -51,13 +50,17 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
  */
 public class MySQLDBDatabaseMetaData extends DBDatabaseMetaData {
 
+	protected static final Logger LOG = Logger.getLogger(MySQLDBDatabaseMetaData.class.getName());
+
 	public MySQLDBDatabaseMetaData(Options options) throws SQLException {
 		super(options);
 	}
 
 	@Override
-	protected void postProcessing(Options options, ArrayList<TableMetaData> tablesFound) {
+	protected void postProcessing(Options options, ArrayList<TableMetaData> tablesFound) throws SQLException, DBRuntimeException {
 		DBDatabase database = options.getDBDatabase();
+
+		// find all the geometry columns
 		List<TableMetaData.Column> reqdColumns = new ArrayList<>(0);
 		for (TableMetaData table : tablesFound) {
 			for (TableMetaData.Column column : table.getColumns()) {
@@ -66,22 +69,29 @@ public class MySQLDBDatabaseMetaData extends DBDatabaseMetaData {
 				}
 			}
 		}
+
+		// query the information_schema for every column and grab the actual datatype
 		if (reqdColumns.size() > 0) {
 			for (TableMetaData.Column reqdColumn : reqdColumns) {
+				// TODO
+				// This is an inefficient query.
+				// Rewrite it to retrieve all the columns at once and link them up in memory
 				STGeometryColumns example = new STGeometryColumns();
-				example.tableCatalog.setValue(getCatalog());
+				example.tableCatalog.setValue("def"); // this will always be "def" according to https://dev.mysql.com/doc/refman/8.0/en/information-schema-st-geometry-columns-table.html
+				if (StringCheck.isNotEmptyNorNull(reqdColumn.getCatalog())) {
+					// MySQL follows the standard but doesn't really differntiate between 
+					// catalog and schema. In this instance they use the catalog as the schema
+					// I expect this to change in a random MySQL update
+					example.tableSchema.setValue(reqdColumn.getCatalog());
+				}
 				example.tableName.setValue(reqdColumn.tableName);
 				example.columnName.setValue(reqdColumn.columnName);
-				try {
-					database.setPrintSQLBeforeExecuting(true);
-					List<STGeometryColumns> got = database.get(1l, example);
-					reqdColumn.sqlDataTypeName = got.get(0).geometryTypeName.getValue();
-				} catch (SQLException | UnexpectedNumberOfRowsException | AccidentalBlankQueryException | NoAvailableDatabaseException ex) {
-					ex.printStackTrace();
-					Logger.getLogger(MySQLDBDatabaseMetaData.class.getName()).log(Level.SEVERE, null, ex);
-				}finally{
-					database.setPrintSQLBeforeExecuting(false);
-				}
+				// if we get more than one something has gone horribly wrong so ensure it
+				List<STGeometryColumns> got = database.get(1l, example);
+				STGeometryColumns firstRow = got.get(0);
+				String preferredType = firstRow.geometryTypeName.getValue();
+				// finally set the correct datatype
+				reqdColumn.sqlDataTypeName = preferredType.toUpperCase();
 			}
 		}
 	}

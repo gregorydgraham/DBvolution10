@@ -108,7 +108,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public Class<? extends QueryableDatatype<?>> getQueryableDatatypeClassForSQLDatatype(String typeName) {
-		switch (typeName) {
+		switch (typeName.toUpperCase()) {
 			case "POLYGON":
 				return DBPolygon2D.class;
 			case "LINESTRING":

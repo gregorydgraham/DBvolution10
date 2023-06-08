@@ -255,8 +255,8 @@ class DataRepoGenerator {
 		if (db != null) {
 
 			DBDatabaseMetaData metaData = db.getDBDatabaseMetaData(opts);
-			String catalog = metaData.getCatalog();
-			String schema = metaData.getSchema();
+			String catalog = metaData.getCatalog(); // this is reporting dbvtest (the schema)
+			String schema = metaData.getSchema();   // and this is null
 
 			List<TableMetaData> tables = metaData.getTables();
 			for (TableMetaData table : tables) {

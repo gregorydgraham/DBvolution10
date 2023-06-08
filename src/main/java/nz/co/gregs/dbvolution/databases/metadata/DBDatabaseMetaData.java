@@ -39,6 +39,7 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
 import nz.co.gregs.dbvolution.generation.Utility;
 import nz.co.gregs.dbvolution.utility.StringCheck;
@@ -101,7 +102,7 @@ public class DBDatabaseMetaData {
 						boolean nonSystemTableCheck = nonSystemTableRegex.matchesEntireString(tableName);
 						if (nonSystemTableCheck) {
 							// create the table model
-							TableMetaData tableMetaData = new TableMetaData(schema, tableName);
+							TableMetaData tableMetaData = new TableMetaData(catalog, schema, tableName);
 							tablesFound.add(tableMetaData);
 
 							Map<String, TableMetaData.PrimaryKey> pkNames = new HashMap<>(0);
@@ -124,7 +125,7 @@ public class DBDatabaseMetaData {
 
 							try (ResultSet columns = metaData.getColumns(catalog, schema, tableName, null)) {
 								while (columns.next()) {
-									TableMetaData.Column column = new TableMetaData.Column(schema, tableName);
+									TableMetaData.Column column = new TableMetaData.Column(catalog, schema, tableName);
 									tableMetaData.addColumn(column);
 									copyColumnData(column, columns, db);
 
@@ -250,7 +251,7 @@ public class DBDatabaseMetaData {
 		return options;
 	}
 
-	protected void postProcessing(Options options, ArrayList<TableMetaData> tablesFound) {
+	protected void postProcessing(Options options, ArrayList<TableMetaData> tablesFound) throws SQLException, DBRuntimeException  {
 		// default operation is a null op
 	}
 }
