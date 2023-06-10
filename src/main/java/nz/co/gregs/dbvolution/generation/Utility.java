@@ -109,8 +109,14 @@ public class Utility {
 			case Types.NVARCHAR:
 			case Types.LONGNVARCHAR:
 			case Types.LONGVARCHAR:
-				value = DBString.class;
-				break;
+				Class<? extends QueryableDatatype<?>> customStringType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
+				if (customStringType != null) {
+					value = customStringType;
+					break;
+				} else {
+					value = DBString.class;
+					break;
+				}
 			case Types.DATE:
 			case Types.TIME:
 			case Types.TIMESTAMP:
