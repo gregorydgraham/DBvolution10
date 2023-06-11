@@ -968,13 +968,13 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	 * Return the function name for the Natural Logarithm function.
 	 *
 	 * <p>
-	 * For SQLite this method returns <b>log</b>
+	 * For SQLite this method returns <b>ln</b>
 	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
 	public String getNaturalLogFunctionName() {
-		return "log";
+		return "ln";
 	}
 
 	@Override

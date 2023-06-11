@@ -1097,6 +1097,7 @@ public class IntegerExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).logN().round(6).is(0.693147));
 
+		dbQuery.printSQLForQuery();
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		assertThat(allRows.size(), is(1));

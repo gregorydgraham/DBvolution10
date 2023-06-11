@@ -45,10 +45,9 @@ public class SQLiteDBDatabaseMetaData extends DBDatabaseMetaData {
 	public SQLiteDBDatabaseMetaData(Options options) throws SQLException {
 		super(options);
 	}
-	
+
 	static final Regex FIND_VARCHAR = Regex.startingFromTheBeginning().literal("VARCHAR").toRegex();
 	static final Regex FIND_VARCHAR_1000 = Regex.startingFromTheBeginning().literal("VARCHAR(1000)").endOfInput().toRegex();
-				
 
 	@Override
 	protected void postProcessing(Options options, ArrayList<TableMetaData> tablesFound) throws SQLException, DBRuntimeException {
@@ -63,6 +62,15 @@ public class SQLiteDBDatabaseMetaData extends DBDatabaseMetaData {
 								column.sqlDataTypeName = value.getConceptualType();
 								break;
 							}
+						}
+					}
+				}
+				if (FIND_VARCHAR.matchesEntireString(column.sqlDataTypeName)) {// using a later version of SQLite
+					DataTypes[] values = DataTypes.values();
+					for (DataTypes value : values) {
+						if (value.getDatabaseType().equals(column.sqlDataTypeName+"("+column.precision+")")) {
+							column.sqlDataTypeName = value.getConceptualType();
+							break;
 						}
 					}
 				}

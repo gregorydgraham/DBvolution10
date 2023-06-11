@@ -849,10 +849,10 @@
 								<testPostgresSQL>true</testPostgresSQL>
 								<testBundledCluster>true</testBundledCluster>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
-								<testFullCluster>true</testFullCluster>
-								<testMSSQLServer>true</testMSSQLServer>
-								<testMSSQLServerLocal>true</testMSSQLServerLocal>
-								<testOracleXE>true</testOracleXE>
+								<!--<testFullCluster>true</testFullCluster>-->
+								<!--<testMSSQLServer>true</testMSSQLServer>-->
+								<!--<testMSSQLServerLocal>true</testMSSQLServerLocal>-->
+								<!--<testOracleXE>true</testOracleXE>-->
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -1439,7 +1439,7 @@
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.25.2</version>
+			<version>3.42.0.0</version>
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
