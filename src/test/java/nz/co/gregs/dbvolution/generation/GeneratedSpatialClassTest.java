@@ -31,7 +31,6 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 	@Test
 	public void testGetSchema() throws SQLException, IOException {
 		if (database.supportsGeometryTypesFullyInSchema()) {
-			System.out.println("PROCESSING: " + database.getLabel());
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new Spatialgen());
 			database.createTable(new Spatialgen());
@@ -101,8 +100,6 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 						if(rgx.matchesEntireString(dbcl.getJavaSource())){
 							found = true;
 						}
-						System.out.println("GENERATED:");
-						System.out.println(dbcl.getJavaSource());
 						assertThat(rgx.matches(dbcl.getJavaSource()), is(true));
 					}
 					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
