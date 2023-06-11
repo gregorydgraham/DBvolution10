@@ -22,6 +22,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
+import nz.co.gregs.dbvolution.databases.metadata.Options;
+import nz.co.gregs.dbvolution.databases.metadata.SQLiteDBDatabaseMetaData;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SQLiteSettingsBuilder;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
@@ -197,6 +200,16 @@ public class SQLiteDB extends DBDatabaseImplementation {
 	@Override
 	public boolean supportsNanosecondPrecision() {
 		return false;
+	}
+
+	@Override
+	public boolean supportsGeometryTypesFullyInSchema() {
+		return true;
+	}
+
+	@Override
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException {
+		return new SQLiteDBDatabaseMetaData(options);
 	}
 
 }

@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
 
 /**
@@ -73,9 +74,9 @@ public class Utility {
 		switch (columnType) {
 			case Types.BIT:
 				if (precision == 1) {
-					value = DBBoolean.class;
+					value = checkForSimulatedTypesOrUseDefault(database, typeName, DBBoolean.class);
 				} else {
-					value = DBLargeBinary.class;
+					value = checkForSimulatedTypesOrUseDefault(database, typeName, DBLargeBinary.class);
 				}
 				break;
 			case Types.TINYINT:
@@ -85,9 +86,9 @@ public class Utility {
 			case Types.ROWID:
 			case Types.SMALLINT:
 				if (precision == 1) {
-					value = DBBoolean.class;
+					value = checkForSimulatedTypesOrUseDefault(database, typeName, DBBoolean.class);
 				} else {
-					value = DBInteger.class;
+					value = checkForSimulatedTypesOrUseDefault(database, typeName, DBInteger.class);
 				}
 				break;
 			case Types.DECIMAL:
@@ -95,48 +96,36 @@ public class Utility {
 			case Types.FLOAT:
 			case Types.NUMERIC:
 			case Types.REAL:
-				value = DBNumber.class;
+				value =checkForSimulatedTypesOrUseDefault(database, typeName, DBNumber.class);
 				break;
 			case Types.CHAR:
 			case Types.NCHAR:
 				if (trimCharColumns) {
-					value = DBStringTrimmed.class;
+					value = checkForSimulatedTypesOrUseDefault(database, typeName, DBStringTrimmed.class);
 				} else {
-					value = DBString.class;
+					value = checkForSimulatedTypesOrUseDefault(database, typeName, DBString.class);
 				}
 				break;
 			case Types.VARCHAR:
 			case Types.NVARCHAR:
 			case Types.LONGNVARCHAR:
 			case Types.LONGVARCHAR:
-				Class<? extends QueryableDatatype<?>> customStringType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
-				if (customStringType != null) {
-					value = customStringType;
-					break;
-				} else {
-					value = DBString.class;
-					break;
-				}
+			value = checkForSimulatedTypesOrUseDefault(database, typeName, DBString.class);
+			break;
 			case Types.DATE:
 			case Types.TIME:
 			case Types.TIMESTAMP:
-				value = DBDate.class;
+				value = checkForSimulatedTypesOrUseDefault(database, typeName, DBDate.class);
 				break;
 			case Types.OTHER:
-				Class<? extends QueryableDatatype<?>> customType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
-				if (customType != null) {
-					value = customType;
-					break;
-				} else {
-					value = DBJavaObject.class;
-					break;
-				}
+			value = checkForSimulatedTypesOrUseDefault(database, typeName, DBJavaObject.class);
+			break;
 			case Types.JAVA_OBJECT:
-				value = DBJavaObject.class;
+				value = checkForSimulatedTypesOrUseDefault(database, typeName, DBJavaObject.class);
 				break;
 			case Types.CLOB:
 			case Types.NCLOB:
-				value = DBLargeText.class;
+				value = checkForSimulatedTypesOrUseDefault(database, typeName, DBLargeText.class);
 				break;
 			case Types.BINARY:
 			case Types.VARBINARY:
@@ -144,18 +133,24 @@ public class Utility {
 			case Types.BLOB:
 			case Types.ARRAY:
 			case Types.SQLXML:
-				Class<? extends QueryableDatatype<?>> customBinaryType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
-				if (customBinaryType != null) {
-					value = customBinaryType;
-					break;
-				} else {
-					value = DBLargeBinary.class;
-					break;
-				}
+			value = checkForSimulatedTypesOrUseDefault(database, typeName, DBLargeBinary.class);
+			break;
 			default:
 				throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: " + columnType, columnType);
 		}
 		return value;
+	}
+
+	private static Class<? extends Object> checkForSimulatedTypesOrUseDefault(DBDatabase database, String typeName, final Class<?> defaultClass) throws NoAvailableDatabaseException {
+		Class<? extends Object> value;
+		Class<? extends QueryableDatatype<?>> customStringType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
+		if (customStringType != null) {
+			value = customStringType;
+			return value;
+		} else {
+			value = defaultClass;
+			return value;
+		}
 	}
 
 	/**

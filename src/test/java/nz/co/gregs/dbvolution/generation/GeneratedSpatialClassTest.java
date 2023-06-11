@@ -101,6 +101,8 @@ public class GeneratedSpatialClassTest extends AbstractTest {
 						if(rgx.matchesEntireString(dbcl.getJavaSource())){
 							found = true;
 						}
+						System.out.println("GENERATED:");
+						System.out.println(dbcl.getJavaSource());
 						assertThat(rgx.matches(dbcl.getJavaSource()), is(true));
 					}
 					assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);

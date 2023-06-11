@@ -107,29 +107,35 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 
 	@Override
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
-		if (qdt instanceof DBLargeText) {
-			return " NTEXT ";
-		} else if (qdt instanceof DBInteger) {
-			return " BIGINT ";
-		} else if (qdt instanceof DBJavaObject) {
-			return " BLOB ";
-		} else if (qdt instanceof DBLargeBinary) {
-			return " BLOB ";
-		} else if (qdt instanceof DBBooleanArray) {
-			return " VARCHAR(64) ";
-		} else if (qdt instanceof DBDate) {
-			return " DATETIME ";
-		} else if (qdt instanceof DBPoint2D) {
-			return " VARCHAR(2000) ";
-		} else if (qdt instanceof DBLine2D) {
-			return " VARCHAR(2001) ";
-		} else if (qdt instanceof DBMultiPoint2D) {
-			return " VARCHAR(2002) ";
+		for (DataTypes value : DataTypes.values()) {
+			var qdtClass = value.getQdtClass();
+			if (qdtClass.isInstance(qdt)) {
+				return " " + value.getDatabaseType() + " ";
+			}
+		}
+//		if (qdt instanceof DBLargeText) {
+//			return " NTEXT ";
+//		} else if (qdt instanceof DBInteger) {
+//			return " BIGINT ";
+//		} else if (qdt instanceof DBJavaObject) {
+//			return " BLOB ";
+//		} else if (qdt instanceof DBLargeBinary) {
+//			return " BLOB ";
+//		} else if (qdt instanceof DBBooleanArray) {
+//			return " "+DataTypes.BOOLEANARRAY.getDatabaseType()+" ";
+//		} else if (qdt instanceof DBDate) {
+//			return " DATETIME ";
+//		} else if (qdt instanceof DBPoint2D) {
+//			return " "+DataTypes.POINT2D.getDatabaseType()+" ";
+//		} else if (qdt instanceof DBLine2D) {
+//			return " "+DataTypes.LINE2D.getDatabaseType()+" ";
+//		} else if (qdt instanceof DBMultiPoint2D) {
+//			return " "+DataTypes.MULTIPOINT2D.getDatabaseType()+" ";
 //		} else if (qdt instanceof DBDuration) {
 //			return " VARCHAR(65) ";
-		} else {
-			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
-		}
+//		} else {
+		return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
+//		}
 	}
 
 	@Override
