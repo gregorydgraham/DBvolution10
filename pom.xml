@@ -7,7 +7,7 @@
  
 	<groupId>nz.co.gregs</groupId>
 	<artifactId>dbvolution10</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
     
 	<name>DBvolution 10</name>
@@ -36,7 +36,7 @@
 		<connection>scm:git:https://github.com/gregorydgraham/DBvolution10.git</connection>
 		<developerConnection>scm:git:https://github.com/gregorydgraham/DBvolution10.git</developerConnection>
 		<url>https://github.com/gregorydgraham/DBvolution10.git</url>
-		<tag>HEAD</tag>
+		<tag>dbvolution10-1.0.1</tag>
 	</scm>
 	<developers>
 		<developer>
