@@ -1279,7 +1279,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	/**
 	 * Stops this cluster and it's contained databases.
 	 *
-	 * See {@link #stopCluster() } and {@link DBDatabaseInterface#stop() }.
+	 * See {@link #stopCluster() } and {@link DBDatabase#stop() }.
 	 */
 	public void stopClusterAndDatabases() {
 		stopClusterInternal(true);

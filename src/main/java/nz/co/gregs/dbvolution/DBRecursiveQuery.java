@@ -64,7 +64,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * <p>
 	 * Use this method If you require a longer running query.
 	 *
-	 * @param timeoutInMilliseconds
+	 * @param timeoutInMilliseconds the timeout required
 	 * @return this query.
 	 */
 	public synchronized DBRecursiveQuery<T> setTimeoutInMilliseconds(Integer timeoutInMilliseconds) {

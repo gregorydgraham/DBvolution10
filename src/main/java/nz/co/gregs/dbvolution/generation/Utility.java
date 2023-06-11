@@ -60,11 +60,11 @@ public class Utility {
 	 *
 	 *
 	 *
-	 * @param database
-	 * @param typeName
-	 * @param columnType
-	 * @param precision
-	 * @param trimCharColumns
+	 * @param database the database we're using to generate classes
+	 * @param typeName the name of the type
+	 * @param columnType the JDBC defined column type
+	 * @param precision the number assigned to the size of the type
+	 * @param trimCharColumns do you want to automatically remove leading and trailing spaces on your VARCHARs: yes/no
 	 * @return a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 */
@@ -187,7 +187,7 @@ public class Utility {
 	 *
 	 *
 	 *
-	 * @param s
+	 * @param s the string to change
 	 * @return Capitalizes the first letter of the string
 	 */
 	public static String toProperCase(String s) {
@@ -223,7 +223,7 @@ public class Utility {
 	 *
 	 *
 	 *
-	 * @param s
+	 * @param s the string to change
 	 * @return Camel Case version of S
 	 */
 	public static String toFieldCase(String s) {

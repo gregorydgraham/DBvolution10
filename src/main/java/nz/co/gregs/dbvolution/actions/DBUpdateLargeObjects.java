@@ -74,6 +74,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	 * Creates a DBUpdateLargeObjects action for the supplied row.
 	 *
 	 * @param row the row to be updated
+	 * @param intent the intended action this is being used for
 	 */
 	protected DBUpdateLargeObjects(DBRow row, QueryIntention intent) {
 		super(row, intent);

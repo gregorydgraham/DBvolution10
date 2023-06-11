@@ -37,6 +37,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param <R> the table affected
 	 * @param row the row to delete
+	 * @param intent the intended action this is being used for
 	 */
 	protected <R extends DBRow> DBDelete(R row, QueryIntention intent) {
 		super(row, intent);

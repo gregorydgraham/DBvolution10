@@ -35,7 +35,7 @@ import java.sql.SQLException;
 /**
  *
  * @author gregorygraham
- * @param <V>
+ * @param <V> the class of the return value of this transaction
  */
 public class IncompleteTransaction<V> {
 

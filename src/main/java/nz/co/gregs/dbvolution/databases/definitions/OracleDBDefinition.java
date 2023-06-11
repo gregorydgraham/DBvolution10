@@ -23,6 +23,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
@@ -424,7 +425,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	/**
 	 * Creates a pattern that will exclude system tables during DBRow class
-	 * generation i.e. {@link DBTableClassGenerator}.
+	 * generation i.e. {@link DBDatabaseMetaData}.
 	 * 
 	 * <p>
 	 * For Oracle databases this pattern is "^[^$]*$".</p>
@@ -434,7 +435,6 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public Regex getSystemTableExclusionPattern() {
 		return Regex.startingFromTheBeginning().excludeSet("$").zeroOrMore().endOfTheString().toRegex();
-//		return "^[^$]*$";
 	}
 
 	@Override

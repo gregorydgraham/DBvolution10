@@ -945,7 +945,7 @@ public interface DBDatabase extends Serializable{
 	 * @throws AccidentalDroppingOfDatabaseException Terrible!
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 * If you're lucky...
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction;
 

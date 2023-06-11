@@ -37,6 +37,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabaseImplementation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * <p>
  * Use
- * {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess)}
+ * {@link DBDatabaseImplementation#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess)}
  * to add a regular process.</p>
  *
  * <p>
@@ -169,7 +170,7 @@ public abstract class RegularProcess implements Serializable {
 	}
 
 	/**
-	 * Returns the (last) database that this process has been added to using {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess)
+	 * Returns the (last) database that this process has been added to using {@link DBDatabaseImplementation#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess)
 	 * }.
 	 *
 	 * @return the database that this process should work upon.
@@ -179,7 +180,7 @@ public abstract class RegularProcess implements Serializable {
 	}
 
 	/**
-	 * Used by  {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess) }
+	 * Used by  {@link DBDatabaseImplementation#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess) }
 	 * to set the database.
 	 *
 	 * <p>

@@ -1395,7 +1395,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * Executes the query using the statement provided and returns the ResultSet
 	 *
 	 * @param statement dbStatement
-	 * @param statementDetails
+	 * @param statementDetails configuration details for the execution
 	 * @param sql sql
 	 *
 	 *

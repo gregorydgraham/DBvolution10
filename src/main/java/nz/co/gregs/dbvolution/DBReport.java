@@ -169,7 +169,7 @@ public class DBReport extends RowDefinition {
 	 * @param <A> DBReport type
 	 * @param database database
 	 * @param exampleReport exampleReport
-	 * @param extraExamples
+	 * @param extraExamples DBRow instances that will be used to add extra criteria
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException

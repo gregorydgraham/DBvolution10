@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBMigration;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryInsert;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -1654,7 +1653,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws AccidentalDroppingOfDatabaseException Terrible!
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 * If you're lucky...
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database errors
 	 */
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
 		if (doIt) {
@@ -2234,7 +2233,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param table the class of the table to check for
 	 * @return true if the table exists on the database, for clusters it is only
 	 * true if the table exists on all databases in the cluster
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	public boolean tableExists(Class<? extends DBRow> table) throws SQLException {
 		return tableExists(DBRow.getDBRow(table));
@@ -2246,7 +2245,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param table the table to check for
 	 * @return true if the table exists on the database, for clusters it is only
 	 * true if the table exists on all databases in the cluster
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 */
 	@Override
 	@SuppressFBWarnings(
