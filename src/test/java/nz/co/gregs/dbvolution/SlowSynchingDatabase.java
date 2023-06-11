@@ -60,7 +60,8 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	 *
 	 * @param label the database label to be used internally to identify the
 	 * database (not related to the database name)
-	 * @return @throws SQLException
+	 * @return a database that takes a long time to synch
+	 * @throws SQLException if a database error occurs
 	 */
 	public static SlowSynchingDatabase createDatabase(String label) throws SQLException {
 		return new SlowSynchingDatabase(new H2MemorySettingsBuilder().setDatabaseName(label).setLabel(label));
@@ -70,10 +71,11 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	 * Creates a new database with random (UUID based) name and label.
 	 *
 	 * <p>
-	 * Great for we you just need to make a database and don't need to keep
+	 * Great for when you just need to make a database and don't need to keep
 	 * it.</p>
 	 *
-	 * @return @throws SQLException
+	 * @return a new slow synching database
+	 * @throws SQLException if a database error occurs
 	 */
 	public static SlowSynchingDatabase createANewRandomDatabase() throws SQLException {
 		return createANewRandomDatabase("", "");
@@ -88,7 +90,8 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	 *
 	 * @param prefix the string to add before the database name and label
 	 * @param postfix the string to add after the database name and label
-	 * @return @throws SQLException
+	 * @return a new slow synching database
+	 * @throws SQLException if a database error occurs
 	 */
 	public static SlowSynchingDatabase createANewRandomDatabase(String prefix, String postfix) throws SQLException {
 		final H2MemorySettingsBuilder settings = new H2MemorySettingsBuilder().withUniqueDatabaseName();
