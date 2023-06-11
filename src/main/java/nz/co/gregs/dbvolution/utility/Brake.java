@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,10 +52,12 @@ import java.util.logging.Logger;
  *
  * @author gregorygraham
  */
-public class Brake {
+public class Brake implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private boolean brakeRequired = true;
-	private final Object monitor = new Object();
+	private transient final Object monitor = new Object();
 	private long timeout = 10000;
 
 	public Brake() {
