@@ -30,9 +30,12 @@
  */
 package nz.co.gregs.dbvolution.utility.encryption;
 
-import com.google.common.base.Stopwatch;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 import nz.co.gregs.dbvolution.exceptions.IncorrectPasswordException;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mindrot.jbcrypt.BCrypt;
@@ -108,10 +111,10 @@ public class UpdatingBCrypt {
 			if (BCrypt.checkpw(password, hash)) {
 				int rounds = getRounds(hash);
 				int minRounds = Math.max(DEFAULT_ROUNDS, rounds - 2);
-				Stopwatch timer = Stopwatch.createStarted();
+				StopWatch timer = StopWatch.createStarted();
 				String newHash = hashPassword(password, minRounds);
 				timer.stop();
-				long elapsed = timer.elapsed(TimeUnit.MILLISECONDS);
+				long elapsed = timer.getTime(TimeUnit.MILLISECONDS);
 				if (elapsed < MINIMUM_EFFORT) {
 					int newRounds = rounds + 1;
 					LOG.debug("Updating password from " + rounds + " rounds to " + newRounds);

@@ -368,9 +368,9 @@ public class DataModel {
 	 * @return all the subclasses of DBRow in the current classpath.
 	 */
 	public static Set<Class<? extends DBRow>> getDBRowDirectSubclasses() {
+		Set<Class<? extends DBRow>> result = new HashSet<Class<? extends DBRow>>();
 		Reflections reflections = new Reflections("");
 		Set<Class<? extends DBRow>> subTypesOf = reflections.getSubTypesOf(DBRow.class);
-		Set<Class<? extends DBRow>> result = new HashSet<Class<? extends DBRow>>();
 		for (Class<? extends DBRow> clzz : subTypesOf) {
 			try {
 				clzz.getConstructor();// checking that there an appropriate constructor
@@ -466,9 +466,10 @@ public class DataModel {
 	 * @param db the database to query
 	 * @param encodedTablesPropertiesAndValues a string encoding of a query
 	 * @param interpreter the interpreter to use to understand the encoded query
-	 * 
+	 *
 	 * @return a DBQuery.
-	 * @throws ClassNotFoundException if Class.forName() cannot find the table provided by the interpreter
+	 * @throws ClassNotFoundException if Class.forName() cannot find the table
+	 * provided by the interpreter
 	 * @throws InstantiationException if the class cannot be instantiated
 	 * @throws IllegalAccessException if the class cannot be accessed
 	 */

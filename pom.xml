@@ -1457,12 +1457,12 @@
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
-			<version>10.11.1.1</version>
+			<version>10.15.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyclient</artifactId>
-			<version>10.11.1.1</version>
+			<version>10.15.2.0</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -1553,11 +1553,12 @@
 			<artifactId>ojdbc10</artifactId>
 			<version>19.14.0.0</version>
 		</dependency>
-		<dependency>
+	 <dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
 			<version>1.15.1</version>
 			<scope>test</scope>
+		 <type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>

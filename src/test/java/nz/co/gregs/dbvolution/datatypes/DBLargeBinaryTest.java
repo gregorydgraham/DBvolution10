@@ -15,14 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import com.google.common.io.ByteStreams;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBRow;
@@ -218,7 +211,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		newFile.createNewFile();
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(newFile));
 		InputStream in = firstRow.imageBytes.getInputStream();
-		ByteStreams.copy(in, out);
+		byteStreamCopy(in, out);
 		in.close();
 		out.close();
 
@@ -231,7 +224,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		newFile.createNewFile();
 		out = new BufferedOutputStream(new FileOutputStream(newFile));
 		in = firstRow.imageBytes.getInputStream();
-		ByteStreams.copy(in, out);
+		byteStreamCopy(in, out);
 		in.close();
 		out.close();
 
@@ -717,4 +710,21 @@ public class DBLargeBinaryTest extends AbstractTest {
 			+ "Results :\n"
 			+ "\n"
 			+ "Tests run: 3, Failures: 0, Errors: 0, Skipped: 0";
+	
+	
+	
+	public static long byteStreamCopy(InputStream from, OutputStream to)
+      throws IOException {
+    byte[] buf = new byte[0x1000]; //4k
+    long total = 0;
+    while (true) {
+      int r = from.read(buf);
+      if (r == -1) {
+        break;
+      }
+      to.write(buf, 0, r);
+      total += r;
+    }
+    return total;
+  }
 }
