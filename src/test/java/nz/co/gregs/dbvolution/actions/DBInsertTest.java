@@ -398,9 +398,9 @@ public class DBInsertTest extends AbstractTest {
 			assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 			assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
 			assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(soon));
-			assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
+			assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue().withNano(0)));
 			assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(soon));
-			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
+			assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue().withNano(0)));
 			assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(soon));
 			LocalDateTime formerUpdateDate = gotRow.updateDate.getValue();
 

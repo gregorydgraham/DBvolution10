@@ -229,7 +229,7 @@ public class DBInsert extends DBAction {
 						updatePrimaryKeyByRetreivingLastInsert(statement, defn, table);
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException ex) {
-						throw ex;
+						throw new DBSQLException(db, sql, ex);
 					}
 				}
 			}
@@ -298,12 +298,17 @@ public class DBInsert extends DBAction {
 	private void executeStatementAndHandleIntegrityConstraintViolation(final DBStatement statement, StatementDetails statementDetails, DBDatabase db, DBRow row) throws SQLException {
 		try {
 			statement.execute(statementDetails);
-		} catch (Exception alreadyExists) {
-			if (db.getDefinition().isPrimaryKeyAlreadyExistsException(alreadyExists)) {
-				db.delete(row);
-				statement.execute(statementDetails);
-			} else {
-				throw alreadyExists;
+		} catch (SQLException ohNo) {
+			boolean throwException = true;
+			if (db.getDefinition().isPrimaryKeyAlreadyExistsException(ohNo)) {
+				if (row.getPrimaryKeysAllHaveValue()) {
+					db.delete(row);
+					statement.execute(statementDetails);
+					throwException = false;
+				}
+			}
+			if (throwException) {
+				throw ohNo;
 			}
 		}
 	}

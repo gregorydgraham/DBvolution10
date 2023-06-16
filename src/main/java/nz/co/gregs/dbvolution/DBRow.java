@@ -1922,7 +1922,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	public SortProvider getSortedSubSelectRequired() {
-		return sortedSubselectRequired==null?null:sortedSubselectRequired.copy();
+		return sortedSubselectRequired == null ? null : sortedSubselectRequired.copy();
 	}
 
 	public boolean hasAutomaticValueFields() {
@@ -1937,6 +1937,20 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		}
 		return hasAutomaticValueFields;
+	}
+
+	public Boolean getPrimaryKeysAllHaveValue() {
+		boolean result = true;
+		List<QueryableDatatype<?>> pks = getPrimaryKeys();
+		if (pks.size() == 0) {
+			return false;
+		}
+		if (pks.size() > 0) {
+			for (QueryableDatatype<?> pk : pks) {
+				result = result && (pk.hasBeenSet()||pk.isDefined());
+			}
+		}
+		return result;
 	}
 
 	/**

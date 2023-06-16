@@ -2186,6 +2186,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		}
 	}
 
+	@Override
 	public <K extends DBRow> DBQueryInsert<K> getDBQueryInsert(K mapper) {
 		return new DBQueryInsert<>(this, mapper);
 	}
