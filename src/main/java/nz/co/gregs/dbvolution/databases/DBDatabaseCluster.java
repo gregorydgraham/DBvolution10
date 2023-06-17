@@ -965,15 +965,18 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		return new DBActionList();
 	}
 
-	private synchronized DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, DBRuntimeException {
+	private synchronized DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, SQLException {
 		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
 		try {
 			final DBDatabase[] databases = getDetails().getReadyDatabases();
+			if (databases.length == 0) {
+				throw new NoAvailableDatabaseException();
+			}
 			DBDatabase firstDatabase = null;
-			DBRuntimeException firstException = null;
+			SQLException firstException = null;
 			boolean succeeded = true;
 			if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
 				// Because of autoincrement PKs we need to execute on one database first
@@ -985,16 +988,9 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 						removeActionFromQueue(database, action);
 						succeeded = true;
 						break;
-					} catch (DBRuntimeException e) {
-						if (firstException == null) {
-							firstException = e;
-						}
-//						if (handleExceptionDuringAction(e, database, action).equals(HandlerAdvice.ABORT)) {
-//							throw e;
-//						}
 					} catch (SQLException ex) {
 						if (firstException == null) {
-							firstException = new DBRuntimeException("Unable to perform " + action.getIntent() + " on cluster", ex);
+							firstException = ex;
 						}
 					}
 				}
