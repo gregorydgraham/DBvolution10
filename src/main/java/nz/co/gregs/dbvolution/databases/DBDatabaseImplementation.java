@@ -151,6 +151,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		return newInstance;
 	}
 
+	@Override
 	public DBDatabase copy() {
 		try {
 			return clone();
@@ -331,6 +332,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * transaction statement.
 	 * @throws java.sql.SQLException interacts with the database layer.
 	 */
+	@Override
 	public DBStatement getDBStatement() throws SQLException {
 		DBStatement statement;
 		synchronized (getStatementSynchronizeObject) {
@@ -560,6 +562,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public final DBActionList insert(DBRow row) throws SQLException {
 		DBActionList changes = new DBActionList();
 		changes.addAll(DBInsert.save(this, row));
@@ -574,6 +577,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public final DBActionList insert(DBRow... listOfRowsToInsert) throws SQLException {
 		if (listOfRowsToInsert.length > 0) {
 			DBBulkInsert insert = new DBBulkInsert();
@@ -591,6 +595,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public final DBActionList insert(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
 		if (listOfRowsToInsert.size() > 0) {
 			DBBulkInsert dbBulkInsert = new DBBulkInsert();
@@ -642,6 +647,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public final DBActionList delete(DBRow... rows) throws SQLException {
 		DBActionList changes = new DBActionList();
 		for (DBRow row : rows) {
@@ -658,6 +664,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public final DBActionList delete(Collection<? extends DBRow> list) throws SQLException {
 		DBActionList changes = new DBActionList();
 		if (list.size() > 0) {
@@ -679,6 +686,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of the actions performed on the database
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public final DBActionList update(DBRow... rows) throws SQLException {
 		return DBUpdate.update(this, rows);
 	}
@@ -694,6 +702,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of the actions performed on the database
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public final DBActionList update(Collection<? extends DBRow> listOfRowsToUpdate) throws SQLException {
 		return DBUpdate.update(this, listOfRowsToUpdate);
 	}
@@ -712,6 +721,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBTable<R> dbTable = getDBTable(exampleRow);
 		return dbTable.getAllRows();
@@ -751,6 +761,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return get(exampleRow);
 	}
@@ -772,6 +783,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws UnexpectedNumberOfRowsException the exception thrown if the number
 	 * of rows is wrong
 	 */
+	@Override
 	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		if (expectedNumberOfRows == null) {
 			return get(exampleRow);
@@ -798,6 +810,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 * thrown if a cluster is unable to service requests.
 	 */
+	@Override
 	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return get(expectedNumberOfRows, exampleRow);
 	}
@@ -813,6 +826,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
+	@Override
 	public List<DBQueryRow> get(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBQuery dbQuery = getDBQuery(row, rows);
 		return dbQuery.getAllRows();
@@ -829,6 +843,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
+	@Override
 	public List<DBQueryRow> getByExamples(DBRow row, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return get(row, rows);
 	}
@@ -852,6 +867,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows(long)
 	 */
+	@Override
 	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow row, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		if (expectedNumberOfRows == null) {
 			return get(row, rows);
@@ -878,6 +894,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @see
 	 * DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 */
+	@Override
 	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, ExceptionThrownDuringTransaction {
 		DBDatabaseImplementation db;
 		try {
@@ -920,6 +937,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		return returnValues;
 	}
 
+	@Override
 	public synchronized <V> IncompleteTransaction<V> doTransactionWithoutCompleting(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
 		DBDatabaseImplementation db;
 		try {
@@ -989,6 +1007,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * an encapsulated exception using the transaction
 	 * @see DBTransaction
 	 */
+	@Override
 	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
 		return doTransaction(dbTransaction, true);
 	}
@@ -1030,28 +1049,13 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	public DBActionList implement(DBScript script) throws Exception {
 		return script.implement(this);
 	}
-
-	/**
-	 * Convenience method to test a DBScript on this database
-	 *
-	 * equivalent to script.test(this);
-	 *
-	 * @param script the script to executed and rollback
-	 * @return a DBActionList provided by the script
-	 * @throws java.sql.SQLException database errors
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
-	 * an encapsulated exception using the transaction
-	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
-	 * thrown when a cluster cannot service requests
-	 */
-//	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
-//		return script.test(this);
-//	}
+	
 	/**
 	 * Returns the name of the JDBC driver class used by this DBDatabase instance.
 	 *
 	 * @return the driverName
 	 */
+	@Override
 	public synchronized String getDriverName() {
 		return driverName;
 	}
@@ -1070,6 +1074,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @return the jdbcURL
 	 */
+	@Override
 	public final synchronized String getJdbcURL() {
 		return getUrlFromSettings(getSettings());
 	}
@@ -1079,6 +1084,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @return the username
 	 */
+	@Override
 	final public synchronized String getUsername() {
 		return settings.getUsername();
 	}
@@ -1088,6 +1094,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @return the password
 	 */
+	@Override
 	final public synchronized String getPassword() {
 		return settings.getPassword();
 	}
@@ -1108,6 +1115,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param example the example row to use in the query
 	 * @return a DBTable instance for the example provided
 	 */
+	@Override
 	public <R extends DBRow> DBTable<R> getDBTable(R example) {
 		return DBTable.getInstance(this, example);
 	}
@@ -1121,6 +1129,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param example the example rows that are required in the query
 	 * @return a DBQuery with the examples as required tables
 	 */
+	@Override
 	public DBQuery getDBQuery(DBRow example) {
 		return DBQuery.getInstance(this, example);
 	}
@@ -1132,6 +1141,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @return a DBQuery with the examples as required tables
 	 */
+	@Override
 	public DBQuery getDBQuery() {
 		return DBQuery.getInstance(this);
 	}
@@ -1146,6 +1156,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param examples the example rows that are required in the query
 	 * @return a DBQuery with the examples as required tables
 	 */
+	@Override
 	public DBQuery getDBQuery(DBRow example, DBRow... examples) {
 		final DBQuery query = DBQuery.getInstance(this, example, examples);
 		return query;
@@ -1160,6 +1171,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param examples the example rows that are required in the query
 	 * @return a DBQuery with the examples as required tables
 	 */
+	@Override
 	public DBQuery getDBQuery(final Collection<DBRow> examples) {
 		switch (examples.size()) {
 			case 0:
@@ -1181,6 +1193,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @param b TRUE to print SQL before execution, FALSE otherwise.
 	 */
+	@Override
 	public synchronized void setPrintSQLBeforeExecuting(boolean b) {
 		printSQLBeforeExecuting = b;
 	}
@@ -1190,6 +1203,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @return the printSQLBeforeExecuting
 	 */
+	@Override
 	public boolean isPrintSQLBeforeExecuting() {
 		return printSQLBeforeExecuting;
 	}
@@ -1226,6 +1240,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
 	 */
+	@Override
 	public void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
 		try {
 			createTable(newTable, includeForeignKeyClauses);
@@ -1248,6 +1263,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
 	 */
+	@Override
 	public void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
 		try {
 			createTable(newTable, false);
@@ -1269,6 +1285,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
 	 */
+	@Override
 	public void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
 		for (DBRow tab : newTables) {
 			createTableNoExceptions(includeForeignKeyClauses, tab);
@@ -1288,6 +1305,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
 	 */
+	@Override
 	public void createTablesNoExceptions(DBRow... newTables) {
 		for (DBRow tab : newTables) {
 			createTableNoExceptions(false, tab);
@@ -1319,6 +1337,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param newTables table
 	 *
 	 */
+	@Override
 	public void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
 		for (DBRow tab : newTables) {
 			try {
@@ -1341,6 +1360,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
 	 */
+	@Override
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, false);
 	}
@@ -1358,6 +1378,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
 	 * used during a DBTransaction or DBScript
 	 */
+	@Override
 	public void createOrUpdateTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		updateTableToMatchDBRow(newTableRow);
 	}
@@ -1389,6 +1410,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws SQLException database exceptions
 	 *
 	 */
+	@Override
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, true);
 	}
@@ -1563,6 +1585,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param tableRow tableRow
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Override
 	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
 		if (tableExists(tableRow)) {
 			this.dropTable(tableRow);
@@ -1620,6 +1643,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 * thrown when a cluster cannot service requests
 	 */
+	@Override
 	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException {
 		return row.willCreateBlankQuery(this.getDefinition());
 	}
@@ -1655,6 +1679,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * If you're lucky...
 	 * @throws java.sql.SQLException database errors
 	 */
+	@Override
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
 		if (doIt) {
 			executeDBAction(new DBDropDatabase(databaseName));
@@ -1666,6 +1691,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @return the database name
 	 */
+	@Override
 	final public synchronized String getDatabaseName() {
 		return settings.getDatabaseName();
 	}
@@ -1699,6 +1725,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @return the internal label of this database
 	 */
+	@Override
 	final public String getLabel() {
 		final String label = settings.getLabel();
 		return label == null || label.isEmpty()
@@ -1740,6 +1767,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
 	 * batch SQL statements, FALSE otherwise
 	 */
+	@Override
 	public synchronized void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
@@ -1764,6 +1792,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	Also note that there is a race condition between the setting of this and your call to dropTable().  If other code
 	calls dropTable() somewhere else, it may get there before you do, so just never use this, OK?
 	 */
+	@Override
 	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
 		this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
 	}
@@ -1844,6 +1873,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return A list of the DBreports generated
 	 * @throws SQLException database exceptions
 	 */
+	@Override
 	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return DBReport.getAllRows(this, report, examples);
 	}
@@ -1910,6 +1940,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param connection connection
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
+	@Override
 	public synchronized void unusedConnection(DBConnection connection) throws SQLException {
 		if (supportsPooledConnections()) {
 			getBusyConnections().remove(connection);
@@ -1956,6 +1987,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @param connection the JDBC connection to be removed
 	 */
+	@Override
 	public synchronized void discardConnection(DBConnection connection) {
 		if (connection != null) {
 			getBusyConnections().remove(connection);
@@ -2002,10 +2034,12 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		throw exp;
 	}
 
+	@Override
 	public final String getUrlFromSettings(DatabaseConnectionSettings oldSettings) {
 		return getURLInterpreter().generateJDBCURL(oldSettings);
 	}
 
+	@Override
 	public final DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 		return getURLInterpreter().fromJDBCURL(jdbcURL).toSettings();
 	}
@@ -2060,6 +2094,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		return getSettings().getDataSource();
 	}
 
+	@Override
 	public void setLastException(Throwable except) {
 		this.exception = except;
 	}
@@ -2083,6 +2118,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		return true;
 	}
 
+	@Override
 	public boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return getDefinition().canProduceNullStrings();
 	}
@@ -2099,6 +2135,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		hasCreatedRequiredTables = b;
 	}
 
+	@Override
 	public LocalDateTime getCurrentLocalDatetime() throws SQLException {
 		DBQuery query = getDBQuery();
 		final String key = "THE DATABASE LOCALDATETIME";
@@ -2109,11 +2146,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			if (value instanceof LocalDateTime) {
 				return (LocalDateTime) value;
 			}
-		} catch (UnexpectedNumberOfRowsException ex) {
-			LOG.error("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME ", ex);
-		} catch (AccidentalCartesianJoinException ex) {
-			LOG.error("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME ", ex);
-		} catch (AccidentalBlankQueryException ex) {
+		} catch (UnexpectedNumberOfRowsException | AccidentalCartesianJoinException | AccidentalBlankQueryException ex) {
 			LOG.error("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME ", ex);
 		}
 		throw new SQLException("UNABLE TO RETRIEVE SYSTEM LOCALDATETIME: " + query.getSQLForQuery());
@@ -2358,6 +2391,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	@Override
 	public abstract Integer getDefaultPort();
 
+	@Override
 	public DatabaseConnectionSettings getSettings() {
 		return settings;
 	}
