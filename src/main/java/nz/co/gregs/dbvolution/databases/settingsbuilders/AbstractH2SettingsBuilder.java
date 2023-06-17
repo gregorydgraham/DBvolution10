@@ -53,6 +53,7 @@ public abstract class AbstractH2SettingsBuilder<SELF extends AbstractH2SettingsB
 		ExtrasCapableSettingsBuilder<SELF, DATABASE> {
 
 	protected static final HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
+	private static final long serialVersionUID = 1L;
 
 	public AbstractH2SettingsBuilder() {
 	}
