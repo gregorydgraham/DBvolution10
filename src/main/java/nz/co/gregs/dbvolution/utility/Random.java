@@ -47,6 +47,18 @@ public class Random {
 
 	private Random() {
 	}
+	
+	public static synchronized int number(){
+		return RANDOM.nextInt();
+	}
+	
+	public static synchronized int NumberBetween(int lower, int upper){
+		// between 1-6 -> 5 but nextInt(5) never returns 5 so +1 -> 6
+		int diff = upper-lower;
+		int randomNumber = RANDOM.nextInt(diff+1);
+		int adjustedNumber = randomNumber+lower;
+		return adjustedNumber;
+	}
 
 	public static synchronized byte[] bytes(int i) {
 		byte[] bytes = new byte[i];
