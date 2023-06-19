@@ -61,7 +61,7 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
  *
  * @author gregorygraham
  */
-public interface DBDatabase extends Serializable{
+public interface DBDatabase extends Serializable {
 
 	public DBDefinition getDefinition() throws NoAvailableDatabaseException;
 
@@ -563,6 +563,8 @@ public interface DBDatabase extends Serializable{
 	DBActionList insertOrUpdate(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException;
 
 	DBActionList insertOrUpdate(DBRow row) throws SQLException;
+
+	DBActionList insertOrUpdate(DBRow... rows) throws SQLException;
 
 	/**
 	 * Get The Rows For The Supplied DBReport Constrained By The Examples.
@@ -1192,7 +1194,7 @@ public interface DBDatabase extends Serializable{
 	 * @throws AccidentalCartesianJoinException Thrown when a query will create a
 	 * Cartesian Join and cartesian joins have not been explicitly permitted.
 	 */
-	default <R extends DBRow> long getCount(R exampleRow) throws SQLException, AccidentalCartesianJoinException{
+	default <R extends DBRow> long getCount(R exampleRow) throws SQLException, AccidentalCartesianJoinException {
 		DBTable<R> dbTable = getDBTable(exampleRow).setBlankQueryAllowed(true);
 		return dbTable.count();
 	}

@@ -519,10 +519,11 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
-	public final DBActionList save(DBRow row) throws SQLException {
-		DBActionList changes = new DBActionList();
-		changes.addAll(insertOrUpdate(row));
-		return changes;
+	public DBActionList save(DBRow row) throws SQLException {
+		return insertOrUpdate(row);
+//		DBActionList changes = new DBActionList();
+//		changes.addAll(insertOrUpdate(row));
+//		return changes;
 	}
 
 	/**
@@ -533,9 +534,10 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
-	public final DBActionList save(DBRow... rows) throws SQLException {
-		final DBActionList save = save(Arrays.asList(rows));
-		return save;
+	public DBActionList save(DBRow... rows) throws SQLException {
+		return insertOrUpdate(rows);
+//		final DBActionList save = save(Arrays.asList(rows));
+//		return save;
 	}
 
 	/**
@@ -546,12 +548,13 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException database exceptions
 	 */
-	public final DBActionList save(Collection<DBRow> rows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (DBRow row : rows) {
-			actions.addAll(save(row));
-		}
-		return actions;
+	public DBActionList save(Collection<DBRow> rows) throws SQLException {
+		return insertOrUpdate(rows);
+//		DBActionList actions = new DBActionList();
+//		for (DBRow row : rows) {
+//			actions.addAll(save(row));
+//		}
+//		return actions;
 	}
 
 	/**
@@ -563,7 +566,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws SQLException database exceptions
 	 */
 	@Override
-	public final DBActionList insert(DBRow row) throws SQLException {
+	public DBActionList insert(DBRow row) throws SQLException {
 		DBActionList changes = new DBActionList();
 		changes.addAll(DBInsert.save(this, row));
 		return changes;
@@ -578,7 +581,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws SQLException database exceptions
 	 */
 	@Override
-	public final DBActionList insert(DBRow... listOfRowsToInsert) throws SQLException {
+	public DBActionList insert(DBRow... listOfRowsToInsert) throws SQLException {
 		if (listOfRowsToInsert.length > 0) {
 			DBBulkInsert insert = new DBBulkInsert();
 			insert.addAll(listOfRowsToInsert);
@@ -596,7 +599,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws SQLException database exceptions
 	 */
 	@Override
-	public final DBActionList insert(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
+	public DBActionList insert(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
 		if (listOfRowsToInsert.size() > 0) {
 			DBBulkInsert dbBulkInsert = new DBBulkInsert();
 			listOfRowsToInsert.forEach(row -> dbBulkInsert.addRow(row));
@@ -614,7 +617,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws SQLException database exceptions
 	 */
 	@Override
-	public final DBActionList insertOrUpdate(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
+	public DBActionList insertOrUpdate(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
 		DBActionList changes = new DBActionList();
 		if (listOfRowsToInsert.size() > 0) {
 			for (DBRow row : listOfRowsToInsert) {
@@ -635,6 +638,15 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			} catch (SQLException exc2) {
 				throw exc1;
 			}
+		}
+		return changes;
+	}
+
+	@Override
+	public DBActionList insertOrUpdate(DBRow... rows) throws SQLException {
+		DBActionList changes = new DBActionList();
+		for (DBRow row : rows) {
+			changes.addAll(insertOrUpdate(row));
 		}
 		return changes;
 	}
@@ -1049,7 +1061,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	public DBActionList implement(DBScript script) throws Exception {
 		return script.implement(this);
 	}
-	
+
 	/**
 	 * Returns the name of the JDBC driver class used by this DBDatabase instance.
 	 *
@@ -2466,13 +2478,14 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	@Override
 	public synchronized void stop() {
 		terminated = true;
-		LOG.info("STOPPING: " + this.getLabel());
-		LOG.info("STOPPING: Regular Processors");
+		String stopping = "STOPPING: " + this.getLabel();
+		LOG.info(stopping);
+		LOG.info(stopping+ " Regular Processors");
 		for (RegularProcess regularProcessor : getRegularProcessors()) {
-			LOG.info("STOPPING: " + regularProcessor.getSimpleName());
+			LOG.info(stopping+ " " + regularProcessor.getSimpleName());
 			regularProcessor.stop();
 		}
-		LOG.info("STOPPING: Regular Processor");
+		LOG.info(stopping+ " Regular Processor");
 		if (regularThreadPoolFuture != null) {
 			regularThreadPoolFuture.cancel(true);
 			regularThreadPoolFuture = null;
@@ -2487,7 +2500,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			}
 			if (transactionConnection != null) {
 				try {
-					LOG.info("STOPPING: transaction connection");
+					LOG.info(stopping+ " transaction connection");
 					discardConnection(transactionConnection);
 				} catch (Exception ex) {
 				}
@@ -2496,7 +2509,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			synchronized (freeConnections) {
 				final DBConnection[] free = freeConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : free) {
-					LOG.info("STOPPING: free connection");
+					LOG.info(stopping+ " free connection");
 					discardConnection(connection);
 				}
 			}
@@ -2504,13 +2517,13 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			synchronized (busyConnections) {
 				final DBConnection[] busy = busyConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : busy) {
-					LOG.info("STOPPING: busy connection");
+					LOG.info(stopping+ " busy connection");
 					discardConnection(connection);
 				}
 			}
 			try {
 				if (storedConnection != null) {
-					LOG.info("STOPPING: stored connection");
+					LOG.info(stopping+ " stored connection");
 					storedConnection.close();
 				}
 			} catch (SQLException ex) {
