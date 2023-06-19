@@ -56,11 +56,12 @@ public class Brake implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private boolean brakeRequired = true;
+	private boolean brakeRequired;
 	private transient final Object monitor = new Object();
 	private long timeout = 10000;
 
 	public Brake() {
+		brakeRequired = false;
 	}
 
 	public static final Brake withTimeoutInMilliseconds(long milliseconds) {
@@ -71,6 +72,7 @@ public class Brake implements Serializable {
 
 	public static final Brake untilReleased() {
 		var result = new Brake();
+		result.apply();
 		result.timeout = 0;
 		return result;
 	}
