@@ -695,11 +695,6 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean supportsTableCheckingViaMetaData() {
-		return false;
-	}
-
-	@Override
 	public String getTableExistsSQL(DBRow table) {
 		return "SELECT COUNT(*) FROM " + this.formatTableName(table);
 	}

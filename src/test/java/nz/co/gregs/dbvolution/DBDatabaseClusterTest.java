@@ -60,6 +60,8 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -113,7 +115,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			assertThat(cluster.getDBTable(testTable).count(), is(22l));
 			assertThat(soloDB.getDBTable(testTable).count(), is(22l));
 
-			SlowSynchingDatabase slowSynchingDB = SlowSynchingDatabase.createANewRandomDatabase("SlowSynchingDatabase-", "-H2");
+			TestingDatabase slowSynchingDB = TestingDatabase.createANewRandomDatabase("SlowSynchingDatabase-", "-H2");
 			Brake brake = slowSynchingDB.getBrake();
 			brake.setTimeout(10);
 
@@ -586,14 +588,41 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public synchronized void testDatabaseRemovedAfterErrorInDelete() throws ClusterHasQuarantinedADatabaseException, SQLException {
+	public synchronized void testDatabaseRemovedAfterPersistentErrorInDelete() throws ClusterHasQuarantinedADatabaseException, SQLException {
 		try (DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
 			cluster.setLabel("testDatabaseRemovedAfterErrorInDelete");
-			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
-			cluster.addDatabaseAndWait(soloDB2);
+			var testingDB = TestingDatabase.createANewRandomDatabase();
+			cluster.addDatabaseAndWait(testingDB);
 			assertThat(cluster.size(), is(2));
-			cluster.setFailOnQuarantine(false);
+			final TableThatDoesExistOnTheCluster tab = new TableThatDoesExistOnTheCluster();
+			tab.pkid.setValue(1);
+			try {
+				// avoid printing lots of exceptions
+				cluster.setQuietExceptionsPreference(true);
+				testingDB.setFailOnDelete(true);
+				// do the actual action we're trying to test
+				cluster.delete(tab);
+			} catch (SQLException exc) {
+				// we don't expect a failure here so print the stacktrace and fail
+				exc.printStackTrace();
+				Assert.fail("UNEXPECTED EXCEPTION");
+			} finally {
+				cluster.setQuietExceptionsPreference(false);
+				assertThat(cluster.size(), is(1));
+			}
+		}
+	}
+
+	@Test
+	public synchronized void testClusterUnchangedAfterDeletingFromNonExistentTable() throws ClusterHasQuarantinedADatabaseException, SQLException {
+		boolean succeeded = false;
+		try (DBDatabaseCluster cluster
+				= DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("testDatabaseRemovedAfterErrorInDelete");
+			var testingDB = H2MemoryDB.createANewRandomDatabase();
+			cluster.addDatabaseAndWait(testingDB);
+			assertThat(cluster.size(), is(2));
 			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
 			tab.pkid.setValue(1);
 			try {
@@ -601,13 +630,16 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				cluster.setQuietExceptionsPreference(true);
 				// do the actual action we're trying to test
 				cluster.delete(tab);
-			} catch (Exception exc) {
-				// we expect something to go wrong
+			} catch (SQLException exc) {
+				// we expect it to throw an SQLException because it can't perform it on any database
+				assertThat(cluster.size(), is(2));
+				succeeded = true;
 			} finally {
 				cluster.setQuietExceptionsPreference(false);
 			}
-			assertThat(cluster.size(), is(1));
+			assertThat(cluster.size(), is(2));
 		}
+		assertThat(succeeded, is(true));
 	}
 
 	@Test(expected = SQLException.class)
@@ -631,45 +663,57 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public synchronized void testDatabaseRemovedAfterFailingInsertPersistantly() throws SQLException {
+	public synchronized void testDatabaseRemovedAfterFailingInsertPersistently() throws SQLException {
 		try (DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
-			cluster.setLabel("testDatabaseRemovedAfterErrorInInsert");
-			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
-			cluster.addDatabaseAndWait(soloDB2);
+			cluster.setLabel("testDatabaseRemovedAfterFailingInsertPersistently");
+			TestingDatabase testingDB = TestingDatabase.createANewRandomDatabase();
+			cluster.addDatabaseAndWait(testingDB);
 			assertThat(cluster.size(), is(2));
-			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
-			tab.pkid.setValue(1);
+			var row = new CarCompany("GREAT WALL", 17);
 			try {
 				// avoid printing lots of exceptions
 				cluster.setQuietExceptionsPreference(true);
-				cluster.insert(tab);
+				testingDB.setFailOnInsert(true);
+				cluster.insert(row);
 			} catch (SQLException e) {
+				e.printStackTrace();
 			} finally {
+				testingDB.setFailOnInsert(false);
 				cluster.setQuietExceptionsPreference(false);
-				assertThat(cluster.size(), is(1));
+				try {
+					assertThat(cluster.size(), is(1));
+				} finally {
+					cluster.delete(row);
+				}
+
 			}
 		}
 	}
 
-	@Test(expected = SQLException.class)
+	@Test()
 	public synchronized void testDatabaseRemovedAfterErrorInUpdate() throws SQLException {
 		try (DBDatabaseCluster cluster
 				= DBDatabaseCluster.randomManualCluster(database)) {
 			cluster.setLabel("testDatabaseRemovedAfterErrorInUpdate");
-			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
-			cluster.addDatabaseAndWait(soloDB2);
+			CarCompany row = new CarCompany("GREAT WALL", 17);
+			cluster.insert(row);
+			row.name.setValue("GREATER WALL");
+			var testingDB = TestingDatabase.createANewRandomDatabase();
+			cluster.addDatabaseAndWait(testingDB);
 			assertThat(cluster.size(), is(2));
-			final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
-			tab.pkid.setValue(1);
-			tab.setDefined();//naughty, but needed otherwise the update won't be generated
-			tab.pkid.setValue(2);
 			try {
 				// avoid printing lots of exceptions
 				cluster.setQuietExceptionsPreference(true);
-				cluster.update(tab);
+				testingDB.setFailOnUpdate(true);
+				cluster.update(row);
 			} finally {
 				cluster.setQuietExceptionsPreference(false);
+				try {
+					assertThat(cluster.size(), is(1));
+				} finally {
+					cluster.delete(row);
+				}
 			}
 		}
 	}
@@ -679,31 +723,27 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
 			cluster.setLabel("testDatabaseRemovedAfterErrorInCreateTable");
 
-			cluster.createTableNoExceptions(new TableThatDoesExistOnTheCluster());
-
-			final H2MemorySettingsBuilder settings
-					= new H2MemorySettingsBuilder()
-							.setLabel("testDatabaseRemovedAfterErrorInCreateTable")
-							.setDatabaseName("testDatabaseRemovedAfterErrorInCreateTable")
-							.setUsername("who")
-							.setPassword("what");
-			H2MemoryDB soloDB2 = new H2MemoryDB(settings) {
-				private static final long serialVersionUID = 1l;
-
-				@Override
-				public DBActionList createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-					if (newTableRow instanceof TableThatDoesExistOnTheCluster) {
-						throw new SQLException("DELIBERATE EXCEPTION");
-					} else {
-						return super.createTable(newTableRow, includeForeignKeyClauses);
-					}
-				}
-
-			};
+			var testingDB = TestingDatabase.createANewRandomDatabase();
 //			cluster.setQuietExceptionsPreference(true);
-			cluster.addDatabaseAndWait(soloDB2);
-//			cluster.setQuietExceptionsPreference(false);
-			assertThat(cluster.size(), is(1));
+			cluster.addDatabaseAndWait(testingDB);
+			assertThat(cluster.size(), is(2));
+			try {
+				// avoid printing lots of exceptions
+				cluster.setQuietExceptionsPreference(true);
+				// set the database to fail whenever creating databases
+				testingDB.setFailOnCreateTable(true);
+				// try to create the table via the cluster and thus get quarantined
+				cluster.createTableNoExceptions(new TableThatDoesExistOnTheCluster());
+			} finally {
+				cluster.setQuietExceptionsPreference(false);
+				try {
+					assertThat(cluster.size(), is(1));
+				} finally {
+					// drop the table so we don't interfere with other tests
+					cluster.preventDroppingOfTables(false);
+					cluster.dropTable(new TableThatDoesExistOnTheCluster());
+				}
+			}
 		}
 	}
 

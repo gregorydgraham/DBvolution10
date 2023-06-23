@@ -241,6 +241,11 @@ public class DBDatabaseHandle implements DBDatabase {
 	}
 
 	@Override
+	public DBActionList insertOrUpdate(DBRow... rows) throws SQLException {
+		return wrappedDatabase.insertOrUpdate(rows);
+	}
+
+	@Override
 	public DBActionList insertOrUpdate(DBRow row) throws SQLException {
 		return wrappedDatabase.insertOrUpdate(row);
 	}
@@ -704,7 +709,7 @@ public class DBDatabaseHandle implements DBDatabase {
 	}
 
 	@Override
-	public DBDatabaseMetaData getDBDatabaseMetaData(Options options)  throws SQLException{
+	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException {
 		return wrappedDatabase.getDBDatabaseMetaData(options);
 	}
 

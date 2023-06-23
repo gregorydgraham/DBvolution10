@@ -32,22 +32,33 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.utility.Brake;
 
 /**
  *
  * @author gregorygraham
  */
-public class SlowSynchingDatabase extends H2MemoryDB {
+public class TestingDatabase extends H2MemoryDB {
 
-	private final Brake controller = new Brake();
 	private static final long serialVersionUID = 1l;
 
-	private SlowSynchingDatabase(H2MemorySettingsBuilder builder) throws SQLException {
+	private final Brake controller = new Brake();
+
+	private boolean failOnInsert = false;
+	private boolean failOnUpdate = false;
+	private boolean failOnCreateTable=false;
+	private boolean failOnDelete = false;
+
+	public void setFailOnUpdate(boolean failOnUpdate) {
+		this.failOnUpdate = failOnUpdate;
+	}
+
+	private TestingDatabase(H2MemorySettingsBuilder builder) throws SQLException {
 		super(builder);
 	}
 
@@ -63,8 +74,8 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	 * @return a database that takes a long time to synch
 	 * @throws SQLException if a database error occurs
 	 */
-	public static SlowSynchingDatabase createDatabase(String label) throws SQLException {
-		return new SlowSynchingDatabase(new H2MemorySettingsBuilder().setDatabaseName(label).setLabel(label));
+	public static TestingDatabase createDatabase(String label) throws SQLException {
+		return new TestingDatabase(new H2MemorySettingsBuilder().setDatabaseName(label).setLabel(label));
 	}
 
 	/**
@@ -77,7 +88,7 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	 * @return a new slow synching database
 	 * @throws SQLException if a database error occurs
 	 */
-	public static SlowSynchingDatabase createANewRandomDatabase() throws SQLException {
+	public static TestingDatabase createANewRandomDatabase() throws SQLException {
 		return createANewRandomDatabase("", "");
 	}
 
@@ -93,11 +104,11 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 	 * @return a new slow synching database
 	 * @throws SQLException if a database error occurs
 	 */
-	public static SlowSynchingDatabase createANewRandomDatabase(String prefix, String postfix) throws SQLException {
+	public static TestingDatabase createANewRandomDatabase(String prefix, String postfix) throws SQLException {
 		final H2MemorySettingsBuilder settings = new H2MemorySettingsBuilder().withUniqueDatabaseName();
 		settings.setDatabaseName(prefix + settings.getDatabaseName() + postfix);
 		settings.setLabel(settings.getDatabaseName());
-		return new SlowSynchingDatabase(settings);
+		return new TestingDatabase(settings);
 	}
 
 	@Override
@@ -107,6 +118,35 @@ public class SlowSynchingDatabase extends H2MemoryDB {
 
 	public Brake getBrake() {
 		return controller;
+	}
+
+	public void setFailOnInsert(boolean failOnInsert) {
+		this.failOnInsert = failOnInsert;
+	}
+
+	public void setFailOnCreateTable(boolean failOnCreateTable) {
+		this.failOnCreateTable = failOnCreateTable;
+	}
+
+	public void setFailOnDelete(boolean failOnDelete) {
+		this.failOnDelete = failOnDelete;
+	}
+
+	@Override
+	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
+		if (failOnInsert && (action instanceof DBInsert)){
+			throw new SQLException("DELIBERATELY FAILING DURING INSERT");
+		}
+		if (failOnUpdate && (action instanceof DBUpdate)){
+			throw new SQLException("DELIBERATELY FAILING DURING UPDATE");
+		}
+		if (failOnCreateTable && (action instanceof DBCreateTable)){
+			throw new SQLException("DELIBERATELY FAILING DURING CREATE TABLE");
+		}
+		if (failOnDelete && (action instanceof DBDelete)){
+			throw new SQLException("DELIBERATELY FAILING DURING DELETE");
+		}
+		return super.executeDBAction(action);
 	}
 
 	private static class SlowSynchingDBTable<E extends DBRow> extends DBTable<E> {

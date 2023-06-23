@@ -25,7 +25,6 @@ import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +53,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class DBAction implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log LOG = LogFactory.getLog(DBInsert.class);
+	private static final Log LOG = LogFactory.getLog(DBAction.class);
 
 	final DBRow row;
 	private RefetchRequirement refetchStatus = RefetchRequirement.REFETCH;
@@ -172,7 +171,11 @@ public abstract class DBAction implements Serializable {
 	public abstract DBActionList execute(DBDatabase db) throws SQLException;
 
 	public boolean requiresRunOnIndividualDatabaseBeforeCluster() {
-		return false;
+		// this was FALSE to allow for effeciency
+		// but maintaining the cluster is more important
+		// so every type of DBAction must run successfully 
+		// at least once
+		return true;
 	}
 
 	public boolean runOnDatabaseDuringCluster(DBDatabase initialDatabase, DBDatabase next) {

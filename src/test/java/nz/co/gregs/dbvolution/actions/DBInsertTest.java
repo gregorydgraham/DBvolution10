@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.SlowSynchingDatabase;
+import nz.co.gregs.dbvolution.TestingDatabase;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.InstantColumn;
 import nz.co.gregs.dbvolution.columns.LocalDateTimeColumn;
@@ -565,7 +565,7 @@ public class DBInsertTest extends AbstractTest {
 					DBDatabaseCluster.Configuration.autoStart(),
 					database)) {
 
-				SlowSynchingDatabase slowDatabase2 = SlowSynchingDatabase.createANewRandomDatabase("testDefaultValuesAreConsistentInCluster-", "-2");
+				TestingDatabase slowDatabase2 = TestingDatabase.createANewRandomDatabase("testDefaultValuesAreConsistentInCluster-", "-2");
 				Brake brake = slowDatabase2.getBrake();
 				brake.setTimeout(10000);
 				brake.release();
@@ -574,7 +574,7 @@ public class DBInsertTest extends AbstractTest {
 				cluster.getDetails().setPreferredDatabase(slowDatabase2);
 
 				brake.apply();
-				SlowSynchingDatabase slowDatabase3 = SlowSynchingDatabase.createANewRandomDatabase("testDefaultValuesAreConsistentInCluster-", "-3");
+				TestingDatabase slowDatabase3 = TestingDatabase.createANewRandomDatabase("testDefaultValuesAreConsistentInCluster-", "-3");
 				brake = slowDatabase3.getBrake();
 				brake.setTimeout(10000);
 				brake.release();

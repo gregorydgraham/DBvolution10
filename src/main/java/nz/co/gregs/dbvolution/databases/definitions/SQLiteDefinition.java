@@ -1003,11 +1003,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 	}
 
 	@Override
-	public boolean supportsTableCheckingViaMetaData() {
-		return false;
-	}
-
-	@Override
 	public boolean supportsNullsOrderingStandard() {
 		return false;
 	}

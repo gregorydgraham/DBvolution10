@@ -184,11 +184,6 @@ public class MySQLDB extends DBDatabaseImplementation implements SupportsPolygon
 	}
 
 	@Override
-	protected boolean checkMetaDataForTable(DBRow table, ResultSet rset) throws SQLException {
-		return super.checkMetaDataForTable(table, rset);
-	}
-
-	@Override
 	public DBDatabaseMetaData getDBDatabaseMetaData(Options options)  throws SQLException{
 		return new MySQLDBDatabaseMetaData(options);
 	}

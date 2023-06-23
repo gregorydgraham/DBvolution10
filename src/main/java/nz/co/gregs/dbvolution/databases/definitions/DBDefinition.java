@@ -6654,7 +6654,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public boolean supportsTableCheckingViaMetaData() {
-		return true;
+		return false;
 	}
 
 	public boolean requiresOnClauseForAllJoins() {
