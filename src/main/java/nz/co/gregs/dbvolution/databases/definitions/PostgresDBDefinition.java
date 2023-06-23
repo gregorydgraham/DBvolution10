@@ -939,11 +939,6 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean supportsTableCheckingViaMetaData() {
-		return false;
-	}
-
-	@Override
 	public boolean requiresOnClauseForAllJoins() {
 		return true;
 	}

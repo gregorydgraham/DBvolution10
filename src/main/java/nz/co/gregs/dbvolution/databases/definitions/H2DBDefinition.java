@@ -681,11 +681,6 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 	}
 
 	@Override
-	public boolean supportsTableCheckingViaMetaData() {
-		return false;
-	}
-
-	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
 		return "GROUP_CONCAT(" + accumulateColumn + " SEPARATOR " + doStringLiteralWrapping(separator) + ")";
 	}
@@ -697,9 +692,6 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	/**
 	 * Creates the CURRENTTIME function for this database.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the default implementation returns " CURRENT_TIMESTAMP "
 	 */
