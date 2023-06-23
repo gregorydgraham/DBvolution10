@@ -2189,7 +2189,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public synchronized void preventAccidentalDroppingOfTables(DBAction action) throws AccidentalDroppingOfTableException {
+	protected synchronized void preventAccidentalDroppingOfTables(DBAction action) throws AccidentalDroppingOfTableException {
 		if (preventAccidentalDroppingOfTables && action.getIntent().isDropTable()) {
 			throw new AccidentalDroppingOfTableException();
 		} else {
@@ -2197,7 +2197,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		}
 	}
 
-	public synchronized void preventAccidentalDeletingAllRowsFromTable(DBAction action) throws AccidentalDroppingOfTableException {
+	protected synchronized void preventAccidentalDeletingAllRowsFromTable(DBAction action) throws AccidentalDroppingOfTableException {
 		if (preventAccidentalDeletingAllRowFromTable && action.getIntent().isDeleteAllRows()) {
 			throw new AccidentalDeletingAllRowsFromTableException();
 		} else {
