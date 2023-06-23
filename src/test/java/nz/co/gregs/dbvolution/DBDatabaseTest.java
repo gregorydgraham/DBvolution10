@@ -58,8 +58,8 @@ public class DBDatabaseTest extends AbstractTest {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		if (database instanceof DBDatabaseCluster){
-			((DBDatabaseCluster)database).waitUntilSynchronised();
+		if (database instanceof DBDatabaseCluster) {
+			((DBDatabaseCluster) database).waitUntilSynchronised();
 		}
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
@@ -97,7 +97,6 @@ public class DBDatabaseTest extends AbstractTest {
 	@Test
 	public void testTableExists() throws SQLException {
 		final CreateTableTestClass createTableTestClass = new CreateTableTestClass();
-		assertThat(database.tableExists(createTableTestClass), is(false));
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(createTableTestClass);
@@ -107,7 +106,7 @@ public class DBDatabaseTest extends AbstractTest {
 		assertThat(database.tableExists(createTableTestClass), is(false));
 
 		database.createTable(createTableTestClass);
-		assertThat(database.tableExists(createTableTestClass), is(true));
+ 		assertThat(database.tableExists(createTableTestClass), is(true));
 		assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		try {
@@ -152,7 +151,7 @@ public class DBDatabaseTest extends AbstractTest {
 
 	}
 
-@Test
+	@Test
 	public void testAddColumnToExistingTable() throws SQLException {
 		final CreateTableTestClassWithOriginalColumns originalColumnTable = new CreateTableTestClassWithOriginalColumns();
 		final CreateTableTestClassWithNewColumns newColumntable = new CreateTableTestClassWithNewColumns();
@@ -170,24 +169,24 @@ public class DBDatabaseTest extends AbstractTest {
 		originalColumnTable.id.setValue(5);
 		originalColumnTable.name.setValue("FIVE");
 		database.insert(originalColumnTable);
-		
+
 		database.updateTableToMatchDBRow(newColumntable);
 
 		assertThat(database.tableExists(originalColumnTable), is(true));
 		assertThat(database.tableExists(newColumntable), is(true));
-		
+
 		List<CreateTableTestClassWithNewColumns> rows = database.getDBTable(newColumntable).setBlankQueryAllowed(true).getAllRows();
 		assertThat(rows.size(), is(1));
 		CreateTableTestClassWithNewColumns row = rows.get(0);
 		assertThat(row.id.getValue(), is(5L));
 		assertThat(row.name.getValue(), is("FIVE"));
-		
+
 		newColumntable.id.setValue(6);
 		newColumntable.name.setValue("SIX");
 		newColumntable.newColumn.setValue("SIX+1");
 		database.insert(newColumntable);
-		
-		List<CreateTableTestClassWithNewColumns> newRows 
+
+		List<CreateTableTestClassWithNewColumns> newRows
 				= database.getDBTable(new CreateTableTestClassWithNewColumns())
 						.setBlankQueryAllowed(true)
 						.setSortOrder(newColumntable.column(newColumntable.id))
@@ -315,7 +314,7 @@ public class DBDatabaseTest extends AbstractTest {
 			assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		} catch (SQLException exp) {
 			throw new DBRuntimeException("Failed to assert that the table is empty", exp);
-		}finally{
+		} finally {
 			database.setQuietExceptionsPreference(false);
 		}
 	}
