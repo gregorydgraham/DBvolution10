@@ -219,7 +219,7 @@ public class DBInsert extends DBAction {
 							executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
 //							successfulInsertAt = 6;
 						} catch (SQLException ex) {
-							throw new DBSQLException(db, sql, sqlex);
+							throw ex;
 						}
 					}
 				} else {
@@ -229,7 +229,7 @@ public class DBInsert extends DBAction {
 						updatePrimaryKeyByRetreivingLastInsert(statement, defn, table);
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException ex) {
-						throw new DBSQLException(db, sql, ex);
+						throw ex;
 					}
 				}
 			}
