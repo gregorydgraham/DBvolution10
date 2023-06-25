@@ -96,7 +96,7 @@ public abstract class AbstractTest {
 							"testSmallCluster",
 							DBDatabaseCluster.Configuration.autoStart(),
 							getSQLiteDBFromSystem(),
-							new H2MemorySettingsBuilder().fromSystemUsingPrefix("h2memory").getDBDatabase()
+							H2MemoryDB.createANewRandomDatabase("CLUSTER-SMALL-H2Mem-", "")
 					);
 			cluster.setLabel("ClusteredDB-H2+SQLite");
 			cluster.waitUntilSynchronised();
@@ -106,7 +106,7 @@ public abstract class AbstractTest {
 		if (System.getProperty("testBundledCluster") != null) {
 			final DBDatabaseCluster cluster = new DBDatabaseCluster("testBundledCluster", DBDatabaseCluster.Configuration.autoStart(),
 					getSQLiteDBFromSystem("bundle"),
-					H2MemoryTestDB.getFromSettings("h2memory")
+					H2MemoryDB.createANewRandomDatabase("CLUSTER-BUNDLED-H2Mem-", "")
 			);
 			cluster.setLabel("ClusteredDB-H2+SQLite");
 			cluster.waitUntilSynchronised();
@@ -118,7 +118,8 @@ public abstract class AbstractTest {
 					= new DBDatabaseCluster(
 							"testOpenSourceCluster",
 							DBDatabaseCluster.Configuration.autoStart(),
-							H2MemoryTestDB.getFromSettings("h2memory"),
+							H2MemoryDB.createANewRandomDatabase("CLUSTER-OPENSOURCE-H2Mem-", ""),
+//							H2MemoryTestDB.getFromSettings("h2memory"),
 							getSQLiteDBFromSystem("open"),
 							postgresDB,
 							new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").setDatabaseName("dbvcluster").getDBDatabase()
@@ -128,7 +129,8 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{cluster.getLabel(), cluster});
 		}
 		if (System.getProperty("testFullCluster") != null) {
-			final H2MemoryDB h2Mem = H2MemoryTestDB.getFromSettings("h2memory");
+			final H2MemoryDB h2Mem = H2MemoryDB.createANewRandomDatabase("CLUSTER-FULL-H2Mem-", "");
+//			final H2MemoryDB h2Mem = H2MemoryTestDB.getFromSettings("h2memory");
 			final SQLiteDB sqlite = getSQLiteDBFromSystem("full");
 			final PostgresDB postgres = new PostgresSettingsBuilder().fromSystemUsingPrefix("postgresfullcluster").getDBDatabase();
 			final MySQLDB mysql = new MySQLSettingsBuilder().fromSystemUsingPrefix("mysql").getDBDatabase();
