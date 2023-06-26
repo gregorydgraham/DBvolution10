@@ -35,4 +35,9 @@ package nz.co.gregs.dbvolution.exceptions;
 public class NoAvailableDatabaseException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1l;
+
+	public NoAvailableDatabaseException() {
+		fillInStackTrace();
+//		printStackTrace();
+	}
 }

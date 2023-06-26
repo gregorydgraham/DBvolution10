@@ -45,9 +45,13 @@ public class DatabaseList implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/* TODO combine these into one list of a data object */
-	private final Map<String, DBDatabase> databaseMap = Collections.synchronizedMap(new HashMap<String, DBDatabase>());
-	private final Map<String, DBDatabaseCluster.Status> statusMap = Collections.synchronizedMap(new HashMap<String, DBDatabaseCluster.Status>(0));
-	private final Map<String, Integer> quarantineCountMap = Collections.synchronizedMap(new HashMap<String, Integer>(0));
+	private final HashMap<String, DBDatabase> databaseMap = new HashMap<String, DBDatabase>();
+	private final HashMap<String, DBDatabaseCluster.Status> statusMap = new HashMap<String, DBDatabaseCluster.Status>(0);
+	private final HashMap<String, Integer> quarantineCountMap = new HashMap<String, Integer>(0);
+
+//	private final Map<String, DBDatabase> databaseMap = Collections.synchronizedMap(new HashMap<String, DBDatabase>());
+//	private final Map<String, DBDatabaseCluster.Status> statusMap = Collections.synchronizedMap(new HashMap<String, DBDatabaseCluster.Status>(0));
+//	private final Map<String, Integer> quarantineCountMap = Collections.synchronizedMap(new HashMap<String, Integer>(0));
 
 	public synchronized int size() {
 		return databaseMap.size();
@@ -90,7 +94,7 @@ public class DatabaseList implements Serializable {
 		return true;
 	}
 
-	public boolean containsAll(Collection<DBDatabase> c) {
+	public synchronized boolean containsAll(Collection<DBDatabase> c) {
 		boolean allAreInTheMap = c
 				.stream()
 				.allMatch(t -> databaseMap.containsKey(getKey(t))
@@ -98,25 +102,25 @@ public class DatabaseList implements Serializable {
 		return allAreInTheMap;
 	}
 
-	public boolean addAll(Collection<? extends DBDatabase> collectionOfDatabases) {
+	public synchronized boolean addAll(Collection<? extends DBDatabase> collectionOfDatabases) {
 		for (DBDatabase dBDatabase : collectionOfDatabases) {
 			this.add(dBDatabase);
 		}
 		return true;
 	}
 
-	public boolean addAll(int index, Collection<? extends DBDatabase> c) {
+	public synchronized boolean addAll(int index, Collection<? extends DBDatabase> c) {
 		return addAll(c);
 	}
 
-	public boolean removeAll(Collection<DBDatabase> collectionOfDatabases) {
+	public synchronized boolean removeAll(Collection<DBDatabase> collectionOfDatabases) {
 		for (DBDatabase db : collectionOfDatabases) {
 			remove(db);
 		}
 		return true;
 	}
 
-	private String getKey(DBDatabase db) {
+	private synchronized String getKey(DBDatabase db) {
 		return db.getSettings().encode();
 	}
 
@@ -142,35 +146,35 @@ public class DatabaseList implements Serializable {
 		}
 	}
 
-	public void setReady(DBDatabase db) {
+	public synchronized void setReady(DBDatabase db) {
 		set(db, READY);
 	}
 
-	public void setUnsynchronised(DBDatabase db) {
+	public synchronized void setUnsynchronised(DBDatabase db) {
 		set(db, UNSYNCHRONISED);
 	}
 
-	public void setPaused(DBDatabase db) {
+	public synchronized void setPaused(DBDatabase db) {
 		set(db, PAUSED);
 	}
 
-	public void setDead(DBDatabase db) {
+	public synchronized void setDead(DBDatabase db) {
 		set(db, DEAD);
 	}
 
-	public void setQuarantined(DBDatabase db) {
+	public synchronized void setQuarantined(DBDatabase db) {
 		set(db, QUARANTINED);
 	}
 
-	public void setUnknown(DBDatabase db) {
+	public synchronized void setUnknown(DBDatabase db) {
 		set(db, UNKNOWN);
 	}
 
-	public void setProcessing(DBDatabase db) {
+	public synchronized void setProcessing(DBDatabase db) {
 		set(db, PROCESSING);
 	}
 
-	public void setSynchronising(DBDatabase db) {
+	public synchronized void setSynchronising(DBDatabase db) {
 		set(db, SYNCHRONIZING);
 	}
 
@@ -214,7 +218,7 @@ public class DatabaseList implements Serializable {
 		return getDatabases(statuses).length;
 	}
 
-	public void clear() {
+	public synchronized void clear() {
 		statusMap.clear();
 		databaseMap.clear();
 	}
@@ -223,18 +227,18 @@ public class DatabaseList implements Serializable {
 		return countDatabases(DBDatabaseCluster.Status.READY) == databaseMap.size();
 	}
 
-	private void incrementQuarantineCount(DBDatabase db) {
+	private synchronized void incrementQuarantineCount(DBDatabase db) {
 		String key = getKey(db);
 		Integer currentValue = quarantineCountMap.get(key);
 		quarantineCountMap.put(key, currentValue + 1);
 	}
 
-	private void clearQuarantineCount(DBDatabase db) {
+	private synchronized void clearQuarantineCount(DBDatabase db) {
 		String key = getKey(db);
 		quarantineCountMap.put(key, 0);
 	}
 
-	public boolean isDead(DBDatabase db) {
+	public synchronized boolean isDead(DBDatabase db) {
 		if (DEAD.equals(getStatusOf(db))) {
 			return true;
 		}

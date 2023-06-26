@@ -251,7 +251,16 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		 * SYNCHRONIZING databases are being actively updated to match the cluster
 		 * schema and data.
 		 */
-		SYNCHRONIZING
+		SYNCHRONIZING;
+
+		public boolean equals(Status... statuses) {
+			for (Status status : statuses) {
+				if (this.equals(status)) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 	public DBDatabaseCluster() throws SQLException {
@@ -1010,6 +1019,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 				}
 				ACTION_THREAD_POOL.invokeAll(tasks);
 			} else {
+				removeActionFromQueue(action);
 				throw firstException;
 			}
 		} catch (InterruptedException ex) {
@@ -1173,6 +1183,13 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		for (DBDatabase db : getDetails().getAllDatabases()) {
 			Queue<DBAction> queue = getDetails().getActionQueue(db);
 			queue.add(action);
+		}
+	}
+
+	private void removeActionFromQueue(DBAction action) {
+		for (DBDatabase db : getDetails().getAllDatabases()) {
+			Queue<DBAction> queue = getDetails().getActionQueue(db);
+			queue.remove(action);
 		}
 	}
 

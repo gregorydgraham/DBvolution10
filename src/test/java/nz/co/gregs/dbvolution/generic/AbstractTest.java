@@ -352,11 +352,17 @@ public abstract class AbstractTest {
 	}
 
 	public void setup(DBDatabase database) throws Exception {
+		try{
 		if (database != null) {
 			if (database instanceof DBDatabaseCluster) {
+				try{
 				DBDatabaseCluster cluster = (DBDatabaseCluster) database;
 				cluster.reconnectQuarantinedDatabases();
 				cluster.waitUntilSynchronised();
+				}catch(Exception ex){
+					ex.printStackTrace();
+					throw ex;
+				}
 			}
 			database.preventDroppingOfTables(false);
 			database.dropTableIfExists(new Marque());
@@ -413,6 +419,10 @@ public abstract class AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 			database.createOrUpdateTable(new LinkCarCompanyAndLogo());
+		}
+		}catch (Exception ex){
+			ex.printStackTrace();
+			throw ex;
 		}
 	}
 
