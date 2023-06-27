@@ -1482,7 +1482,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	}
 
 	@Test
-//	@Ignore
 	public void testDayDifferenceFunction() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
@@ -1513,7 +1512,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
-//		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1523,14 +1521,12 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		got = query.getAllInstancesOf(marq);
 
 		MarqueWithLocalDateTime secondDateMarques = new MarqueWithLocalDateTime();
-//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		secondDateMarques.creationLocalDateTime.permittedValues(secondLocalDateTime);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
 		assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
 	@Test
-//	@Ignore
 	public void testWeekDifferenceFunction() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
@@ -1547,8 +1543,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
-//		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1564,7 +1558,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	}
 
 	@Test
-//	@Ignore
 	public void testMonthDifferenceFunction() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
@@ -1581,8 +1574,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
-//		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1598,7 +1589,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	}
 
 	@Test
-//	@Ignore
 	public void testYearDifferenceFunction() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
@@ -1615,8 +1605,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
-//		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1637,7 +1625,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	}
 
 	@Test
-//	@Ignore
 	public void testHourDifferenceFunction() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
@@ -1654,8 +1641,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
-//		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1671,7 +1656,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 	}
 
 	@Test
-//	@Ignore
 	public void testMinutesDifferenceFunction() throws SQLException, ParseException {
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
@@ -1688,8 +1672,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
-//		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1721,9 +1703,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		LocalDateTime secondLocalDateTime = LocalDateTime.of(2011, Month.APRIL, 2, 1, 2, 3);
-//		LocalDateTime secondLocalDateTime = LocalDateTime.parse(AbstractTest.secondDateStr.subSequence(0, secondDateStr.length()), LOCALDATETIME_FORMAT);
-//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
-//		Date secondDate = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.getDefault()).parse(secondDateStr);
 		marq = new MarqueWithLocalDateTime();
 		query = database.getDBQuery(marq).setQueryLabel("FIND CREATION DATE WITHIN 1 SECOND OF SECOND DATE");
 		query.addCondition(
@@ -1793,7 +1772,6 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 		final LocalDateTime april1st2011 = LocalDateTime.of(2011, Month.APRIL, 1, 1, 2, 3);
 		final LocalDateTime nullDate = null;
 		for (MarqueWithEndOfMonthOfLocalDateTimeColumn allRow : allRows) {
-//			System.out.println(allRow);
 			assertThat(allRow.endOfMonth.getValue(),
 					anyOf(
 							is(nullDate),
