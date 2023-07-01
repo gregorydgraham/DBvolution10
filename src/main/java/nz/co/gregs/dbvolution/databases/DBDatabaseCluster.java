@@ -311,7 +311,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config, DBDatabase... databases) throws SQLException {
 		this(clusterLabel, config);
-		initDatabase(databases);
+		initCluster(databases);
 	}
 
 	public DBDatabaseCluster(String clusterLabel, Configuration config, DatabaseConnectionSettings... settings) throws SQLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -324,7 +324,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	public DBDatabaseCluster(String clusterLabel, DBDatabase... databases) throws SQLException {
 		this(clusterLabel);
-		initDatabase(databases);
+		initCluster(databases);
 	}
 
 	public DBDatabaseCluster(DatabaseConnectionSettings settings) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
@@ -339,7 +339,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		}
 	}
 
-	private void initDatabase(DBDatabase[] databases) {
+	private void initCluster(DBDatabase[] databases) {
 		initDatabaseMembers(databases);
 		setDefinition(new ClusterDatabaseDefinition());
 		SynchroniserProcess synchroniserProcess = new SynchroniserProcess();
@@ -384,7 +384,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	 * @throws SQLException database errors may occur while intialising the
 	 * database and synchronising
 	 */
-	public static DBDatabaseCluster randomCluster(Configuration config, DBDatabase databases) throws SQLException {
+	public static DBDatabaseCluster randomCluster(Configuration config, DBDatabase... databases) throws SQLException {
 		final String dbName = getRandomClusterName();
 		return new DBDatabaseCluster(dbName, config, databases);
 	}
@@ -401,7 +401,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	 * the database
 	 * @throws SQLException database errors may be thrown during initialisation
 	 */
-	public static DBDatabaseCluster randomManualCluster(DBDatabase databases) throws SQLException {
+	public static DBDatabaseCluster randomManualCluster(DBDatabase... databases) throws SQLException {
 		final String dbName = getRandomClusterName();
 		return new DBDatabaseCluster(dbName, Configuration.fullyManual(), databases);
 	}
@@ -418,7 +418,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	 * automatically start, rebuild the structure, and reconnect added databases
 	 * @throws SQLException database errors may be thrown during initialisation
 	 */
-	public static DBDatabaseCluster randomAutomaticCluster(DBDatabase databases) throws SQLException {
+	public static DBDatabaseCluster randomAutomaticCluster(DBDatabase... databases) throws SQLException {
 		final String dbName = getRandomClusterName();
 		return new DBDatabaseCluster(dbName, Configuration.autoRebuildReconnectAndStart(), databases);
 	}
@@ -743,9 +743,9 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	}
 
 	@Override
-	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+	public DBActionList dropTableIfExists(DBRow tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
 		removeTrackedTable(tableRow);
-		super.dropTableIfExists(tableRow);
+		return super.dropTableIfExists(tableRow);
 	}
 
 	@Override
@@ -1437,6 +1437,28 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 		@Override
 		public DBActionList call() throws SQLException, NoAvailableDatabaseException {
+//			DBScript script = new DBScript() {
+//				@Override
+//				public DBActionList script(DBDatabase db) throws Exception {
+//					try {
+//						DBActionList actions = database.executeDBAction(action);
+//						setActionList(actions);
+//					} catch (SQLException | NoAvailableDatabaseException e) {
+//						HandlerAdvice handleExceptionDuringAction = cluster.handleExceptionDuringAction(e, database, action, quarantineAllowed);
+//						if (handleExceptionDuringAction.equals(HandlerAdvice.ABORT)
+//								|| handleExceptionDuringAction.equals(HandlerAdvice.REQUERY)) {
+//							throw e;
+//						}
+//					}
+//					return getActionList();
+//				}
+//			};
+//			try {
+//				return script.implement(database);
+//			} catch (Exception ex) {
+//				Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, "ERROR DURING "+action.getIntent()+"ACTION ON "+database.getLabel(), ex);
+//			}
+//			return getActionList();
 			try {
 				DBActionList actions = database.executeDBAction(action);
 				setActionList(actions);

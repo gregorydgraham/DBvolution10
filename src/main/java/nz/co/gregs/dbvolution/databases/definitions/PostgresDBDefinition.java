@@ -57,6 +57,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	private static final List<String> RESERVED_WORD_LIST = Arrays.asList(RESERVED_WORD_ARRAY);
 
 	@Override
+	public String getDropTableIfExistsClause(DBRow table) {
+		return "DROP TABLE IF EXISTS "+formatTableName(table);
+	}
+	
+	@Override
 	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
 		return "DROP DATABASE IF EXISTS '" + databaseName + "';";
 	}

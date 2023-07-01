@@ -180,31 +180,37 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 
 	@Override
 	public synchronized boolean equals(Object obj) {
-		if (obj == null) {
+		if (obj instanceof DBDatabase) {
+			DBDatabase other =(DBDatabase)obj;
+			return this.getSettings().equals(other.getSettings());
+		} else {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final DBDatabase other = (DBDatabase) obj;
-		if ((this.getDriverName() == null) ? (other.getDriverName() != null) : !this.getDriverName().equals(other.getDriverName())) {
-			return false;
-		}
-		if ((this.getJdbcURL() == null) ? (other.getJdbcURL() != null) : !this.getJdbcURL().equals(other.getJdbcURL())) {
-			return false;
-		}
-		if ((this.getUsername() == null) ? (other.getUsername() != null) : !this.getUsername().equals(other.getUsername())) {
-			return false;
-		}
-		if ((this.getPassword() == null) ? (other.getPassword() != null) : !this.getPassword().equals(other.getPassword())) {
-			return false;
-		}
-		if ((this.getDataSource() == null) ? (other.getDataSource() != null) : !this.getDataSource().equals(other.getDataSource())) {
-			return false;
-		}
-		final DatabaseConnectionSettings thisSettings = this.getSettings();
-		final DatabaseConnectionSettings otherSettings = other.getSettings();
-		return !(thisSettings != otherSettings && (thisSettings == null || !thisSettings.equals(otherSettings)));
+//		if (obj == null) {
+//			return false;
+//		}
+//		if (getClass() != obj.getClass()) {
+//			return false;
+//		}
+//		final DBDatabase other = (DBDatabase) obj;
+//		if ((this.getDriverName() == null) ? (other.getDriverName() != null) : !this.getDriverName().equals(other.getDriverName())) {
+//			return false;
+//		}
+//		if ((this.getJdbcURL() == null) ? (other.getJdbcURL() != null) : !this.getJdbcURL().equals(other.getJdbcURL())) {
+//			return false;
+//		}
+//		if ((this.getUsername() == null) ? (other.getUsername() != null) : !this.getUsername().equals(other.getUsername())) {
+//			return false;
+//		}
+//		if ((this.getPassword() == null) ? (other.getPassword() != null) : !this.getPassword().equals(other.getPassword())) {
+//			return false;
+//		}
+//		if ((this.getDataSource() == null) ? (other.getDataSource() != null) : !this.getDataSource().equals(other.getDataSource())) {
+//			return false;
+//		}
+//		final DatabaseConnectionSettings thisSettings = this.getSettings();
+//		final DatabaseConnectionSettings otherSettings = other.getSettings();
+//		return !(thisSettings != otherSettings && (thisSettings == null || !thisSettings.equals(otherSettings)));
 	}
 
 	/**
@@ -1598,10 +1604,14 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @throws java.sql.SQLException database errors
 	 */
 	@Override
-	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
-		if (tableExists(tableRow)) {
-			this.dropTable(tableRow);
-		}
+	public DBActionList dropTableIfExists(DBRow tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+		DBActionList changes = new DBActionList();
+		DBDropTableIfExists drop = new DBDropTableIfExists(tableRow);
+		changes.add(drop);
+
+		executeDBAction(drop);
+
+		return changes;
 	}
 
 	/**
@@ -2480,12 +2490,12 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		terminated = true;
 		String stopping = "STOPPING: " + this.getLabel();
 		LOG.info(stopping);
-		LOG.info(stopping+ " Regular Processors");
+		LOG.info(stopping + " Regular Processors");
 		for (RegularProcess regularProcessor : getRegularProcessors()) {
-			LOG.info(stopping+ " " + regularProcessor.getSimpleName());
+			LOG.info(stopping + " " + regularProcessor.getSimpleName());
 			regularProcessor.stop();
 		}
-		LOG.info(stopping+ " Regular Processor");
+		LOG.info(stopping + " Regular Processor");
 		if (regularThreadPoolFuture != null) {
 			regularThreadPoolFuture.cancel(true);
 			regularThreadPoolFuture = null;
@@ -2500,7 +2510,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			}
 			if (transactionConnection != null) {
 				try {
-					LOG.info(stopping+ " transaction connection");
+					LOG.info(stopping + " transaction connection");
 					discardConnection(transactionConnection);
 				} catch (Exception ex) {
 				}
@@ -2509,7 +2519,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			synchronized (freeConnections) {
 				final DBConnection[] free = freeConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : free) {
-					LOG.info(stopping+ " free connection");
+					LOG.info(stopping + " free connection");
 					discardConnection(connection);
 				}
 			}
@@ -2517,13 +2527,13 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			synchronized (busyConnections) {
 				final DBConnection[] busy = busyConnections.toArray(new DBConnection[]{});
 				for (DBConnection connection : busy) {
-					LOG.info(stopping+ " busy connection");
+					LOG.info(stopping + " busy connection");
 					discardConnection(connection);
 				}
 			}
 			try {
 				if (storedConnection != null) {
-					LOG.info(stopping+ " stored connection");
+					LOG.info(stopping + " stored connection");
 					storedConnection.close();
 				}
 			} catch (SQLException ex) {

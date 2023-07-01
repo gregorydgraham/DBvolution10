@@ -31,16 +31,29 @@
 package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.databases.*;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBLocalDateTime;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
-import nz.co.gregs.dbvolution.example.CompanyLogo;
-import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
-import nz.co.gregs.dbvolution.expressions.ExistsExpression;
+import nz.co.gregs.dbvolution.expressions.LocalDateTimeExpression;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -54,151 +67,130 @@ public class TempTest extends AbstractTest {
 
 	}
 
-	@Test
-	public void testDBExistsOnMultipleTablesUsingDBQueries1() throws SQLException {
+	LocalDateTime march23rd2013LocalDateTime = (new GregorianCalendar(2013, 2, 23, 12, 34, 56)).toZonedDateTime().toLocalDateTime();
+	LocalDateTime april2nd2011LocalDateTime = (new GregorianCalendar(2011, 3, 2, 1, 2, 3)).toZonedDateTime().toLocalDateTime();
 
-		CarCompany carCompany = new CarCompany();
-		carCompany.uidCarCompany.permittedValues(3);
-		DBQuery existsTables
-				= database.getDBQuery()
-						.add(carCompany)
-						.add(new CompanyLogo());
+	@Before
+	public void setupMarqueWithLocalDateTime() throws Exception {
+		DBDatabase db = database;
+//		db.setPrintSQLBeforeExecuting(true);
+		db.preventDroppingOfTables(false);
+		db.dropTableIfExists(new LocalDateTimeTestTable());
+		db.createTable(new LocalDateTimeTestTable());
 
-		Marque marque = new Marque();
-		DBQuery outerQuery = database.getDBQuery(marque);
+		List<LocalDateTimeTestTable> toInsert = new ArrayList<>();
+		toInsert.add(new LocalDateTimeTestTable(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, true));
+		toInsert.add(new LocalDateTimeTestTable(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", march23rd2013LocalDateTime, 2, false));
+		toInsert.add(new LocalDateTimeTestTable(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", march23rd2013LocalDateTime, 3, null));
+		toInsert.add(new LocalDateTimeTestTable(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(4896300, "False", 1246974, null, 2, "UV", "HYUNDAI", null, "Y", march23rd2013LocalDateTime, 1, null));
+		toInsert.add(new LocalDateTimeTestTable(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y", march23rd2013LocalDateTime, 3, null));
+		toInsert.add(new LocalDateTimeTestTable(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(8376505, "False", 1246974, "", null, "", "ISUZU", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(8587147, "False", 1246974, "", null, "", "DAEWOO", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y", march23rd2013LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(13224369, "False", 1246974, "", 0, "", "VW", "", "Y", april2nd2011LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", april2nd2011LocalDateTime, 4, null));
+		toInsert.add(new LocalDateTimeTestTable(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", march23rd2013LocalDateTime, 1, true));
+		toInsert.add(new LocalDateTimeTestTable(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", april2nd2011LocalDateTime, 3, null));
 
-		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
-
-		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(0));
-
-		CompanyLogo companyLogo = new CompanyLogo();
-		companyLogo.carCompany.setValue(3);
-		companyLogo.logoID.setValue(4);
-		database.insert(companyLogo);
-
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(3));
-
-		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
-
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(19));
+		db.insert(toInsert);
 	}
 
 	@Test
-	public void testDBExistsOnMultipleTablesUsingDBQueries2() throws SQLException {
+	public void testIsNotDateExpression() throws SQLException {
+		for (int i = 0; i < 10; i++) {
 
-		CarCompany carCompany = new CarCompany();
-		carCompany.uidCarCompany.permittedValues(3);
-		DBQuery existsTables
-				= database.getDBQuery()
-						.add(carCompany)
-						.add(new CompanyLogo());
+			try {
+				setupMarqueWithLocalDateTime();
+			} catch (Exception ex) {
+				Logger.getLogger(TempTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			LocalDateTimeTestTable marq = new LocalDateTimeTestTable();
+			DBQuery query = database.getDBQuery(marq);
+			final LocalDateTimeExpression fiveDaysPriorToCreation = marq.column(marq.creationLocalDateTime).addDays(-5);
+			query.addCondition(
+					LocalDateTimeExpression.leastOf(
+							marq.column(marq.creationLocalDateTime),
+							fiveDaysPriorToCreation,
+							LocalDateTimeExpression.value(march23rd2013LocalDateTime).addWeeks(-5),
+							LocalDateTimeExpression.value(march23rd2013LocalDateTime).addDays(-2))
+							.isNot(fiveDaysPriorToCreation)
+			);
+			List<DBQueryRow> allRows = query.getAllRows();
 
-		Marque marque = new Marque();
-		DBQuery outerQuery = database.getDBQuery(marque);
-
-		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
-
-		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(0));
-
-		CompanyLogo companyLogo = new CompanyLogo();
-		companyLogo.carCompany.setValue(3);
-		companyLogo.logoID.setValue(4);
-		database.insert(companyLogo);
-
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(3));
-
-		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
-
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(19));
+			assertThat(allRows.size(), is(18));
+		}
 	}
 
-	@Test
-	public void testDBExistsOnMultipleTablesUsingDBQueries3() throws SQLException {
+	@DBTableName("temp_test_table")
+	public static class LocalDateTimeTestTable extends DBRow {
 
-		CarCompany carCompany = new CarCompany();
-		carCompany.uidCarCompany.permittedValues(3);
-		DBQuery existsTables
-				= database.getDBQuery()
-						.add(carCompany)
-						.add(new CompanyLogo());
+		private static final long serialVersionUID = 1L;
 
-		Marque marque = new Marque();
-		DBQuery outerQuery = database.getDBQuery(marque);
+		@DBColumn("uid_marque")
+		@DBPrimaryKey
+		public DBInteger uidMarque = new DBInteger();
 
-		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
+		@DBColumn
+		public DBString name = new DBString();
 
-		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
+		@DBColumn("creation_localdatetime")
+		public DBLocalDateTime creationLocalDateTime = new DBLocalDateTime();
 
-		assertThat(rowList.size(), is(0));
+		@DBForeignKey(CarCompany.class)
+		@DBColumn("fk_carcompany")
+		public DBInteger carCompany = new DBInteger();
 
-		CompanyLogo companyLogo = new CompanyLogo();
-		companyLogo.carCompany.setValue(3);
-		companyLogo.logoID.setValue(4);
-		database.insert(companyLogo);
+		@DBColumn()
+		public DBLocalDateTime insertTime = new DBLocalDateTime().setDefaultInsertValueToNow();
 
-		rowList = marquesQuery.getAllInstancesOf(marque);
+		@DBColumn()
+		public DBLocalDateTime updateTime = new DBLocalDateTime().setDefaultUpdateValueToNow();
 
-		assertThat(rowList.size(), is(3));
+		/**
+		 * Required Public No-Argument Constructor.
+		 *
+		 */
+		public LocalDateTimeTestTable() {
+		}
 
-		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
+		/**
+		 * Convenience Constructor.
+		 *
+		 * @param uidMarque uidMarque
+		 * @param isUsedForTAFROs isUsedForTAFROs
+		 * @param statusClass statusClass
+		 * @param carCompany carCompany
+		 * @param intIndividualAllocationsAllowed intIndividualAllocationsAllowed
+		 * @param pricingCodePrefix pricingCodePrefix
+		 * @param updateCount updateCount
+		 * @param name name
+		 * @param reservationsAllowed reservationsAllowed
+		 * @param autoCreated autoCreated
+		 * @param creationLocalDateTime creationLocalDateTime
+		 * @param enabled enabled
+		 */
+		public LocalDateTimeTestTable(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, LocalDateTime creationLocalDateTime, int carCompany, Boolean enabled) {
+			this.uidMarque.setValue(uidMarque);
+			this.name.setValue(name);
+			this.creationLocalDateTime.setValue(creationLocalDateTime);
+			this.carCompany.setValue(carCompany);
+		}
 
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(19));
-	}
-
-	@Test
-	public void testDBExistsOnMultipleTablesUsingDBQueries4() throws SQLException {
-
-		CarCompany carCompany = new CarCompany();
-		carCompany.uidCarCompany.permittedValues(3);
-		DBQuery existsTables
-				= database.getDBQuery()
-						.add(carCompany)
-						.add(new CompanyLogo());
-
-		Marque marque = new Marque();
-		DBQuery outerQuery = database.getDBQuery(marque);
-
-		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
-
-		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(0));
-
-		CompanyLogo companyLogo = new CompanyLogo();
-		companyLogo.carCompany.setValue(3);
-		companyLogo.logoID.setValue(4);
-		database.insert(companyLogo);
-
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(3));
-
-		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
-
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		assertThat(rowList.size(), is(19));
+		public LocalDateTimeTestTable(int uidMarque, String name, LocalDateTime creationLocalDateTime) {
+			this.uidMarque.setValue(uidMarque);
+			this.name.setValue(name);
+			this.creationLocalDateTime.setValue(creationLocalDateTime);
+			this.carCompany.setValue(carCompany);
+		}
 	}
 }

@@ -55,6 +55,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DecimalFormat;
 import java.time.Duration;
@@ -6732,6 +6733,10 @@ public abstract class DBDefinition implements Serializable {
 		return " IF EXISTS ";
 	}
 
+	public String getDropTableIfExistsClause(DBRow table) {
+		return "DROP TABLE "+formatTableName(table)+" IF EXISTS ";
+	}
+
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
 		return "GROUP_CONCAT(" + accumulateColumn + " SEPARATOR " + doStringLiteralWrapping(separator) + ")";
 	}
@@ -7240,6 +7245,11 @@ public abstract class DBDefinition implements Serializable {
 
 	public String wrapNameForDatabase(String objectName) {
 		return objectName;
+	}
+
+	public boolean isTableDoesntExistException(SQLException sqlex) {
+		System.out.println("IS THIS THE TABLE DOESNT EXIST EXCEPTION?: "+sqlex.getClass().getSimpleName()+" with message: "+sqlex.getMessage());
+		return false;
 	}
 
 	public static enum GroupByClauseMethod {

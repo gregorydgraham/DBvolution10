@@ -759,4 +759,9 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 		return "ALTER TABLE IF EXISTS " + tableName + " ON COLUMN IF EXISTS " + columnName + " RESTART WITH " + (primaryKeyGenerated + 1);
 		
 	}
+
+	@Override
+	public String getDropTableIfExistsClause(DBRow table) {
+		return "DROP TABLE IF EXISTS "+formatTableName(table);
+	}
 }

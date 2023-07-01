@@ -2308,6 +2308,11 @@ class DBDefinitionWrapper extends DBDefinition {
 	}
 
 	@Override
+	public String getDropTableIfExistsClause(DBRow table) {
+		return base.getDropTableIfExistsClause(table);
+	}
+
+	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
 		return base.doStringAccumulateTransform(accumulateColumn, separator, referencedTable);
 	}

@@ -984,11 +984,11 @@ public interface DBDatabase extends Serializable {
 	 * <p>
 	 * Your DBA will murder you.
 	 *
-	 * @param <TR> DBRow type
-	 * @param tableRow tableRow
+	 * @param tableRow the database table to drop permanently
+	 * @return the actions performed during the action
 	 * @throws java.sql.SQLException database errors
 	 */
-	<TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException;
+	DBActionList dropTableIfExists(DBRow tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException;
 
 	/**
 	 *

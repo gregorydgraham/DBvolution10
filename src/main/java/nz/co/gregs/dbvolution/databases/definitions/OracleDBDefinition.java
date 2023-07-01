@@ -699,6 +699,11 @@ public class OracleDBDefinition extends DBDefinition {
 		return "SELECT COUNT(*) FROM " + this.formatTableName(table);
 	}
 
+	@Override
+	public String getDropTableIfExistsClause(DBRow table) {
+		return "DROP TABLE "+formatTableName(table)+" ";
+	}
+
 	/**
 	 * Provides the start of the DROP TABLE expression for this database.
 	 *

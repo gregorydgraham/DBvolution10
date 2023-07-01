@@ -136,8 +136,8 @@ public class DBDatabaseHandle implements DBDatabase {
 	}
 
 	@Override
-	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
-		wrappedDatabase.dropTableIfExists(tableRow);
+	public DBActionList dropTableIfExists(DBRow tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+		return wrappedDatabase.dropTableIfExists(tableRow);
 	}
 
 	@Override

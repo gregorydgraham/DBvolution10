@@ -1114,4 +1114,9 @@ public class SQLiteDefinition extends DBDefinition implements SupportsPolygonDat
 		}
 	}
 
+	@Override
+	public String getDropTableIfExistsClause(DBRow table) {
+		return "DROP TABLE IF EXISTS "+formatTableName(table);
+	}
+
 }
