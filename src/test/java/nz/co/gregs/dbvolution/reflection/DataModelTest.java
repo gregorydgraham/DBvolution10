@@ -488,7 +488,8 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.DBMigrationTest$MigrateHeroesAndSelectedVilliansToFight");
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$testDefaultValuesAreConsistentInCluster");
 		knownKeys.add("class nz.co.gregs.dbvolution.databases.metadata.MySQLDBDatabaseMetaData$STGeometryColumns");
-
+		knownKeys.add("class nz.co.gregs.dbvolution.generic.TempTest$LocalDateTimeTestTable");
+		
 		// Store the number found for use later
 		final int numberOfClassesFound = foundKeys.size();
 
@@ -662,6 +663,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.RequiredTableShouldBeCreatedAutomatically");
 		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.testDefaultValuesAreConsistentInCluster");
 		knownKeys.add("nz.co.gregs.dbvolution.databases.metadata.MySQLDBDatabaseMetaData.STGeometryColumns");
+		knownKeys.add("nz.co.gregs.dbvolution.generic.TempTest.LocalDateTimeTestTable");
 
 		// Store the number found for use later
 		final int numberOfFoundClasses = foundClasses.size();
