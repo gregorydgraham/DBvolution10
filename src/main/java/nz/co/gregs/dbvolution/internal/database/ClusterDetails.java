@@ -50,6 +50,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
+import nz.co.gregs.dbvolution.internal.cluster.ActionQueueList;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.dbvolution.utility.PreferencesImproved;
@@ -92,10 +94,12 @@ public class ClusterDetails implements Serializable {
 	private boolean preferredDatabaseRequired;
 	private boolean stillRunning = true;
 	private final PropertyChangeSupport propertyChangeSupport;
+	private final ActionQueueList actionQueues;
 
 	public ClusterDetails(String label) {
 		this.clusterLabel = label;
 		propertyChangeSupport = new PropertyChangeSupport(this);
+		this.actionQueues = new ActionQueueList(this);
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
@@ -124,6 +128,8 @@ public class ClusterDetails implements Serializable {
 					// currently the cluster and query should avoid any need to change the database behaviour
 				}
 			}
+			// make a Data Queue to buffer asynchronous actions
+			actionQueues.add(database);
 
 			if (clusterContains(database)) {
 				members.setUnsynchronised(database);
@@ -220,6 +226,7 @@ public class ClusterDetails implements Serializable {
 			propertyChangeSupport.firePropertyChange("unable to remove last member", null, database);
 			throw new UnableToRemoveLastDatabaseFromClusterException();
 		} else {
+			removeActionQueue(databaseToRemove);
 			members.remove(database);
 			propertyChangeSupport.firePropertyChange("removed database", null, database);
 			setAuthoritativeDatabase();
@@ -227,6 +234,10 @@ public class ClusterDetails implements Serializable {
 			checkSupportForDifferenceBetweenNullAndEmptyString();
 			return true;
 		}
+	}
+
+	private void removeActionQueue(DBDatabase databaseToRemove) {
+		actionQueues.remove(databaseToRemove);
 	}
 
 	protected boolean hasTooFewReadyDatabases() {
@@ -559,7 +570,8 @@ public class ClusterDetails implements Serializable {
 		return members.getDatabases(DBDatabaseCluster.Status.QUARANTINED);
 	}
 
-	public void removeAllDatabases() throws SQLException {
+	public synchronized void removeAllDatabases() throws SQLException {
+		actionQueues.clear();
 		members.clear();
 	}
 
@@ -950,9 +962,14 @@ public class ClusterDetails implements Serializable {
 
 	public void shutdown() {
 		this.stillRunning = false;
+		actionQueues.clear();
 	}
 
 	public boolean isShuttingDown() {
 		return !stillRunning;
+	}
+
+	public void queueAction(DBDatabase nextDatabase, DBAction action) {
+		actionQueues.enqueue(nextDatabase, action);
 	}
 }

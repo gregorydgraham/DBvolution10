@@ -1541,6 +1541,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	@Override
 	public synchronized DBActionList dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
 		DBActionList changes = new DBActionList();
+		preventAccidentalDroppingOfTables();
 		DBDropTable drop = new DBDropTable(tableRow);
 		changes.add(drop);
 
@@ -1606,6 +1607,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	@Override
 	public DBActionList dropTableIfExists(DBRow tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
 		DBActionList changes = new DBActionList();
+		preventAccidentalDroppingOfTables();
 		DBDropTableIfExists drop = new DBDropTableIfExists(tableRow);
 		changes.add(drop);
 
@@ -1703,6 +1705,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 */
 	@Override
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
+		preventAccidentalDroppingOfDatabases();
 		if (doIt) {
 			executeDBAction(new DBDropDatabase(databaseName));
 		}
@@ -1846,8 +1849,16 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		return this.preventAccidentalDroppingDatabase;
 	}
 
-	public synchronized void preventAccidentalDroppingOfDatabases(DBAction action) throws AccidentalDroppingOfDatabaseException {
-		if (preventAccidentalDroppingDatabase && action.getIntent().isDropDatabase()) {
+//	public synchronized void preventAccidentalDroppingOfDatabases(DBAction action) throws AccidentalDroppingOfDatabaseException {
+//		if (preventAccidentalDroppingDatabase && action.getIntent().isDropDatabase()) {
+//			throw new AccidentalDroppingOfDatabaseException();
+//		} else {
+//			preventAccidentalDroppingDatabase = true;
+//		}
+//	}
+
+	public synchronized void preventAccidentalDroppingOfDatabases() throws AccidentalDroppingOfDatabaseException {
+		if (preventAccidentalDroppingDatabase) {
 			throw new AccidentalDroppingOfDatabaseException();
 		} else {
 			preventAccidentalDroppingDatabase = true;
@@ -2199,16 +2210,32 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	protected synchronized void preventAccidentalDroppingOfTables(DBAction action) throws AccidentalDroppingOfTableException {
-		if (preventAccidentalDroppingOfTables && action.getIntent().isDropTable()) {
+//	protected synchronized void preventAccidentalDroppingOfTables(DBAction action) throws AccidentalDroppingOfTableException {
+//		if (preventAccidentalDroppingOfTables && action.getIntent().isDropTable()) {
+//			throw new AccidentalDroppingOfTableException();
+//		} else {
+//			preventAccidentalDroppingOfTables = true;
+//		}
+//	}
+//
+//	protected synchronized void preventAccidentalDeletingAllRowsFromTable(DBAction action) throws AccidentalDroppingOfTableException {
+//		if (preventAccidentalDeletingAllRowFromTable && action.getIntent().isDeleteAllRows()) {
+//			throw new AccidentalDeletingAllRowsFromTableException();
+//		} else {
+//			preventAccidentalDeletingAllRowFromTable = true;
+//		}
+//	}
+
+	protected synchronized void preventAccidentalDroppingOfTables() throws AccidentalDroppingOfTableException {
+		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
 		} else {
 			preventAccidentalDroppingOfTables = true;
 		}
 	}
 
-	protected synchronized void preventAccidentalDeletingAllRowsFromTable(DBAction action) throws AccidentalDroppingOfTableException {
-		if (preventAccidentalDeletingAllRowFromTable && action.getIntent().isDeleteAllRows()) {
+	protected synchronized void preventAccidentalDeletingAllRowsFromTable() throws AccidentalDroppingOfTableException {
+		if (preventAccidentalDeletingAllRowFromTable) {
 			throw new AccidentalDeletingAllRowsFromTableException();
 		} else {
 			preventAccidentalDeletingAllRowFromTable = true;
@@ -2222,6 +2249,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 
 	@Override
 	public void deleteAllRowsFromTable(DBRow table) throws SQLException {
+		preventAccidentalDeletingAllRowsFromTable();
 		executeDBAction(new DBDeleteAll(table));
 	}
 
@@ -2248,10 +2276,10 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 
 	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
-		preventAccidentalDDLDuringTransaction(action);
-		preventAccidentalDroppingOfDatabases(action);
-		preventAccidentalDroppingOfTables(action);
-		preventAccidentalDeletingAllRowsFromTable(action);
+//		preventAccidentalDDLDuringTransaction(action);
+//		preventAccidentalDroppingOfDatabases(action);
+//		preventAccidentalDroppingOfTables(action);
+//		preventAccidentalDeletingAllRowsFromTable(action);
 		if (quietExceptionsPreference) {
 			try {
 				return action.execute(this);

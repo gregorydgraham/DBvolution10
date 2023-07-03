@@ -103,6 +103,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNotDate() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testIsNotDate()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
 
@@ -116,6 +117,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLeastOf() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testLeastOf()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
 		final LocalDateTimeExpression fiveDaysPriorToCreation = marq.column(marq.creationLocalDateTime).addDays(-5);
@@ -134,6 +136,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLeastOfWithList() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testLeastOfWithList()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq).setQueryLabel("testLeastOfWithList").setBlankQueryAllowed(true);
 
@@ -164,6 +167,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLeastOfWithDates() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testLeastOfWithDates()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq).setQueryLabel("testLeastOfWithDates").setBlankQueryAllowed(true);
 
@@ -194,6 +198,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGreatestOf() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testGreatestOf()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
 		final LocalDateTimeExpression creationLocalDateTime = marq.column(marq.creationLocalDateTime);
@@ -213,6 +218,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGreatestOfWithList() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testGreatestOfWithList()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
 		final LocalDateTimeExpression creationLocalDateTime = marq.column(marq.creationLocalDateTime);
@@ -234,6 +240,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGreatestOfWithDates() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testGreatestOfWithDates()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -249,6 +256,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testOverlapsDateExpressionDateResult() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testOverlapsDateExpressionDateResult()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(LocalDateTimeExpression.overlaps(
@@ -263,6 +271,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testOverlapsAllDateResults() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testOverlapsAllDateResults()");
 		MarqueWithLocalDateTime marq = new MarqueWithLocalDateTime();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(LocalDateTimeExpression.overlaps(
@@ -278,6 +287,7 @@ public class LocalDateTimeExpressionTest extends AbstractTest {
 
 	@Test
 	public void testAggregators() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testAggregators()");
 		MarqueWithDateAggregators marq = new MarqueWithDateAggregators();
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();

@@ -131,6 +131,20 @@ public class TempTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testIsNotDate() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.expressions.LocalDateTimeExpressionTest.testIsNotDate()");
+		LocalDateTimeTestTable marq = new LocalDateTimeTestTable();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.creationLocalDateTime).isNot(april2nd2011LocalDateTime)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		assertThat(allRows.size(), is(18));
+	}
+
 	@DBTableName("temp_test_table")
 	public static class LocalDateTimeTestTable extends DBRow {
 

@@ -52,6 +52,7 @@ import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.internal.cluster.QueueReader;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
@@ -60,7 +61,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Creates a database cluster programmatically.
+ * Creates a database cluster programatically.
  *
  * <p>
  * Clustering provides several benefits: automatic replication, reduced server
@@ -108,7 +109,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	private boolean startupIsNeeded = true;
 	private boolean failOnQuarantine = false;
 	private boolean hasQuarantined = false;
-
+	
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException {
 		super(builder);
 		Configuration config = builder.getConfiguration();
@@ -744,20 +745,22 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	@Override
 	public DBActionList dropTableIfExists(DBRow tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+		final DBActionList dropTableIfExists = super.dropTableIfExists(tableRow);
 		removeTrackedTable(tableRow);
-		return super.dropTableIfExists(tableRow);
+		return dropTableIfExists;
 	}
 
 	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
-		removeTrackedTable(tableRow);
 		super.dropTableNoExceptions(tableRow);
+		removeTrackedTable(tableRow);
 	}
 
 	@Override
 	public synchronized DBActionList dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
+		final DBActionList dropTable = super.dropTable(tableRow);
 		removeTrackedTable(tableRow);
-		return super.dropTable(tableRow);
+		return dropTable;
 	}
 
 	@Override
@@ -966,9 +969,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		if (!details.isShuttingDown()) {
 			failOnQuarantine();
-			preventAccidentalDDLDuringTransaction(action);
-			preventAccidentalDroppingOfDatabases(action);
-			preventAccidentalDroppingOfTables(action);
 			return executeDBActionOnClusterMembers(action);
 		}
 		return new DBActionList();
@@ -976,61 +976,104 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	private synchronized DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, SQLException {
 		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
-		addActionToQueue(action);
-		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
-		try {
-			final DBDatabase[] databases = getDetails().getReadyDatabases();
-			if (databases.length == 0) {
-				throw new NoAvailableDatabaseException();
-			}
-			DBDatabase firstDatabase = null;
-			SQLException firstException = null;
-			boolean succeeded = true;
-			if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
-				// Because of autoincrement PKs we need to execute on one database first
-				succeeded = false;
-				for (DBDatabase database : databases) {
-					firstDatabase = database;
-					try {
-						actionsPerformed = new ActionTask(this, database, action, false).call();
-						removeActionFromQueue(database, action);
-						succeeded = true;
-						break;
-					} catch (SQLException ex) {
-						if (firstException == null) {
-							firstException = ex;
-						}
-					}
-				}
-			}
-			if (succeeded) {
-				// Now execute on all the other databases
-				for (DBDatabase next : databases) {
-					if (action.requiresRunOnIndividualDatabaseBeforeCluster() && next.equals(firstDatabase)) {
-						// skip this database as it's already been actioned
-					} else {
-						if (action.runOnDatabaseDuringCluster(firstDatabase, next)) {
-							final ActionTask task = new ActionTask(this, next, action);
-							tasks.add(task);
-							removeActionFromQueue(next, action);
-						}
-					}
-				}
-				ACTION_THREAD_POOL.invokeAll(tasks);
-			} else {
-				removeActionFromQueue(action);
-				throw firstException;
-			}
-		} catch (InterruptedException ex) {
-			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
-			throw new DBRuntimeException("Unable To Execute " + action.getIntent(), ex);
+		final DBDatabase[] databases = getDetails().getReadyDatabases();
+		if (databases.length == 0) {
+			throw new NoAvailableDatabaseException();
 		}
-		if (actionsPerformed.isEmpty() && !tasks.isEmpty()) {
-			actionsPerformed = tasks.get(0).getActionList();
+		DBDatabase succeededDatabase = null;
+		SQLException firstException = null;
+		boolean succeeded = true;
+		if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
+			// Because of autoincrement PKs we need to execute on one database first
+			succeeded = false;
+			for (DBDatabase database : databases) {
+				succeededDatabase = database;
+				try {
+					actionsPerformed = database.executeDBAction(action);
+					succeeded = true;
+					break;
+				} catch (SQLException ex) {
+					if (firstException == null) {
+						firstException = ex;
+					}
+				}
+			}
+		}
+		if (succeeded) {
+			// Now execute on all the other databases
+			for (DBDatabase nextDatabase : databases) {
+				if (action.requiresRunOnIndividualDatabaseBeforeCluster() && nextDatabase.equals(succeededDatabase)) {
+					// skip this database as it's already been actioned
+				} else {
+					if (action.runOnDatabaseDuringCluster(succeededDatabase, nextDatabase)) {
+						details.queueAction(nextDatabase,action);
+					}
+				}
+			}
+		} else {
+			throw firstException;
 		}
 		return actionsPerformed;
 	}
+	
+//	private synchronized DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, SQLException {
+//		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
+//		addActionToQueue(action);
+//		List<ActionTask> tasks = new ArrayList<ActionTask>();
+//		DBActionList actionsPerformed = new DBActionList();
+//		try {
+//			final DBDatabase[] databases = getDetails().getReadyDatabases();
+//			if (databases.length == 0) {
+//				throw new NoAvailableDatabaseException();
+//			}
+//			DBDatabase firstDatabase = null;
+//			SQLException firstException = null;
+//			boolean succeeded = true;
+//			if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
+//				// Because of autoincrement PKs we need to execute on one database first
+//				succeeded = false;
+//				for (DBDatabase database : databases) {
+//					firstDatabase = database;
+//					try {
+//						actionsPerformed = new ActionTask(this, database, action, false).call();
+//						removeActionFromQueue(database, action);
+//						succeeded = true;
+//						break;
+//					} catch (SQLException ex) {
+//						if (firstException == null) {
+//							firstException = ex;
+//						}
+//					}
+//				}
+//			}
+//			if (succeeded) {
+//				// Now execute on all the other databases
+//				for (DBDatabase next : databases) {
+//					if (action.requiresRunOnIndividualDatabaseBeforeCluster() && next.equals(firstDatabase)) {
+//						// skip this database as it's already been actioned
+//					} else {
+//						if (action.runOnDatabaseDuringCluster(firstDatabase, next)) {
+//							final ActionTask task = new ActionTask(this, next, action);
+//							tasks.add(task);
+//							removeActionFromQueue(next, action);
+//						}
+//					}
+//				}
+//				ACTION_THREAD_POOL.invokeAll(tasks);
+//			} else {
+//				removeActionFromQueue(action);
+//				throw firstException;
+//			}
+//		} catch (InterruptedException ex) {
+//			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
+//			throw new DBRuntimeException("Unable To Execute " + action.getIntent(), ex);
+//		}
+//		if (actionsPerformed.isEmpty() && !tasks.isEmpty()) {
+//			actionsPerformed = tasks.get(0).getActionList();
+//		}
+//		return actionsPerformed;
+//	}
 
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
