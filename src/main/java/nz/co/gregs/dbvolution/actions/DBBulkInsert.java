@@ -60,6 +60,11 @@ public class DBBulkInsert extends DBAction {
 		super(null, QueryIntention.BULK_INSERT);
 	}
 
+	public DBBulkInsert(List<DBRow> allRows) {
+		this();
+		addAll(allRows);
+	}
+
 	public void addRow(DBRow row) {
 		rows.add(row);
 	}
@@ -239,6 +244,12 @@ public class DBBulkInsert extends DBAction {
 
 	private boolean canBeBulkInserted(DBRow row) {
 		return row.getDefined();
+	}
+
+	private void addAll(List<DBRow> allRows) {
+		for (DBRow aRow : allRows) {
+			addRow(aRow);
+		}
 	}
 
 }
