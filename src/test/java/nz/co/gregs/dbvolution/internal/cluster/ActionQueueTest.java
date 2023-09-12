@@ -85,375 +85,373 @@ public class ActionQueueTest {
 
 	@Test
 	public void testStart() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.add(new NoOpDBAction());
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-		}
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+		
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.add(new NoOpDBAction());
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
 	}
 
 	@Test
 	public void testAdd_DBAction() throws SQLException {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			actionQueue.add(new NoOpDBAction(10000l));
-			assertThat(actionQueue.isEmpty(), is(false));
-		}
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+		
+		assertThat(actionQueue.isEmpty(), is(true));
+		actionQueue.add(new NoOpDBAction(10000l));
+		assertThat(actionQueue.isEmpty(), is(false));
 	}
 
 	@Test
 	public void testGetHeadOfQueue() throws Exception {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			final NoOpDBAction action = new NoOpDBAction(10000l);
-			actionQueue.add(action);
-			assertThat(actionQueue.isEmpty(), is(false));
-			ActionMessage got = actionQueue.getHeadOfQueue();
-			assertThat(got.getAction(), is(action));
-		}
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+		
+		assertThat(actionQueue.isEmpty(), is(true));
+		final NoOpDBAction action = new NoOpDBAction(10000l);
+		actionQueue.add(action);
+		assertThat(actionQueue.isEmpty(), is(false));
+		ActionMessage got = actionQueue.getHeadOfQueue();
+		assertThat(got.getAction(), is(action));
 	}
 
 	@Test
 	public void testIsEmpty() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-		}
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+
+		assertThat(actionQueue.isEmpty(), is(true));
+		actionQueue.add(new NoOpDBAction());
+		assertThat(actionQueue.isEmpty(), is(false));
+		actionQueue.getHeadOfQueue();
+		assertThat(actionQueue.isEmpty(), is(true));
 	}
 
 	@Test
 	public void testStop() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			actionQueue.add(new NoOpDBAction());
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			actionQueue.stop();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException ex) {
-				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			assertThat(actionQueue.hasStarted(), is(false));
-			assertThat(actionQueue.keepRunning, is(false));
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+
+		assertThat(actionQueue.isEmpty(), is(true));
+		actionQueue.add(new NoOpDBAction());
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		actionQueue.stop();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
 		}
+		assertThat(actionQueue.hasStarted(), is(false));
 	}
 
 	@Test
 	public void testGetDatabase() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			System.out.println("DATABASE1: " + database.getSettings());
-			System.out.println("DATABASE2: " + actionQueue.getDatabase().getSettings());
-			assertThat(actionQueue.getDatabase(), is(database));
-		}
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+
+		System.out.println("DATABASE1: " + database.getSettings());
+		System.out.println("DATABASE2: " + actionQueue.getDatabase().getSettings());
+		assertThat(actionQueue.getDatabase(), is(database));
 	}
 
 	@Test
 	public void testWaitUntilEmpty_0args() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			actionQueue.add(new NoOpDBAction(100l));
-			actionQueue.add(new NoOpDBAction(100l));
-			actionQueue.add(new NoOpDBAction(100l));
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasStarted(), is(false));
-			Timer timer = Timer.timer();
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			assertThat(actionQueue.isEmpty(), is(false));
-			actionQueue.waitUntilEmpty();
-			timer.stop();
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(timer.duration(), is(greaterThan(300l)));
-			assertThat(timer.duration(), is(lessThan(2000l)));
-		}
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+
+		assertThat(actionQueue.isEmpty(), is(true));
+		actionQueue.add(new NoOpDBAction(100l));
+		actionQueue.add(new NoOpDBAction(100l));
+		actionQueue.add(new NoOpDBAction(100l));
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasStarted(), is(false));
+		Timer timer = Timer.timer();
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		assertThat(actionQueue.isEmpty(), is(false));
+		actionQueue.waitUntilEmpty();
+		timer.stop();
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(timer.duration(), is(greaterThan(300l)));
+		assertThat(timer.duration(), is(lessThan(2000l)));
 	}
 
 	@Test
 	public void testWaitUntilEmpty_long() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			actionQueue.add(new NoOpDBAction(100l));
-			actionQueue.add(new NoOpDBAction(100l));
-			actionQueue.add(new NoOpDBAction(100l));
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasStarted(), is(false));
-			Timer timer = Timer.start();
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			assertThat(actionQueue.isEmpty(), is(false));
-			actionQueue.waitUntilEmpty(100);
-			assertThat(actionQueue.isEmpty(), is(false));
-			actionQueue.waitUntilEmpty(10000);
-			timer.stop();
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(timer.duration(), is(greaterThan(300l)));
-			assertThat(timer.duration(), is(lessThan(10000l)));
-		}
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+
+		assertThat(actionQueue.isEmpty(), is(true));
+		actionQueue.add(new NoOpDBAction(100l));
+		actionQueue.add(new NoOpDBAction(100l));
+		actionQueue.add(new NoOpDBAction(100l));
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasStarted(), is(false));
+		Timer timer = Timer.start();
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		assertThat(actionQueue.isEmpty(), is(false));
+		actionQueue.waitUntilEmpty(100);
+		assertThat(actionQueue.isEmpty(), is(false));
+		actionQueue.waitUntilEmpty(10000);
+		timer.stop();
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(timer.duration(), is(greaterThan(300l)));
+		assertThat(timer.duration(), is(lessThan(10000l)));
 	}
 
 	@Test
 	public void testWaitUntilActionsAvailable() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			assertThat(actionQueue.isEmpty(), is(true));
-			Instant then = Instant.now();
-			actionQueue.waitUntilActionsAvailable(201l);
-			Instant now = Instant.now();
-			assertThat(now.toEpochMilli() - then.toEpochMilli(), greaterThan(200l));
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 
-			Runnable addThreeSlowActions = () -> {
-				try {
-					Thread.sleep(100l);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				actionQueue.add(new NoOpDBAction(100l));
-				actionQueue.add(new NoOpDBAction(100l));
-				actionQueue.add(new NoOpDBAction(100l));
-			};
-			Thread addThread = new Thread(addThreeSlowActions, "Add 3 Actions");
-			addThread.start();
-			actionQueue.waitUntilActionsAvailable();
-			assertThat(actionQueue.hasActionsAvailable(), is(true));
-			assertThat(actionQueue.isEmpty(), is(false));
-		}
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		assertThat(actionQueue.isEmpty(), is(true));
+		Instant then = Instant.now();
+		actionQueue.waitUntilActionsAvailable(201l);
+		Instant now = Instant.now();
+		assertThat(now.toEpochMilli() - then.toEpochMilli(), greaterThan(200l));
+
+		Runnable addThreeSlowActions = () -> {
+			try {
+				Thread.sleep(100l);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			actionQueue.add(new NoOpDBAction(100l));
+			actionQueue.add(new NoOpDBAction(100l));
+			actionQueue.add(new NoOpDBAction(100l));
+		};
+		Thread addThread = new Thread(addThreeSlowActions, "Add 3 Actions");
+		addThread.start();
+		actionQueue.waitUntilActionsAvailable();
+		assertThat(actionQueue.hasActionsAvailable(), is(true));
+		assertThat(actionQueue.isEmpty(), is(false));
 	}
 
 	@Test
 	public void testWaitUntilUnpause() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			assertThat(actionQueue.isPaused(), is(false));
-			actionQueue.pause();
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 
-			Runnable unpauseActionQueue = () -> {
-				try {
-					Thread.sleep(101l);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				actionQueue.unpause();
-			};
-			Thread unpauseThread = new Thread(unpauseActionQueue, "Unpause actionQueue");
-			unpauseThread.start();
-			Timer timer = Timer.start();
-			actionQueue.waitUntilUnpause(1000l);
-			timer.end();
-			assertThat(actionQueue.isPaused(), is(false));
-			assertThat(timer.duration(), greaterThan(100l));
-		}
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		assertThat(actionQueue.isPaused(), is(false));
+		actionQueue.pause();
+
+		Runnable unpauseActionQueue = () -> {
+			try {
+				Thread.sleep(101l);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			actionQueue.unpause();
+		};
+		Thread unpauseThread = new Thread(unpauseActionQueue, "Unpause actionQueue");
+		unpauseThread.start();
+		Timer timer = Timer.start();
+		actionQueue.waitUntilUnpause(1000l);
+		timer.end();
+		assertThat(actionQueue.isPaused(), is(false));
+		assertThat(timer.duration(), greaterThan(100l));
 	}
 
 	@Test
 	public void testNotifyUnpause() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			assertThat(actionQueue.isPaused(), is(false));
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 
-			Runnable unpauseActionQueue = () -> {
-				try {
-					Thread.sleep(101l);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				actionQueue.notifyUNPAUSED();
-			};
-			Thread unpauseThread = new Thread(unpauseActionQueue, "Unpause actionQueue");
-			unpauseThread.start();
-			Timer timer = Timer.start();
-			actionQueue.waitUntilUnpause(1000l);
-			timer.end();
-			assertThat(actionQueue.isPaused(), is(false));
-			assertThat(timer.duration(), greaterThan(100l));
-		}
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		assertThat(actionQueue.isPaused(), is(false));
+
+		Runnable unpauseActionQueue = () -> {
+			try {
+				Thread.sleep(101l);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			actionQueue.notifyUNPAUSED();
+		};
+		Thread unpauseThread = new Thread(unpauseActionQueue, "Unpause actionQueue");
+		unpauseThread.start();
+		Timer timer = Timer.start();
+		actionQueue.waitUntilUnpause(1000l);
+		timer.end();
+		assertThat(actionQueue.isPaused(), is(false));
+		assertThat(timer.duration(), greaterThan(100l));
 	}
 
 	@Test
 	public void testNotifyQueueIsEmpty() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.add(new NoOpDBAction(10000l));
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.add(new NoOpDBAction(10000l));
 
-			Runnable notifyEmptyRunner = () -> {
-				try {
-					Thread.sleep(101l);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				actionQueue.notifyQueueIsEmpty();
-			};
-			Thread emptyingThread = new Thread(notifyEmptyRunner, "Unpause actionQueue");
-			Timer timer = Timer.start();
-			emptyingThread.start();
-			actionQueue.waitUntilEmpty(10000l);
-			timer.end();
-			assertThat(actionQueue.isEmpty(), is(false)); // because we didn't remove anything
-			assertThat(timer.duration(), greaterThan(100l));
-			assertThat(timer.duration(), lessThan(1000l));
-		}
+		Runnable notifyEmptyRunner = () -> {
+			try {
+				Thread.sleep(101l);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			actionQueue.notifyQueueIsEmpty();
+		};
+		Thread emptyingThread = new Thread(notifyEmptyRunner, "Unpause actionQueue");
+		Timer timer = Timer.start();
+		emptyingThread.start();
+		actionQueue.waitUntilEmpty(10000l);
+		timer.end();
+		assertThat(actionQueue.isEmpty(), is(false)); // because we didn't remove anything
+		assertThat(timer.duration(), greaterThan(100l));
+		assertThat(timer.duration(), lessThan(1000l));
 	}
 
 	@Test
 	public void testWaitUntilReady() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			
-			actionQueue.add(new NoOpDBAction());
-			actionQueue.add(new NoOpDBAction());
-			actionQueue.add(new NoOpDBAction());
-			actionQueue.add(new NoOpDBAction());
-			actionQueue.add(new NoOpDBAction());
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasActionsAvailable(), is(true));
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
 
-			Timer timer = Timer.start();
-			actionQueue.waitUntilReady(10000l);
-			timer.stop();
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasActionsAvailable(), is(false));
-			assertThat(timer.duration(), greaterThan(299l));
-			assertThat(timer.duration(), lessThan(10000l));
-		}
+		actionQueue.add(new NoOpDBAction());
+		actionQueue.add(new NoOpDBAction());
+		actionQueue.add(new NoOpDBAction());
+		actionQueue.add(new NoOpDBAction());
+		actionQueue.add(new NoOpDBAction());
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasActionsAvailable(), is(true));
+
+		Timer timer = Timer.start();
+		actionQueue.waitUntilReady(10000l);
+		timer.stop();
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasActionsAvailable(), is(false));
+		assertThat(timer.duration(), greaterThan(299l));
+		assertThat(timer.duration(), lessThan(10000l));
 	}
 
 	@Test
 	public void testNotifyReady() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.add(new NoOpDBAction(100l));
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasActionsAvailable(), is(true));
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.add(new NoOpDBAction(100l));
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasActionsAvailable(), is(true));
 
-			Runnable notifyReadyRunnable = () -> {
-				try {
-					Thread.sleep(101l);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				actionQueue.notifyQueueIsReady();
-			};
-			Thread notifyReadyThread = new Thread(notifyReadyRunnable, "Unpause actionQueue");
-			notifyReadyThread.start();
-			Timer timer = Timer.start();
-			actionQueue.waitUntilReady(1000l);
-			timer.end();
-			assertThat(actionQueue.isEmpty(), is(false)); // because we haven't started the AQ
-			assertThat(timer.duration(), greaterThan(100l)); // because the notify thread waits for 100ms
-			assertThat(timer.duration(), lessThan(1000l)); // because the wait didn't timeout
-		}
+		Runnable notifyReadyRunnable = () -> {
+			try {
+				Thread.sleep(101l);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			actionQueue.notifyQueueIsReady();
+		};
+		Thread notifyReadyThread = new Thread(notifyReadyRunnable, "Unpause actionQueue");
+		notifyReadyThread.start();
+		Timer timer = Timer.start();
+		actionQueue.waitUntilReady(1000l);
+		timer.end();
+		assertThat(actionQueue.isEmpty(), is(false)); // because we haven't started the AQ
+		assertThat(timer.duration(), greaterThan(100l)); // because the notify thread waits for 100ms
+		assertThat(timer.duration(), lessThan(1000l)); // because the wait didn't timeout
 	}
 
 	@Test
 	public void testPause() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			assertThat(actionQueue.isPaused(), is(false));
-			actionQueue.pause();
-			assertThat(actionQueue.isPaused(), is(true));
-			assertThat(actionQueue.hasStarted(), is(true));// because paused and alive are different
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		assertThat(actionQueue.isPaused(), is(false));
+		actionQueue.pause();
+		assertThat(actionQueue.isPaused(), is(true));
+		assertThat(actionQueue.hasStarted(), is(true));// because paused and alive are different
 
-			actionQueue.add(new NoOpDBAction());
-			actionQueue.add(new NoOpDBAction());
-			actionQueue.add(new NoOpDBAction());
-			assertThat(actionQueue.isEmpty(), is(false));
-			Timer timer = Timer.start();
-			actionQueue.waitUntilUnpause(101l);
-			timer.end();
-			assertThat(actionQueue.isPaused(), is(true));
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(timer.duration(), greaterThan(100l));// proof that it timed out
-		}
+		actionQueue.add(new NoOpDBAction());
+		actionQueue.add(new NoOpDBAction());
+		actionQueue.add(new NoOpDBAction());
+		assertThat(actionQueue.isEmpty(), is(false));
+		Timer timer = Timer.start();
+		actionQueue.waitUntilUnpause(101l);
+		timer.end();
+		assertThat(actionQueue.isPaused(), is(true));
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(timer.duration(), greaterThan(100l));// proof that it timed out
 	}
 
 	@Test
 	public void testUnpause() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasStarted(), is(false));
-			actionQueue.start();
-			assertThat(actionQueue.hasStarted(), is(true));
-			assertThat(actionQueue.isPaused(), is(false));
-			actionQueue.pause();
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 
-			Runnable unpauseActionQueue = () -> {
-				try {
-					Thread.sleep(101l);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				actionQueue.unpause();
-			};
-			Thread unpauseThread = new Thread(unpauseActionQueue, "Unpause actionQueue");
-			Timer timer = Timer.start();
-			unpauseThread.start();
-			actionQueue.waitUntilUnpause(1000l);
-			timer.end();
-			assertThat(actionQueue.isPaused(), is(false));
-			assertThat(timer.duration(), greaterThan(100l));
-			assertThat(timer.duration(), lessThan(1000l));
-		}
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasStarted(), is(false));
+		actionQueue.start();
+		assertThat(actionQueue.hasStarted(), is(true));
+		assertThat(actionQueue.isPaused(), is(false));
+		actionQueue.pause();
+
+		Runnable unpauseActionQueue = () -> {
+			try {
+				Thread.sleep(101l);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			actionQueue.unpause();
+		};
+		Thread unpauseThread = new Thread(unpauseActionQueue, "Unpause actionQueue");
+		Timer timer = Timer.start();
+		unpauseThread.start();
+		actionQueue.waitUntilUnpause(1000l);
+		timer.end();
+		assertThat(actionQueue.isPaused(), is(false));
+		assertThat(timer.duration(), greaterThan(100l));
+		assertThat(timer.duration(), lessThan(1000l));
 	}
 
 	@Test
 	public void testClear() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			actionQueue.add(new NoOpDBAction(10000l));
-			actionQueue.add(new NoOpDBAction(10000l));
-			actionQueue.add(new NoOpDBAction(10000l));
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasActionsAvailable(), is(true));
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 
-			actionQueue.clear();
-			assertThat(actionQueue.isEmpty(), is(true));
-			assertThat(actionQueue.hasActionsAvailable(), is(false));
-		}
+		assertThat(actionQueue.isEmpty(), is(true));
+		actionQueue.add(new NoOpDBAction(10000l));
+		actionQueue.add(new NoOpDBAction(10000l));
+		actionQueue.add(new NoOpDBAction(10000l));
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasActionsAvailable(), is(true));
 
+		actionQueue.clear();
+		assertThat(actionQueue.isEmpty(), is(true));
+		assertThat(actionQueue.hasActionsAvailable(), is(false));
 	}
 
 	@Test
 	public void testAddAll() {
-		try (ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list)) {
-			assertThat(actionQueue.isEmpty(), is(true));
-			final NoOpDBAction act1 = new NoOpDBAction(10000l);
-			final NoOpDBAction act2 = new NoOpDBAction(10000l);
-			final NoOpDBAction act3 = new NoOpDBAction(10000l);
-			ActionQueue templateQueue = new ActionQueue(database, clusterDetails, 100, list);
-			templateQueue.add(act1);
-			templateQueue.add(act2);
-			templateQueue.add(act3);
+		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 
-			actionQueue.addAll(templateQueue);
-			assertThat(actionQueue.isEmpty(), is(false));
-			assertThat(actionQueue.hasActionsAvailable(), is(true));
-			assertThat(actionQueue.getHeadOfQueue().getAction(), is(act1));
-			assertThat(actionQueue.getHeadOfQueue().getAction(), is(act2));
-			assertThat(actionQueue.getHeadOfQueue().getAction(), is(act3));
-		}
+		assertThat(actionQueue.isEmpty(), is(true));
+		final NoOpDBAction act1 = new NoOpDBAction(10000l);
+		final NoOpDBAction act2 = new NoOpDBAction(10000l);
+		final NoOpDBAction act3 = new NoOpDBAction(10000l);
+		ActionQueue templateQueue = new ActionQueue(database, clusterDetails, 100, list);
+		templateQueue.add(act1);
+		templateQueue.add(act2);
+		templateQueue.add(act3);
+
+		actionQueue.addAll(templateQueue);
+		assertThat(actionQueue.isEmpty(), is(false));
+		assertThat(actionQueue.hasActionsAvailable(), is(true));
+		assertThat(actionQueue.getHeadOfQueue().getAction(), is(act1));
+		assertThat(actionQueue.getHeadOfQueue().getAction(), is(act2));
+		assertThat(actionQueue.getHeadOfQueue().getAction(), is(act3));
 	}
 
 }
