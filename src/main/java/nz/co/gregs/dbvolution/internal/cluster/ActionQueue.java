@@ -51,7 +51,6 @@ public class ActionQueue implements AutoCloseable {
 	private final int maxSize;
 
 	private final BlockingQueue<ActionMessage> actionQueue;
-	public boolean keepRunning = true;
 	private final QueueReader reader;
 	private transient final Object QUEUE_IS_EMPTY = new Object();
 	private transient final Object ACTION_IS_AVAILABLE = new Object();
@@ -67,7 +66,6 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	public void start() {
-		keepRunning = true;
 		reader.start();
 	}
 
@@ -106,7 +104,6 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	public void stop() {
-		this.keepRunning = false;
 		reader.stop();
 	}
 
