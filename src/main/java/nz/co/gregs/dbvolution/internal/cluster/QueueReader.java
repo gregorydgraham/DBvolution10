@@ -45,48 +45,72 @@ import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
  */
 public class QueueReader implements Runnable {
 
-	private Logger LOG = Logger.getLogger(QueueReader.class.getName());
+	private static final Logger LOG = Logger.getLogger(QueueReader.class.getName());
 
 	private final ActionQueue actionQueue;
 	private final DBDatabase database;
 	private final ClusterDetails clusterDetails;
+	private boolean paused = false;
+	private final Thread readerThread;
+	private boolean keepRunning = true;
 
 	public QueueReader(DBDatabase database, ClusterDetails details, ActionQueue dataQueue) {
 		this.database = database;
 		this.actionQueue = dataQueue;
 		this.clusterDetails = details;
+
+		readerThread = new Thread(this, "DBV-READER-" + database.getLabel());
 	}
 
 	@Override
 	public void run() {
-		dequeue();
+		while (keepRunning) {
+			dequeue();
+		}
+		LOG.log(Level.INFO, "Thread {0} for {1} stopped", new Object[]{readerThread.getName(), database.getLabel()});
+	}
+
+	public void pause() {
+		paused = true;
+	}
+
+	public void unpause() {
+		paused = false;
 	}
 
 	public void dequeue() {
-		while (actionQueue.keepRunning) {
-			try {
-				ActionMessage message = actionQueue.remove();
-				if (message != null) {
-					final DBAction action = message.getAction();
-					final QueryIntention intent = action.getIntent();
-					System.out.println("READING: " + intent+" ON "+database.getLabel());
-
-					useMessage(message);
-				}
-			} catch (Exception ex) {
-				LOG.log(Level.SEVERE, "INTERRUPTED WHILE TRYING TO GET MESSAGE FOR " + database.getLabel(), ex);
+		if (paused) {
+			actionQueue.waitUntilUnpause(1000);
+		} else {
+			boolean successful = attemptAction();
+			if (successful == false) {
+				actionQueue.notifyQueueIsEmpty();
 			}
 		}
-		LOG.log(Level.INFO, "Consumer for {0} stopped", database.getLabel());
+		actionQueue.waitUntilActionsAvailable(100);
+	}
+
+	private boolean attemptAction() {
+		boolean result = false;
+		ActionMessage message = actionQueue.getHeadOfQueue();
+		if (message != null) {
+			final DBAction action = message.getAction();
+			final QueryIntention intent = action.getIntent();
+			System.out.println("READING: " + intent + " ON " + database.getLabel());
+
+			doAction(action);
+			result = true;
+		}
+		return result;
 	}
 
 	public void stop() {
-		actionQueue.keepRunning = false;
+		keepRunning = false;
 	}
 
-	private void useMessage(ActionMessage message) {
+	private void doAction(DBAction action) {
 		try {
-			this.database.executeDBAction(message.getAction());
+			this.database.executeDBAction(action);
 		} catch (SQLException ex) {
 			LOG.log(Level.SEVERE, null, ex);
 			clusterDetails.quarantineDatabase(database, ex);
@@ -95,5 +119,17 @@ public class QueueReader implements Runnable {
 		} catch (Exception ex) {
 			LOG.log(Level.SEVERE, null, ex);
 		}
+	}
+
+	void start() {
+		readerThread.start();
+	}
+
+	boolean hasStarted() {
+		return readerThread.isAlive();
+	}
+
+	boolean isPaused() {
+		return paused;
 	}
 }
