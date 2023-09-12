@@ -54,6 +54,10 @@ public class QueueReader implements Runnable {
 	private final Thread readerThread;
 	private boolean keepRunning = true;
 
+	{
+		Runtime.getRuntime().addShutdownHook(new StopReader(this));
+	}
+
 	public QueueReader(DBDatabase database, ClusterDetails details, ActionQueue dataQueue) {
 		this.database = database;
 		this.actionQueue = dataQueue;
@@ -131,5 +135,23 @@ public class QueueReader implements Runnable {
 
 	boolean isPaused() {
 		return paused;
+	}
+
+	private static class StopReader extends Thread {
+
+		private final QueueReader reader;
+
+		public StopReader(QueueReader aThis) {
+			reader = aThis;
+		}
+
+		@Override
+		public void run() {
+			try {
+				reader.stop();
+			} catch (Exception e) {
+				LOG.info("Exception while stopping QueueReader: " + e.getLocalizedMessage());
+			}
+		}
 	}
 }
