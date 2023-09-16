@@ -48,7 +48,9 @@ public class ActionQueue implements AutoCloseable {
 	private static final Logger LOG = Logger.getLogger(ActionQueue.class.getName());
 
 	private final DBDatabase database;
+	private final ClusterDetails clusterDetails;
 	private final int maxSize;
+	private final ActionQueueList list;
 
 	private final BlockingQueue<ActionMessage> actionQueue;
 	private final QueueReader reader;
@@ -59,7 +61,9 @@ public class ActionQueue implements AutoCloseable {
 
 	public ActionQueue(DBDatabase database, ClusterDetails clusterDetails, int maxSize, ActionQueueList list) {
 		this.database = database;
+		this.clusterDetails = clusterDetails;
 		this.maxSize = maxSize;
+		this.list = list;
 
 		actionQueue = new LinkedBlockingDeque<>(this.maxSize);
 		reader = new QueueReader(database, clusterDetails, this);
@@ -73,6 +77,10 @@ public class ActionQueue implements AutoCloseable {
 		return reader.hasStarted();
 	}
 
+	public synchronized int size() {
+		return actionQueue.size();
+	}
+
 	public synchronized void add(DBAction action) {
 		ActionMessage value = new ActionMessage(action);
 		try {
@@ -81,6 +89,12 @@ public class ActionQueue implements AutoCloseable {
 			notifyACTION_IS_AVAILABLE();
 		} catch (InterruptedException e) {
 			System.out.println("ENQUEUE FAILED: " + e.getMessage());
+		}
+	}
+	
+	public synchronized void add(DBAction... actions){
+		for (DBAction action : actions) {
+			add(action);
 		}
 	}
 
@@ -161,6 +175,10 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
+	public void waitUntilReady() {
+		waitUntilEmpty();
+	}
+
 	public void waitUntilReady(long milliseconds) {
 		waitUntilEmpty(milliseconds);
 	}
@@ -215,6 +233,7 @@ public class ActionQueue implements AutoCloseable {
 			System.out.println("QUEUE IS EMPTY");
 			QUEUE_IS_EMPTY.notifyAll();
 		}
+		list.notifyQueueIsReady();
 	}
 
 	private void waitOnQUEUE_IS_EMPTY() {
