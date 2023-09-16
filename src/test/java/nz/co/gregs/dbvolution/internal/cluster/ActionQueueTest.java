@@ -171,6 +171,7 @@ public class ActionQueueTest {
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isEmpty(), is(false));
 		actionQueue.waitUntilEmpty();
+		actionQueue.pause();
 		timer.stop();
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(timer.duration(), is(greaterThan(300l)));
