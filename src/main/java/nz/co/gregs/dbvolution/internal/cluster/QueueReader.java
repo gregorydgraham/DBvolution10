@@ -55,7 +55,13 @@ public class QueueReader implements Runnable {
 	private boolean keepRunning = true;
 
 	{
-		Runtime.getRuntime().addShutdownHook(new StopReader(this));
+		try {
+			Runtime.getRuntime().addShutdownHook(new StopReader(this));
+		} catch (Exception exc) {
+			// the only exception I know of is an illegal state exception
+			// if we create a QueueReader while the runtime is trying to 
+			// shutdown
+		}
 	}
 
 	public QueueReader(DBDatabase database, ClusterDetails details, ActionQueue dataQueue) {
@@ -84,12 +90,9 @@ public class QueueReader implements Runnable {
 
 	public void dequeue() {
 		if (paused) {
-			actionQueue.waitUntilUnpause(1000);
+			actionQueue.waitUntilUnpause(100);
 		} else {
-			boolean successful = attemptAction();
-			if (successful == false) {
-				actionQueue.notifyQueueIsEmpty();
-			}
+			attemptAction();
 		}
 		actionQueue.waitUntilActionsAvailable(100);
 	}
@@ -97,7 +100,9 @@ public class QueueReader implements Runnable {
 	private boolean attemptAction() {
 		boolean result = false;
 		ActionMessage message = actionQueue.getHeadOfQueue();
-		if (message != null) {
+		if (message == null) {
+			actionQueue.notifyQueueIsEmpty();
+		} else {
 			final DBAction action = message.getAction();
 			final QueryIntention intent = action.getIntent();
 			System.out.println("READING: " + intent + " ON " + database.getLabel());
@@ -130,7 +135,7 @@ public class QueueReader implements Runnable {
 	}
 
 	boolean hasStarted() {
-		return readerThread.isAlive();
+		return readerThread.isAlive() && keepRunning;
 	}
 
 	boolean isPaused() {
@@ -150,7 +155,7 @@ public class QueueReader implements Runnable {
 			try {
 				reader.stop();
 			} catch (Exception e) {
-				LOG.info("Exception while stopping QueueReader: " + e.getLocalizedMessage());
+				LOG.log(Level.INFO, "Exception while stopping QueueReader: {0}", e.getLocalizedMessage());
 			}
 		}
 	}
