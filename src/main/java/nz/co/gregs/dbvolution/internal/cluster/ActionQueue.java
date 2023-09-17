@@ -208,7 +208,6 @@ public class ActionQueue implements AutoCloseable {
 
 	public void pause() {
 		reader.pause();
-		notifyPAUSED();
 	}
 
 	public void notifyPAUSED() {
@@ -219,7 +218,6 @@ public class ActionQueue implements AutoCloseable {
 
 	public void unpause() {
 		reader.unpause();
-		notifyUNPAUSED();
 	}
 
 	public void notifyUNPAUSED() {
@@ -278,5 +276,29 @@ public class ActionQueue implements AutoCloseable {
 
 	public boolean isPaused() {
 		return reader.isPaused();
+	}
+
+	public boolean isReady() {
+		return isEmpty();
+	}
+
+	void waitUntilPaused(long milliseconds) {
+		synchronized (QUEUE_IS_PAUSED) {
+			try {
+				QUEUE_IS_PAUSED.wait(milliseconds);
+			} catch (InterruptedException ex) {
+				LOG.log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	void waitUntilUnpaused(long milliseconds) {
+		synchronized (QUEUE_IS_UNPAUSED) {
+			try {
+				QUEUE_IS_UNPAUSED.wait(milliseconds);
+			} catch (InterruptedException ex) {
+				LOG.log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 }
