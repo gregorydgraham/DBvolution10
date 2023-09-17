@@ -82,10 +82,12 @@ public class QueueReader implements Runnable {
 
 	public void pause() {
 		paused = true;
+		actionQueue.notifyPAUSED();
 	}
 
 	public void unpause() {
 		paused = false;
+		actionQueue.notifyUNPAUSED();
 	}
 
 	public void dequeue() {
