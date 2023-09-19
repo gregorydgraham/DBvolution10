@@ -376,7 +376,7 @@ public class ActionQueueTest {
 		assertThat(actionQueue.isPaused(), is(false));
 		actionQueue.pause();
 		assertThat(actionQueue.isPaused(), is(true));
-		assertThat(actionQueue.hasStarted(), is(true));// because paused and alive are different
+		assertThat(actionQueue.hasStarted(), is(false));
 
 		actionQueue.add(new NoOpDBAction());
 		actionQueue.add(new NoOpDBAction());
@@ -648,7 +648,7 @@ public class ActionQueueTest {
 		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		assertThat(actionQueue.isPaused(), is(false));
+		assertThat(actionQueue.isPaused(), is(true));
 		actionQueue.add(new NoOpDBAction(10000l));
 
 		Runnable notifyPauseRunner = () -> {
@@ -664,7 +664,6 @@ public class ActionQueueTest {
 		emptyingThread.start();
 		actionQueue.waitUntilPaused(10000l);
 		timer.end();
-		assertThat(actionQueue.isPaused(), is(false)); // because we didn't actual pause it
 		assertThat(timer.duration(), greaterThan(100l));
 		assertThat(timer.duration(), lessThan(1000l));
 	}
@@ -675,7 +674,7 @@ public class ActionQueueTest {
 		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		assertThat(actionQueue.isPaused(), is(false));
+		assertThat(actionQueue.isPaused(), is(true));
 		actionQueue.add(new NoOpDBAction(10000l));
 
 		Runnable notifyUnpauseRunner = () -> {
@@ -691,7 +690,7 @@ public class ActionQueueTest {
 		emptyingThread.start();
 		actionQueue.waitUntilUnpaused(10000l);
 		timer.end();
-		assertThat(actionQueue.isPaused(), is(false)); // because we didn't actual pause it
+		assertThat(actionQueue.isPaused(), is(true)); // because we didn't actual pause it
 		assertThat(timer.duration(), greaterThan(100l));
 		assertThat(timer.duration(), lessThan(10000l));
 	}
@@ -700,11 +699,12 @@ public class ActionQueueTest {
 	public void testIsPaused() {
 		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 
-		assertThat(actionQueue.isPaused(), is(false));
-		actionQueue.pause();
 		assertThat(actionQueue.isPaused(), is(true));
 		actionQueue.unpause();
-		assertThat(actionQueue.isPaused(), is(false));
+		assertThat(actionQueue.isPaused(), is(false));		
+		actionQueue.pause();
+		assertThat(actionQueue.isPaused(), is(true));
+
 	}
 
 	@Test
@@ -724,6 +724,7 @@ public class ActionQueueTest {
 		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
+		assertThat(actionQueue.isPaused(), is(true));
 		actionQueue.start();
 		assertThat(actionQueue.isPaused(), is(false));
 
