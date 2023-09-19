@@ -43,16 +43,15 @@ import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
  *
  * @author gregorygraham
  */
-public class QueueReader implements Runnable {
+public class QueueReader {
 
 	private static final Logger LOG = Logger.getLogger(QueueReader.class.getName());
 
 	private final ActionQueue actionQueue;
 	private final DBDatabase database;
 	private final ClusterDetails clusterDetails;
-	private boolean paused = false;
-	private final Thread readerThread;
-	private boolean keepRunning = true;
+	private Runner runner;
+	private final Object THREAD_STOPPED = new Object();
 
 	{
 		try {
@@ -68,60 +67,48 @@ public class QueueReader implements Runnable {
 		this.database = database;
 		this.actionQueue = dataQueue;
 		this.clusterDetails = details;
-
-		readerThread = new Thread(this, "DBV-READER-" + database.getLabel());
+		this.runner = getNewRunner();
 	}
 
-	@Override
-	public void run() {
-		while (keepRunning) {
-			dequeue();
-		}
-		LOG.log(Level.INFO, "Thread {0} for {1} stopped", new Object[]{readerThread.getName(), database.getLabel()});
+	private Runner getNewRunner() {
+		return new Runner(this);
 	}
 
 	public void pause() {
-		paused = true;
-		actionQueue.notifyPAUSED();
+		stop();
 	}
 
 	public void unpause() {
-		paused = false;
-		actionQueue.notifyUNPAUSED();
-	}
-
-	public void dequeue() {
-		if (paused) {
-			actionQueue.waitUntilUnpause(100);
-		} else {
-			attemptAction();
-		}
-		actionQueue.waitUntilActionsAvailable(100);
-	}
-
-	private boolean attemptAction() {
-		boolean result = false;
-		ActionMessage message = actionQueue.getHeadOfQueue();
-		if (message == null) {
-			actionQueue.notifyQueueIsEmpty();
-		} else {
-			final DBAction action = message.getAction();
-			final QueryIntention intent = action.getIntent();
-			System.out.println("READING: " + intent + " ON " + database.getLabel());
-
-			doAction(action);
-			result = true;
-		}
-		return result;
+		start();
 	}
 
 	public void stop() {
-		keepRunning = false;
+		runner.stop();
+		waitOnThreadDeath(100);
+		actionQueue.notifyPAUSED();
+	}
+
+	public synchronized void start() {
+		runner = getNewRunner();
+		runner.start();
+		actionQueue.notifyUNPAUSED();
+	}
+
+	public boolean isPaused() {
+		return runner.isPaused();
+	}
+
+	public boolean hasStarted() {
+		return runner.hasStarted();
+	}
+
+	public boolean hasStopped() {
+		return runner.hasStopped();
 	}
 
 	private void doAction(DBAction action) {
 		try {
-			this.database.executeDBAction(action);
+			database.executeDBAction(action);
 		} catch (SQLException ex) {
 			LOG.log(Level.SEVERE, null, ex);
 			clusterDetails.quarantineDatabase(database, ex);
@@ -132,16 +119,40 @@ public class QueueReader implements Runnable {
 		}
 	}
 
-	void start() {
-		readerThread.start();
+	public void waitOnThreadDeath(long milliseconds) {
+		synchronized (THREAD_STOPPED) {
+			try {
+				THREAD_STOPPED.wait(milliseconds);
+			} catch (InterruptedException ex) {
+				LOG.log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 
-	boolean hasStarted() {
-		return readerThread.isAlive() && keepRunning;
+	private void notifyThreadStopped() {
+		synchronized (THREAD_STOPPED) {
+			THREAD_STOPPED.notifyAll();
+		}
 	}
 
-	boolean isPaused() {
-		return paused;
+	private void attemptAction() {
+		ActionMessage message = actionQueue.getHeadOfQueue();
+		if (message == null) {
+			actionQueue.notifyQueueIsEmpty();
+		} else {
+			final DBAction action = message.getAction();
+			final QueryIntention intent = action.getIntent();
+			System.out.println("READING: " + intent + " ON " + database.getLabel());
+			doAction(action);
+		}
+	}
+
+	private void waitUntilActionsAvailable(int milliseconds) {
+		actionQueue.waitUntilActionsAvailable(milliseconds);
+	}
+
+	private String getLabel() {
+		return database.getLabel();
 	}
 
 	private static class StopReader extends Thread {
@@ -160,5 +171,56 @@ public class QueueReader implements Runnable {
 				LOG.log(Level.INFO, "Exception while stopping QueueReader: {0}", e.getLocalizedMessage());
 			}
 		}
+	}
+
+	private static class Runner implements Runnable {
+
+		private final QueueReader queueReader;
+		private final Thread readerThread;
+
+		private boolean proceed = true;
+
+		private Runner(QueueReader reader) {
+			this.queueReader = reader;
+
+			readerThread = new Thread(this, "Reader thread for " + queueReader.getLabel());
+		}
+
+		@Override
+		public void run() {
+			while (proceed) {
+				dequeue();
+			}
+			LOG.log(Level.INFO, "Thread {0} for {1} stopped", new Object[]{readerThread.getName(), queueReader.getLabel()});
+			queueReader.notifyThreadStopped();
+		}
+
+		public void dequeue() {
+			if (proceed) {
+				queueReader.attemptAction();
+			}
+			queueReader.waitUntilActionsAvailable(100);
+		}
+
+		private void stop() {
+			proceed = false;
+		}
+
+		private void start() {
+			readerThread.start();
+		}
+
+		private boolean hasStarted() {
+			return proceed && readerThread.isAlive();
+		}
+
+		private boolean hasStopped() {
+			return !proceed && !readerThread.isAlive();
+		}
+
+		private boolean isPaused() {
+			return !hasStarted();
+		}
+
 	}
 }
