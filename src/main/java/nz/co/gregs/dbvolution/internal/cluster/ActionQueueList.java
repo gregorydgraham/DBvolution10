@@ -76,7 +76,14 @@ public class ActionQueueList implements Serializable {
 
 	public void start(DBDatabase db) {
 		ActionQueue queueForDatabase = getQueueForDatabase(db);
-		queueForDatabase.start();
+		if (!queueForDatabase.hasStarted()) {
+			queueForDatabase.start();
+		}
+	}
+
+	public void stop(DBDatabase db) {
+		ActionQueue queueForDatabase = getQueueForDatabase(db);
+		queueForDatabase.stop();
 	}
 
 	public synchronized int size() {
@@ -91,6 +98,12 @@ public class ActionQueueList implements Serializable {
 			add(key, queue);
 		}
 		queue.add(act);
+	}
+
+	public synchronized void queueAction(DBDatabase db, DBAction... actions) {
+		for (DBAction action : actions) {
+			queueAction(db, action);
+		}
 	}
 
 	public synchronized void queueActionForAllDatabases(DBAction action) {
@@ -142,6 +155,7 @@ public class ActionQueueList implements Serializable {
 				A_QUEUE_IS_READY.wait();
 				return true;
 			} catch (InterruptedException ex) {
+				System.out.println("INTERRUPTED: waitUntilAQueueIsReady()");
 				LOG.log(Level.SEVERE, null, ex);
 				return false;
 			}
@@ -165,7 +179,7 @@ public class ActionQueueList implements Serializable {
 		}
 	}
 
-	void notifyQueueIsReady() {
+	void notifyAQueueIsReady() {
 		synchronized (A_QUEUE_IS_READY) {
 			A_QUEUE_IS_READY.notifyAll();
 		}
@@ -184,6 +198,9 @@ public class ActionQueueList implements Serializable {
 		ActionQueue queue = queues.get(getKey(db));
 		if (queue == null) {
 			return false;
+		}
+		if (queue.size() == 0) {
+			return true;
 		}
 		queue.waitUntilEmpty(milliseconds);
 		return true;
