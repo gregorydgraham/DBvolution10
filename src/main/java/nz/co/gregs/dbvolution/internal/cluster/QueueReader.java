@@ -52,6 +52,7 @@ public class QueueReader {
 	private final ClusterDetails clusterDetails;
 	private Runner runner;
 	private final Object THREAD_STOPPED = new Object();
+	private ActionMessage previousMessage;
 
 	{
 		try {
@@ -138,13 +139,16 @@ public class QueueReader {
 	private void attemptAction() {
 		ActionMessage message = actionQueue.getHeadOfQueue();
 		if (message == null) {
-			actionQueue.notifyQueueIsEmpty();
+			if (previousMessage != null) {
+				actionQueue.notifyQueueIsEmpty();
+			}
 		} else {
 			final DBAction action = message.getAction();
 			final QueryIntention intent = action.getIntent();
 			System.out.println("READING: " + intent + " ON " + database.getLabel());
 			doAction(action);
 		}
+		previousMessage = message;
 	}
 
 	private void waitUntilActionsAvailable(int milliseconds) {
@@ -153,6 +157,7 @@ public class QueueReader {
 
 	private String getLabel() {
 		return database.getLabel();
+
 	}
 
 	private static class StopReader extends Thread {
@@ -199,7 +204,7 @@ public class QueueReader {
 			if (proceed) {
 				queueReader.attemptAction();
 			}
-			queueReader.waitUntilActionsAvailable(100);
+			queueReader.waitUntilActionsAvailable(1);
 		}
 
 		private void stop() {
