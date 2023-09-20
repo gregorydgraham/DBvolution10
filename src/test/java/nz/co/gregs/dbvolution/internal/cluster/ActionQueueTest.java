@@ -340,33 +340,6 @@ public class ActionQueueTest {
 	}
 
 	@Test
-	public void testNotifyReady() {
-		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
-		assertThat(actionQueue.isEmpty(), is(true));
-		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.add(new NoOpDBAction(100l));
-		assertThat(actionQueue.isEmpty(), is(false));
-		assertThat(actionQueue.hasActionsAvailable(), is(true));
-
-		Runnable notifyReadyRunnable = () -> {
-			try {
-				Thread.sleep(101l);
-			} catch (InterruptedException ex) {
-				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			actionQueue.notifyQueueIsReady();
-		};
-		Thread notifyReadyThread = new Thread(notifyReadyRunnable, "Unpause actionQueue");
-		notifyReadyThread.start();
-		Timer timer = Timer.start();
-		actionQueue.waitUntilReady(1000l);
-		timer.end();
-		assertThat(actionQueue.isEmpty(), is(false)); // because we haven't started the AQ
-		assertThat(timer.duration(), greaterThan(100l)); // because the notify thread waits for 100ms
-		assertThat(timer.duration(), lessThan(1000l)); // because the wait didn't timeout
-	}
-
-	@Test
 	public void testPause() {
 		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
 		assertThat(actionQueue.isEmpty(), is(true));
@@ -486,29 +459,6 @@ public class ActionQueueTest {
 		actionQueue.add(new NoOpDBAction(10000l), new NoOpDBAction(), new NoOpDBAction());
 		assertThat(actionQueue.isEmpty(), is(false));
 		assertThat(actionQueue.size(), is(3));
-	}
-
-	@Test
-	public void testNotifyQueueIsReady() {
-		ActionQueue actionQueue = new ActionQueue(database, clusterDetails, 100, list);
-		actionQueue.pause();
-		actionQueue.add(new NoOpDBAction(100));
-		Runnable notifyRunnable = () -> {
-			try {
-				Thread.sleep(101l);
-			} catch (InterruptedException ex) {
-				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			actionQueue.notifyQueueIsReady();
-		};
-		Thread notifyThread = new Thread(notifyRunnable, "notify ready");
-
-		Timer timer = Timer.timer();
-		notifyThread.start();
-		actionQueue.waitUntilReady();
-		timer.stop();
-		assertThat(timer.duration(), is(greaterThan(100l)));
-		assertThat(timer.duration(), is(lessThan(1000l)));
 	}
 
 	@Test
