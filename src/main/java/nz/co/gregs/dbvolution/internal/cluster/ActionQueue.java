@@ -100,15 +100,11 @@ public class ActionQueue implements AutoCloseable {
 
 	public synchronized ActionMessage getHeadOfQueue() {
 		ActionMessage pulled;
-		if (isEmpty()) {
 			try {
-				pulled = actionQueue.poll(1, TimeUnit.SECONDS);
+				pulled = actionQueue.poll(1, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException intexc) {
 				pulled = null;
 			}
-		} else {
-			pulled = actionQueue.poll();
-		}
 		return pulled;
 	}
 
@@ -143,10 +139,6 @@ public class ActionQueue implements AutoCloseable {
 
 	public void notifyQueueIsEmpty() {
 		notifyQUEUE_IS_EMPTY();
-	}
-
-	public void notifyQueueIsReady() {
-		notifyQueueIsEmpty();
 	}
 
 	public void waitUntilActionsAvailable() {
@@ -231,7 +223,7 @@ public class ActionQueue implements AutoCloseable {
 			System.out.println("QUEUE IS EMPTY");
 			QUEUE_IS_EMPTY.notifyAll();
 		}
-		list.notifyQueueIsReady();
+		list.notifyAQueueIsReady();
 	}
 
 	private void waitOnQUEUE_IS_EMPTY() {
