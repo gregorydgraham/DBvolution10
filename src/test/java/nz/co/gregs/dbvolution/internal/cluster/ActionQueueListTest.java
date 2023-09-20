@@ -31,6 +31,8 @@
 package nz.co.gregs.dbvolution.internal.cluster;
 
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.NoOpDBAction;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
@@ -71,11 +73,10 @@ public class ActionQueueListTest {
 
 	@After
 	public void tearDown() {
-//		database.close();
 	}
 
 	@Test
-	public void testAdd() throws SQLException {
+	public void testAdd_DBDatabase() throws SQLException {
 		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
 		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
 		final H2MemoryDB createANewRandomDatabase = H2MemoryDB.createANewRandomDatabase();
@@ -85,6 +86,19 @@ public class ActionQueueListTest {
 		actionQueueList.add(H2MemoryDB.createANewRandomDatabase());
 		MatcherAssert.assertThat("AQL should have 2 databases now", actionQueueList.size(), is(2));
 		actionQueueList.add(H2MemoryDB.createANewRandomDatabase());
+		MatcherAssert.assertThat("AQL should have 3 databases now", actionQueueList.size(), is(3));
+	}
+
+	@Test
+	public void testAdd_DBDatabaseArr() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
+
+		actionQueueList.add(
+				H2MemoryDB.createANewRandomDatabase(),
+				H2MemoryDB.createANewRandomDatabase(),
+				H2MemoryDB.createANewRandomDatabase()
+		);
 		MatcherAssert.assertThat("AQL should have 3 databases now", actionQueueList.size(), is(3));
 	}
 
@@ -243,7 +257,7 @@ public class ActionQueueListTest {
 		// test that it times out
 		actionQueueList.waitUntilAQueueIsReady(10l);
 		timer.stop();
-		System.out.println("DURATION: " + timer.duration());
+		timer.report();
 		MatcherAssert.assertThat(queue1.isEmpty(), is(false));
 		MatcherAssert.assertThat(queue2.isEmpty(), is(false));
 		MatcherAssert.assertThat(queue3.isEmpty(), is(false));
@@ -455,7 +469,7 @@ public class ActionQueueListTest {
 		final ActionQueue queue1 = queue[0];
 		final ActionQueue queue2 = queue[1];
 		final ActionQueue queue3 = queue[2];
-		
+
 		actionQueueList.pause(db1);
 		actionQueueList.pause(db2);
 
@@ -463,12 +477,12 @@ public class ActionQueueListTest {
 		assertThat(queue1.size(), is(3));
 		assertThat(queue2.size(), is(0));
 		assertThat(queue3.size(), is(0));
-		
+
 		actionQueueList.copyFromTo(db1, db2);
 		assertThat(queue1.size(), is(3));
 		assertThat(queue2.size(), is(3));
 		assertThat(queue3.size(), is(0));
-		
+
 		actionQueueList.copyFromTo(db1, db3);
 		// check that it's copied
 		assertThat(queue3.size(), is(greaterThan(0)));
@@ -477,8 +491,470 @@ public class ActionQueueListTest {
 		assertThat(queue1.size(), is(3));
 		assertThat(queue2.size(), is(3));
 		assertThat(queue3.size(), is(0));
-		
 
+	}
+
+	@Test
+	public void testStart() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+
+		actionQueueList.add(db1);
+		assertThat(actionQueueList.getQueueForDatabase(db1).hasStarted(), is(true));
+		actionQueueList.stop(db1);
+		Timer.sleepFor(10); // give it time to work
+		assertThat(actionQueueList.getQueueForDatabase(db1).hasStarted(), is(false));
+		actionQueueList.start(db1);
+		assertThat(actionQueueList.getQueueForDatabase(db1).hasStarted(), is(true));
+
+		actionQueueList.getQueueForDatabase(db2);
+		assertThat(actionQueueList.getQueueForDatabase(db2).hasStarted(), is(true));
+		actionQueueList.start(db2);
+		assertThat(actionQueueList.getQueueForDatabase(db1).hasStarted(), is(true));
+		actionQueueList.stop(db2);
+		Timer.sleepFor(10); // give it time to work
+		assertThat(actionQueueList.getQueueForDatabase(db2).hasStarted(), is(false));
+	}
+
+	@Test
+	public void testStop() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+
+		actionQueueList.add(db1);
+		assertThat(actionQueueList.getQueueForDatabase(db1).hasStarted(), is(true));
+		actionQueueList.stop(db1);
+		assertThat(actionQueueList.getQueueForDatabase(db1).hasStarted(), is(false));
+		actionQueueList.start(db1);
+		assertThat(actionQueueList.getQueueForDatabase(db1).hasStarted(), is(true));
+	}
+
+	@Test
+	public void testSize() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+
+		assertThat(actionQueueList.size(), is(0));
+		actionQueueList.add(db1);
+		assertThat(actionQueueList.size(), is(1));
+		actionQueueList.getQueueForDatabase(db1);
+		assertThat(actionQueueList.size(), is(1));
+		actionQueueList.getQueueForDatabase(db2);
+		assertThat(actionQueueList.size(), is(2));
+		actionQueueList.add(db3);
+		assertThat(actionQueueList.size(), is(3));
+		actionQueueList.remove(db1);
+		assertThat(actionQueueList.size(), is(2));
+
+	}
+
+	@Test
+	public void testQueueActionForAllDatabases_DBAction() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2, db3);
+
+		NoOpDBAction act1 = new NoOpDBAction();
+		NoOpDBAction act2 = new NoOpDBAction();
+		NoOpDBAction act3 = new NoOpDBAction();
+
+		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(0));
+		assertThat(queues[2].size(), is(0));
+
+		actionQueueList.queueActionForAllDatabases(act1);
+		assertThat(queues[0].size(), is(1));
+		assertThat(queues[1].size(), is(1));
+		assertThat(queues[2].size(), is(1));
+
+		actionQueueList.queueActionForAllDatabases(act2);
+		assertThat(queues[0].size(), is(2));
+		assertThat(queues[1].size(), is(2));
+		assertThat(queues[2].size(), is(2));
+
+		actionQueueList.queueActionForAllDatabases(act3);
+		assertThat(queues[0].size(), is(3));
+		assertThat(queues[1].size(), is(3));
+		assertThat(queues[2].size(), is(3));
+
+	}
+
+	@Test
+	public void testQueueActionForAllDatabases_DBActionArr() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2, db3);
+
+		NoOpDBAction act1 = new NoOpDBAction();
+		NoOpDBAction act2 = new NoOpDBAction();
+		NoOpDBAction act3 = new NoOpDBAction();
+
+		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(0));
+		assertThat(queues[2].size(), is(0));
+
+		actionQueueList.queueActionForAllDatabases(act1, act2, act3);
+		assertThat(queues[0].size(), is(3));
+		assertThat(queues[1].size(), is(3));
+		assertThat(queues[2].size(), is(3));
+
+	}
+
+	@Test
+	public void testWaitUntilAllQueuesAreEmpty() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2, db3);
+
+		NoOpDBAction act1 = new NoOpDBAction(50);
+		NoOpDBAction act2 = new NoOpDBAction(50);
+		NoOpDBAction act3 = new NoOpDBAction(50);
+
+		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(0));
+		assertThat(queues[2].size(), is(0));
+
+		actionQueueList.queueActionForAllDatabases(act1, act2, act3);
+		assertThat(queues[0].size(), is(3));
+		assertThat(queues[1].size(), is(3));
+		assertThat(queues[2].size(), is(3));
+
+		actionQueueList.unpause(db1, db2, db3);
+		actionQueueList.waitUntilAllQueuesAreEmpty();
+		actionQueueList.pause(db1, db2, db3);
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(0));
+		assertThat(queues[2].size(), is(0));
+	}
+
+	@Test
+	public void testWaitUntilAQueueIsReady_0args() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2, db3);
+
+		NoOpDBAction actFast = new NoOpDBAction(50);
+		NoOpDBAction actSlow = new NoOpDBAction(1000);
+
+		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(0));
+		assertThat(queues[2].size(), is(0));
+
+		actionQueueList.queueAction(db1, actFast, actFast, actFast);
+		actionQueueList.queueAction(db2, actSlow, actSlow, actSlow);
+		actionQueueList.queueAction(db3, actSlow, actSlow, actSlow);
+		assertThat(queues[0].size(), is(3));
+		assertThat(queues[1].size(), is(3));
+		assertThat(queues[2].size(), is(3));
+
+		actionQueueList.unpause(db1, db2, db3);
+		actionQueueList.waitUntilAQueueIsReady();
+		actionQueueList.pause(db1, db2, db3);
+		// AssertThat one of the queues is size zero
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(greaterThan(0)));
+		assertThat(queues[2].size(), is(greaterThan(0)));
+	}
+
+	@Test
+	public void testWaitUntilAQueueIsReady_long() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2, db3);
+
+		NoOpDBAction actFast = new NoOpDBAction(50);
+		NoOpDBAction actSlow = new NoOpDBAction(1000);
+
+		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(0));
+		assertThat(queues[2].size(), is(0));
+
+		actionQueueList.queueAction(db1, actFast, actFast, actFast);
+		actionQueueList.queueAction(db2, actSlow, actSlow, actSlow, actSlow, actSlow);
+		actionQueueList.queueAction(db3, actSlow, actSlow, actSlow, actSlow, actSlow);
+		assertThat(queues[0].size(), is(3));
+		assertThat(queues[1].size(), is(5));
+		assertThat(queues[2].size(), is(5));
+
+		Timer timer = Timer.timer();
+		actionQueueList.unpause(db1, db2, db3);
+		actionQueueList.waitUntilAQueueIsReady(2);
+		actionQueueList.pause(db1, db2, db3);
+		timer.report();
+		// AssertThat one of the queues is size zero
+		assertThat(queues[0].size(), is(greaterThan(0)));
+		assertThat(queues[1].size(), is(greaterThan(0)));
+		assertThat(queues[2].size(), is(greaterThan(0)));
+		assertThat(timer.duration(), is(lessThan(1000l)));
+
+		timer.restart();
+		actionQueueList.unpause(db1, db2, db3);
+		actionQueueList.waitUntilAQueueIsReady(2500);
+		actionQueueList.pause(db1, db2, db3);
+		timer.report();
+		// AssertThat one of the queues is size zero
+		assertThat(queues[0].size(), is(0));
+		assertThat(queues[1].size(), is(greaterThan(0)));
+		assertThat(queues[2].size(), is(greaterThan(0)));
+		assertThat(timer.duration(), is(lessThan(2500l)));
+	}
+
+	@Test
+	public void testNotifyQueueIsReady() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2, db3);
+
+//		NoOpDBAction actFast = new NoOpDBAction(50);
+//		NoOpDBAction actSlow = new NoOpDBAction(1000);
+//
+//		actionQueueList.queueAction(db1, actSlow, actSlow, actSlow, actSlow, actSlow);
+//		actionQueueList.queueAction(db2, actFast, actFast, actFast, actFast, actFast);
+//		actionQueueList.queueAction(db3, actSlow, actSlow, actSlow, actSlow, actSlow);
+		Runnable runnable = () -> {
+			try {
+				Thread.sleep(101l);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueueTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			actionQueueList.notifyAQueueIsReady();
+		};
+		Thread thread = new Thread(runnable, "notify ready");
+
+		Timer timer = Timer.timer();
+		thread.start();
+		actionQueueList.waitUntilAQueueIsReady();
+		timer.stop();
+		assertThat(timer.duration(), is(greaterThan(100l)));
+		assertThat(timer.duration(), is(lessThan(1000l)));
+
+		actionQueueList.notifyAQueueIsReady();
+	}
+
+	@Test
+	public void testPause_DBDatabase() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db3);
+
+		NoOpDBAction actFast = new NoOpDBAction(5);
+		NoOpDBAction actSlow = new NoOpDBAction(1000);
+
+		actionQueueList.queueAction(db1, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db2, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db3, actFast, actFast, actFast, actFast, actFast);
+
+		Timer timer = Timer.timer();
+		actionQueueList.waitUntilReady(db3, 100l);
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(greaterThan(100l)));
+		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(5));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
+
+		timer.restart();
+		actionQueueList.unpause(db3);
+		actionQueueList.waitUntilReady(db3, 100l);
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(lessThan(100l)));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
+	}
+
+	@Test
+	public void testUnpause_DBDatabase() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db3);
+
+		NoOpDBAction actFast = new NoOpDBAction(5);
+		NoOpDBAction actSlow = new NoOpDBAction(1000);
+
+		actionQueueList.queueAction(db1, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db2, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db3, actFast, actFast, actFast, actFast, actFast);
+
+		Timer timer = Timer.timer();
+		actionQueueList.waitUntilReady(db3, 100l);
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(greaterThan(100l)));
+		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(5));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
+
+		timer.restart();
+		actionQueueList.unpause(db3);
+		actionQueueList.waitUntilReady(db3, 100l);
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(lessThan(100l)));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
+	}
+
+	@Test
+	public void testUnpause_DBDatabaseArr() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2);
+
+		NoOpDBAction actFast = new NoOpDBAction(5);
+		NoOpDBAction actSlow = new NoOpDBAction(1000);
+
+		actionQueueList.queueAction(db1, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db2, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db3, actFast, actFast, actFast, actFast, actFast);
+
+		Timer timer = Timer.timer();
+		actionQueueList.waitUntilReady(db1, 100l);
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(greaterThan(100l)));
+		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(5));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(5));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
+
+		timer.restart();
+		actionQueueList.unpause(db1, db2);
+		actionQueueList.waitUntilReady(db1, 1000l);
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
+	}
+
+	@Test
+	public void testGetKey() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+
+		String key1 = actionQueueList.getKey(db1);
+		String key2 = actionQueueList.getKey(db2);
+		String key3 = actionQueueList.getKey(db3);
+
+		assertThat(key1, allOf(not(key2), not(key3)));
+		assertThat(key2, allOf(not(key1), not(key3)));
+		assertThat(key3, allOf(not(key1), not(key2)));
+
+		assertThat(key1, is(actionQueueList.getKey(db1)));
+		assertThat(key2, is(actionQueueList.getKey(db2)));
+		assertThat(key3, is(actionQueueList.getKey(db3)));
+	}
+
+	@Test
+	public void testGetQueueForDatabase_DBDatabase() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+
+		actionQueueList.add(db1, db2, db3);
+
+		ActionQueue queue1 = actionQueueList.getQueueForDatabase(db1);
+		ActionQueue queue2 = actionQueueList.getQueueForDatabase(db2);
+		ActionQueue queue3 = actionQueueList.getQueueForDatabase(db3);
+		assertThat(queue1.getDatabase().getSettings().toString(), is(db1.getSettings().toString()));
+		assertThat(queue2.getDatabase().getSettings().toString(), is(db2.getSettings().toString()));
+		assertThat(queue3.getDatabase().getSettings().toString(), is(db3.getSettings().toString()));
+	}
+
+	@Test
+	public void testPause_DBDatabaseArr() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(db1, db2, db3);
+		actionQueueList.pause(db1, db2, db3);
+
+		NoOpDBAction actFast = new NoOpDBAction(5);
+		NoOpDBAction actSlow = new NoOpDBAction(1000);
+
+		actionQueueList.queueAction(db1, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db2, actFast, actFast, actFast, actFast, actFast);
+		actionQueueList.queueAction(db3, actFast, actFast, actFast, actFast, actFast);
+
+		Timer timer = Timer.timer();
+		actionQueueList.waitUntilReady(db3, 100l);
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(greaterThan(100l)));
+		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(5));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(5));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(5));
+
+		timer.restart();
+		actionQueueList.unpause(db1, db2, db3);
+		actionQueueList.waitUntilAllQueuesAreEmpty();
+		timer.stop();
+		timer.report();
+		assertThat(timer.duration(), is(lessThan(100l)));
+		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
+		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
+	}
+
+	@Test
+	public void testGetQueueForDatabase_DBDatabaseArr() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+		
+		actionQueueList.add(db1,db2,db3);
+		
+		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1,db2,db3);
+		assertThat(queues[0].getDatabase().getSettings().toString(), is(db1.getSettings().toString()));
+		assertThat(queues[1].getDatabase().getSettings().toString(), is(db2.getSettings().toString()));
+		assertThat(queues[2].getDatabase().getSettings().toString(), is(db3.getSettings().toString()));
 	}
 
 }
