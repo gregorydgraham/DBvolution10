@@ -223,6 +223,12 @@ public class ActionQueueList implements Serializable {
 		}
 	}
 
+	public void unpauseAll() {
+		for (ActionQueue db : queues.values()) {
+			db.unpause();
+		}
+	}
+
 	public String getKey(DBDatabase db) {
 		return db.getSettings().encode();
 	}
@@ -258,9 +264,15 @@ public class ActionQueueList implements Serializable {
 		return queue;
 	}
 
-	void pause(DBDatabase... dbs) {
+	public void pause(DBDatabase... dbs) {
 		for (DBDatabase db : dbs) {
 			pause(db);
+		}
+	}
+
+	public void pauseAll() {
+		for (ActionQueue queue : queues.values()) {
+			queue.pause();
 		}
 	}
 
