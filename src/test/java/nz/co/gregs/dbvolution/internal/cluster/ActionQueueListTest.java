@@ -103,26 +103,6 @@ public class ActionQueueListTest {
 	}
 
 	@Test
-	public void testQueueAction() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
-		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
-
-		H2MemoryDB database = H2MemoryDB.createANewRandomDatabase();
-		actionQueueList.add(database);
-		final ActionQueue queue = actionQueueList.getQueueForDatabase(database);
-		queue.waitUntilEmpty();
-		queue.stop();
-
-		final NoOpDBAction noOpDBAction = new NoOpDBAction(100l);
-		actionQueueList.queueAction(database, noOpDBAction);
-
-		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
-		final ActionMessage headOfQueue = queue.getHeadOfQueue();
-		final DBAction action = headOfQueue.getAction();
-		MatcherAssert.assertThat(action, is(noOpDBAction));
-	}
-
-	@Test
 	public void testRemove() throws SQLException {
 		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
 		H2MemoryDB db = H2MemoryDB.createANewRandomDatabase();
@@ -194,17 +174,21 @@ public class ActionQueueListTest {
 		final ActionQueue queue3 = queue[2];
 		actionQueueList.pause(db2, db3);
 
-		final long delay = 50l;
+		final long actionDelay = 50l;
+		final int numberOfActions = 2;
+		final long expectedMinimumDelay = actionDelay * numberOfActions;
+
 		Timer timer = Timer.timer();
-		actionQueueList.queueActionForAllDatabases(new NoOpDBAction(delay));
-		actionQueueList.queueActionForAllDatabases(new NoOpDBAction(delay));
+		for (int i = 0; i < numberOfActions; i++) {
+			actionQueueList.queueActionForAllDatabases(new NoOpDBAction(actionDelay));
+		}
 		actionQueueList.waitUntilAQueueIsReady();
 		timer.stop();
 		System.out.println("DURATION: " + timer.duration());
 		MatcherAssert.assertThat(queue1.isEmpty(), is(true));
 		MatcherAssert.assertThat(queue2.isEmpty(), is(false));
 		MatcherAssert.assertThat(queue3.isEmpty(), is(false));
-		MatcherAssert.assertThat(timer.duration(), is(greaterThan(delay * 2)));
+		MatcherAssert.assertThat(timer.duration(), is(greaterThan(expectedMinimumDelay)));
 		MatcherAssert.assertThat("AQL should still have 3 queues", actionQueueList.size(), is(3));
 
 		timer = Timer.start();
@@ -215,7 +199,7 @@ public class ActionQueueListTest {
 		MatcherAssert.assertThat(queue1.isEmpty(), is(true));
 		MatcherAssert.assertThat(queue2.isEmpty(), is(true));
 		MatcherAssert.assertThat(queue3.isEmpty(), is(false));
-		MatcherAssert.assertThat(timer.duration(), is(greaterThan(delay * 2)));
+		MatcherAssert.assertThat(timer.duration(), is(greaterThan(expectedMinimumDelay)));
 		MatcherAssert.assertThat("AQL should still have 3 queues", actionQueueList.size(), is(3));
 
 		timer = Timer.start();
@@ -226,7 +210,7 @@ public class ActionQueueListTest {
 		MatcherAssert.assertThat(queue1.isEmpty(), is(true));
 		MatcherAssert.assertThat(queue2.isEmpty(), is(true));
 		MatcherAssert.assertThat(queue3.isEmpty(), is(true));
-		MatcherAssert.assertThat(timer.duration(), is(greaterThan(delay * 2)));
+		MatcherAssert.assertThat(timer.duration(), is(greaterThan(expectedMinimumDelay)));
 		MatcherAssert.assertThat("AQL should still have 3 queues", actionQueueList.size(), is(3));
 	}
 
@@ -249,13 +233,15 @@ public class ActionQueueListTest {
 		// need waitTime to be large because the code actually takes a while to run
 		// so have a big delay, and multiple it by a ridiculous scale
 		// to ensure good results: 500 * 10 works well
-		final long delay = 500l;
-		final long waitTime = delay * 10;
-		actionQueueList.queueActionForAllDatabases(new NoOpDBAction(delay));
-		actionQueueList.queueActionForAllDatabases(new NoOpDBAction(delay));
+		final long actionDelay = 500l;
+		final long waitTime = actionDelay * 10;
+		final long reallyShortWait = actionDelay / 50 +1;// really short
+		final int numberOfActions = 2;
+		actionQueueList.queueActionForAllDatabases(new NoOpDBAction(actionDelay));
+		actionQueueList.queueActionForAllDatabases(new NoOpDBAction(actionDelay));
 		Timer timer = Timer.timer();
 		// test that it times out
-		actionQueueList.waitUntilAQueueIsReady(10l);
+		actionQueueList.waitUntilAQueueIsReady(reallyShortWait); 
 		timer.stop();
 		timer.report();
 		MatcherAssert.assertThat(queue1.isEmpty(), is(false));
@@ -264,8 +250,8 @@ public class ActionQueueListTest {
 		MatcherAssert.assertThat(queue1.size(), is(2));
 		MatcherAssert.assertThat(queue2.size(), is(2));
 		MatcherAssert.assertThat(queue3.size(), is(2));
-		MatcherAssert.assertThat(timer.duration(), is(greaterThan(10l)));
-		MatcherAssert.assertThat(timer.duration(), is(lessThan(delay)));
+		MatcherAssert.assertThat(timer.duration(), is(greaterThanOrEqualTo(reallyShortWait)));
+		MatcherAssert.assertThat(timer.duration(), is(lessThan(actionDelay)));
 		MatcherAssert.assertThat("AQL should still have 3 queues", actionQueueList.size(), is(3));
 
 		timer = Timer.start();
@@ -281,21 +267,22 @@ public class ActionQueueListTest {
 		MatcherAssert.assertThat(queue1.size(), is(2));
 		MatcherAssert.assertThat(queue2.size(), is(0));
 		MatcherAssert.assertThat(queue3.size(), is(2));
-		MatcherAssert.assertThat(timer.duration(), is(greaterThan(delay * 2)));
+		MatcherAssert.assertThat(timer.duration(), is(greaterThanOrEqualTo(actionDelay * numberOfActions)));
 		MatcherAssert.assertThat(timer.duration(), is(lessThan(waitTime)));
 		MatcherAssert.assertThat("AQL should still have 3 queues", actionQueueList.size(), is(3));
 
+		// test that it returns immediately in the already-ready case
 		timer = Timer.start();
 		actionQueueList.unpause(db3);
-		// test that it returns immediately in the already-ready case
-		actionQueueList.waitUntilAQueueIsReady(delay * 3);
+		actionQueueList.waitUntilAQueueIsReady(actionDelay * 3);
 		timer.stop();
+		actionQueueList.pauseAll();
 
 		MatcherAssert.assertThat(queue3.isEmpty(), is(false));
-		System.out.println("DURATION: " + timer.duration());
 		MatcherAssert.assertThat(queue1.isEmpty(), is(false));
 		MatcherAssert.assertThat(queue2.isEmpty(), is(true));
-		MatcherAssert.assertThat(timer.duration(), is(lessThan(delay)));
+		System.out.println("DURATION: " + timer.duration());
+		MatcherAssert.assertThat(timer.duration(), is(lessThan(actionDelay)));
 		MatcherAssert.assertThat("AQL should still have 3 queues", actionQueueList.size(), is(3));
 	}
 
@@ -723,7 +710,7 @@ public class ActionQueueListTest {
 	}
 
 	@Test
-	public void testNotifyQueueIsReady() throws SQLException {
+	public void testNotifyAQueueIsReady() throws SQLException {
 		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
@@ -777,7 +764,7 @@ public class ActionQueueListTest {
 		actionQueueList.waitUntilReady(db3, 100l);
 		timer.stop();
 		timer.report();
-		assertThat(timer.duration(), is(greaterThan(100l)));
+		assertThat(timer.duration(), is(greaterThan(99l)));
 		assertThat(timer.duration(), is(lessThan(200l)));
 		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(5));
 		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
@@ -811,21 +798,22 @@ public class ActionQueueListTest {
 		actionQueueList.queueAction(db3, actFast, actFast, actFast, actFast, actFast);
 
 		Timer timer = Timer.timer();
-		actionQueueList.waitUntilReady(db3, 100l);
+		final long delay = 100l;
+		actionQueueList.waitUntilReady(db3, delay);
 		timer.stop();
 		timer.report();
-		assertThat(timer.duration(), is(greaterThan(100l)));
-		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(timer.duration(), is(greaterThan(delay - 1)));
+		assertThat(timer.duration(), is(lessThan(delay * 2)));
 		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(5));
 		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
 		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
 
 		timer.restart();
 		actionQueueList.unpause(db3);
-		actionQueueList.waitUntilReady(db3, 100l);
+		actionQueueList.waitUntilReady(db3, delay);
 		timer.stop();
 		timer.report();
-		assertThat(timer.duration(), is(lessThan(100l)));
+		assertThat(timer.duration(), is(lessThan(delay - 1)));
 		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
 		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
 		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
@@ -848,21 +836,22 @@ public class ActionQueueListTest {
 		actionQueueList.queueAction(db3, actFast, actFast, actFast, actFast, actFast);
 
 		Timer timer = Timer.timer();
-		actionQueueList.waitUntilReady(db1, 100l);
+		final long delay = 100l;
+		actionQueueList.waitUntilReady(db1, delay);
 		timer.stop();
 		timer.report();
-		assertThat(timer.duration(), is(greaterThan(100l)));
-		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(timer.duration(), is(greaterThanOrEqualTo(delay)));
+		assertThat(timer.duration(), is(lessThan(delay * 2)));
 		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(5));
 		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(5));
 		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
 
 		timer.restart();
 		actionQueueList.unpause(db1, db2);
-		actionQueueList.waitUntilReady(db1, 1000l);
+		actionQueueList.waitUntilReady(db1, delay * 10);// DON'T want a timeout
 		timer.stop();
 		timer.report();
-		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(timer.duration(), is(lessThan(delay * 2))); // DIDN'T timeout?
 		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
 		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
 		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
@@ -922,11 +911,12 @@ public class ActionQueueListTest {
 		actionQueueList.queueAction(db3, actFast, actFast, actFast, actFast, actFast);
 
 		Timer timer = Timer.timer();
-		actionQueueList.waitUntilReady(db3, 100l);
+		final long delay = 100l;
+		actionQueueList.waitUntilReady(db3, delay);
 		timer.stop();
 		timer.report();
-		assertThat(timer.duration(), is(greaterThan(100l)));
-		assertThat(timer.duration(), is(lessThan(200l)));
+		assertThat(timer.duration(), is(greaterThanOrEqualTo(delay)));
+		assertThat(timer.duration(), is(lessThan(delay * 2)));
 		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(5));
 		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(5));
 		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(5));
@@ -936,7 +926,7 @@ public class ActionQueueListTest {
 		actionQueueList.waitUntilAllQueuesAreEmpty();
 		timer.stop();
 		timer.report();
-		assertThat(timer.duration(), is(lessThan(100l)));
+		assertThat(timer.duration(), is(lessThan(delay)));
 		assertThat(actionQueueList.getQueueForDatabase(db3).size(), is(0));
 		assertThat(actionQueueList.getQueueForDatabase(db1).size(), is(0));
 		assertThat(actionQueueList.getQueueForDatabase(db2).size(), is(0));
@@ -948,13 +938,162 @@ public class ActionQueueListTest {
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
-		
-		actionQueueList.add(db1,db2,db3);
-		
-		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1,db2,db3);
+
+		actionQueueList.add(db1, db2, db3);
+
+		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1, db2, db3);
 		assertThat(queues[0].getDatabase().getSettings().toString(), is(db1.getSettings().toString()));
 		assertThat(queues[1].getDatabase().getSettings().toString(), is(db2.getSettings().toString()));
 		assertThat(queues[2].getDatabase().getSettings().toString(), is(db3.getSettings().toString()));
 	}
 
+	@Test
+	public void testQueueAction_DBDatabase_DBAction() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
+
+		H2MemoryDB database = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(database);
+		final ActionQueue queue = actionQueueList.getQueueForDatabase(database);
+		queue.waitUntilEmpty();
+		queue.stop();
+
+		// can insert the first action
+		NoOpDBAction noOpDBAction = new NoOpDBAction(100l);
+		actionQueueList.queueAction(database, noOpDBAction);
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		ActionMessage headOfQueue = queue.getHeadOfQueue();
+		DBAction action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(false));
+
+		// can insert another action
+		noOpDBAction = new NoOpDBAction(100l);
+		actionQueueList.queueAction(database, noOpDBAction);
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		headOfQueue = queue.getHeadOfQueue();
+		action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(false));
+
+		// can insert 2 actions at once
+		noOpDBAction = new NoOpDBAction(100l);
+		NoOpDBAction noOpDBAction2 = new NoOpDBAction(100l);
+		actionQueueList.queueAction(database, noOpDBAction);
+		actionQueueList.queueAction(database, noOpDBAction2);
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		headOfQueue = queue.getHeadOfQueue();
+		action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		headOfQueue = queue.getHeadOfQueue();
+		action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction2));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(false));
+	}
+
+	@Test
+	public void testQueueAction_DBDatabase_DBActionArr() throws SQLException {
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
+
+		H2MemoryDB database = H2MemoryDB.createANewRandomDatabase();
+		actionQueueList.add(database);
+		final ActionQueue queue = actionQueueList.getQueueForDatabase(database);
+		queue.waitUntilEmpty();
+		queue.stop();
+
+		// can insert 2 actions at once
+		NoOpDBAction noOpDBAction = new NoOpDBAction(100l);
+		NoOpDBAction noOpDBAction2 = new NoOpDBAction(100l);
+		actionQueueList.queueAction(database, noOpDBAction);
+		actionQueueList.queueAction(database, noOpDBAction2);
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		ActionMessage headOfQueue = queue.getHeadOfQueue();
+		DBAction action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		headOfQueue = queue.getHeadOfQueue();
+		action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction2));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(false));
+
+		// can insert 2 more actions
+		noOpDBAction = new NoOpDBAction(100l);
+		noOpDBAction2 = new NoOpDBAction(100l);
+		actionQueueList.queueAction(database, noOpDBAction);
+		actionQueueList.queueAction(database, noOpDBAction2);
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		headOfQueue = queue.getHeadOfQueue();
+		action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(true));
+		headOfQueue = queue.getHeadOfQueue();
+		action = headOfQueue.getAction();
+		MatcherAssert.assertThat(action, is(noOpDBAction2));
+		MatcherAssert.assertThat(queue.hasActionsAvailable(), is(false));
+	}
+
+	@Test
+	public void testUnpauseAll() throws SQLException {
+
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+
+		actionQueueList.add(db1, db2, db3);
+		MatcherAssert.assertThat("AQL should now have 3 queues", actionQueueList.size(), is(3));
+		actionQueueList.waitUntilAllQueuesAreEmpty();
+		final ActionQueue[] queue = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		final ActionQueue queue1 = queue[0];
+		final ActionQueue queue2 = queue[1];
+		final ActionQueue queue3 = queue[2];
+		assertThat(queue1.isEmpty(), is(true));
+		assertThat(queue2.isEmpty(), is(true));
+		assertThat(queue3.isEmpty(), is(true));
+
+		assertThat(queue1.isPaused(), is(false));
+		assertThat(queue2.isPaused(), is(false));
+		assertThat(queue3.isPaused(), is(false));
+
+		actionQueueList.pauseAll();
+		assertThat(queue1.isPaused(), is(true));
+		assertThat(queue2.isPaused(), is(true));
+		assertThat(queue3.isPaused(), is(true));
+
+		actionQueueList.unpauseAll();
+		assertThat(queue1.isPaused(), is(false));
+		assertThat(queue2.isPaused(), is(false));
+		assertThat(queue3.isPaused(), is(false));
+	}
+
+	@Test
+	public void testPauseAll() throws SQLException {
+
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails);
+		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
+		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
+
+		actionQueueList.add(db1, db2, db3);
+		MatcherAssert.assertThat("AQL should now have 3 queues", actionQueueList.size(), is(3));
+		actionQueueList.waitUntilAllQueuesAreEmpty();
+		final ActionQueue[] queue = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		final ActionQueue queue1 = queue[0];
+		final ActionQueue queue2 = queue[1];
+		final ActionQueue queue3 = queue[2];
+		assertThat(queue1.isEmpty(), is(true));
+		assertThat(queue2.isEmpty(), is(true));
+		assertThat(queue3.isEmpty(), is(true));
+
+		assertThat(queue1.isPaused(), is(false));
+		assertThat(queue2.isPaused(), is(false));
+		assertThat(queue3.isPaused(), is(false));
+
+		actionQueueList.pauseAll();
+		assertThat(queue1.isPaused(), is(true));
+		assertThat(queue2.isPaused(), is(true));
+		assertThat(queue3.isPaused(), is(true));
+	}
 }
