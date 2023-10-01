@@ -52,6 +52,7 @@ import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
 import nz.co.gregs.dbvolution.internal.cluster.QueueReader;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
@@ -109,7 +110,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	private boolean startupIsNeeded = true;
 	private boolean failOnQuarantine = false;
 	private boolean hasQuarantined = false;
-	
+
 	public DBDatabaseCluster(DBDatabaseClusterSettingsBuilder builder) throws SQLException {
 		super(builder);
 		Configuration config = builder.getConfiguration();
@@ -163,11 +164,11 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	}
 
 	public void waitUntilDatabaseIsSynchronised(DBDatabase database) {
-		getDetails().waitUntilDatabaseHasSynchronised(database);
+		getDetails().waitUntilDatabaseHasSynchronized(database);
 	}
 
 	public void waitUntilDatabaseIsSynchronised(DBDatabase database, long timeoutInMilliseconds) {
-		getDetails().waitUntilDatabaseHasSynchronised(database, timeoutInMilliseconds);
+		getDetails().waitUntilDatabaseHasSynchronized(database, timeoutInMilliseconds);
 	}
 
 	public synchronized boolean requeryPermitted() {
@@ -212,7 +213,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		 * Unsynchronised databases have not yet had the schema implemented nor the
 		 * data updated.
 		 */
-		UNSYNCHRONISED,
+//		UNSYNCHRONISED,
 		/**
 		 * Paused databases are ready databases that are being use to synchronize
 		 * other databases.
@@ -247,12 +248,12 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		 * <p>
 		 * Currently unused</p>
 		 */
-		PROCESSING,
+		PROCESSING;
 		/**
 		 * SYNCHRONIZING databases are being actively updated to match the cluster
 		 * schema and data.
 		 */
-		SYNCHRONIZING;
+//		SYNCHRONIZING;
 
 		public boolean equals(Status... statuses) {
 			for (Status status : statuses) {
@@ -343,9 +344,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	private void initCluster(DBDatabase[] databases) {
 		initDatabaseMembers(databases);
 		setDefinition(new ClusterDatabaseDefinition());
-		SynchroniserProcess synchroniserProcess = new SynchroniserProcess();
-		addRegularProcess(synchroniserProcess);
-
 	}
 
 	private void initDatabaseMembers(DBDatabase[] databases) {
@@ -516,7 +514,10 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	private synchronized boolean addDatabaseWithWaiting(DBDatabase database, boolean wait) throws SQLException {
 		boolean add = addDatabaseWithoutWaiting(database);
-		synchronizeAddedDatabases(wait);
+		if (wait) {
+			details.waitUntilDatabaseHasSynchronized(database);
+		}
+//		synchronizeAddedDatabases(wait);
 		return add;
 	}
 
@@ -1007,7 +1008,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 					// skip this database as it's already been actioned
 				} else {
 					if (action.runOnDatabaseDuringCluster(succeededDatabase, nextDatabase)) {
-						details.queueAction(nextDatabase,action);
+						details.queueAction(nextDatabase, action);
 					}
 				}
 			}
@@ -1016,7 +1017,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		}
 		return actionsPerformed;
 	}
-	
+
 //	private synchronized DBActionList executeDBActionOnClusterMembers(DBAction action) throws NoAvailableDatabaseException, SQLException {
 //		LOG.debug("EXECUTING ACTION: " + action.getSQLStatements(this));
 //		addActionToQueue(action);
@@ -1074,7 +1075,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 //		}
 //		return actionsPerformed;
 //	}
-
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase workingDB = query.getWorkingDatabase();
@@ -1222,46 +1222,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		return getDetails().getSupportsDifferenceBetweenNullAndEmptyString();
 	}
 
-	private void addActionToQueue(DBAction action) {
-		for (DBDatabase db : getDetails().getAllDatabases()) {
-			Queue<DBAction> queue = getDetails().getActionQueue(db);
-			queue.add(action);
-		}
-	}
-
-	private void removeActionFromQueue(DBAction action) {
-		for (DBDatabase db : getDetails().getAllDatabases()) {
-			Queue<DBAction> queue = getDetails().getActionQueue(db);
-			queue.remove(action);
-		}
-	}
-
-	private void removeActionFromQueue(DBDatabase database, DBAction action) {
-		final Queue<DBAction> queue = getDetails().getActionQueue(database);
-		synchronized (queue) {
-			if (queue != null) {
-				queue.remove(action);
-			}
-		}
-	}
-
-	private synchronized void synchronizeAddedDatabases(boolean blocking) throws SQLException {
-		boolean block = blocking || (getDetails().getReadyDatabases().length < 2);
-		final DBDatabase[] dbs = getDetails().getUnsynchronizedDatabases();
-		for (DBDatabase addedDatabase : dbs) {
-			SynchroniseTask task = new SynchroniseTask(this, addedDatabase);
-			if (block) {
-				task.synchronise(this, addedDatabase);
-			} else {
-				try {
-					ACTION_THREAD_POOL.submit(task);
-				} catch (RejectedExecutionException ex) {
-					task.synchronise(this, addedDatabase);
-				}
-			}
-		}
-	}
-
 	@Override
 	public synchronized boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = true;
@@ -1296,18 +1256,18 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	public String getClusterStatus() {
 		final String summary = getStatusOfActiveDatabases();
-		final String unsyn = getStatusOfUnsynchronisedDatabases();
+//		final String unsyn = getStatusOfUnsynchronisedDatabases();
 		final String quarantined = getStatusOfQuarantinedDatabases();
-		return summary + "\n" + unsyn + "\n" + quarantined;
+		return summary + "\n" + quarantined;
 	}
 
 	private String getStatusOfQuarantinedDatabases() {
 		return (new Date()).toString() + "Quarantined Databases: " + getDetails().getQuarantinedDatabases().length + " of " + getDetails().getAllDatabases().length;
 	}
 
-	private String getStatusOfUnsynchronisedDatabases() {
-		return (new Date()).toString() + "Unsynchronised: " + getDetails().getUnsynchronizedDatabases().length + " of " + getDetails().getAllDatabases().length;
-	}
+//	private String getStatusOfUnsynchronisedDatabases() {
+//		return (new Date()).toString() + "Unsynchronised: " + getDetails().getUnsynchronizedDatabases().length + " of " + getDetails().getAllDatabases().length;
+//	}
 
 	private String getStatusOfActiveDatabases() {
 		final DBDatabase[] ready = getDetails().getReadyDatabases();
@@ -1527,40 +1487,40 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		}
 	}
 
-	private static class SynchroniseTask implements Callable<Void> {
-
-		private final DBDatabaseCluster cluster;
-		private final DBDatabase database;
-
-		public SynchroniseTask(DBDatabaseCluster cluster, DBDatabase db) {
-			this.cluster = cluster;
-			this.database = db;
-		}
-
-		@Override
-		final public Void call() throws Exception {
-			return synchronise(getCluster(), getDatabase());
-		}
-
-		/**
-		 * @return the cluster
-		 */
-		final public DBDatabaseCluster getCluster() {
-			return cluster;
-		}
-
-		/**
-		 * @return the database
-		 */
-		final public DBDatabase getDatabase() {
-			return database;
-		}
-
-		final public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) {
-			cluster.getDetails().synchronizeSecondaryDatabase(database);
-			return null;
-		}
-	}
+//	private static class SynchroniseTask implements Callable<Void> {
+//
+//		private final DBDatabaseCluster cluster;
+//		private final DBDatabase database;
+//
+//		public SynchroniseTask(DBDatabaseCluster cluster, DBDatabase db) {
+//			this.cluster = cluster;
+//			this.database = db;
+//		}
+//
+//		@Override
+//		final public Void call() throws Exception {
+//			return synchronise(getCluster(), getDatabase());
+//		}
+//
+//		/**
+//		 * @return the cluster
+//		 */
+//		final public DBDatabaseCluster getCluster() {
+//			return cluster;
+//		}
+//
+//		/**
+//		 * @return the database
+//		 */
+//		final public DBDatabase getDatabase() {
+//			return database;
+//		}
+//
+//		final public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) {
+//			cluster.getDetails().synchronizeSecondaryDatabase(database);
+//			return null;
+//		}
+//	}
 
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
@@ -1906,20 +1866,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		 */
 		public Configuration withAutoConnect() {
 			return new Configuration(this.useAutoRebuild, this.useAutoReconnect, this.useAutoStart, true);
-		}
-	}
-
-	private class SynchroniserProcess extends RegularProcess {
-
-		private static final long serialVersionUID = 1L;
-
-		public SynchroniserProcess() {
-		}
-
-		@Override
-		public String process() throws Exception {
-			getDetails().synchronizeSecondaryDatabases();
-			return "Finished Synchronising Databases";
 		}
 	}
 }

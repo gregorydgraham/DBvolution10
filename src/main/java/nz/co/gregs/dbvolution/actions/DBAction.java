@@ -59,6 +59,8 @@ public abstract class DBAction implements Serializable {
 	private RefetchRequirement refetchStatus = RefetchRequirement.REFETCH;
 
 	protected final QueryIntention intention;
+	private boolean hasSucceeded = false;
+	private boolean hasRun = false;
 
 	/**
 	 * Standard action constructor.
@@ -168,7 +170,28 @@ public abstract class DBAction implements Serializable {
 	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
-	public abstract DBActionList execute(DBDatabase db) throws SQLException;
+	public DBActionList action(DBDatabase db) throws SQLException{
+		hasRun = true;
+		DBActionList actions = execute(db);
+		hasSucceeded = true;
+		return actions;
+	}
+
+	/**
+	 * Performs the DB execute and returns a list of all actions performed in the
+	 * process.
+	 *
+	 * <p>
+	 * The supplied row will be changed by the action in an appropriate way,
+	 * however the Action will contain an unchanged and unchangeable copy of the
+	 * row for internal use.
+	 *
+	 * @param db the target database.
+	 * @return The complete list of all actions performed to complete this action
+	 * on the database
+	 * @throws SQLException Database operations may throw SQLExceptions
+	 */
+	protected abstract DBActionList execute(DBDatabase db) throws SQLException;
 
 	public boolean requiresRunOnIndividualDatabaseBeforeCluster() {
 		// this was FALSE to allow for effeciency
@@ -244,6 +267,14 @@ public abstract class DBAction implements Serializable {
 
 	protected void prepareRollbackData(DBDatabase db, DBActionList actions) throws SQLException, DBRuntimeException {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public boolean hasRun() {
+		return hasRun;
+	}
+
+	public boolean hasSucceeded() {
+		return hasSucceeded;
 	}
 
 	public static enum RefetchRequirement {

@@ -37,7 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
-import nz.co.gregs.dbvolution.utility.Timer;
+import nz.co.gregs.dbvolution.utility.StopWatch;
 
 /**
  *
@@ -86,9 +86,9 @@ public class NoOpDBAction extends DBAction {
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
 		if (WAIT_TIME_IN_MILLIS > 0) {
-			Timer timer = Timer.timer();
+			StopWatch timer = StopWatch.stopwatch();
 			try {
-				timer = Timer.timer();
+				timer = StopWatch.stopwatch();
 				Thread.sleep(WAIT_TIME_IN_MILLIS);
 //				System.out.println("STALLED "+this);
 				System.out.println("STALLED "+this+" FOR: " + timer.duration());

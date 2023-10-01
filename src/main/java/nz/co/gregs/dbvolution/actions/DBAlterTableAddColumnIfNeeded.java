@@ -77,7 +77,7 @@ public class DBAlterTableAddColumnIfNeeded extends DBAction {
 	}
 
 	@Override
-	public DBActionList execute(DBDatabase db) throws SQLException {
+	protected DBActionList execute(DBDatabase db) throws SQLException {
 		return execute2(db);
 	}
 

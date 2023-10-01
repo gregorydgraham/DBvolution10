@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.internal.cluster;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -38,7 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
+import nz.co.gregs.dbvolution.internal.database.DatabaseList;
 import nz.co.gregs.looper.LoopVariable;
 
 /**
@@ -50,25 +51,25 @@ public class ActionQueueList implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final HashMap<String, ActionQueue> queues = new HashMap<>(2);
-	private final ClusterDetails clusterDetails;
 	private final int maxQueueSize = 100000;
-	private transient final Object A_QUEUE_IS_READY = new Object();
+	private transient final Object A_QUEUE_IS_EMPTY = new Object();
+	private final DatabaseList databaseList;
 
-	public ActionQueueList(ClusterDetails clusterDetails) {
-		this.clusterDetails = clusterDetails;
+	public ActionQueueList(DatabaseList databaseList) {
+		this.databaseList = databaseList;
 	}
 
 	private ActionQueue getNewActionQueue(DBDatabase db) {
-		return new ActionQueue(db, clusterDetails, maxQueueSize, this);
+		return new ActionQueue(db, maxQueueSize, this);
 	}
 
 	public synchronized String add(DBDatabase db) {
 		final String key = getKey(db);
 		final ActionQueue queue = getNewActionQueue(db);
-		return add(key, queue);
+		return addQueue(key, queue);
 	}
 
-	private synchronized String add(String key, ActionQueue queue) {
+	private synchronized String addQueue(String key, ActionQueue queue) {
 		queues.put(key, queue);
 		queue.start();
 		return key;
@@ -95,7 +96,7 @@ public class ActionQueueList implements Serializable {
 		ActionQueue queue = queues.get(key);
 		if (queue == null) {
 			queue = getNewActionQueue(db);
-			add(key, queue);
+			addQueue(key, queue);
 		}
 		queue.add(act);
 	}
@@ -137,22 +138,21 @@ public class ActionQueueList implements Serializable {
 	}
 
 	public boolean waitUntilAllQueuesAreEmpty() {
-		try {
-			Collection<ActionQueue> values = queues.values();
-			for (ActionQueue queue : values) {
-				queue.waitUntilEmpty();
+		Collection<ActionQueue> values = queues.values();
+		for (ActionQueue queue : values) {
+			boolean waitResponse = queue.waitUntilEmpty();
+			// we weren't interrupted
+			if (waitResponse == false) {
+				return false;
 			}
-			return true;
-		} catch (Exception ex) {
-			LOG.log(Level.SEVERE, null, ex);
-			return false;
 		}
+		return true;
 	}
 
 	public boolean waitUntilAQueueIsReady() {
-		synchronized (A_QUEUE_IS_READY) {
+		synchronized (A_QUEUE_IS_EMPTY) {
 			try {
-				A_QUEUE_IS_READY.wait();
+				A_QUEUE_IS_EMPTY.wait();
 				return true;
 			} catch (InterruptedException ex) {
 				System.out.println("INTERRUPTED: waitUntilAQueueIsReady()");
@@ -168,9 +168,9 @@ public class ActionQueueList implements Serializable {
 		if (found.isPresent()) {
 			return true;
 		}
-		synchronized (A_QUEUE_IS_READY) {
+		synchronized (A_QUEUE_IS_EMPTY) {
 			try {
-				A_QUEUE_IS_READY.wait(millisecondsToWait);
+				A_QUEUE_IS_EMPTY.wait(millisecondsToWait);
 				return true;
 			} catch (InterruptedException ex) {
 				LOG.log(Level.SEVERE, null, ex);
@@ -179,17 +179,22 @@ public class ActionQueueList implements Serializable {
 		}
 	}
 
-	void notifyAQueueIsReady() {
-		synchronized (A_QUEUE_IS_READY) {
-			A_QUEUE_IS_READY.notifyAll();
+	void notifyAQueueIsEmpty(DBDatabase database) {
+		databaseList.handleEmptyQueue(database);
+		synchronized (A_QUEUE_IS_EMPTY) {
+			A_QUEUE_IS_EMPTY.notifyAll();
 		}
 	}
 
 	public boolean waitUntilReady(DBDatabase db) {
 		ActionQueue queue = queues.get(getKey(db));
 		if (queue != null) {
-			queue.waitUntilReady();
-			return true;
+			if (queue.isEmpty()) {
+				return true;
+			} else {
+				queue.waitUntilReady();
+				return true;
+			}
 		}
 		return false;
 	}
@@ -209,7 +214,9 @@ public class ActionQueueList implements Serializable {
 
 	public void pause(DBDatabase db) {
 		ActionQueue q = queues.get(getKey(db));
-		q.pause();
+		if (q != null) {
+			q.pause();
+		}
 	}
 
 	public void unpause(DBDatabase db) {
@@ -254,13 +261,13 @@ public class ActionQueueList implements Serializable {
 		}
 	}
 
-	ActionQueue getQueueForDatabase(DBDatabase database) {
+	public ActionQueue getQueueForDatabase(DBDatabase database) {
 		String key = getKey(database);
 		ActionQueue queue = queues.get(key);
 		if (queue == null) {
 			key = add(database);
+			queue = queues.get(key);
 		}
-		queue = queues.get(key);
 		return queue;
 	}
 
@@ -282,7 +289,7 @@ public class ActionQueueList implements Serializable {
 		}
 	}
 
-	ActionQueue[] getQueueForDatabase(DBDatabase... dbs) {
+	public ActionQueue[] getQueueForDatabase(DBDatabase... dbs) {
 		ActionQueue[] result = new ActionQueue[dbs.length];
 		LoopVariable loop = LoopVariable.factory(dbs.length);
 		for (DBDatabase db : dbs) {
@@ -290,5 +297,9 @@ public class ActionQueueList implements Serializable {
 			loop.attempt();
 		}
 		return result;
+	}
+
+	void quarantineDatabase(DBDatabase database, SQLException ex) {
+		databaseList.quarantineDatabase(database, ex);
 	}
 }

@@ -186,7 +186,7 @@ public class DBBulkInsert extends DBAction {
 	}
 
 	@Override
-	public DBActionList execute(DBDatabase db) throws SQLException {
+	protected DBActionList execute(DBDatabase db) throws SQLException {
 		DBActionList actions = new DBActionList();
 		boolean allRowsCanBeBulkInserted = true;
 		for (DBRow current : rows) {
@@ -203,7 +203,7 @@ public class DBBulkInsert extends DBAction {
 			}
 		} else {
 			for (DBRow current : rows) {
-				actions.addAll(new DBInsert(current).execute(db));
+				actions.addAll(new DBInsert(current).action(db));
 			}
 		}
 		return actions;

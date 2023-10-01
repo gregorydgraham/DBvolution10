@@ -62,7 +62,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	}
 
 	@Override
-	public DBActionList execute(DBDatabase db) throws SQLException {
+	protected DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow table = getRow();
 		final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(table);
 		DBActionList actions = new DBActionList(newDeleteAction);

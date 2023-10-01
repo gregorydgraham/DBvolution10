@@ -141,7 +141,7 @@ public class DBInsert extends DBAction {
 	}
 
 	@Override
-	public DBActionList execute(DBDatabase db) throws SQLException, DBSQLException {
+	protected DBActionList execute(DBDatabase db) throws SQLException, DBSQLException {
 		final DBDefinition defn = db.getDefinition();
 		DBRow table = originalRow;
 		final DBInsert newInsert = new DBInsert(table);

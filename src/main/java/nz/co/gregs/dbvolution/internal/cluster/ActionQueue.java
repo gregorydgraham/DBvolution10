@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.internal.cluster;
 
+import java.sql.SQLException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 
 /**
  *
@@ -48,7 +48,6 @@ public class ActionQueue implements AutoCloseable {
 	private static final Logger LOG = Logger.getLogger(ActionQueue.class.getName());
 
 	private final DBDatabase database;
-	private final ClusterDetails clusterDetails;
 	private final int maxSize;
 	private final ActionQueueList list;
 
@@ -59,14 +58,13 @@ public class ActionQueue implements AutoCloseable {
 	private transient final Object QUEUE_IS_PAUSED = new Object();
 	private transient final Object QUEUE_IS_UNPAUSED = new Object();
 
-	public ActionQueue(DBDatabase database, ClusterDetails clusterDetails, int maxSize, ActionQueueList list) {
+	public ActionQueue(DBDatabase database, int maxSize, ActionQueueList list) {
 		this.database = database;
-		this.clusterDetails = clusterDetails;
 		this.maxSize = maxSize;
 		this.list = list;
 
 		actionQueue = new LinkedBlockingDeque<>(this.maxSize);
-		reader = new QueueReader(database, clusterDetails, this);
+		reader = new QueueReader(database, this);
 	}
 
 	public void start() {
@@ -91,8 +89,8 @@ public class ActionQueue implements AutoCloseable {
 			System.out.println("ENQUEUE FAILED: " + e.getMessage());
 		}
 	}
-	
-	public synchronized void add(DBAction... actions){
+
+	public synchronized void add(DBAction... actions) {
 		for (DBAction action : actions) {
 			add(action);
 		}
@@ -100,11 +98,11 @@ public class ActionQueue implements AutoCloseable {
 
 	public synchronized ActionMessage getHeadOfQueue() {
 		ActionMessage pulled;
-			try {
-				pulled = actionQueue.poll(1, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException intexc) {
-				pulled = null;
-			}
+		try {
+			pulled = actionQueue.poll(1, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException intexc) {
+			pulled = null;
+		}
 		return pulled;
 	}
 
@@ -121,16 +119,17 @@ public class ActionQueue implements AutoCloseable {
 		return database;
 	}
 
-	public void waitUntilEmpty() {
+	public boolean waitUntilEmpty() {
 		if (actionQueue.isEmpty()) {
 			// return immediately
+			return true;
 		} else {
-			waitOnQUEUE_IS_EMPTY();
+			return waitOnQUEUE_IS_EMPTY();
 		}
 	}
 
 	public void waitUntilEmpty(long milliseconds) {
-		if (actionQueue.isEmpty()) {
+		if (isEmpty()) {
 			// return immediately
 		} else {
 			waitOnQUEUE_IS_EMPTY(milliseconds);
@@ -219,19 +218,20 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	private void notifyQUEUE_IS_EMPTY() {
+		list.notifyAQueueIsEmpty(database);
 		synchronized (QUEUE_IS_EMPTY) {
-			System.out.println("QUEUE IS EMPTY");
 			QUEUE_IS_EMPTY.notifyAll();
 		}
-		list.notifyAQueueIsReady();
 	}
 
-	private void waitOnQUEUE_IS_EMPTY() {
+	private boolean waitOnQUEUE_IS_EMPTY() {
 		synchronized (QUEUE_IS_EMPTY) {
 			try {
 				QUEUE_IS_EMPTY.wait();
+				return true;
 			} catch (InterruptedException ex) {
 				LOG.log(Level.SEVERE, null, ex);
+				return false;
 			}
 		}
 	}
@@ -292,5 +292,9 @@ public class ActionQueue implements AutoCloseable {
 				LOG.log(Level.SEVERE, null, ex);
 			}
 		}
+	}
+
+	void quarantineDatabase(SQLException ex) {
+		list.quarantineDatabase(database, ex);
 	}
 }

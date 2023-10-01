@@ -37,7 +37,6 @@ import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
-import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 
 /**
  *
@@ -49,25 +48,24 @@ public class QueueReader {
 
 	private final ActionQueue actionQueue;
 	private final DBDatabase database;
-	private final ClusterDetails clusterDetails;
 	private Runner runner;
-	private final Object THREAD_STOPPED = new Object();
+	private final Object THREAD_DEATH = new Object();
 	private ActionMessage previousMessage;
 
 	{
 		try {
 			Runtime.getRuntime().addShutdownHook(new StopReader(this));
 		} catch (Exception exc) {
-			// the only exception I know of is an illegal state exception
-			// if we create a QueueReader while the runtime is trying to 
-			// shutdown
+			/* the only exception I know of is an illegal state exception
+			   if we create a QueueReader while the runtime is trying to 
+			   shutdown
+			 */
 		}
 	}
 
-	public QueueReader(DBDatabase database, ClusterDetails details, ActionQueue dataQueue) {
+	public QueueReader(DBDatabase database, ActionQueue dataQueue) {
 		this.database = database;
 		this.actionQueue = dataQueue;
-		this.clusterDetails = details;
 		this.runner = getNewRunner();
 	}
 
@@ -110,36 +108,45 @@ public class QueueReader {
 	private void doAction(DBAction action) {
 		try {
 			database.executeDBAction(action);
+			System.out.println("COMPLETED " + action.getIntent() + " ON DATABASE " + database.getLabel());
 		} catch (SQLException ex) {
 			LOG.log(Level.SEVERE, null, ex);
-			clusterDetails.quarantineDatabase(database, ex);
+			System.out.println("FAILED " + action.getIntent() + " ON DATABASE " + database.getLabel());
+			System.out.println("QUARANTINING DATABASE " + database.getLabel());
+			actionQueue.quarantineDatabase(ex);
 		} catch (NoAvailableDatabaseException ex) {
 			LOG.log(Level.SEVERE, null, ex);
+			System.out.println("FAILED " + action.getIntent() + " ON DATABASE " + database.getLabel() + " BECAUSE OF NoAvailableDatabaseException");
+			actionQueue.quarantineDatabase(new SQLException(ex));
 		} catch (Exception ex) {
 			LOG.log(Level.SEVERE, null, ex);
+			System.out.println("FAILED " + action.getIntent() + " ON DATABASE " + database.getLabel() + " BECAUSE OF "+ex.getLocalizedMessage());
+			actionQueue.quarantineDatabase(new SQLException(ex));
 		}
 	}
 
 	public void waitOnThreadDeath(long milliseconds) {
-		synchronized (THREAD_STOPPED) {
+		synchronized (THREAD_DEATH) {
 			try {
-				THREAD_STOPPED.wait(milliseconds);
+				THREAD_DEATH.wait(milliseconds);
+				System.out.println("Successfully waited for QueueReader thread death");
 			} catch (InterruptedException ex) {
 				LOG.log(Level.SEVERE, null, ex);
 			}
 		}
 	}
 
-	private void notifyThreadStopped() {
-		synchronized (THREAD_STOPPED) {
-			THREAD_STOPPED.notifyAll();
+	private void notifyThreadDeath() {
+		synchronized (THREAD_DEATH) {
+			System.out.println("QueueReader thread stopped");
+			THREAD_DEATH.notifyAll();
 		}
 	}
 
 	private void attemptAction() {
 		ActionMessage message = actionQueue.getHeadOfQueue();
 		if (message == null) {
-			if (previousMessage != null) {
+			if (previousMessage == null) {
 				actionQueue.notifyQueueIsEmpty();
 			}
 		} else {
@@ -197,7 +204,7 @@ public class QueueReader {
 				dequeue();
 			}
 			LOG.log(Level.INFO, "Thread {0} for {1} stopped", new Object[]{readerThread.getName(), queueReader.getLabel()});
-			queueReader.notifyThreadStopped();
+			queueReader.notifyThreadDeath();
 		}
 
 		public void dequeue() {

@@ -2282,11 +2282,11 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 //		preventAccidentalDeletingAllRowsFromTable(action);
 		if (quietExceptionsPreference) {
 			try {
-				return action.execute(this);
+				return action.action(this);
 			} catch (SQLException acceptableException) {
 			}
 		}
-		return action.execute(this);
+		return action.action(this);
 	}
 
 	@Override

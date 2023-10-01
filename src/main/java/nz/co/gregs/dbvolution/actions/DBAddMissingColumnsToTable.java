@@ -74,10 +74,10 @@ public class DBAddMissingColumnsToTable extends DBAction {
 	}
 
 	@Override
-	public DBActionList execute(DBDatabase db) throws SQLException {
+	protected DBActionList execute(DBDatabase db) throws SQLException {
 		DBActionList actions = prepareActionList(db);
 		for (DBAction action : actions) {
-			action.execute(db);
+			action.action(db);
 		}
 		return actions;
 	}
