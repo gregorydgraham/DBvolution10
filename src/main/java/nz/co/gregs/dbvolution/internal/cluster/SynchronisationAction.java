@@ -41,7 +41,6 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.exceptions.OnlyOneDatabaseInClusterException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
-import nz.co.gregs.dbvolution.internal.database.DatabaseList;
 
 /**
  *

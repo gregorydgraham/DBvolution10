@@ -35,8 +35,11 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
+import nz.co.gregs.dbvolution.internal.database.ClusterMember;
+import nz.co.gregs.dbvolution.internal.database.DatabaseList;
 import nz.co.gregs.dbvolution.utility.StopWatch;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -52,9 +55,9 @@ import static org.hamcrest.Matchers.*;
  */
 public class ActionQueueTest {
 
-	private static H2MemoryDB database;
+	private static DBDatabase database;
 	private static ClusterDetails clusterDetails;
-	private static ActionQueueList list;
+	private static ClusterMember member;
 
 	public ActionQueueTest() {
 	}
@@ -75,30 +78,30 @@ public class ActionQueueTest {
 			exc.printStackTrace();
 		}
 		clusterDetails = new ClusterDetails("ActionQueueTest");
-		list = clusterDetails.getMembers().getActionQueueList();
+		member = new ClusterMember(clusterDetails, new DatabaseList(clusterDetails), database);
 	}
 
 	@After
 	public void tearDown() {
-		database.close();
+		database.stop();
 	}
 
 	@Test
 	public void testStart() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
 		actionQueue.add(new NoOpDBAction());
 		assertThat(actionQueue.isEmpty(), is(false));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 	}
 
 	@Test
 	public void testAdd_DBAction() throws SQLException {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction(10000l));
@@ -107,7 +110,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testGetHeadOfQueue() throws Exception {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		final NoOpDBAction action = new NoOpDBAction(10000l);
@@ -119,7 +122,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testIsEmpty() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction());
@@ -130,15 +133,15 @@ public class ActionQueueTest {
 
 	@Test
 	public void testStop() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction());
 		assertThat(actionQueue.isEmpty(), is(false));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
-		actionQueue.stop();
+		actionQueue.stopReader();
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException ex) {
@@ -149,7 +152,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testGetDatabase() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		System.out.println("DATABASE1: " + database.getSettings());
 		System.out.println("DATABASE2: " + actionQueue.getDatabase().getSettings());
@@ -158,7 +161,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilEmpty_0args() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction(100l));
@@ -167,7 +170,7 @@ public class ActionQueueTest {
 		assertThat(actionQueue.isEmpty(), is(false));
 		assertThat(actionQueue.hasStarted(), is(false));
 		StopWatch timer = StopWatch.stopwatch();
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isEmpty(), is(false));
 		actionQueue.waitUntilEmpty();
@@ -180,7 +183,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilEmpty_long() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction(100l));
@@ -189,7 +192,7 @@ public class ActionQueueTest {
 		assertThat(actionQueue.isEmpty(), is(false));
 		assertThat(actionQueue.hasStarted(), is(false));
 		StopWatch timer = StopWatch.start();
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isEmpty(), is(false));
 		actionQueue.waitUntilEmpty(100);
@@ -203,11 +206,11 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilActionsAvailable() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isEmpty(), is(true));
 		Instant then = Instant.now();
@@ -235,11 +238,11 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilUnpause() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isPaused(), is(false));
 		actionQueue.pause();
@@ -263,11 +266,11 @@ public class ActionQueueTest {
 
 	@Test
 	public void testNotifyUnpause() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isPaused(), is(false));
 
@@ -290,7 +293,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testNotifyQueueIsEmpty() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
 		actionQueue.add(new NoOpDBAction(10000l));
@@ -315,11 +318,11 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilReady() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 
 		actionQueue.add(new NoOpDBAction(5));
@@ -342,10 +345,10 @@ public class ActionQueueTest {
 
 	@Test
 	public void testPause() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isPaused(), is(false));
 		actionQueue.pause();
@@ -366,11 +369,11 @@ public class ActionQueueTest {
 
 	@Test
 	public void testUnpause() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isPaused(), is(false));
 		actionQueue.pause();
@@ -395,7 +398,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testClear() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction(10000l));
@@ -411,13 +414,13 @@ public class ActionQueueTest {
 
 	@Test
 	public void testAddAll() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		final NoOpDBAction act1 = new NoOpDBAction(10000l);
 		final NoOpDBAction act2 = new NoOpDBAction(10000l);
 		final NoOpDBAction act3 = new NoOpDBAction(10000l);
-		ActionQueue templateQueue = new ActionQueue(database, 100, list);
+		ActionQueue templateQueue = new ActionQueue(database, 100, member);
 		templateQueue.add(act1);
 		templateQueue.add(act2);
 		templateQueue.add(act3);
@@ -432,19 +435,19 @@ public class ActionQueueTest {
 
 	@Test
 	public void testHasStarted() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.hasStarted(), is(false));
 
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 
-		actionQueue.stop();
+		actionQueue.stopReader();
 		assertThat(actionQueue.hasStarted(), is(false));
 	}
 
 	@Test
 	public void testSize() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.size(), is(0));
 
 		actionQueue.pause();
@@ -454,7 +457,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testAdd_DBActionArr() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction(10000l), new NoOpDBAction(), new NoOpDBAction());
@@ -464,7 +467,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilActionsAvailable_0args() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		Runnable runnable = () -> {
 			try {
 				Thread.sleep(101l);
@@ -485,7 +488,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilActionsAvailable_long() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		Runnable runnable = () -> {
 			try {
 				Thread.sleep(101l);
@@ -516,7 +519,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilReady_0args() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isReady(), is(true));
 		actionQueue.add(new NoOpDBAction(100l));
@@ -525,7 +528,7 @@ public class ActionQueueTest {
 		assertThat(actionQueue.isReady(), is(false));
 		assertThat(actionQueue.hasStarted(), is(false));
 		StopWatch timer = StopWatch.stopwatch();
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isReady(), is(false));
 		actionQueue.waitUntilReady();
@@ -538,7 +541,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testWaitUntilReady_long() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isReady(), is(true));
 		actionQueue.add(new NoOpDBAction(100l));
@@ -547,7 +550,7 @@ public class ActionQueueTest {
 		assertThat(actionQueue.isReady(), is(false));
 		assertThat(actionQueue.hasStarted(), is(false));
 		StopWatch timer = StopWatch.start();
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		assertThat(actionQueue.isReady(), is(false));
 		actionQueue.waitUntilReady(100);
@@ -562,13 +565,13 @@ public class ActionQueueTest {
 	@Test
 	public void testClose() {
 
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isEmpty(), is(true));
 		actionQueue.add(new NoOpDBAction());
 		assertThat(actionQueue.isEmpty(), is(false));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.hasStarted(), is(true));
 		actionQueue.close();
 		try {
@@ -581,13 +584,13 @@ public class ActionQueueTest {
 
 	@Test
 	public void testHasActionsAvailable() throws InterruptedException {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.hasActionsAvailable(), is(false));
 		actionQueue.add(new NoOpDBAction(), new NoOpDBAction(), new NoOpDBAction());
 		assertThat(actionQueue.hasActionsAvailable(), is(true));
 		assertThat(actionQueue.size(), is(3));
-		actionQueue.start();
+		actionQueue.startReader();
 		Thread.sleep(50l);
 		assertThat(actionQueue.hasActionsAvailable(), is(false));
 
@@ -596,7 +599,7 @@ public class ActionQueueTest {
 	@Test
 	public void testNotifyPAUSED() {
 
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
 		assertThat(actionQueue.isPaused(), is(true));
@@ -622,7 +625,7 @@ public class ActionQueueTest {
 	@Test
 	public void testNotifyUNPAUSED() {
 
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
 		assertThat(actionQueue.isPaused(), is(true));
@@ -648,7 +651,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testIsPaused() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isPaused(), is(true));
 		actionQueue.unpause();
@@ -660,7 +663,7 @@ public class ActionQueueTest {
 
 	@Test
 	public void testIsReady() {
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 
 		assertThat(actionQueue.isReady(), is(true));
 		actionQueue.add(new NoOpDBAction());
@@ -672,11 +675,11 @@ public class ActionQueueTest {
 	@Test
 	public void testWaitUntilPaused() {
 
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
 		assertThat(actionQueue.isPaused(), is(true));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.isPaused(), is(false));
 
 		Runnable runner = () -> {
@@ -701,10 +704,10 @@ public class ActionQueueTest {
 	@Test
 	public void testWaitUntilUnpaused() {
 
-		ActionQueue actionQueue = new ActionQueue(database, 100, list);
+		ActionQueue actionQueue = new ActionQueue(database, 100, member);
 		assertThat(actionQueue.isEmpty(), is(true));
 		assertThat(actionQueue.hasStarted(), is(false));
-		actionQueue.start();
+		actionQueue.startReader();
 		assertThat(actionQueue.isPaused(), is(false));
 		actionQueue.pause();
 		assertThat(actionQueue.isPaused(), is(true));

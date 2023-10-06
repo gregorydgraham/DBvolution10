@@ -80,7 +80,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testAdd_DBDatabase() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
 		final H2MemoryDB createANewRandomDatabase = H2MemoryDB.createANewRandomDatabase();
 		actionQueueList.add(createANewRandomDatabase);
@@ -94,7 +94,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testAdd_DBDatabaseArr() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
 
 		actionQueueList.add(
@@ -107,7 +107,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testRemove() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		H2MemoryDB db = H2MemoryDB.createANewRandomDatabase();
 		ActionQueue removed = actionQueueList.remove(db);
 		MatcherAssert.assertThat(removed, is(nullValue()));
@@ -121,7 +121,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testClear() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
 		actionQueueList.add(H2MemoryDB.createANewRandomDatabase());
 		actionQueueList.add(H2MemoryDB.createANewRandomDatabase());
@@ -134,7 +134,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testWaitUntilAllAreEmpty() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 
 		actionQueueList.add(db1);
@@ -164,7 +164,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testwaitUntilAQueueIsReady_0args() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -223,7 +223,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testwaitUntilAQueueIsReady_int() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -296,7 +296,7 @@ public class ActionQueueListTest {
 	@Test
 	public void testWaitUntilReady_DBDatabase() throws SQLException {
 
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -332,7 +332,7 @@ public class ActionQueueListTest {
 	@Test
 	public void testWaitUntilReady_DBDatabase_long() throws SQLException {
 
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -377,7 +377,7 @@ public class ActionQueueListTest {
 	@Test
 	public void testPause() throws SQLException {
 
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -411,7 +411,7 @@ public class ActionQueueListTest {
 	@Test
 	public void testUnpause() throws SQLException {
 
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -451,7 +451,7 @@ public class ActionQueueListTest {
 	@Test
 	public void testCopyFromTo() throws SQLException, InterruptedException {
 
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -490,7 +490,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testStart() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 
@@ -513,7 +513,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testStop() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 
 		actionQueueList.add(db1);
@@ -526,7 +526,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testSize() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -547,7 +547,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testQueueActionForAllDatabases_DBAction() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -582,7 +582,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testQueueActionForAllDatabases_DBActionArr() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -607,7 +607,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testWaitUntilAllQueuesAreEmpty() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -638,7 +638,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testWaitUntilAQueueIsReady_0args() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -671,7 +671,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testWaitUntilAQueueIsReady_long() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -718,7 +718,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testNotifyAQueueIsReady() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -745,7 +745,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testPause_DBDatabase() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -782,7 +782,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testUnpause_DBDatabase() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -820,7 +820,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testUnpause_DBDatabaseArr() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -858,7 +858,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testGetKey() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -878,7 +878,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testGetQueueForDatabase_DBDatabase() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -895,7 +895,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testPause_DBDatabaseArr() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -933,7 +933,7 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testGetQueueForDatabase_DBDatabaseArr() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -948,14 +948,14 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testQueueAction_DBDatabase_DBAction() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
 
 		H2MemoryDB database = H2MemoryDB.createANewRandomDatabase();
 		actionQueueList.add(database);
 		final ActionQueue queue = actionQueueList.getQueueForDatabase(database);
 		queue.waitUntilEmpty();
-		queue.stop();
+		queue.stopReader();
 
 		// can insert the first action
 		NoOpDBAction noOpDBAction = new NoOpDBAction(100l);
@@ -993,14 +993,14 @@ public class ActionQueueListTest {
 
 	@Test
 	public void testQueueAction_DBDatabase_DBActionArr() throws SQLException {
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		MatcherAssert.assertThat("AQL should start off empty", actionQueueList.size(), is(0));
 
 		H2MemoryDB database = H2MemoryDB.createANewRandomDatabase();
 		actionQueueList.add(database);
 		final ActionQueue queue = actionQueueList.getQueueForDatabase(database);
 		queue.waitUntilEmpty();
-		queue.stop();
+		queue.stopReader();
 
 		// can insert 2 actions at once
 		NoOpDBAction noOpDBAction = new NoOpDBAction(100l);
@@ -1036,7 +1036,7 @@ public class ActionQueueListTest {
 	@Test
 	public void testUnpauseAll() throws SQLException {
 
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();
@@ -1070,7 +1070,7 @@ public class ActionQueueListTest {
 	@Test
 	public void testPauseAll() throws SQLException {
 
-		ActionQueueList actionQueueList = new ActionQueueList(databaseList);
+		ActionQueueList actionQueueList = new ActionQueueList(clusterDetails, databaseList);
 		final H2MemoryDB db1 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db2 = H2MemoryDB.createANewRandomDatabase();
 		final H2MemoryDB db3 = H2MemoryDB.createANewRandomDatabase();

@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.internal.database.ClusterMember;
 
 /**
  *
@@ -47,27 +48,29 @@ public class ActionQueue implements AutoCloseable {
 
 	private static final Logger LOG = Logger.getLogger(ActionQueue.class.getName());
 
-	private final DBDatabase database;
-	private final int maxSize;
-	private final ActionQueueList list;
-
-	private final BlockingQueue<ActionMessage> actionQueue;
-	private final QueueReader reader;
 	private transient final Object QUEUE_IS_EMPTY = new Object();
 	private transient final Object ACTION_IS_AVAILABLE = new Object();
 	private transient final Object QUEUE_IS_PAUSED = new Object();
 	private transient final Object QUEUE_IS_UNPAUSED = new Object();
+	private transient final Object ACTION_HAS_SUCCEEDED = new Object();
 
-	public ActionQueue(DBDatabase database, int maxSize, ActionQueueList list) {
+	private final DBDatabase database;
+	private final int maxSize;
+	private final ClusterMember member;
+
+	private final BlockingQueue<ActionMessage> actionQueue;
+	private final QueueReader reader;
+
+	public ActionQueue(DBDatabase database, int maxSize, ClusterMember member) {
 		this.database = database;
 		this.maxSize = maxSize;
-		this.list = list;
+		this.member = member;
 
 		actionQueue = new LinkedBlockingDeque<>(this.maxSize);
 		reader = new QueueReader(database, this);
 	}
 
-	public void start() {
+	public void startReader() {
 		reader.start();
 	}
 
@@ -111,7 +114,7 @@ public class ActionQueue implements AutoCloseable {
 		return result;
 	}
 
-	public void stop() {
+	public void stopReader() {
 		reader.stop();
 	}
 
@@ -190,7 +193,7 @@ public class ActionQueue implements AutoCloseable {
 
 	@Override
 	public void close() {
-		stop();
+		stopReader();
 	}
 
 	public synchronized boolean hasActionsAvailable() {
@@ -218,7 +221,9 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	private void notifyQUEUE_IS_EMPTY() {
-		list.notifyAQueueIsEmpty(database);
+		if (member != null) {
+			member.notifyADatabaseIsReady();
+		}
 		synchronized (QUEUE_IS_EMPTY) {
 			QUEUE_IS_EMPTY.notifyAll();
 		}
@@ -294,7 +299,25 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
-	void quarantineDatabase(SQLException ex) {
-		list.quarantineDatabase(database, ex);
+	synchronized void quarantineDatabase(SQLException ex) {
+		if (member != null) {
+			member.quarantineDatabase(database, ex);
+		}
+	}
+
+	void notifyActionHasSucceeded() {
+		synchronized (ACTION_HAS_SUCCEEDED) {
+			ACTION_HAS_SUCCEEDED.notifyAll();
+		}
+	}
+
+	public void waitOnActionHasSucceeded() {
+		synchronized (ACTION_HAS_SUCCEEDED) {
+			try {
+				ACTION_HAS_SUCCEEDED.wait();
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ActionQueue.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 }

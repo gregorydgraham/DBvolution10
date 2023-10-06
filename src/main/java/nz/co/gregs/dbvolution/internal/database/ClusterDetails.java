@@ -126,7 +126,8 @@ public class ClusterDetails implements Serializable {
 			// make a Action Queue to buffer asynchronous actions
 
 			if (clusterContains(database)) {
-				members.setUnsynchronised(database);
+				members.remove(database);
+				members.add(database);
 				return false;
 			} else {
 				members.add(database);
@@ -937,7 +938,11 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public DatabaseList getMembers() {
+	void notifyADatabaseIsReady() {
+		members.notifyADatabaseIsReady();
+	}
+
+	DatabaseList getDatabaseList() {
 		return members;
 	}
 }

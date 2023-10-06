@@ -35,13 +35,14 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import static nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
 import nz.co.gregs.dbvolution.internal.cluster.ActionQueueList;
-import nz.co.gregs.dbvolution.internal.cluster.SynchronisationAction;
 import nz.co.gregs.dbvolution.utility.StopWatch;
 
 /**
@@ -51,73 +52,90 @@ import nz.co.gregs.dbvolution.utility.StopWatch;
 public class DatabaseList implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	/* TODO combine these into one list of a data object */
-	private final ActionQueueList actionQueues;
-	private final HashMap<String, DBDatabase> databaseMap = new HashMap<String, DBDatabase>();
-	private final HashMap<String, DBDatabaseCluster.Status> statusMap = new HashMap<String, DBDatabaseCluster.Status>(0);
-	private final HashMap<String, Integer> quarantineCountMap = new HashMap<String, Integer>(0);
-	private final ClusterDetails details;
 	private final transient Object A_DATABASE_IS_READY = new Object();
-	private final transient Object ALL_DATABASES_ARE_READY = new Object();
+	private final transient Object CLUSTER_HAS_SYNCHRONISED = new Object();
+
+	private final HashMap<String, ClusterMember> members = new HashMap<>(2);
+	private final ClusterDetails details;
+
+	public DatabaseList(ClusterDetails clusterDetails) {
+		this.details = clusterDetails;
+	}
+
+	public DatabaseList(ClusterDetails clusterDetails, DBDatabase firstDB, DBDatabase... databases) {
+		this(clusterDetails);
+		add(firstDB);
+		for (var db : databases) {
+			add(db);
+		}
+	}
 
 	public synchronized int size() {
-		return databaseMap.size();
+		return members.size();
 	}
 
 	public synchronized boolean isEmpty() {
-		return databaseMap.isEmpty();
+		return members.isEmpty();
 	}
 
 	public synchronized boolean contains(DBDatabase db) {
-		return databaseMap.containsKey(getKey(db));
+		return members.containsKey(getKey(db));
 	}
 
-	public synchronized Iterator<DBDatabase> iterator() {
-		return databaseMap.values().iterator();
+	public synchronized Iterator<ClusterMember> iterator() {
+		return members
+				.values()
+				.stream()
+				.collect(Collectors.toList())
+				.iterator();
 	}
 
-	public synchronized DBDatabase[] toArray() {
-		return toArray(new DBDatabase[]{});
-	}
-
-	public synchronized DBDatabase[] toArray(DBDatabase[] a) {
-		return databaseMap.values().toArray(a);
+	public synchronized ClusterMember[] toArray() {
+		return members
+				.values()
+				.stream()
+				.collect(Collectors.toList())
+				.toArray(new ClusterMember[]{});
 	}
 
 	public synchronized final boolean add(DBDatabase db) {
-		final String key = getKey(db);
-		quarantineCountMap.put(key, 0);
-		addUnsynchronisedDatabase(key, db);
+		final ClusterMember clusterMember = addWithoutStart(db);
+		clusterMember.start();
 		return true;
 	}
 
-	private void addUnsynchronisedDatabase(final String key, DBDatabase db) {
-		statusMap.put(key, PROCESSING);
-		databaseMap.put(key, db);
-		actionQueues.add(db);
-		actionQueues.queueAction(db, new SynchronisationAction(details, db));
+	public synchronized final ClusterMember addWithoutStart(DBDatabase db) {
+		final ClusterMember clusterMember = new ClusterMember(details, this, db);
+		members.put(getKey(db), clusterMember);
+		return clusterMember;
 	}
 
 	public synchronized final boolean add(DBDatabase... dbs) {
 		boolean result = true;
+		ArrayList<ClusterMember> newMembers = new ArrayList<>(dbs.length);
 		for (DBDatabase db : dbs) {
-			result = result && add(db);
+			newMembers.add(addWithoutStart(db));
+		}
+		for (ClusterMember newMember : newMembers) {
+			newMember.start();
 		}
 		return result;
 	}
 
 	public synchronized boolean remove(DBDatabase db) {
-		actionQueues.remove(db);
-		databaseMap.remove(getKey(db));
-		statusMap.remove(getKey(db));
+		final String key = getKey(db);
+		final ClusterMember member = members.get(key);
+		if (member != null) {
+			members.remove(key);
+			member.stop();
+		}
 		return true;
 	}
 
 	public synchronized boolean containsAll(Collection<DBDatabase> c) {
 		boolean allAreInTheMap = c
 				.stream()
-				.allMatch(t -> databaseMap.containsKey(getKey(t))
+				.allMatch(t -> members.containsKey(getKey(t))
 				);
 		return allAreInTheMap;
 	}
@@ -140,28 +158,10 @@ public class DatabaseList implements Serializable {
 		return db.getSettings().encode();
 	}
 
-	public DatabaseList(ClusterDetails clusterDetails) {
-		this.details = clusterDetails;
-		this.actionQueues = new ActionQueueList(this);
-	}
-
-	public DatabaseList(ClusterDetails clusterDetails, DBDatabase firstDB, DBDatabase... databases) {
-		this(clusterDetails);
-		add(firstDB);
-		for (var db : databases) {
-			add(db);
-		}
-	}
-
 	private synchronized void set(DBDatabaseCluster.Status status, DBDatabase db) {
-		if (statusMap.containsKey(getKey(db))) {
-			statusMap.put(getKey(db), status);
-			if (QUARANTINED.equals(status)) {
-				incrementQuarantineCount(db);
-			}
-			if (READY.equals(status)) {
-				clearQuarantineCount(db);
-			}
+		ClusterMember member = getMember(db);
+		if (member != null) {
+			member.setStatus(status);
 		}
 	}
 
@@ -170,20 +170,14 @@ public class DatabaseList implements Serializable {
 		notifyADatabaseIsReady();
 	}
 
-	public synchronized void setUnsynchronised(DBDatabase db) {
-		actionQueues.remove(db);
-		addUnsynchronisedDatabase(getKey(db), db);
-	}
-
 	public synchronized void setPaused(DBDatabase... dbs) {
 		for (DBDatabase db : dbs) {
-			setPaused(db);
+			set(PAUSED, db);
 		}
 	}
 
 	public synchronized void setPaused(DBDatabase db) {
 		set(PAUSED, db);
-		actionQueues.pause(db);
 	}
 
 	public synchronized void setUnpaused(DBDatabase db) {
@@ -192,12 +186,10 @@ public class DatabaseList implements Serializable {
 
 	public synchronized void setDead(DBDatabase db) {
 		set(DEAD, db);
-		actionQueues.remove(db);
 	}
 
 	public synchronized void setQuarantined(DBDatabase db) {
 		set(QUARANTINED, db);
-		actionQueues.remove(db);
 	}
 
 	public synchronized void setUnknown(DBDatabase db) {
@@ -206,22 +198,33 @@ public class DatabaseList implements Serializable {
 
 	public synchronized void setProcessing(DBDatabase db) {
 		set(PROCESSING, db);
-		actionQueues.unpause(db);
 	}
 
-//	public synchronized void setSynchronising(DBDatabase db) {
-//		set(SYNCHRONIZING, db);
-//	}
 	public synchronized DBDatabase[] getDatabases() {
-		return databaseMap.values().toArray(new DBDatabase[]{});
+		return members
+				.values()
+				.stream()
+				.map((t) -> t.getDatabase())
+				.collect(Collectors.toList())
+				.toArray(new DBDatabase[]{});
 	}
 
 	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase statusOfThisDatabase) {
-		return statusMap.getOrDefault(getKey(statusOfThisDatabase), UNKNOWN);
+		ClusterMember member = members.getOrDefault(getKey(statusOfThisDatabase), null);
+		if (member == null) {
+			return UNKNOWN;
+		} else {
+			return member.getStatus();
+		}
 	}
 
 	public synchronized boolean isReady(DBDatabase database) {
-		return statusMap.getOrDefault(getKey(database), UNKNOWN).equals(READY);
+		ClusterMember member = members.getOrDefault(getKey(database), null);
+		if (member == null) {
+			return false;
+		} else {
+			return member.getStatus().equals(READY);
+		}
 	}
 
 	public DBDatabase[] getReadyDatabases() {
@@ -243,12 +246,13 @@ public class DatabaseList implements Serializable {
 
 	public synchronized List<DBDatabase> getDatabasesByStatusAsList(DBDatabaseCluster.Status... statuses) {
 		List<DBDatabase> found = new ArrayList<>(0);
-		for (Map.Entry<String, DBDatabaseCluster.Status> entry : statusMap.entrySet()) {
+		for (Map.Entry<String, ClusterMember> entry : members.entrySet()) {
 			String key = entry.getKey();
-			DBDatabaseCluster.Status val = entry.getValue();
+			ClusterMember member = entry.getValue();
+			DBDatabaseCluster.Status val = member.getStatus();
 			for (DBDatabaseCluster.Status status : statuses) {
 				if (val.equals(status)) {
-					DBDatabase db = databaseMap.get(key);
+					DBDatabase db = members.get(key).getDatabase();
 					found.add(db);
 					break;
 				}
@@ -262,7 +266,7 @@ public class DatabaseList implements Serializable {
 	}
 
 	public synchronized long countPausedDatabases() {
-		return statusMap.values().stream().filter(t -> t.equals(PAUSED)).count();
+		return members.values().stream().filter(t -> t.getStatus().equals(PAUSED)).count();
 	}
 
 	public synchronized int countDatabases(DBDatabaseCluster.Status... statuses) {
@@ -270,35 +274,42 @@ public class DatabaseList implements Serializable {
 	}
 
 	public synchronized void clear() {
-		actionQueues.clear();
-		statusMap.clear();
-		databaseMap.clear();
+		members.forEach((key, member) -> {
+			member.stop();
+		});
+		members.clear();
 	}
 
 	public synchronized boolean areAllReady() {
-		return countDatabases(DBDatabaseCluster.Status.READY) == databaseMap.size();
+		return countDatabases(DBDatabaseCluster.Status.READY) == members.size();
 	}
 
-	private synchronized void incrementQuarantineCount(DBDatabase db) {
-		String key = getKey(db);
-		Integer currentValue = quarantineCountMap.get(key);
-		if (currentValue == null) {
-			currentValue = 0;
+	public ClusterMember getMember(DBDatabase db) {
+		ClusterMember member = members.get(getKey(db));
+		return member;
+	}
+
+	public List<ClusterMember> getMembers(DBDatabase... dbs) {
+		ArrayList<ClusterMember> found = new ArrayList<>(0);
+		for (DBDatabase db : dbs) {
+			ClusterMember member = getMember(db);
+			if (member != null) {
+				found.add(member);
+			}
 		}
-		quarantineCountMap.put(key, currentValue + 1);
+		return found;
 	}
 
-	private synchronized void clearQuarantineCount(DBDatabase db) {
-		String key = getKey(db);
-		quarantineCountMap.put(key, 0);
+	public synchronized void clearQuarantineCount(DBDatabase db) {
+		getMember(db).resetQuarantineCount();
 	}
 
 	public synchronized boolean isDead(DBDatabase db) {
-		if (DEAD.equals(getStatusOf(db))) {
+		ClusterMember member = getMember(db);
+		if (DEAD.equals(member.getStatus())) {
 			return true;
 		}
-		String key = getKey(db);
-		Integer currentValue = quarantineCountMap.get(key);
+		Integer currentValue = member.getQuarantineCount();
 		if (currentValue == null) {
 			currentValue = 0;
 		}
@@ -344,11 +355,13 @@ public class DatabaseList implements Serializable {
 	}
 
 	boolean waitUntilSynchronised() {
-		if (getReadyDatabases().length == this.databaseMap.size()) {
+		if (getReadyDatabases().length == members.size()) {
 			return true;
 		} else {
 			try {
-				waitOnAllDatabasesAreReady();
+				waitOnClusterHasSynchronised();
+				System.out.println("CLUSTER HAS SYNCHRONISED");
+				members.values().stream().forEach((member) -> System.out.println("MEMBER " + member.getDatabase().getLabel() + " IS STATUS " + member.getStatus()));
 				return true;
 			} catch (InterruptedException ex) {
 				Logger.getLogger(DatabaseList.class.getName()).log(Level.SEVERE, null, ex);
@@ -373,7 +386,7 @@ public class DatabaseList implements Serializable {
 		if (getStatusOf(database).equals(READY)) {
 			return true;
 		} else {
-			while (!getStatusOf(database).equals(READY) && timer.splitTime()<timeoutInMilliseconds) {
+			while (!getStatusOf(database).equals(READY) && timer.splitTime() < timeoutInMilliseconds) {
 				waitUntilADatabaseIsReady();
 			}
 			return true;
@@ -384,24 +397,43 @@ public class DatabaseList implements Serializable {
 		if (getStatusOf(db).equals(READY)) {
 			setProcessing(db);
 		}
-		actionQueues.queueAction(db, action);
+		getMember(db).getQueue().add(action);
 	}
 
 	void copyFromTo(DBDatabase template, DBDatabase secondary) {
-		actionQueues.copyFromTo(template, secondary);
+		ActionQueue templateQ = getMember(template).getQueue();
+		ActionQueue secondaryQ = getMember(secondary).getQueue();
+		boolean templatePaused = templateQ.isPaused();
+		boolean secondaryPaused = secondaryQ.isPaused();
+		if (!templatePaused) {
+			templateQ.pause();
+		}
+		if (!secondaryPaused) {
+			secondaryQ.pause();
+		}
+		secondaryQ.clear();
+		secondaryQ.addAll(templateQ);
+		if (!secondaryPaused) {
+			secondaryQ.unpause();
+		}
+		if (!templatePaused) {
+			templateQ.unpause();
+		}
+//		actionQueues.copyFromTo(template, secondary);
 	}
 
-	public ActionQueueList getActionQueueList() {
-		return this.actionQueues;
-	}
-
+//	public ActionQueueList getActionQueueList() {
+//		return this.actionQueues;
+//	}
 	private boolean waitUntilADatabaseIsReady() {
 		synchronized (A_DATABASE_IS_READY) {
 			try {
 				A_DATABASE_IS_READY.wait();
 				return true;
+
 			} catch (InterruptedException ex) {
-				Logger.getLogger(DatabaseList.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DatabaseList.class
+						.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 		return false;
@@ -412,8 +444,10 @@ public class DatabaseList implements Serializable {
 			try {
 				A_DATABASE_IS_READY.wait(millisecondsToWait);
 				return true;
+
 			} catch (InterruptedException ex) {
-				Logger.getLogger(DatabaseList.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DatabaseList.class
+						.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 		return false;
@@ -423,7 +457,13 @@ public class DatabaseList implements Serializable {
 		synchronized (A_DATABASE_IS_READY) {
 			A_DATABASE_IS_READY.notifyAll();
 		}
-		notifyAllDatabasesAreReadyIfNecessary();
+		final int readyDatabases = getDatabasesByStatusAsList(READY).size();
+		final int numberOfMembers = members.size();
+		if (numberOfMembers == readyDatabases) {
+			synchronized (CLUSTER_HAS_SYNCHRONISED) {
+				CLUSTER_HAS_SYNCHRONISED.notifyAll();
+			}
+		}
 	}
 
 	public synchronized void quarantineDatabase(DBDatabase database, SQLException ex) {
@@ -437,17 +477,21 @@ public class DatabaseList implements Serializable {
 		}
 	}
 
-	private void waitOnAllDatabasesAreReady() throws InterruptedException {
-		synchronized (ALL_DATABASES_ARE_READY) {
-			ALL_DATABASES_ARE_READY.wait();
+	private void waitOnClusterHasSynchronised() throws InterruptedException {
+		synchronized (CLUSTER_HAS_SYNCHRONISED) {
+			CLUSTER_HAS_SYNCHRONISED.wait();
 		}
 	}
 
-	private void notifyAllDatabasesAreReadyIfNecessary() {
-		if (databaseMap.size() == getReadyDatabases().length) {
-			synchronized (ALL_DATABASES_ARE_READY) {
-				ALL_DATABASES_ARE_READY.notifyAll();
-			}
-		}
+	public ActionQueueList getDatabaseList() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	ActionQueue[] getActionQueues(DBDatabase... dbs) {
+		return getMembers(dbs)
+				.stream()
+				.map((m) -> m.getQueue())
+				.collect(Collectors.toList())
+				.toArray(new ActionQueue[]{});
 	}
 }

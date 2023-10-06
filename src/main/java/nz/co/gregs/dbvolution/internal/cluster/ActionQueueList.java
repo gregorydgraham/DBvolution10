@@ -39,6 +39,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
+import nz.co.gregs.dbvolution.internal.database.ClusterMember;
 import nz.co.gregs.dbvolution.internal.database.DatabaseList;
 import nz.co.gregs.looper.LoopVariable;
 
@@ -54,13 +56,16 @@ public class ActionQueueList implements Serializable {
 	private final int maxQueueSize = 100000;
 	private transient final Object A_QUEUE_IS_EMPTY = new Object();
 	private final DatabaseList databaseList;
+	private final ClusterDetails details;
 
-	public ActionQueueList(DatabaseList databaseList) {
+	public ActionQueueList(ClusterDetails details, DatabaseList databaseList) {
+		this.details = details;
 		this.databaseList = databaseList;
+		
 	}
 
 	private ActionQueue getNewActionQueue(DBDatabase db) {
-		return new ActionQueue(db, maxQueueSize, this);
+		return new ActionQueue(db, maxQueueSize, new ClusterMember(details, databaseList, db));
 	}
 
 	public synchronized String add(DBDatabase db) {
@@ -71,20 +76,20 @@ public class ActionQueueList implements Serializable {
 
 	private synchronized String addQueue(String key, ActionQueue queue) {
 		queues.put(key, queue);
-		queue.start();
+		queue.startReader();
 		return key;
 	}
 
 	public void start(DBDatabase db) {
 		ActionQueue queueForDatabase = getQueueForDatabase(db);
 		if (!queueForDatabase.hasStarted()) {
-			queueForDatabase.start();
+			queueForDatabase.startReader();
 		}
 	}
 
 	public void stop(DBDatabase db) {
 		ActionQueue queueForDatabase = getQueueForDatabase(db);
-		queueForDatabase.stop();
+		queueForDatabase.stopReader();
 	}
 
 	public synchronized int size() {
@@ -124,7 +129,7 @@ public class ActionQueueList implements Serializable {
 		final String key = getKey(db);
 		ActionQueue found = queues.get(key);
 		if (found != null) {
-			found.stop();
+			found.stopReader();
 			queues.remove(key);
 		}
 		return found;
@@ -132,7 +137,7 @@ public class ActionQueueList implements Serializable {
 
 	public synchronized void clear() {
 		queues.forEach((db, queue) -> {
-			queue.stop();
+			queue.stopReader();
 		});
 		queues.clear();
 	}

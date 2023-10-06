@@ -36,6 +36,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.NoOpDBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
@@ -45,6 +47,7 @@ import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
 import nz.co.gregs.dbvolution.internal.cluster.ActionQueueList;
 import nz.co.gregs.dbvolution.utility.StopWatch;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -63,6 +66,7 @@ public class DatabaseListTest {
 	private DBDatabase db1;
 	private DBDatabase db2;
 	private DBDatabase db3;
+	private DatabaseList databaseList;
 
 	public DatabaseListTest() {
 	}
@@ -78,6 +82,7 @@ public class DatabaseListTest {
 	@Before
 	public void setUp() throws SQLException {
 		clusterDetails = new ClusterDetails("DatabaseListTest");
+		databaseList = new DatabaseList(clusterDetails);
 		db1 = H2MemoryDB.createANewRandomDatabase();
 		db2 = H2MemoryDB.createANewRandomDatabase();
 		db3 = H2MemoryDB.createANewRandomDatabase();
@@ -86,11 +91,13 @@ public class DatabaseListTest {
 
 	@After
 	public void tearDown() {
+		db1.stop();
+		db2.stop();
+		db3.stop();
 	}
 
 	@Test
 	public void testSize() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		// DatabaseList is empty at creation
 		assertThat(databaseList.size(), is(0));
 
@@ -109,7 +116,6 @@ public class DatabaseListTest {
 
 	@Test
 	public void testIsEmpty() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		// DatabaseList is empty at creation
 		assertThat(databaseList.isEmpty(), is(true));
 
@@ -132,7 +138,6 @@ public class DatabaseListTest {
 
 	@Test
 	public void testContains() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 
 		// DatabaseList is empty at creation
 		assertThat(databaseList.contains(db1), is(false));
@@ -157,34 +162,33 @@ public class DatabaseListTest {
 
 	@Test
 	public void testIterator() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 
 		// DatabaseList is empty at creation
-		Iterator<DBDatabase> iterator = databaseList.iterator();
+		Iterator<ClusterMember> iterator = databaseList.iterator();
 		assertThat(iterator.hasNext(), is(false));
 
 		databaseList.add(db1);
 		iterator = databaseList.iterator();
 		assertThat(iterator.hasNext(), is(true));
-		DBDatabase next = iterator.next();
-		assertThat(next.getSettings().toString(), is(db1.getSettings().toString()));
+		ClusterMember next = iterator.next();
+		assertThat(next.getDatabase().getSettings().toString(), is(db1.getSettings().toString()));
 		assertThat(iterator.hasNext(), is(false));
 
 		databaseList.add(db2);
 		iterator = databaseList.iterator();
 		assertThat(iterator.hasNext(), is(true));
 		next = iterator.next();
-		assertThat(next.getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
+		assertThat(next.getDatabase().getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
 		assertThat(iterator.hasNext(), is(true));
 		next = iterator.next();
-		assertThat(next.getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
+		assertThat(next.getDatabase().getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
 		assertThat(iterator.hasNext(), is(false));
 
 		databaseList.remove(db1);
 		iterator = databaseList.iterator();
 		assertThat(iterator.hasNext(), is(true));
 		next = iterator.next();
-		assertThat(next.getSettings().toString(), is(db2.getSettings().toString()));
+		assertThat(next.getDatabase().getSettings().toString(), is(db2.getSettings().toString()));
 		assertThat(iterator.hasNext(), is(false));
 
 		databaseList.remove(db2);
@@ -194,31 +198,30 @@ public class DatabaseListTest {
 
 	@Test
 	public void testToArray_0args() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 
 		// DatabaseList is empty at creation
-		DBDatabase[] array = databaseList.toArray();
+		ClusterMember[] array = databaseList.toArray();
 		assertThat(array.length, is(0));
 
 		databaseList.add(db1);
 		array = databaseList.toArray();
 		assertThat(array.length, is(1));
-		DBDatabase next = array[0];
-		assertThat(next.getSettings().toString(), is(db1.getSettings().toString()));
+		ClusterMember next = array[0];
+		assertThat(next.getDatabase().getSettings().toString(), is(db1.getSettings().toString()));
 
 		databaseList.add(db2);
 		array = databaseList.toArray();
 		assertThat(array.length, is(2));
 		next = array[0];
-		assertThat(next.getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
+		assertThat(next.getDatabase().getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
 		next = array[1];
-		assertThat(next.getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
+		assertThat(next.getDatabase().getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
 
 		databaseList.remove(db1);
 		array = databaseList.toArray();
 		assertThat(array.length, is(1));
 		next = array[0];
-		assertThat(next.getSettings().toString(), is(db2.getSettings().toString()));
+		assertThat(next.getDatabase().getSettings().toString(), is(db2.getSettings().toString()));
 
 		databaseList.remove(db2);
 		array = databaseList.toArray();
@@ -227,44 +230,35 @@ public class DatabaseListTest {
 
 	@Test
 	public void testToArray_DBDatabaseArr() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
-
-		DBDatabase[] array = new DBDatabase[2];
 
 		// DatabaseList is empty at creation
-		databaseList.toArray(array);
-		assertThat(array.length, is(2));
-		assertThat(array[0], nullValue());
-		assertThat(array[1], nullValue());
+		ClusterMember[] array = databaseList.toArray();
+		assertThat(array.length, is(0));
 
 		databaseList.add(db1);
-		databaseList.toArray(array);
-		assertThat(array.length, is(2));
-		assertThat(array[0].getSettings().toString(), is(db1.getSettings().toString()));
-		assertThat(array[1], nullValue());
+		array = databaseList.toArray();
+		assertThat(array.length, is(1));
+		assertThat(array[0].getDatabase().getSettings().toString(), is(db1.getSettings().toString()));
 
 		databaseList.add(db2);
-		databaseList.toArray(array);
+		array = databaseList.toArray();
 		assertThat(array.length, is(2));
-		assertThat(array[0].getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
-		assertThat(array[1].getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
+		assertThat(array[0].getDatabase().getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
+		assertThat(array[1].getDatabase().getSettings().toString(), isOneOf(db1.getSettings().toString(), db2.getSettings().toString()));
 
 		databaseList.remove(db1);
-		databaseList.toArray(array);
-		assertThat(array.length, is(2));
-		assertThat(array[0].getSettings().toString(), is(db2.getSettings().toString()));
-		assertThat(array[1], nullValue());
+		array = databaseList.toArray();
+		assertThat(array.length, is(1));
+		assertThat(array[0].getDatabase().getSettings().toString(), is(db2.getSettings().toString()));
 
 		databaseList.remove(db2);
-		array = databaseList.toArray(array);
-		assertThat(array[0], nullValue());
-		assertThat(array[1], nullValue());
+		array = databaseList.toArray();
+		assertThat(array.length, is(0));
 
 	}
 
 	@Test
 	public void testAdd() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1);
@@ -276,7 +270,6 @@ public class DatabaseListTest {
 
 	@Test
 	public void testAdd_DBDatabaseArr() throws SQLException {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -285,7 +278,6 @@ public class DatabaseListTest {
 
 	@Test
 	public void testRemove() throws SQLException {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -312,7 +304,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testContainsAll() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		final List<DBDatabase> listToCheck = Arrays.asList(new DBDatabase[]{db1, db2});
 
@@ -332,7 +324,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testAddAll_Collection() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		final List<DBDatabase> listToCheck = Arrays.asList(new DBDatabase[]{db1, db2});
 
@@ -344,7 +336,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testRemoveAll() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		final List<DBDatabase> listToCheck = Arrays.asList(new DBDatabase[]{db1, db2});
 
@@ -365,9 +357,12 @@ public class DatabaseListTest {
 
 	@Test
 	public void testSetReady() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
+		databaseList.queueAction(db1, new NoOpDBAction(2000));
+		databaseList.queueAction(db2, new NoOpDBAction(2000));
+		databaseList.queueAction(db3, new NoOpDBAction(2000));
 
 		DBDatabase[] readyDatabases = databaseList.getReadyDatabases();
 		assertThat(readyDatabases.length, is(0));
@@ -379,38 +374,14 @@ public class DatabaseListTest {
 
 	}
 
-//	@Test
-//	public void testSetUnsynchronised() {
-//		DatabaseList databaseList = new DatabaseList(clusterDetails);
-//		assertThat(databaseList.size(), is(0));
-//		databaseList.add(db1, db2, db3);
-//
-//		List<DBDatabase> unsynched = databaseList.getDatabasesByStatusAsList(DBDatabaseCluster.Status.UNSYNCHRONISED);
-//		assertThat(unsynched.size(), is(3));
-//
-//		databaseList.setReady(db1);
-//		databaseList.setReady(db2);
-//		databaseList.setReady(db3);
-//
-//		unsynched = databaseList.getDatabasesByStatusAsList(DBDatabaseCluster.Status.UNSYNCHRONISED);
-//		assertThat(unsynched.size(), is(0));
-//		assertThat(databaseList.getReadyDatabases().length, is(3));
-//
-//		databaseList.setUnsynchronised(db1);
-//		unsynched = databaseList.getDatabasesByStatusAsList(DBDatabaseCluster.Status.UNSYNCHRONISED);
-//		assertThat(unsynched.size(), is(1));
-//		assertThat(unsynched.get(0), is(db1));
-//
-//		databaseList.setReady(db1);
-//		unsynched = databaseList.getDatabasesByStatusAsList(DBDatabaseCluster.Status.UNSYNCHRONISED);
-//		assertThat(unsynched.size(), is(0));
-//	}
-
 	@Test
 	public void testSetPaused() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
+		databaseList.queueAction(db1, new NoOpDBAction(2000));
+		databaseList.queueAction(db2, new NoOpDBAction(2000));
+		databaseList.queueAction(db3, new NoOpDBAction(2000));
 
 		List<DBDatabase> unsynched = databaseList.getDatabasesByStatusAsList(PAUSED);
 		assertThat(unsynched.size(), is(0));
@@ -428,13 +399,13 @@ public class DatabaseListTest {
 
 	@Test
 	public void testSetDead() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
 
 		List<DBDatabase> unsynched = databaseList.getDatabasesByStatusAsList(DEAD);
 		assertThat(unsynched.size(), is(0));
-		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING).size(), is(3));
+		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING, READY).size(), is(3));
 
 		databaseList.setDead(db1);
 		unsynched = databaseList.getDatabasesByStatusAsList(DEAD);
@@ -448,13 +419,13 @@ public class DatabaseListTest {
 
 	@Test
 	public void testSetQuarantined() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
 
 		List<DBDatabase> unsynched = databaseList.getDatabasesByStatusAsList(QUARANTINED);
 		assertThat(unsynched.size(), is(0));
-		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING).size(), is(3));
+		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING, READY).size(), is(3));
 
 		databaseList.setQuarantined(db1);
 		unsynched = databaseList.getDatabasesByStatusAsList(QUARANTINED);
@@ -468,14 +439,14 @@ public class DatabaseListTest {
 
 	@Test
 	public void testSetUnknown() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
 		final DBDatabaseCluster.Status desiredStatus = UNKNOWN;
 
 		List<DBDatabase> unsynched = databaseList.getDatabasesByStatusAsList(desiredStatus);
 		assertThat(unsynched.size(), is(0));
-		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING).size(), is(3));
+		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING, READY).size(), is(3));
 
 		databaseList.setUnknown(db1);
 		unsynched = databaseList.getDatabasesByStatusAsList(desiredStatus);
@@ -489,31 +460,30 @@ public class DatabaseListTest {
 
 	@Test
 	public void testSetProcessing() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
 		databaseList.waitUntilSynchronised();
-		final DBDatabaseCluster.Status desiredStatus = PROCESSING;
 
-		List<DBDatabase> unsynched = databaseList.getDatabasesByStatusAsList(desiredStatus);
-		assertThat(unsynched.size(), is(0));
+		List<DBDatabase> processingMembers = databaseList.getDatabasesByStatusAsList(PROCESSING);
+		assertThat(processingMembers.size(), is(0));
 		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING).size(), is(0));
 		assertThat(databaseList.getDatabasesByStatusAsList(READY).size(), is(3));
 
 		databaseList.setProcessing(db1);
-		unsynched = databaseList.getDatabasesByStatusAsList(desiredStatus);
-		assertThat(unsynched.size(), is(1));
-		assertThat(unsynched.get(0), is(db1));
+		processingMembers = databaseList.getDatabasesByStatusAsList(PROCESSING);
+		assertThat(processingMembers.size(), is(1));
+		assertThat(processingMembers.get(0), is(db1));
 
 		databaseList.setReady(db1);
-		unsynched = databaseList.getDatabasesByStatusAsList(desiredStatus);
-		assertThat(unsynched.size(), is(0));
+		processingMembers = databaseList.getDatabasesByStatusAsList(PROCESSING);
+		assertThat(processingMembers.size(), is(0));
 		assertThat(databaseList.getReadyDatabases().length, is(3));
 	}
-	
+
 	@Test
 	public void testGetDatabases_0args() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		DBDatabase[] databases = databaseList.getDatabases();
@@ -528,12 +498,12 @@ public class DatabaseListTest {
 
 	@Test
 	public void testGetStatusOf() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
 
-		assertThat(databaseList.getStatusOf(db1), is(PROCESSING));
+		assertThat(databaseList.getStatusOf(db1), isOneOf(PROCESSING, READY));
 
 		databaseList.setReady(db1);
 		assertThat(databaseList.getStatusOf(db1), is(READY));
@@ -541,14 +511,12 @@ public class DatabaseListTest {
 
 	@Test
 	public void testIsReady() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
+		databaseList.waitUntilDatabaseHasSynchonized(db1);
 
-		assertThat(databaseList.isReady(db1), is(false));
-
-		databaseList.setReady(db1);
 		assertThat(databaseList.isReady(db1), is(true));
 
 		databaseList.setUnknown(db1);
@@ -566,41 +534,37 @@ public class DatabaseListTest {
 		databaseList.setQuarantined(db1);
 		assertThat(databaseList.isReady(db1), is(false));
 
-		databaseList.setUnsynchronised(db1);
-		assertThat(databaseList.isReady(db1), is(false));
-
 		databaseList.setReady(db1);
 		assertThat(databaseList.isReady(db1), is(true));
 	}
 
 	@Test
 	public void testGetReadyDatabases() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
+		databaseList.waitUntilSynchronised();
+		assertThat(databaseList.getReadyDatabases().length, is(3));
 
-		assertThat(databaseList.getReadyDatabases().length, is(0));
-
-		databaseList.setReady(db1);
-		assertThat(databaseList.getReadyDatabases().length, is(1));
-		assertThat(Arrays.asList(databaseList.getReadyDatabases()), containsInAnyOrder(db1));
-
-		databaseList.setReady(db2);
+		databaseList.setPaused(db3);
 		assertThat(databaseList.getReadyDatabases().length, is(2));
 		assertThat(Arrays.asList(databaseList.getReadyDatabases()), containsInAnyOrder(db1, db2));
 
-		databaseList.remove(db1);
+		databaseList.setPaused(db2);
 		assertThat(databaseList.getReadyDatabases().length, is(1));
-		assertThat(Arrays.asList(databaseList.getReadyDatabases()), containsInAnyOrder(db2));
+		assertThat(Arrays.asList(databaseList.getReadyDatabases()), containsInAnyOrder(db1));
+
+		databaseList.remove(db1);
+		assertThat(databaseList.getReadyDatabases().length, is(0));
 
 		databaseList.setReady(db3);
-		assertThat(databaseList.getReadyDatabases().length, is(2));
-		assertThat(Arrays.asList(databaseList.getReadyDatabases()), containsInAnyOrder(db2, db3));
+		assertThat(databaseList.getReadyDatabases().length, is(1));
+		assertThat(Arrays.asList(databaseList.getReadyDatabases()), containsInAnyOrder(db3));
 	}
 
 	@Test
 	public void testGetDatabasesByStatus() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		DBDatabase[] databases = databaseList.getDatabasesByStatus(PAUSED, PROCESSING);
@@ -613,9 +577,9 @@ public class DatabaseListTest {
 		assertThat(databases.length, is(3));
 		assertThat(Arrays.asList(databases), containsInAnyOrder(db1, db2, db3));
 
-		databaseList.queueAction(db1, new NoOpDBAction(100));
-		databaseList.queueAction(db2, new NoOpDBAction(100));
-		databaseList.queueAction(db3, new NoOpDBAction(100));
+		databaseList.queueAction(db1, new NoOpDBAction(2000));
+		databaseList.queueAction(db2, new NoOpDBAction(2000));
+		databaseList.queueAction(db3, new NoOpDBAction(2000));
 		databases = databaseList.getDatabasesByStatus(PAUSED, READY);
 		assertThat(databases.length, is(0));
 
@@ -633,7 +597,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testGetReadyDatabasesList() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(db1, db2, db3);
 		databaseList.waitUntilSynchronised();
@@ -641,7 +605,7 @@ public class DatabaseListTest {
 		databaseList.queueAction(db1, new NoOpDBAction(10));
 		databaseList.queueAction(db2, new NoOpDBAction(10));
 		databaseList.queueAction(db3, new NoOpDBAction(10));
-		
+
 		assertThat(databaseList.getReadyDatabasesList().size(), is(0));
 
 		databaseList.setReady(db1);
@@ -664,7 +628,7 @@ public class DatabaseListTest {
 	@Test
 	public void testGetDatabasesByStatusAsList() {
 
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		List<DBDatabase> databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING);
@@ -672,15 +636,16 @@ public class DatabaseListTest {
 
 		databaseList.add(db1, db2, db3);
 
-		databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING);
+		databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING, READY);
 		assertThat(databases.size(), is(3));
 		assertThat(databases, containsInAnyOrder(db1, db2, db3));
 
-		databases = databaseList.getDatabasesByStatusAsList(PAUSED, READY);
+		databases = databaseList.getDatabasesByStatusAsList(PAUSED);
 		assertThat(databases.size(), is(0));
 
 		databaseList.setReady(db1);
 		databaseList.setPaused(db2);
+		databaseList.setProcessing(db3);
 
 		databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING);
 		assertThat(databases.size(), is(2));
@@ -693,30 +658,31 @@ public class DatabaseListTest {
 
 	@Test
 	public void testCountReadyDatabases() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		assertThat(databaseList.countReadyDatabases(), is(0));
 
 		databaseList.add(db1, db2, db3);
-		assertThat(databaseList.countReadyDatabases(), is(0));
-
-		databaseList.setReady(db1);
-		assertThat(databaseList.countReadyDatabases(), is(1));
-
-		databaseList.setReady(db2);
-		assertThat(databaseList.countReadyDatabases(), is(2));
-
-		databaseList.setReady(db3);
+		databaseList.waitUntilSynchronised();
 		assertThat(databaseList.countReadyDatabases(), is(3));
 
 		databaseList.setPaused(db1);
+		assertThat(databaseList.countReadyDatabases(), is(2));
+
+		databaseList.setPaused(db2);
+		assertThat(databaseList.countReadyDatabases(), is(1));
+
+		databaseList.setPaused(db3);
+		assertThat(databaseList.countReadyDatabases(), is(0));
+
+		databaseList.setReady(db1);
+		databaseList.setReady(db2);
 		assertThat(databaseList.countReadyDatabases(), is(2));
 	}
 
 	@Test
 	public void testCountPausedDatabases() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		assertThat(databaseList.countPausedDatabases(), is(0l));
@@ -740,7 +706,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testCountDatabases() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		assertThat(databaseList.countDatabases(PAUSED), is(0));
@@ -769,7 +735,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testClear() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -781,7 +747,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testAreAllReady() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -801,7 +767,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testIsDead() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -821,10 +787,11 @@ public class DatabaseListTest {
 
 	@Test
 	public void testGetReadyDatabase_0args() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
+		databaseList.setPaused(db1, db2, db3);
 		try {
 			databaseList.getReadyDatabase();
 			assertThat(false, is(true));
@@ -850,7 +817,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testGetReadyDatabase_int() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -895,7 +862,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testWaitUntilSynchronised() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -910,7 +877,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testWaitUntilDatabaseHasSynchonized() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -926,7 +893,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testWaitUntilDatabaseHasSynchronized() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -945,7 +912,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testQueueAction() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -957,7 +924,7 @@ public class DatabaseListTest {
 		databaseList.queueAction(db1, new NoOpDBAction(10));
 		databaseList.queueAction(db1, new NoOpDBAction(10));
 
-		ActionQueue[] queues = databaseList.getActionQueueList().getQueueForDatabase(db1, db2, db3);
+		ActionQueue[] queues = databaseList.getActionQueues(db1, db2, db3);
 		assertThat(queues[0].size(), is(5));
 		assertThat(queues[1].size(), is(0));
 		assertThat(queues[2].size(), is(0));
@@ -982,7 +949,7 @@ public class DatabaseListTest {
 
 		databaseList.setUnpaused(db1);
 		databaseList.waitUntilDatabaseHasSynchonized(db1);
-		queues = databaseList.getActionQueueList().getQueueForDatabase(db1, db2, db3);
+		queues = databaseList.getActionQueues(db1, db2, db3);
 		assertThat(queues[0].size(), is(0));
 		assertThat(queues[1].size(), is(5));
 		assertThat(queues[2].size(), is(5));
@@ -991,7 +958,7 @@ public class DatabaseListTest {
 		databaseList.setProcessing(db3);
 		databaseList.waitUntilDatabaseHasSynchonized(db2);
 		databaseList.waitUntilDatabaseHasSynchonized(db3);
-		queues = databaseList.getActionQueueList().getQueueForDatabase(db1, db2, db3);
+		queues = databaseList.getActionQueues(db1, db2, db3);
 		assertThat(queues[0].size(), is(0));
 		assertThat(queues[1].size(), is(0));
 		assertThat(queues[2].size(), is(0));
@@ -1000,7 +967,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testCopyFromTo() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -1014,7 +981,7 @@ public class DatabaseListTest {
 		databaseList.queueAction(db1, new NoOpDBAction(10));
 		databaseList.queueAction(db1, act5);
 
-		ActionQueue[] queues = databaseList.getActionQueueList().getQueueForDatabase(db1, db2, db3);
+		ActionQueue[] queues = databaseList.getActionQueues(db1, db2, db3);
 		assertThat(queues[0].size(), is(5));
 		assertThat(queues[1].size(), is(0));
 		assertThat(queues[2].size(), is(0));
@@ -1037,7 +1004,7 @@ public class DatabaseListTest {
 
 	@Test
 	public void testGetActionQueueList() {
-		DatabaseList databaseList = new DatabaseList(clusterDetails);
+//		DatabaseList databaseList = new DatabaseList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(db1, db2, db3);
@@ -1049,8 +1016,7 @@ public class DatabaseListTest {
 		databaseList.queueAction(db1, new NoOpDBAction(10));
 		databaseList.queueAction(db1, new NoOpDBAction(10));
 
-		final ActionQueueList actionQueueList = databaseList.getActionQueueList();
-		ActionQueue[] queues = actionQueueList.getQueueForDatabase(db1, db2, db3);
+		final ActionQueue[] queues = databaseList.getActionQueues(db1, db2, db3);
 		assertThat(queues[0].size(), is(5));
 		assertThat(queues[1].size(), is(0));
 		assertThat(queues[2].size(), is(0));

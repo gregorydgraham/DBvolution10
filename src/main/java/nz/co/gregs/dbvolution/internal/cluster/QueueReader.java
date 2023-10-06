@@ -35,7 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.QueryIntention;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 
 /**
@@ -105,10 +104,26 @@ public class QueueReader {
 		return runner.hasStopped();
 	}
 
+	private void attemptAction() {
+		ActionMessage message = actionQueue.getHeadOfQueue();
+		if (message == null) {
+			if (previousMessage == null) {
+				actionQueue.notifyQueueIsEmpty();
+			}
+		} else {
+			final DBAction action = message.getAction();
+//			final QueryIntention intent = action.getIntent();
+//			System.out.println("READING: " + intent + " ON " + database.getLabel());
+			doAction(action);
+		}
+		previousMessage = message;
+	}
+	
 	private void doAction(DBAction action) {
 		try {
 			database.executeDBAction(action);
-			System.out.println("COMPLETED " + action.getIntent() + " ON DATABASE " + database.getLabel());
+//			System.out.println("COMPLETED " + action.getIntent() + " ON DATABASE " + database.getLabel());
+			actionQueue.notifyActionHasSucceeded();
 		} catch (SQLException ex) {
 			LOG.log(Level.SEVERE, null, ex);
 			System.out.println("FAILED " + action.getIntent() + " ON DATABASE " + database.getLabel());
@@ -141,21 +156,6 @@ public class QueueReader {
 			System.out.println("QueueReader thread stopped");
 			THREAD_DEATH.notifyAll();
 		}
-	}
-
-	private void attemptAction() {
-		ActionMessage message = actionQueue.getHeadOfQueue();
-		if (message == null) {
-			if (previousMessage == null) {
-				actionQueue.notifyQueueIsEmpty();
-			}
-		} else {
-			final DBAction action = message.getAction();
-			final QueryIntention intent = action.getIntent();
-			System.out.println("READING: " + intent + " ON " + database.getLabel());
-			doAction(action);
-		}
-		previousMessage = message;
 	}
 
 	private void waitUntilActionsAvailable(int milliseconds) {
@@ -195,7 +195,7 @@ public class QueueReader {
 		private Runner(QueueReader reader) {
 			this.queueReader = reader;
 
-			readerThread = new Thread(this, "Reader thread for " + queueReader.getLabel());
+			readerThread = new Thread(this, "READER thread for " + queueReader.getLabel());
 		}
 
 		@Override
@@ -211,7 +211,7 @@ public class QueueReader {
 			if (proceed) {
 				queueReader.attemptAction();
 			}
-			queueReader.waitUntilActionsAvailable(1);
+			queueReader.waitUntilActionsAvailable(10);
 		}
 
 		private void stop() {
