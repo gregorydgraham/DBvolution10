@@ -67,15 +67,19 @@ public class QueryGraphVisualisationTest {
 		database.dropTableNoExceptions(new Marque());
 		database.createTable(new Marque());
 
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CarCompany());
 		database.createTable(new CarCompany());
 
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CompanyLogo());
 		database.createTable(new CompanyLogo());
 
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 		database.createTable(new LinkCarCompanyAndLogo());
 
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
 		database.createTable(new LinkCarCompanyAndLogoWithPreviousLink());
 	}
