@@ -141,4 +141,9 @@ new MySQL_5_7SettingsBuilder()
 		return urlProcessor;
 	}
 
+	@Override
+	public MySQL_5_7SettingsBuilder getSettingsBuilder() {
+		return new MySQL_5_7SettingsBuilder().fromSettings(this.getSettings());
+	}
+
 }

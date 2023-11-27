@@ -57,6 +57,7 @@ public class ReconnectionProcess extends RegularProcess {
 			DBDatabaseCluster cluster = (DBDatabaseCluster) database;
 			if (cluster.getAutoReconnect()) {
 				String msg = database.getLabel()+ ": PREPARING TO RECONNECT DATABASES... \n";
+				System.out.println("RECONNECTION: "+msg);
 				LOGGER.info(msg);
 				str = msg;
 				try {
@@ -65,6 +66,7 @@ public class ReconnectionProcess extends RegularProcess {
 					Logger.getLogger(ReconnectionProcess.class.getName()).log(Level.SEVERE, null, ex);
 				}
 				msg = database.getLabel() + ": FINISHED RECONNECTING DATABASES...";
+				System.out.println("RECONNECTION: "+msg);
 				LOGGER.info(msg);
 				str += "\n" + msg;
 			}

@@ -1935,12 +1935,11 @@ public class DBQuery implements Serializable {
 	private void initialiseQueryGraph() {
 		if (queryGraph == null) {
 			queryGraph = new QueryGraph(details.getRequiredQueryTables(), getConditions());
-			queryGraph.addOptionalAndConnectToRelevant(details.getOptionalQueryTables(), getConditions());
 		} else {
 			queryGraph.clear();
 			queryGraph.addAndConnectToRelevant(details.getRequiredQueryTables(), getConditions());
-			queryGraph.addOptionalAndConnectToRelevant(details.getOptionalQueryTables(), getConditions());
 		}
+		queryGraph.addOptionalAndConnectToRelevant(details.getOptionalQueryTables(), getConditions());
 	}
 
 	/**

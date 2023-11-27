@@ -170,7 +170,7 @@ public abstract class DBAction implements Serializable {
 	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
-	public DBActionList action(DBDatabase db) throws SQLException{
+	public DBActionList action(DBDatabase db) throws SQLException {
 		hasRun = true;
 		DBActionList actions = execute(db);
 		hasSucceeded = true;
@@ -248,8 +248,10 @@ public abstract class DBAction implements Serializable {
 
 	protected void executeOnStatement(DBDatabase db, DBActionList actions) throws SQLException {
 		try (final DBStatement statement = db.getDBStatement()) {
-			for (String sql : actions.getSQL(db)) {
-				statement.execute(getIntent(), sql);
+			for (DBAction act : actions) {
+				for (String sql : act.getSQLStatements(db)) {
+					statement.execute(act.toString(), getIntent(), sql);
+				}
 			}
 		}
 	}
@@ -257,7 +259,7 @@ public abstract class DBAction implements Serializable {
 	public DBActionList execute2(DBDatabase db) throws SQLException {
 		DBActionList actions = prepareActionList(db);
 		prepareRollbackData(db, actions);
-		executeOnStatement(db,actions);
+		executeOnStatement(db, actions);
 		return actions;
 	}
 
@@ -280,5 +282,10 @@ public abstract class DBAction implements Serializable {
 	public static enum RefetchRequirement {
 		REFETCH,
 		DO_NOT_REFETCH
+	}
+
+	@Override
+	public String toString() {
+		return getIntent() + " " + getRow().getClass().getSimpleName();
 	}
 }

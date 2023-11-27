@@ -52,12 +52,11 @@ import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
-import nz.co.gregs.dbvolution.internal.cluster.QueueReader;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.internal.database.ClusterCleanupActions;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
-import nz.co.gregs.dbvolution.utility.RegularProcess;
+import nz.co.gregs.separatedstring.SeparatedString;
+import nz.co.gregs.separatedstring.SeparatedStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -105,7 +104,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	private static final long serialVersionUID = 1l;
 
 	private ClusterDetails details;
-	private transient final ExecutorService ACTION_THREAD_POOL;
 	private boolean requeryPermitted = true;
 	private boolean startupIsNeeded = true;
 	private boolean failOnQuarantine = false;
@@ -116,8 +114,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		Configuration config = builder.getConfiguration();
 		final ClusterDetails clusterDetails = getDetails();
 		clusterDetails.setConfiguration(config);
-
-		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
 
 		if (config.useAutoRebuild) {
 			clusterDetails.loadTrackedTables();
@@ -159,8 +155,12 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		throw new UnsupportedOperationException("DBDatabaseCluster does not support getDefaultPort() yet.");
 	}
 
-	public void waitUntilSynchronised() {
-		getDetails().waitUntilSynchronised();
+	public boolean waitUntilSynchronised() {
+		return getDetails().waitUntilSynchronised();
+	}
+
+	public boolean waitUntilSynchronised(int timeout) {
+		return getDetails().waitUntilSynchronised(timeout);
 	}
 
 	public void waitUntilDatabaseIsSynchronised(DBDatabase database) {
@@ -213,7 +213,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		 * Unsynchronised databases have not yet had the schema implemented nor the
 		 * data updated.
 		 */
-//		UNSYNCHRONISED,
+		//		UNSYNCHRONISED,
 		/**
 		 * Paused databases are ready databases that are being use to synchronize
 		 * other databases.
@@ -245,17 +245,37 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		/**
 		 * PROCESSING.
 		 *
-		 * <p>
-		 * Currently unused</p>
+		 * Automatically switches to READY upon completing the queued actions
 		 */
-		PROCESSING;
+		PROCESSING,
+		/**
+		 * TEMPLATE.
+		 *
+		 * Indicates that the database is being used to synchronise a (new) member
+		 */
+		TEMPLATE,
+		/**
+		 * SYNCHRONIZING.
+		 *
+		 * Indicates that the database is being synchronized.
+		 * 
+		 */
+		SYNCHRONIZING,
+		/**
+		 * CREATED.
+		 *
+		 * Default status of newly created members
+		 */
+		CREATED;
+
 		/**
 		 * SYNCHRONIZING databases are being actively updated to match the cluster
 		 * schema and data.
+		 *
+		 * @param statuses the statuses that are allowed to match
+		 * @return TRUE if this status oneOf any of the supplied statuses
 		 */
-//		SYNCHRONIZING;
-
-		public boolean equals(Status... statuses) {
+		public boolean oneOf(Status... statuses) {
 			for (Status status : statuses) {
 				if (this.equals(status)) {
 					return true;
@@ -293,9 +313,9 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	}
 
 	private void addReconnectionProcessor() {
-		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
-		reconnectionProcessor.setTimeOffset(ChronoUnit.MINUTES, 1);
-		addRegularProcess(reconnectionProcessor);
+		final ReconnectionProcess reconnector = new ReconnectionProcess();
+		reconnector.setTimeOffset(ChronoUnit.SECONDS, 1);
+		addRegularProcess(reconnector);
 	}
 
 	public DBDatabase start() {
@@ -515,7 +535,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	private synchronized boolean addDatabaseWithWaiting(DBDatabase database, boolean wait) throws SQLException {
 		boolean add = addDatabaseWithoutWaiting(database);
 		if (wait) {
-			details.waitUntilDatabaseHasSynchronized(database);
+			details.waitUntilDatabaseHasSynchronized(database, 10000);
 		}
 //		synchronizeAddedDatabases(wait);
 		return add;
@@ -562,7 +582,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	 * is present (optional operation).If this list does not contain the element,
 	 * it is unchanged.More formally, removes the element with the lowest index
 	 * <code>i</code> such that
-	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.oneOf(get(i)))</code>
 	 * (if such an element exists). Returns true if this list contained the
 	 * specified element (or equivalently, if this list changed as a result of the
 	 * call).
@@ -589,7 +609,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	 * is present (optional operation).If this list does not contain the element,
 	 * it is unchanged.More formally, removes the element with the lowest index i
 	 * such that
-	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.oneOf(get(i)))</code>
 	 * (if such an element exists). Returns <code>true</code> if this list
 	 * contained the specified element (or equivalently, if this list changed as a
 	 * result of the call).
@@ -619,7 +639,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	 * is present (optional operation).If this list does not contain the element,
 	 * it is unchanged. More formally, removes the element with the lowest index i
 	 * such that
-	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
+	 * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.oneOf(get(i)))</code>
 	 * (if such an element exists). Returns <code>true</code> if this list
 	 * contained the specified element (or equivalently, if this list changed as a
 	 * result of the call).
@@ -838,7 +858,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	@Override
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		addTrackedTable(newTableRow);
+//		addTrackedTable(newTableRow);
 		super.createTable(newTableRow);
 	}
 
@@ -988,30 +1008,24 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
 			// Because of autoincrement PKs we need to execute on one database first
 			succeeded = false;
-			for (DBDatabase database : databases) {
-				succeededDatabase = database;
+			for (DBDatabase nextDatabase : databases) {
 				try {
-					actionsPerformed = database.executeDBAction(action);
+					actionsPerformed = nextDatabase.executeDBAction(action);
+					succeededDatabase = nextDatabase;
 					succeeded = true;
 					break;
 				} catch (SQLException ex) {
+					succeeded = false;
+					succeededDatabase = null;
 					if (firstException == null) {
 						firstException = ex;
 					}
 				}
 			}
 		}
-		if (succeeded) {
+		if (succeeded && succeededDatabase != null) {
 			// Now execute on all the other databases
-			for (DBDatabase nextDatabase : databases) {
-				if (action.requiresRunOnIndividualDatabaseBeforeCluster() && nextDatabase.equals(succeededDatabase)) {
-					// skip this database as it's already been actioned
-				} else {
-					if (action.runOnDatabaseDuringCluster(succeededDatabase, nextDatabase)) {
-						details.queueAction(nextDatabase, action);
-					}
-				}
-			}
+			details.executeOnAllDatabasesExcluding(action, succeededDatabase);
 		} else {
 			throw firstException;
 		}
@@ -1051,7 +1065,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 //			if (succeeded) {
 //				// Now execute on all the other databases
 //				for (DBDatabase next : databases) {
-//					if (action.requiresRunOnIndividualDatabaseBeforeCluster() && next.equals(firstDatabase)) {
+//					if (action.requiresRunOnIndividualDatabaseBeforeCluster() && next.oneOf(firstDatabase)) {
 //						// skip this database as it's already been actioned
 //					} else {
 //						if (action.runOnDatabaseDuringCluster(firstDatabase, next)) {
@@ -1255,23 +1269,21 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	}
 
 	public String getClusterStatus() {
-		final String summary = getStatusOfActiveDatabases();
-//		final String unsyn = getStatusOfUnsynchronisedDatabases();
-		final String quarantined = getStatusOfQuarantinedDatabases();
-		return summary + "\n" + quarantined;
+		SeparatedString summary = SeparatedStringBuilder.byLines();
+			SeparatedString bySpaces = SeparatedStringBuilder.bySpaces();
+			String line;
+		final int allDatabaseCount = getDetails().getAllDatabases().length;
+		for (Status value : Status.values()) {
+			line = bySpaces.encode(new Date().toString(), ""+value.name(),"Databases:",""+getDetails().getDatabasesByStatus(value).length,"of",""+allDatabaseCount);
+			summary.add(line);
+//			summary.add(new Date().toString() + " " + value.name() + " Databases: " + getDetails().getDatabasesByStatus(value).length + " of " + allDatabaseCount);
+		}
+		return summary.encode();
 	}
 
-	private String getStatusOfQuarantinedDatabases() {
-		return (new Date()).toString() + "Quarantined Databases: " + getDetails().getQuarantinedDatabases().length + " of " + getDetails().getAllDatabases().length;
-	}
-
-//	private String getStatusOfUnsynchronisedDatabases() {
-//		return (new Date()).toString() + "Unsynchronised: " + getDetails().getUnsynchronizedDatabases().length + " of " + getDetails().getAllDatabases().length;
-//	}
-
-	private String getStatusOfActiveDatabases() {
-		final DBDatabase[] ready = getDetails().getReadyDatabases();
-		return (new Date()).toString() + "Active Databases: " + ready.length + " of " + getDetails().getAllDatabases().length;
+	public ClusterDetails.StatusSnapshot getClusterStatusSnapshot() {
+		ClusterDetails.StatusSnapshot summary = details.getClusterStatusSnapshot();
+		return summary;
 	}
 
 	public String getDatabaseStatuses() {
@@ -1326,6 +1338,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	}
 
 	private synchronized void stopClusterInternal(boolean andDatabases) {
+		System.out.println("STOPPING: cluster " + details.getClusterLabel());
 		try {
 			shutdownClusterProcesses();
 			if (andDatabases) {
@@ -1340,6 +1353,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		} catch (SQLException ex) {
 			LOG.error(this, ex);
 		}
+		System.out.println("STOPPED: cluster " + details.getClusterLabel());
 	}
 
 	@Override
@@ -1372,7 +1386,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	private transient Cleaner.Cleanable cleanable;
 
 	private void addCleaner() {
-		clusterCleanupActions = new ClusterCleanupActions(getDetails(), LOG, ACTION_THREAD_POOL);
+		clusterCleanupActions = new ClusterCleanupActions(getDetails(), LOG);
 		cleanable = cleaner.register(this, clusterCleanupActions);
 	}
 
@@ -1403,7 +1417,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 
 	private synchronized void shutdownClusterProcesses() {
 		LOG.debug("STOPPING: action thread pool");
-		ACTION_THREAD_POOL.shutdown();
+//		ACTION_THREAD_POOL.shutdown();
 		details.shutdown();
 	}
 
@@ -1448,8 +1462,8 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 //						setActionList(actions);
 //					} catch (SQLException | NoAvailableDatabaseException e) {
 //						HandlerAdvice handleExceptionDuringAction = cluster.handleExceptionDuringAction(e, database, action, quarantineAllowed);
-//						if (handleExceptionDuringAction.equals(HandlerAdvice.ABORT)
-//								|| handleExceptionDuringAction.equals(HandlerAdvice.REQUERY)) {
+//						if (handleExceptionDuringAction.oneOf(HandlerAdvice.ABORT)
+//								|| handleExceptionDuringAction.oneOf(HandlerAdvice.REQUERY)) {
 //							throw e;
 //						}
 //					}
@@ -1521,7 +1535,6 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 //			return null;
 //		}
 //	}
-
 	public String reconnectQuarantinedDatabases() throws UnableToRemoveLastDatabaseFromClusterException, SQLException {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] reconnectables = details.getDatabasesForReconnecting();
@@ -1539,6 +1552,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	private void reconnectQuarantinedDatabase(StringBuilder str, DBDatabase quarantee) throws UnableToRemoveLastDatabaseFromClusterException {
 		str.append(quarantee.getSettings());
 		try {
+			System.out.println(this.getLabel() + " RECONNECTING DATABASE: " + quarantee.getLabel());
 			LOG.info(this.getLabel() + " RECONNECTING DATABASE: " + quarantee.getLabel());
 			addDatabase(quarantee);
 			LOG.info(this.getLabel() + " RECONNECTED DATABASE: " + quarantee.getLabel());
@@ -1584,6 +1598,13 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	public void removeTrackedTables(DBRow... rows) {
 		getDetails().removeTrackedTables(Arrays.asList(rows));
 
+	}
+
+	@Override
+	public DBDatabaseClusterSettingsBuilder getSettingsBuilder() {
+		DBDatabaseClusterSettingsBuilder builder = new DBDatabaseClusterSettingsBuilder();
+		builder.fromSettings(this.getSettings());
+		return builder;
 	}
 
 	public static class Configuration implements Serializable {

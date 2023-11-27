@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.utility;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 /**
  *
@@ -82,5 +83,19 @@ public class Random {
 			sb.append(rndChar);
 		}
 		return sb.toString();
+	}
+
+	public static <TYPE> TYPE get(List<TYPE> dbs) {
+		return dbs.get(new java.util.Random().nextInt(dbs.size()));
+	}
+
+	public static <TYPE> TYPE get(TYPE[] options) {
+		if (options.length==0){
+			return null;
+		}
+		if (options.length==1){
+			return options[0];
+		}
+		return options[new java.util.Random().nextInt(options.length)];
 	}
 }

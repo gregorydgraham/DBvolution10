@@ -220,7 +220,9 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2MemoryDB", H2MemoryTestDB.getFromSettings("h2memory")});
 		}
 		if (databases.isEmpty() || System.getProperty("testH2BlankDB") != null) {
-			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
+			final H2MemoryDB blankDB = H2MemoryTestDB.blankDB();
+			blankDB.setLabel("TESTING H2MemDB");
+			databases.add(new Object[]{"H2BlankDB", blankDB});
 		}
 	}
 

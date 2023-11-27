@@ -212,4 +212,9 @@ public class SQLiteDB extends DBDatabaseImplementation {
 		return new SQLiteDBDatabaseMetaData(options);
 	}
 
+	@Override
+	public SQLiteSettingsBuilder getSettingsBuilder() {
+		return new SQLiteSettingsBuilder().fromSettings(this.getSettings());
+	}
+
 }

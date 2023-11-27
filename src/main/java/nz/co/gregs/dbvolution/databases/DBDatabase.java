@@ -54,6 +54,7 @@ import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.databases.metadata.Options;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
@@ -1202,5 +1203,7 @@ public interface DBDatabase extends Serializable {
 	void setPreventAccidentalDeletingAllRowsFromTable(boolean b);
 
 	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException;
+
+	public SettingsBuilder<?,?> getSettingsBuilder();
 
 }

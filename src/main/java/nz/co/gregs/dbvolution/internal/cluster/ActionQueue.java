@@ -50,6 +50,7 @@ public class ActionQueue implements AutoCloseable {
 
 	private transient final Object QUEUE_IS_EMPTY = new Object();
 	private transient final Object ACTION_IS_AVAILABLE = new Object();
+	private transient final Object QUEUE_IS_STOPPED = new Object();
 	private transient final Object QUEUE_IS_PAUSED = new Object();
 	private transient final Object QUEUE_IS_UNPAUSED = new Object();
 	private transient final Object ACTION_HAS_SUCCEEDED = new Object();
@@ -70,12 +71,12 @@ public class ActionQueue implements AutoCloseable {
 		reader = new QueueReader(database, this);
 	}
 
-	public void startReader() {
-		reader.start();
+	public void start() {
+		reader.unpause();
 	}
 
-	public boolean hasStarted() {
-		return reader.hasStarted();
+	public boolean isRunning() {
+		return !reader.isPaused() && !reader.hasStopped();
 	}
 
 	public synchronized int size() {
@@ -85,7 +86,7 @@ public class ActionQueue implements AutoCloseable {
 	public synchronized void add(DBAction action) {
 		ActionMessage value = new ActionMessage(action);
 		try {
-			System.out.println("ENQUEUING:" + action.getIntent() + " ON " + database.getLabel());
+			System.out.println("ENQUEUING:" + action.toString() + " ON " + database.getLabel());
 			actionQueue.put(value);
 			notifyACTION_IS_AVAILABLE();
 		} catch (InterruptedException e) {
@@ -109,12 +110,17 @@ public class ActionQueue implements AutoCloseable {
 		return pulled;
 	}
 
+	public synchronized ActionMessage peekHeadOfQueue() {
+		ActionMessage peeked = actionQueue.peek();
+		return peeked;
+	}
+
 	public synchronized boolean isEmpty() {
 		final boolean result = actionQueue.size() == 0;
 		return result;
 	}
 
-	public void stopReader() {
+	public void stop() {
 		reader.stop();
 	}
 
@@ -131,11 +137,12 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
-	public void waitUntilEmpty(long milliseconds) {
+	public boolean waitUntilEmpty(long milliseconds) {
 		if (isEmpty()) {
 			// return immediately
+			return true;
 		} else {
-			waitOnQUEUE_IS_EMPTY(milliseconds);
+			return waitOnQUEUE_IS_EMPTY(milliseconds);
 		}
 	}
 
@@ -151,11 +158,11 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
-	public void waitUntilActionsAvailable(long milliseconds) {
-		if (isEmpty()) {
-			waitOnACTION_IS_AVAILABLE(milliseconds);
+	public boolean waitUntilActionsAvailable(long milliseconds) {
+		if (!isEmpty()) {
+			return true;
 		} else {
-			// return immediately
+			return waitOnACTION_IS_AVAILABLE(milliseconds);
 		}
 	}
 
@@ -193,7 +200,7 @@ public class ActionQueue implements AutoCloseable {
 
 	@Override
 	public void close() {
-		stopReader();
+		stop();
 	}
 
 	public synchronized boolean hasActionsAvailable() {
@@ -210,6 +217,12 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
+	public void notifySTOPPED() {
+		synchronized (QUEUE_IS_STOPPED) {
+			QUEUE_IS_STOPPED.notifyAll();
+		}
+	}
+
 	public void unpause() {
 		reader.unpause();
 	}
@@ -222,7 +235,7 @@ public class ActionQueue implements AutoCloseable {
 
 	private void notifyQUEUE_IS_EMPTY() {
 		if (member != null) {
-			member.notifyADatabaseIsReady();
+			member.notifyAQueueHasFinished();
 		}
 		synchronized (QUEUE_IS_EMPTY) {
 			QUEUE_IS_EMPTY.notifyAll();
@@ -230,6 +243,9 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	private boolean waitOnQUEUE_IS_EMPTY() {
+		if (actionQueue.isEmpty()) {
+			return false;
+		}
 		synchronized (QUEUE_IS_EMPTY) {
 			try {
 				QUEUE_IS_EMPTY.wait();
@@ -241,17 +257,25 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
-	private void waitOnQUEUE_IS_EMPTY(long milliseconds) {
+	private boolean waitOnQUEUE_IS_EMPTY(long milliseconds) {
+		if (actionQueue.isEmpty()) {
+			return false;
+		}
 		synchronized (QUEUE_IS_EMPTY) {
 			try {
 				QUEUE_IS_EMPTY.wait(milliseconds);
+				return true;
 			} catch (InterruptedException ex) {
 				LOG.log(Level.SEVERE, null, ex);
 			}
 		}
+		return false;
 	}
 
 	private void waitOnACTION_IS_AVAILABLE() {
+		if (reader.hasStopped()) {
+			return;
+		}
 		synchronized (ACTION_IS_AVAILABLE) {
 			try {
 				ACTION_IS_AVAILABLE.wait();
@@ -261,14 +285,19 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
-	private void waitOnACTION_IS_AVAILABLE(long milliseconds) {
+	private boolean waitOnACTION_IS_AVAILABLE(long milliseconds) {
+		if (!actionQueue.isEmpty()) {
+			return false;
+		}
 		synchronized (ACTION_IS_AVAILABLE) {
 			try {
 				ACTION_IS_AVAILABLE.wait(milliseconds);
+				return !actionQueue.isEmpty();
 			} catch (InterruptedException ex) {
 				LOG.log(Level.SEVERE, null, ex);
 			}
 		}
+		return !actionQueue.isEmpty();
 	}
 
 	public boolean isPaused() {
@@ -279,7 +308,25 @@ public class ActionQueue implements AutoCloseable {
 		return isEmpty();
 	}
 
+	boolean waitUntilStopped(long milliseconds) {
+		if (reader.hasStopped()) {
+			return true;
+		}
+		synchronized (QUEUE_IS_STOPPED) {
+			try {
+				QUEUE_IS_STOPPED.wait(milliseconds);
+				return reader.hasStopped();
+			} catch (InterruptedException ex) {
+				LOG.log(Level.SEVERE, null, ex);
+			}
+		}
+		return false;
+	}
+
 	void waitUntilPaused(long milliseconds) {
+		if (reader.isPaused()) {
+			return;
+		}
 		synchronized (QUEUE_IS_PAUSED) {
 			try {
 				QUEUE_IS_PAUSED.wait(milliseconds);
@@ -290,6 +337,9 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	void waitUntilUnpaused(long milliseconds) {
+		if (!reader.isPaused()) {
+			return;
+		}
 		synchronized (QUEUE_IS_UNPAUSED) {
 			try {
 				QUEUE_IS_UNPAUSED.wait(milliseconds);
@@ -312,6 +362,9 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	public void waitOnActionHasSucceeded() {
+		if (reader.hasStopped()) {
+			return;
+		}
 		synchronized (ACTION_HAS_SUCCEEDED) {
 			try {
 				ACTION_HAS_SUCCEEDED.wait();
@@ -319,5 +372,9 @@ public class ActionQueue implements AutoCloseable {
 				Logger.getLogger(ActionQueue.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
+	}
+
+	public boolean hasStopped() {
+		return this.reader.hasStopped();
 	}
 }

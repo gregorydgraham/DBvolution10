@@ -128,4 +128,9 @@ public class Oracle12DB extends OracleDB {
 		return new Oracle12SettingsBuilder();
 	}
 
+	@Override
+	public Oracle12SettingsBuilder getSettingsBuilder() {
+		return new Oracle12SettingsBuilder().fromSettings(this.getSettings());
+	}
+
 }

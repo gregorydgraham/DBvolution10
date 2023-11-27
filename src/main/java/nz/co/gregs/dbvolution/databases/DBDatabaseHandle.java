@@ -56,6 +56,7 @@ import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.databases.metadata.Options;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.DBDatabaseClusterSettingsBuilder;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
@@ -711,6 +712,11 @@ public class DBDatabaseHandle implements DBDatabase {
 	@Override
 	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException {
 		return wrappedDatabase.getDBDatabaseMetaData(options);
+	}
+
+	@Override
+	public SettingsBuilder<?, ?> getSettingsBuilder() {
+		return this.wrappedDatabase.getSettingsBuilder();
 	}
 
 }

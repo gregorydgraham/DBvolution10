@@ -86,8 +86,4 @@ public class BlockingDBAction extends DBAction {
 		return new DBActionList();
 	}
 
-	private synchronized String incCounter() {
-		counter++;
-		return "" + counter;
-	}
 }

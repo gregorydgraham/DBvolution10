@@ -146,7 +146,6 @@ public class DBInsert extends DBAction {
 		DBRow table = originalRow;
 		final DBInsert newInsert = new DBInsert(table);
 		DBActionList actions = new DBActionList(newInsert);
-//		int successfulInsertAt;
 
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
@@ -157,7 +156,6 @@ public class DBInsert extends DBAction {
 						if (primaryKeys == null || primaryKeys.isEmpty()) {
 							// There are no primary keys so execute and move on.
 							executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
-//							successfulInsertAt = 1;
 						} else {
 							boolean allPKsHaveBeenSet = true;
 							for (QueryableDatatype<?> primaryKey : primaryKeys) {
@@ -166,7 +164,6 @@ public class DBInsert extends DBAction {
 							if (allPKsHaveBeenSet) {
 								// The primary key has already been sorted for us so execute and move on.
 								executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
-//								successfulInsertAt = 2;
 							} else {
 								if (primaryKeys.size() == 1) {
 									QueryableDatatype<?> primaryKey = primaryKeys.get(0);
@@ -175,7 +172,6 @@ public class DBInsert extends DBAction {
 									if (pkIndex == null || primaryKeyColumnName == null) {
 										// We can't find the PK so just execute and move on.
 										executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
-//										successfulInsertAt = 3;
 
 									} else {
 										// There is a PK, it's not set, and we can find it, so we need to get it's value...
@@ -183,14 +179,12 @@ public class DBInsert extends DBAction {
 											// Not sure of the column name, so ask for the keys and cross fingers.
 											statementDetails = statementDetails.withGeneratedKeys();
 											executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
-//											successfulInsertAt = 4;
 
 										} else {
 											// execute and ask for the column specifically, also cross fingers.
 											statementDetails = statementDetails
 													.withNamedPKColumn(db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName));
 											executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
-//											successfulInsertAt = 5;
 											pkIndex = 1;
 										}
 										if (primaryKey.hasBeenSet() == false) {
@@ -217,7 +211,6 @@ public class DBInsert extends DBAction {
 					} catch (SQLException sqlex) {
 						try {
 							executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
-//							successfulInsertAt = 6;
 						} catch (SQLException ex) {
 							throw ex;
 						}
@@ -225,7 +218,6 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						executeStatementAndHandleIntegrityConstraintViolation(statement, statementDetails, db, table);
-//						successfulInsertAt = 7;
 						updatePrimaryKeyByRetreivingLastInsert(statement, defn, table);
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException ex) {

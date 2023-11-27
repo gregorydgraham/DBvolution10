@@ -422,4 +422,9 @@ public class PostgresDB extends DBDatabaseImplementation implements SupportsPoly
 	public boolean supportsGeometryTypesFullyInSchema() {
 		return true;
 	}
+
+	@Override
+	public PostgresSettingsBuilder getSettingsBuilder() {
+		return new PostgresSettingsBuilder().fromSettings(this.getSettings());
+	}
 }

@@ -62,7 +62,11 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 import nz.co.gregs.looper.Looper;
+import nz.co.gregs.regexi.Match;
+import nz.co.gregs.regexi.Regex;
+import nz.co.gregs.regexi.internal.PartialRegex;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -203,7 +207,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				cluster.addDatabase(soloDB);
 				cluster.waitUntilDatabaseIsSynchronised(soloDB);
 
-				// check that the cluster still the data
+				// check that the cluster still has the data
 				assertThat(cluster.getDBTable(testTable).count(), is(22l));
 				assertThat(database.getDBTable(testTable).count(), is(22l));
 				// check that the new database has gained the data
@@ -235,14 +239,18 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
+		System.out.println("nz.co.gregs.dbvolution.DBDatabaseClusterTest.testDatabaseRemovedAfterErrorInQuery()");
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			cluster.setLabel("CLUSTER-testDatabaseRemovedAfterErrorInQuery");
 			assertThat(cluster.size(), is(1));
 
 			cluster.setFailOnQuarantine(false);
 
 			cluster.addTrackedTable(new Marque());
 			try (H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase()) {
+				soloDB2.setLabel("MEMBER-2");
 				cluster.addDatabaseAndWait(soloDB2);
+				System.out.println("STATUSES: \n"+cluster.getDatabaseStatuses());
 				assertThat(cluster.size(), is(2));
 
 				DBQuery query = cluster.getDBQuery(new Marque());
@@ -640,8 +648,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 	@Test(expected = SQLException.class)
 	public synchronized void testSQLExceptionAfterErrorInInsert() throws SQLException {
-		if (database instanceof DBDatabaseCluster){
-			DBDatabaseCluster cluster = (DBDatabaseCluster)database;
+		if (database instanceof DBDatabaseCluster) {
+			DBDatabaseCluster cluster = (DBDatabaseCluster) database;
 			cluster.waitUntilSynchronised();
 		}
 		try (DBDatabaseCluster cluster
@@ -757,6 +765,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			assertThat(cluster.size(), is(2));
 			try {
 				cluster.createTable(new TableThatDoesExistOnTheCluster());
+				// Create table now self corrects if the table exists already
+				// so just wait for synchronisation
+				cluster.waitUntilSynchronised(10000);
 			} catch (SQLException | AutoCommitActionDuringTransactionException e) {
 			}
 			assertThat(cluster.size(), is(2));
@@ -788,18 +799,30 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		File file = new File(yamlConfigFilename);
 		file.delete();
 
-		DBDatabaseCluster db = new DBDatabaseCluster("testYAMLFileProcessing",
+		DBDatabaseCluster cluster = new DBDatabaseCluster("testYAMLFileProcessing",
 				DBDatabaseCluster.Configuration.autoStart());
 		try {
-			db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing2",
+			cluster = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing2",
 					DBDatabaseCluster.Configuration.autoStart(), yamlConfigFilename);
 		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class
 			)));
 		}
-		assertThat(
-				db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-				is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nQuarantined Databases: 0 of 0"));
+		String clusterStatus = cluster.getClusterStatus();
+
+		// Check that the statuses are all "0 of 0"
+		final String STATUS_NAME = "name";
+		PartialRegex statuses = Regex.multiline()
+				.beginNamedCapture(STATUS_NAME).uppercaseCharacter().oneOrMore().endNamedCapture()
+				.space().literal("Databases:").space();
+		Regex statusesFound
+				= statuses.integer()
+						.space().literal("of")
+						.space().integer().endRegex();
+		Regex statusesOfZero
+				= statuses.literal("0 of 0").endRegex();
+		assertThat(statusesFound.getAllMatches(clusterStatus).size(), is(9));
+		assertThat(statusesOfZero.getAllMatches(clusterStatus).size(), is(9));
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 		source.setDbdatabaseClass(H2MemoryDB.class
@@ -847,20 +870,48 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 		try {
 			try {
-				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing3",
+				cluster = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessing3",
 						DBDatabaseCluster.Configuration.autoStart(), yamlConfigFilename);
-				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
-				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
+				assertThat(cluster.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
+				assertThat(cluster.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 			} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 				Logger.getLogger(DBDatabaseClusterTest.class
 						.getName()).log(Level.SEVERE, null, ex);
 				Assert.fail(ex.getMessage());
 			}
-			assertThat(
-					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-					is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nQuarantined Databases: 0 of 2"));
+			clusterStatus = cluster.getClusterStatus();
+
+			// Check that READY is "2 of 2" and the rest are "0 of 2"
+			assertThat(statusesFound.getAllMatches(clusterStatus).size(), is(9));
+			assertThat(statusesOfZero.getAllMatches(clusterStatus).size(), is(0));
+			final String VALUE = "value";
+			final String TOTAL = "total";
+			Regex actualStatuses = statuses
+					.beginNamedCapture(VALUE).integer().endNamedCapture()
+					.literal(" of ")
+					.beginNamedCapture(TOTAL).integer().endNamedCapture()
+					.endRegex();
+			List<Match> matches = actualStatuses.getAllMatches(clusterStatus);
+			assertThat(matches.size(), is(9));
+			boolean foundReady = false;
+			for (Match match : matches) {
+				final String name = match.getNamedCapture(STATUS_NAME);
+				final String value = match.getNamedCapture(VALUE);
+				final String total = match.getNamedCapture(TOTAL);
+				assertThat(total, is("2"));
+				switch (name) {
+					case "READY":
+						assertThat(value, is("2"));
+						foundReady = true;
+						break;
+
+					default:
+						assertThat(value, is("0"));
+				}
+			}
+			assertThat(foundReady, is(true));
 		} finally {
-			db.dismantle();
+			cluster.dismantle();
 		}
 
 		file.delete();
@@ -879,20 +930,35 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		File file = new File(yamlConfigFilename);
 		file.delete();
 
-		DBDatabaseCluster db = new DBDatabaseCluster("testYAMLFileProcessingWithFile",
+		DBDatabaseCluster cluster = new DBDatabaseCluster("testYAMLFileProcessingWithFile",
 				DBDatabaseCluster.Configuration.autoStart());
 		try {
 			try {
-				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile2",
+				cluster = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile2",
 						DBDatabaseCluster.Configuration.autoStart(), yamlConfigFilename);
 			} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 				assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class
 				)));
 			}
-			assertThat(
-					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-					is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nQuarantined Databases: 0 of 0"));
+			String clusterStatus = cluster.getClusterStatus();
 
+			// Check that the statuses are all "0 of 0"
+			final String STATUS_NAME = "name";
+			PartialRegex statuses = Regex.multiline()
+					.beginNamedCapture(STATUS_NAME).uppercaseCharacter().oneOrMore().endNamedCapture()
+					.space().literal("Databases:").space();
+			Regex statusesFound
+					= statuses.integer()
+							.space().literal("of")
+							.space().integer().endRegex();
+			Regex statusesOfZero
+					= statuses.literal("0 of 0").endRegex();
+			assertThat(statusesFound.getAllMatches(clusterStatus).size(), is(9));
+			assertThat(statusesOfZero.getAllMatches(clusterStatus).size(), is(9));
+
+//			assertThat(
+//					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
+//					is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nQuarantined Databases: 0 of 0"));
 			DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 			source.setDbdatabaseClass(H2MemoryDB.class
 					.getCanonicalName());
@@ -939,18 +1005,45 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			}
 
 			try {
-				db = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile",
+				cluster = new DBDatabaseClusterWithConfigFile("testYAMLFileProcessingWithFile",
 						DBDatabaseCluster.Configuration.autoStart(), file);
-				assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
-				assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
+				assertThat(cluster.getDatabases()[1].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
+				assertThat(cluster.getDatabases()[0].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 			} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 				Logger.getLogger(DBDatabaseClusterTest.class
 						.getName()).log(Level.SEVERE, null, ex);
 				Assert.fail(ex.getMessage());
 			}
-			assertThat(
-					db.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
-					is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nQuarantined Databases: 0 of 2"));
+			clusterStatus = cluster.getClusterStatus();
+
+			// Check that READY is "2 of 2" and the rest are "0 of 2"
+			assertThat(statusesFound.getAllMatches(clusterStatus).size(), is(9));
+			assertThat(statusesOfZero.getAllMatches(clusterStatus).size(), is(0));
+			final String VALUE = "value";
+			final String TOTAL = "total";
+			Regex actualStatuses = statuses.beginNamedCapture(VALUE).integer().endNamedCapture().literal(" of ").beginNamedCapture(TOTAL).integer().endNamedCapture().endRegex();
+			List<Match> matches = actualStatuses.getAllMatches(clusterStatus);
+			assertThat(matches.size(), is(9));
+			boolean foundReady = false;
+			for (Match match : matches) {
+				final String name = match.getNamedCapture(STATUS_NAME);
+				final String value = match.getNamedCapture(VALUE);
+				final String total = match.getNamedCapture(TOTAL);
+				assertThat(total, is("2"));
+				switch (name) {
+					case "READY":
+						assertThat(value, is("2"));
+						foundReady = true;
+						break;
+
+					default:
+						assertThat(value, is("0"));
+				}
+			}
+			assertThat(foundReady, is(true));
+//			assertThat(
+//					cluster.getClusterStatus().replaceAll("[a-zA-Z]* [a-zA-Z]* [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{2,4} [0-9]{4}", ""),
+//					is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nQuarantined Databases: 0 of 2"));
 
 			file.delete();
 
@@ -970,7 +1063,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(soloDB1)) {
 				try (H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase()) {
 					assertThat(soloDB2.supportsDifferenceBetweenNullAndEmptyString(), is(true));
-					cluster.addDatabase(soloDB2);
+					cluster.addDatabaseAndWait(soloDB2);
 					assertThat(cluster.size(), is(2));
 					assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 
@@ -1005,7 +1098,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		H2MemoryDB soloDB1 = H2MemoryDB.createANewRandomDatabase();
 		H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 		try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(soloDB1)) {
-			cluster.addDatabase(soloDB2);
+			cluster.addDatabaseAndWait(soloDB2);
 			assertThat(cluster.size(), is(2));
 			assertThat(cluster.supportsDifferenceBetweenNullAndEmptyString(), is(true));
 
@@ -1120,6 +1213,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			cluster.addDatabase(soloDB2);
+			cluster.waitUntilSynchronised(5000);
 			assertThat(cluster.size(), is(2));
 		}
 		{

@@ -190,4 +190,11 @@ public class InformixDB extends DBDatabaseImplementation {
 		return new InformixSettingsBuilder();
 	}
 
+	@Override
+	public InformixSettingsBuilder getSettingsBuilder() {
+		var builder = new InformixSettingsBuilder();
+		builder.fromSettings(this.getSettings());
+		return builder;
+	}
+
 }

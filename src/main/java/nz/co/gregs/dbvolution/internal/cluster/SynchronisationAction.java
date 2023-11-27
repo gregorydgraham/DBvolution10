@@ -39,8 +39,10 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.OnlyOneDatabaseInClusterException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
+import nz.co.gregs.dbvolution.internal.database.ClusterMemberList;
 
 /**
  *
@@ -52,11 +54,13 @@ public class SynchronisationAction extends DBAction {
 	private final DBDatabase target;
 	private final ClusterDetails cluster;
 	private static final Logger LOG = Logger.getLogger(SynchronisationAction.class.getName());
+	private final ClusterMemberList members;
 
 	public <R extends DBRow> SynchronisationAction(ClusterDetails details, DBDatabase target) {
 		super(null, QueryIntention.SYNCHRONISE_WITH_CLUSTER);
 		this.cluster = details;
 		this.target = target;
+		this.members = cluster.getMembers();
 	}
 
 	@Override
@@ -74,21 +78,19 @@ public class SynchronisationAction extends DBAction {
 		DBActionList actions = new DBActionList();
 
 		DBDatabase template = null;
-		boolean proceedWithSynchronization = true;
 		final String secondaryLabel = target.getLabel();
 		final String clusterLabel = cluster.getClusterLabel();
 		LOG.log(Level.FINEST, "{0} SYNCHRONISING: {1}", new Object[]{clusterLabel, secondaryLabel});
 		// we need to unpause the template no matter what happens so use a finally clause
 		try {
-			template = cluster.getTemplateDatabase();
-			if (proceedWithSynchronization && template != null) {
+			template = members.getTemplateDatabase(target);
+			if (template != null) {
 				// Check that we're not synchronising the reference database
 				if (!template.getSettings().equals(target.getSettings())) {
 					LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
 					// TODO change to use a queue of tables so we can re-try tables that require another table to exist
 					for (DBRow table : cluster.getRequiredAndTrackedTables()) {
 						final String tableName = table.getTableName();
-						if (proceedWithSynchronization) {
 							LOG.log(Level.FINEST, "{0} CHECKING TABLE: {1}", new Object[]{clusterLabel, tableName});
 							// make sure the table exists in the cluster already
 							if (template.tableExists(table)) {
@@ -127,60 +129,35 @@ public class SynchronisationAction extends DBAction {
 									// lets just skip this table since it seems to be broken
 								}
 							}
-						}
 						LOG.log(Level.FINEST, "{0} FINISHED WITH TABLE: {1}", new Object[]{clusterLabel, tableName});
 					}
-					waitForStructureToSynchronise(actions, template);
+					cluster.queueAction(target, actions);
 					// the structure is done so copy the buffered actions 
-					cluster.copyTemplateActionQueueToSecondary(template, target);
+					cluster.addTemplateActionQueueToSecondary(template, target);
 					// Successfully synchronised the new database :)
 				}
 			}
 		} catch (OnlyOneDatabaseInClusterException except) {
+			System.out.println("SYNCH COMPLETE: "+secondaryLabel+" is the only database in this cluster");
 //			 must be the first database
 //			 let it proceed without doing anything
 		} finally {
-			cluster.releaseTemplateDatabase(template);
+			releaseTemplateDatabase(template);
 		}
 		System.out.println("Completed synchronisation action");
 		return actions;
 	}
 
-	public boolean waitForStructureToSynchronise(DBActionList actions, DBDatabase template) {
-		boolean result = false;
-
-		cluster.queueAction(target, actions);
-		//**********//
-		// LOOP HERE
-		// we need to wait for the synchrony to occur (all actions succeed)
-		// or fail because no action succeeded during a loop
-		//**********//
-		cluster.waitUntilDatabaseHasSynchronized(template, 1000);
-		DBActionList previousActions = actions;
-		DBActionList reqdActions;
-		boolean madeProgress;
-		do {
-			reqdActions = new DBActionList();
-			madeProgress = false;
-			for (DBAction action : previousActions) {
-				if (action.hasSucceeded()) {
-					madeProgress = true;
-				} else {
-					reqdActions.add(action);
-				}
-			}
-			if (reqdActions.size() == 0) {
-				result = true;
-			}
-			// check if we've got any more actions to do AND we've actually made some progress
-			if (reqdActions.size() > 0 && madeProgress) {
-				cluster.queueAction(target, reqdActions);
-				cluster.waitUntilDatabaseHasSynchronized(template, 1000);
-			}
-			previousActions = reqdActions;
-		} while (reqdActions.size() > 0 && madeProgress);
-
-		return result;
+	@Override
+	public String toString() {
+		return getIntent() + " " + cluster.getClusterLabel();
 	}
 
+	public synchronized void releaseTemplateDatabase(DBDatabase primary) throws NoAvailableDatabaseException {
+		if (primary != null) {
+				System.out.println("RELEASING TEMPLATE: " + primary.getLabel());
+				members.setProcessing(primary);
+				System.out.println("RELEASED TEMPLATE: " + primary.getLabel());
+		}
+	}
 }

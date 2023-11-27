@@ -33,6 +33,7 @@ package nz.co.gregs.dbvolution.generation;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;

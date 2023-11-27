@@ -121,4 +121,9 @@ public class MariaDB extends DBDatabaseImplementation {
 	public MariaDBSettingsBuilder getURLInterpreter() {
 		return new MariaDBSettingsBuilder();
 	}
+
+	@Override
+	public MariaDBSettingsBuilder getSettingsBuilder() {
+		return new MariaDBSettingsBuilder().fromSettings(this.getSettings());
+	}
 }

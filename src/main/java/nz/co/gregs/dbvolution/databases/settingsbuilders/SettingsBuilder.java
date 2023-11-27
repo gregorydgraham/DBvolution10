@@ -52,6 +52,11 @@ public interface SettingsBuilder<SELF extends SettingsBuilder<SELF, DATABASE>, D
 
 	public DATABASE getDBDatabase() throws Exception;
 
+	public default SELF fromDBDatabase(DATABASE db) throws Exception{
+		fromJDBCURL(db.getJdbcURL(), db.getUsername(), db.getPassword());
+		return (SELF)this;
+	}
+
 	String encodeHost(DatabaseConnectionSettings settings);
 
 	public boolean canProcessesURLsFor(DBDatabase otherdb);

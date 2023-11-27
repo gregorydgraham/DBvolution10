@@ -181,7 +181,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	@Override
 	public synchronized boolean equals(Object obj) {
 		if (obj instanceof DBDatabase) {
-			DBDatabase other =(DBDatabase)obj;
+			DBDatabase other = (DBDatabase) obj;
 			return this.getSettings().equals(other.getSettings());
 		} else {
 			return false;
@@ -1856,7 +1856,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 //			preventAccidentalDroppingDatabase = true;
 //		}
 //	}
-
 	public synchronized void preventAccidentalDroppingOfDatabases() throws AccidentalDroppingOfDatabaseException {
 		if (preventAccidentalDroppingDatabase) {
 			throw new AccidentalDroppingOfDatabaseException();
@@ -2225,7 +2224,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 //			preventAccidentalDeletingAllRowFromTable = true;
 //		}
 //	}
-
 	protected synchronized void preventAccidentalDroppingOfTables() throws AccidentalDroppingOfTableException {
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -2284,9 +2282,11 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			try {
 				return action.action(this);
 			} catch (SQLException acceptableException) {
+				return new DBActionList();
 			}
+		} else {
+			return action.action(this);
 		}
-		return action.action(this);
 	}
 
 	@Override
@@ -2600,7 +2600,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		if (regularThreadPoolFuture != null) {
 			regularThreadPoolFuture.cancel(true);
 		}
-		regularThreadPoolFuture = getRegularThreadPool().scheduleWithFixedDelay(new RunRegularProcessors(), 1, 1, TimeUnit.MINUTES);
+		regularThreadPoolFuture = getRegularThreadPool().scheduleWithFixedDelay(new RunRegularProcessors(), 1, 1, TimeUnit.SECONDS);
 	}
 
 	public final void addRegularProcess(RegularProcess processor) {

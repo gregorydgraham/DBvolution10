@@ -324,4 +324,11 @@ public class H2DB extends DBDatabaseImplementation {
 	public DBDatabaseMetaData getDBDatabaseMetaData(Options options) throws SQLException {
 		return new H2DBDatabaseMetaData(options);
 	}
+
+	@Override
+	public H2SettingsBuilder getSettingsBuilder() {
+		var builder = new H2SettingsBuilder();
+		builder.fromSettings(this.getSettings());
+		return builder;
+	}
 }

@@ -37,7 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.QueryIntention;
-import nz.co.gregs.dbvolution.utility.StopWatch;
+import nz.co.gregs.looper.StopWatch;
 
 /**
  *
@@ -91,19 +91,19 @@ public class NoOpDBAction extends DBAction {
 				timer = StopWatch.stopwatch();
 				Thread.sleep(WAIT_TIME_IN_MILLIS);
 //				System.out.println("STALLED "+this);
-				System.out.println("STALLED "+this+" FOR: " + timer.duration());
+				System.out.println("STALLED " + this + " FOR: " + timer.duration());
 			} catch (InterruptedException ex) {
 				timer.stop();
 				Logger.getLogger(NoOpDBAction.class.getName()).log(Level.SEVERE, null, ex);
-				
+
 				System.out.println("INTERUPTED AFTER: " + timer.duration());
 			}
 		}
 		return new DBActionList();
 	}
 
-	private synchronized String incCounter() {
-		counter++;
-		return "" + counter;
+	@Override
+	public String toString() {
+		return getIntent().toString();
 	}
 }

@@ -32,6 +32,8 @@ package nz.co.gregs.dbvolution.internal.database;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,33 +43,28 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import static nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status.*;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
+import nz.co.gregs.dbvolution.exceptions.OnlyOneDatabaseInClusterException;
 import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
-import nz.co.gregs.dbvolution.internal.cluster.ActionQueueList;
-import nz.co.gregs.dbvolution.utility.StopWatch;
+import nz.co.gregs.dbvolution.utility.Random;
+import nz.co.gregs.looper.LoopVariable;
+import nz.co.gregs.looper.StopWatch;
 
 /**
  *
  * @author gregorygraham
  */
-public class DatabaseList implements Serializable {
+public class ClusterMemberList implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private final transient Object A_DATABASE_IS_READY = new Object();
 	private final transient Object CLUSTER_HAS_SYNCHRONISED = new Object();
+	private final transient Object A_STATUS_HAS_CHANGED = new Object();
 
 	private final HashMap<String, ClusterMember> members = new HashMap<>(2);
 	private final ClusterDetails details;
 
-	public DatabaseList(ClusterDetails clusterDetails) {
+	public ClusterMemberList(ClusterDetails clusterDetails) {
 		this.details = clusterDetails;
-	}
-
-	public DatabaseList(ClusterDetails clusterDetails, DBDatabase firstDB, DBDatabase... databases) {
-		this(clusterDetails);
-		add(firstDB);
-		for (var db : databases) {
-			add(db);
-		}
 	}
 
 	public synchronized int size() {
@@ -172,7 +169,7 @@ public class DatabaseList implements Serializable {
 
 	public synchronized void setPaused(DBDatabase... dbs) {
 		for (DBDatabase db : dbs) {
-			set(PAUSED, db);
+			setPaused(db);
 		}
 	}
 
@@ -234,7 +231,7 @@ public class DatabaseList implements Serializable {
 	public synchronized DBDatabase[] getDatabasesByStatus(DBDatabaseCluster.Status... statuses) {
 		final List<DBDatabase> list = getDatabasesByStatusAsList(statuses);
 		if (list == null || list.size() == 0) {
-			return new DBDatabase[]{};
+			return new DBDatabase[0];
 		} else {
 			return list.toArray(new DBDatabase[0]);
 		}
@@ -281,7 +278,7 @@ public class DatabaseList implements Serializable {
 	}
 
 	public synchronized boolean areAllReady() {
-		return countDatabases(DBDatabaseCluster.Status.READY) == members.size();
+		return countReadyDatabases() == members.size();
 	}
 
 	public ClusterMember getMember(DBDatabase db) {
@@ -289,8 +286,16 @@ public class DatabaseList implements Serializable {
 		return member;
 	}
 
+	public List<ClusterMember> getMembers() {
+		ArrayList<ClusterMember> found = new ArrayList<>(2);
+		for (ClusterMember value : members.values()) {
+			found.add(value);
+		}
+		return found;
+	}
+
 	public List<ClusterMember> getMembers(DBDatabase... dbs) {
-		ArrayList<ClusterMember> found = new ArrayList<>(0);
+		ArrayList<ClusterMember> found = new ArrayList<>(2);
 		for (DBDatabase db : dbs) {
 			ClusterMember member = getMember(db);
 			if (member != null) {
@@ -320,6 +325,12 @@ public class DatabaseList implements Serializable {
 		return false;
 	}
 
+	/**
+	 *
+	 *
+	 *
+	 * @return a random ready database
+	 */
 	public synchronized DBDatabase getReadyDatabase() {
 		List<DBDatabase> readyDatabases = getReadyDatabasesList();
 		if (readyDatabases.size() == 0) {
@@ -330,7 +341,7 @@ public class DatabaseList implements Serializable {
 		}
 		DBDatabase ready;
 		try {
-			ready = readyDatabases.get(new Random().nextInt(readyDatabases.size()));
+			ready = Random.get(readyDatabases);
 		} catch (Exception e) {
 			ready = null;
 		}
@@ -350,24 +361,61 @@ public class DatabaseList implements Serializable {
 		if (readyDatabases.size() == 1) {
 			return readyDatabases.get(0);
 		}
-		DBDatabase ready = readyDatabases.get(new Random().nextInt(readyDatabases.size()));
+		DBDatabase ready = Random.get(readyDatabases);
 		return ready;
 	}
 
 	boolean waitUntilSynchronised() {
-		if (getReadyDatabases().length == members.size()) {
+		if (isSynchronised()) {
 			return true;
 		} else {
 			try {
+				for (ClusterMember member : members.values()) {
+					System.out.println("MEMBER " + member.getDatabase().getLabel() + " IS STATUS " + member.getStatus());
+				}
+//				members.values().stream().forEach((member) -> System.out.println("MEMBER " + member.getDatabase().getLabel() + " IS STATUS " + member.getStatus()));
 				waitOnClusterHasSynchronised();
-				System.out.println("CLUSTER HAS SYNCHRONISED");
+				System.out.println("AFTER WAIT");
 				members.values().stream().forEach((member) -> System.out.println("MEMBER " + member.getDatabase().getLabel() + " IS STATUS " + member.getStatus()));
-				return true;
+				if (isSynchronised()) {
+					System.out.println("CLUSTER HAS SYNCHRONISED");
+					return true;
+				} else {
+					System.out.println("CLUSTER HAS TIMED OUT");
+					return false;
+				}
 			} catch (InterruptedException ex) {
-				Logger.getLogger(DatabaseList.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(ClusterMemberList.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			return false;
 		}
+	}
+
+	boolean waitUntilSynchronised(int timeout) {
+		if (isSynchronised()) {
+			return true;
+		} else {
+			try {
+				members.values().stream().forEach((member) -> System.out.println("MEMBER " + member.getDatabase().getLabel() + " IS STATUS " + member.getStatus()));
+				waitOnClusterHasSynchronised(timeout);
+				System.out.println("AFTER WAIT");
+				members.values().stream().forEach((member) -> System.out.println("MEMBER " + member.getDatabase().getLabel() + " IS STATUS " + member.getStatus()));
+				if (isSynchronised()) {
+					System.out.println("CLUSTER HAS SYNCHRONISED");
+					return true;
+				} else {
+					System.out.println("CLUSTER HAS TIMED OUT");
+					return false;
+				}
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ClusterMemberList.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			return false;
+		}
+	}
+
+	private boolean isSynchronised() {
+		return getReadyDatabases().length == members.size();
 	}
 
 	boolean waitUntilDatabaseHasSynchonized(DBDatabase database) {
@@ -387,9 +435,9 @@ public class DatabaseList implements Serializable {
 			return true;
 		} else {
 			while (!getStatusOf(database).equals(READY) && timer.splitTime() < timeoutInMilliseconds) {
-				waitUntilADatabaseIsReady();
+				waitUntilADatabaseIsReady(timeoutInMilliseconds);
 			}
-			return true;
+			return getStatusOf(database).equals(READY);
 		}
 	}
 
@@ -397,10 +445,20 @@ public class DatabaseList implements Serializable {
 		if (getStatusOf(db).equals(READY)) {
 			setProcessing(db);
 		}
-		getMember(db).getQueue().add(action);
+		final ClusterMember member = getMember(db);
+		if (member != null) {
+			final ActionQueue queue = member.getQueue();
+			if (queue != null) {
+				queue.add(action);
+			}
+		}
 	}
 
-	void copyFromTo(DBDatabase template, DBDatabase secondary) {
+	synchronized void copyFromTo(DBDatabase template, DBDatabase secondary) {
+		if (getMember(template) == null) {
+			System.out.println("TEMPLATE NOT FOUND");
+			return;
+		}
 		ActionQueue templateQ = getMember(template).getQueue();
 		ActionQueue secondaryQ = getMember(secondary).getQueue();
 		boolean templatePaused = templateQ.isPaused();
@@ -411,7 +469,6 @@ public class DatabaseList implements Serializable {
 		if (!secondaryPaused) {
 			secondaryQ.pause();
 		}
-		secondaryQ.clear();
 		secondaryQ.addAll(templateQ);
 		if (!secondaryPaused) {
 			secondaryQ.unpause();
@@ -419,12 +476,8 @@ public class DatabaseList implements Serializable {
 		if (!templatePaused) {
 			templateQ.unpause();
 		}
-//		actionQueues.copyFromTo(template, secondary);
 	}
 
-//	public ActionQueueList getActionQueueList() {
-//		return this.actionQueues;
-//	}
 	private boolean waitUntilADatabaseIsReady() {
 		synchronized (A_DATABASE_IS_READY) {
 			try {
@@ -432,7 +485,7 @@ public class DatabaseList implements Serializable {
 				return true;
 
 			} catch (InterruptedException ex) {
-				Logger.getLogger(DatabaseList.class
+				Logger.getLogger(ClusterMemberList.class
 						.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -446,7 +499,35 @@ public class DatabaseList implements Serializable {
 				return true;
 
 			} catch (InterruptedException ex) {
-				Logger.getLogger(DatabaseList.class
+				Logger.getLogger(ClusterMemberList.class
+						.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		return false;
+	}
+
+	private boolean waitUntilAStatusHasChanged() {
+		synchronized (A_STATUS_HAS_CHANGED) {
+			try {
+				A_STATUS_HAS_CHANGED.wait();
+				return true;
+
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ClusterMemberList.class
+						.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		return false;
+	}
+
+	private boolean waitUntilAStatusHasChanged(long millisecondsToWait) {
+		synchronized (A_STATUS_HAS_CHANGED) {
+			try {
+				A_STATUS_HAS_CHANGED.wait(millisecondsToWait);
+				return true;
+
+			} catch (InterruptedException ex) {
+				Logger.getLogger(ClusterMemberList.class
 						.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -457,12 +538,18 @@ public class DatabaseList implements Serializable {
 		synchronized (A_DATABASE_IS_READY) {
 			A_DATABASE_IS_READY.notifyAll();
 		}
-		final int readyDatabases = getDatabasesByStatusAsList(READY).size();
-		final int numberOfMembers = members.size();
-		if (numberOfMembers == readyDatabases) {
+//		final int readyDatabases = getDatabasesByStatusAsList(READY).size();
+//		final int numberOfMembers = members.size();
+		if (isSynchronised()) {
 			synchronized (CLUSTER_HAS_SYNCHRONISED) {
 				CLUSTER_HAS_SYNCHRONISED.notifyAll();
 			}
+		}
+	}
+
+	public void notifyAStatusHasChanged() {
+		synchronized (A_STATUS_HAS_CHANGED) {
+			A_STATUS_HAS_CHANGED.notifyAll();
 		}
 	}
 
@@ -478,13 +565,21 @@ public class DatabaseList implements Serializable {
 	}
 
 	private void waitOnClusterHasSynchronised() throws InterruptedException {
+		if (isSynchronised()) {
+			return;
+		}
 		synchronized (CLUSTER_HAS_SYNCHRONISED) {
 			CLUSTER_HAS_SYNCHRONISED.wait();
 		}
 	}
 
-	public ActionQueueList getDatabaseList() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	private void waitOnClusterHasSynchronised(int timeout) throws InterruptedException {
+		if (isSynchronised()) {
+			return;
+		}
+		synchronized (CLUSTER_HAS_SYNCHRONISED) {
+			CLUSTER_HAS_SYNCHRONISED.wait(timeout);
+		}
 	}
 
 	ActionQueue[] getActionQueues(DBDatabase... dbs) {
@@ -493,5 +588,102 @@ public class DatabaseList implements Serializable {
 				.map((m) -> m.getQueue())
 				.collect(Collectors.toList())
 				.toArray(new ActionQueue[]{});
+	}
+
+	void setTemplate(DBDatabase template) {
+		System.out.println("TEMPLATE: " + template.getLabel());
+		set(TEMPLATE, template);
+	}
+
+	public boolean waitOnStatusChange(DBDatabaseCluster.Status status, int timeout, DBDatabase... affectedMembers) {
+		if (affectedMembers.length == 0) {
+			return false;
+		}
+		List<ClusterMember> membs = getMembers(affectedMembers);
+		if (membs.size() == 0) {
+			return false;
+		}
+		Instant endTime = Instant.now().plus(0L + timeout, ChronoUnit.MICROS);
+		while (Instant.now().isBefore(endTime)) {
+			for (ClusterMember memb : membs) {
+				if (memb.getStatus().equals(status)) {
+					return true;
+				}
+			}
+			waitUntilAStatusHasChanged(timeout);
+		}
+		return false;
+	}
+
+	public DBDatabase waitOnStatusChange(DBDatabase db, int timeout, DBDatabaseCluster.Status... statuses) {
+		List<DBDatabaseCluster.Status> statusList = Arrays.asList(statuses);
+		boolean found = false;
+		while (!found) {
+			for (ClusterMember memb : members.values()) {
+				if (statusList.contains(memb.getStatus())) {
+					return memb.getDatabase();
+				}
+			}
+			waitUntilAStatusHasChanged(timeout);
+		}
+		return null;
+	}
+
+	public synchronized DBDatabase getTemplateDatabase(DBDatabase target) throws OnlyOneDatabaseInClusterException, NoAvailableDatabaseException {
+		DBDatabase template = null;
+		if (getDatabasesByStatus(PROCESSING, TEMPLATE, READY).length < 1) {
+			if (details.getConfiguration().isUseAutoRebuild()) {
+				// Use the saved database if we're restarting a AutoRebuild cluster
+				System.out.println("TEMPLATE: using authorative database");
+				template = details.getAuthoritativeDatabase();
+			} else {
+				// if there's only 1 db and it's not an AutoRebuild cluster
+				// then we should NOT be using a template
+				throw new OnlyOneDatabaseInClusterException();
+			}
+		} else {
+			// we know that at least one database has synchronised so lets try and get
+			// a template by grabbing a READY database
+			template = target;
+			LoopVariable loop = LoopVariable.factory(10);
+			while (loop.attempt()) {
+				template = Random.get(getDatabasesByStatus(READY));
+				loop.done(template != null && !template.equals(target));
+			}
+			if (template == null) {
+				// we failed to get a READY database, so check for PROCESSING and 
+				// TEMPLATE databases
+				final DBDatabase[] processingDBs = getDatabasesByStatus(PROCESSING, TEMPLATE, READY);
+				if (processingDBs.length > 0) {
+					// there are PROCESSING databases so lets wait for one to become READY
+					if (waitOnStatusChange(READY, 1000, processingDBs)) {
+						// try again now that we have a READY database
+						template = Random.get(getDatabasesByStatus(READY));
+					} else {
+						throw new NoAvailableDatabaseException();
+					}
+				} else {
+					throw new NoAvailableDatabaseException();
+				}
+			}
+		}
+		if (template == null) {
+			throw new NoAvailableDatabaseException();
+		} else {
+			setTemplate(template);
+			return template;
+		}
+	}
+
+	public boolean hasDatabasesOfStatus(DBDatabaseCluster.Status status) {
+		return countDatabases(status) > 0;
+	}
+
+	public DBDatabase getRandomDatabase(DBDatabase... dbs) throws NoAvailableDatabaseException {
+		DBDatabase db = Random.get(dbs);
+		if (db == null) {
+			throw new NoAvailableDatabaseException();
+		}
+		return db;
 	}
 }

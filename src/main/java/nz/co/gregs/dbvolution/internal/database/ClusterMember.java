@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status;
 import static nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status.*;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
 import nz.co.gregs.dbvolution.internal.cluster.SynchronisationAction;
 
@@ -44,13 +45,14 @@ import nz.co.gregs.dbvolution.internal.cluster.SynchronisationAction;
 public class ClusterMember implements AutoCloseable {
 
 	private final ClusterDetails details;
-	private final DatabaseList list;
+	private final ClusterMemberList list;
 	private final DBDatabase database;
 	private final ActionQueue queue;
-	private Status status = Status.PAUSED;
+	private Status status = Status.CREATED;
 	private Integer quarantineCount = 0;
+	private String memberId = null;
 
-	public ClusterMember(ClusterDetails details, DatabaseList list, DBDatabase database) {
+	public ClusterMember(ClusterDetails details, ClusterMemberList list, DBDatabase database) {
 		this.details = details;
 		this.list = list;
 		this.database = database;
@@ -63,30 +65,70 @@ public class ClusterMember implements AutoCloseable {
 
 	public synchronized final void setStatus(Status status) {
 		Status oldStatus = this.status;
-		this.status = status;
-		switch (status) {
-			case DEAD:
-				stop();
-				break;
-			case PAUSED:
-				stop();
-				break;
-			case PROCESSING:
-				start();
-				break;
-			case QUARANTINED:
-				incrementQuarantineCount();
-				stop();
-				break;
-			case READY:
-				resetQuarantineCount();
-				break;
-			case UNKNOWN:
-				stop();
-				break;
-		}
-		if (!oldStatus.equals(this.status)) {
-			System.out.println("MEMBER: " + database.getLabel() + " NOW STATUS " + status);
+		if (!oldStatus.equals(status)) {
+			switch (status) {
+				case DEAD:
+					stop();
+					break;
+				case PAUSED:
+					pause();
+					break;
+				case SYNCHRONIZING:
+				case PROCESSING:
+					switch (oldStatus) {
+						case PAUSED:
+							unpause();
+							break;
+						case CREATED:
+							start();
+							break;
+						case SYNCHRONIZING:
+						case PROCESSING:
+							break;
+						case QUARANTINED:
+							start();
+							break;
+						case READY:
+							break;
+						case TEMPLATE:
+							unpause();
+							break;
+						case UNKNOWN:
+							start();
+							break;
+						default:
+							throw new DBRuntimeException("ILLEGAL STATUS CHANGE: " + oldStatus + " => " + status);
+					}
+					if (oldStatus.equals(CREATED)) {
+					}
+					if (queue.hasStopped()) {
+						unpause();
+					}
+					break;
+				case QUARANTINED:
+					incrementQuarantineCount();
+					stop();
+					break;
+				case READY:
+					switch (oldStatus) {
+						case PROCESSING:
+						case READY:
+							resetQuarantineCount();
+							break;
+						default:
+							throw new DBRuntimeException("ILLEGAL STATUS CHANGE: " + oldStatus + " => " + status);
+					}
+					break;
+				case TEMPLATE:
+					pause();
+					break;
+				case UNKNOWN:
+					stop();
+					break;
+			}
+			this.status = status;
+			System.out.println("MEMBER: " + database.getLabel() + " was " + oldStatus + " => " + status);
+			this.list.notifyAStatusHasChanged();
 		}
 	}
 
@@ -107,12 +149,12 @@ public class ClusterMember implements AutoCloseable {
 	}
 
 	void stop() {
-		queue.stopReader();
+		queue.stop();
 	}
 
 	@Override
 	public void close() {
-		queue.stopReader();
+		queue.stop();
 
 	}
 
@@ -121,23 +163,43 @@ public class ClusterMember implements AutoCloseable {
 	}
 
 	public synchronized final void start() {
-		status = PAUSED;
-		queue.stopReader();
+		setStatus(PAUSED);
+		System.out.println(getMemberId() + ": STARTING NEW CLUSTER MEMBER ");
+		queue.pause();
 		queue.clear();
 		queue.add(new SynchronisationAction(details, database));
-		status = PROCESSING;
-		queue.startReader();
+		setStatus(SYNCHRONIZING);
+		queue.unpause();
+		System.out.println(getMemberId() + ": STARTED NEW CLUSTER MEMBER ");
 	}
 
-	public void notifyADatabaseIsReady() {
+	public synchronized final void unpause() {
+		queue.unpause();
+	}
+
+	public void notifyAQueueHasFinished() {
 		if (status.equals(PROCESSING)) {
 			setStatus(READY);
 			list.notifyADatabaseIsReady();
+		}
+		if (status.equals(SYNCHRONIZING)) {
+			setStatus(PROCESSING);
 		}
 	}
 
 	public void quarantineDatabase(DBDatabase database, SQLException ex) {
 		setStatus(QUARANTINED);
 
+	}
+
+	private void pause() {
+		queue.pause();
+	}
+
+	public String getMemberId() {
+		if (memberId == null) {
+			this.memberId = details.getClusterLabel() + "(" + database.getLabel() + ")";
+		}
+		return this.memberId;
 	}
 }

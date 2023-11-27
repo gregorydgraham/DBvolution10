@@ -528,7 +528,7 @@ public class DBStatement implements AutoCloseable {
 	private void executeWithRecovery(StatementDetails details) throws SQLException {
 		details.setDBStatement(this);
 		String sql = details.getSql();
-		final String logSQL = "EXECUTING on " + database.getLabel() + ": " + sql;
+		final String logSQL = "EXECUTING "+details.getLabel()+" on " + database.getLabel() + ": \n" + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		try {
@@ -560,12 +560,14 @@ public class DBStatement implements AutoCloseable {
 	private void executeOnInternalStatement(StatementDetails details) throws UnableToCreateDatabaseConnectionException, SQLException, UnableToFindJDBCDriver {
 		Statement stmt = getInternalStatement();
 		details.execute(stmt);
+		System.out.println("EXECUTE: succeeded for "+details.getLabel()+" on database "+database.getLabel());
 	}
 
 	static final Regex DROP_INTENTION_MATCHER = Regex.startingAnywhere().literal("DROP").toRegex();
 	static final Regex DROP_EXCEPTION_MATCHER = Regex.startingAnywhere().beginCaseInsensitiveSection().anyOf("does not exist", "doesn't exist").endCaseInsensitiveSection().toRegex();
 
 	private void addFeatureAndAttemptExecuteAgain(StatementDetails details) throws SQLException {
+		System.out.println("EXECUTE: "+details.getLabel()+" ON "+this.database.getLabel()+" FAILED for SQL \n"+details.getSql()+"\n- attempting to recover...");
 		details.setDBStatement(this);
 		String sql = details.getSql();
 		Exception exp = details.getException();
@@ -591,10 +593,12 @@ public class DBStatement implements AutoCloseable {
 				if (!exp.getMessage().equals(exp2.getMessage())) {
 					addFeatureAndAttemptExecuteAgain(details);
 				} else {
+					System.out.println("EXECUTE: RECOVERY FAILED");
 					throw new SQLException(exp);
 				}
 			}
 		}
+		System.out.println("EXECUTE: RECOVERY succeeded");
 	}
 
 	public ResponseToException handleResponseFromFixingException(Exception exp, QueryIntention intent, StatementDetails details) throws Exception {

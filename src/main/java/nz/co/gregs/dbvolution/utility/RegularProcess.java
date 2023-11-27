@@ -71,7 +71,7 @@ public abstract class RegularProcess implements Serializable {
 
 	public static final long serialVersionUID = 1l;
 
-	final Log LOG = LogFactory.getLog(RegularProcess.class);
+	final transient Log LOG = LogFactory.getLog(RegularProcess.class);
 
 	private Instant nextRun = Instant.now();
 	ChronoUnit timeField = ChronoUnit.MINUTES;

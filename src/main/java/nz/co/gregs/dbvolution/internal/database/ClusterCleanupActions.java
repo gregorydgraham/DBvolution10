@@ -63,18 +63,18 @@ public class ClusterCleanupActions implements Runnable, Serializable {
 
 	private final ClusterDetails details;
 	private final Log log;
-	private final ExecutorService actionThreadPool;
+//	private final ExecutorService actionThreadPool;
 
-	public ClusterCleanupActions(ClusterDetails details, Log log, ExecutorService actionThreadPool) {
+	public ClusterCleanupActions(ClusterDetails details, Log log) {
 		this.details = details;
 		this.log = log;
-		this.actionThreadPool = actionThreadPool;
+//		this.actionThreadPool = actionThreadPool;
 	}
 
 	@Override
 	public void run() {
 		log.debug("CLEANING UP CLUSTER...");
-		actionThreadPool.shutdown();
+//		actionThreadPool.shutdown();
 		try {
 			details.removeAllDatabases();
 		} catch (SQLException ex) {

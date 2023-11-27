@@ -152,4 +152,9 @@ public class MariaClusterDB extends DBDatabaseImplementation {
 	public MariaClusterDBSettingsBuilder getURLInterpreter() {
 		return new MariaClusterDBSettingsBuilder();
 	}
+
+	@Override
+	public MariaClusterDBSettingsBuilder getSettingsBuilder() {
+		return new MariaClusterDBSettingsBuilder().fromSettings(this.getSettings());
+	}
 }

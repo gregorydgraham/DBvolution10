@@ -47,9 +47,8 @@ public class QueueReader {
 
 	private final ActionQueue actionQueue;
 	private final DBDatabase database;
-	private Runner runner;
+	private final Runner runner;
 	private final Object THREAD_DEATH = new Object();
-	private ActionMessage previousMessage;
 
 	{
 		try {
@@ -66,6 +65,7 @@ public class QueueReader {
 		this.database = database;
 		this.actionQueue = dataQueue;
 		this.runner = getNewRunner();
+		runner.start();
 	}
 
 	private Runner getNewRunner() {
@@ -73,23 +73,23 @@ public class QueueReader {
 	}
 
 	public void pause() {
-		stop();
+		runner.pause();
+		if (runner.isPaused()) {
+			actionQueue.notifyPAUSED();
+		}
 	}
 
 	public void unpause() {
-		start();
+		runner.pause(false);
+		if (!runner.isPaused()) {
+			actionQueue.notifyUNPAUSED();
+		}
 	}
 
 	public void stop() {
 		runner.stop();
 		waitOnThreadDeath(100);
-		actionQueue.notifyPAUSED();
-	}
-
-	public synchronized void start() {
-		runner = getNewRunner();
-		runner.start();
-		actionQueue.notifyUNPAUSED();
+		actionQueue.notifySTOPPED();
 	}
 
 	public boolean isPaused() {
@@ -107,59 +107,63 @@ public class QueueReader {
 	private void attemptAction() {
 		ActionMessage message = actionQueue.getHeadOfQueue();
 		if (message == null) {
-			if (previousMessage == null) {
-				actionQueue.notifyQueueIsEmpty();
-			}
+			actionQueue.notifyQueueIsEmpty();
 		} else {
 			final DBAction action = message.getAction();
-//			final QueryIntention intent = action.getIntent();
-//			System.out.println("READING: " + intent + " ON " + database.getLabel());
 			doAction(action);
 		}
-		previousMessage = message;
 	}
-	
+
 	private void doAction(DBAction action) {
 		try {
+			System.out.println("ENACTING " + action + " ON DATABASE " + database.getLabel());
 			database.executeDBAction(action);
-//			System.out.println("COMPLETED " + action.getIntent() + " ON DATABASE " + database.getLabel());
+			System.out.println("COMPLETED " + action + " ON DATABASE " + database.getLabel());
 			actionQueue.notifyActionHasSucceeded();
 		} catch (SQLException ex) {
 			LOG.log(Level.SEVERE, null, ex);
-			System.out.println("FAILED " + action.getIntent() + " ON DATABASE " + database.getLabel());
+			System.out.println("FAILED " + action + " ON DATABASE " + database.getLabel());
 			System.out.println("QUARANTINING DATABASE " + database.getLabel());
 			actionQueue.quarantineDatabase(ex);
 		} catch (NoAvailableDatabaseException ex) {
 			LOG.log(Level.SEVERE, null, ex);
-			System.out.println("FAILED " + action.getIntent() + " ON DATABASE " + database.getLabel() + " BECAUSE OF NoAvailableDatabaseException");
+			System.out.println("FAILED " + action + " ON DATABASE " + database.getLabel() + " BECAUSE OF NoAvailableDatabaseException");
+			ex.printStackTrace();
 			actionQueue.quarantineDatabase(new SQLException(ex));
 		} catch (Exception ex) {
 			LOG.log(Level.SEVERE, null, ex);
-			System.out.println("FAILED " + action.getIntent() + " ON DATABASE " + database.getLabel() + " BECAUSE OF "+ex.getLocalizedMessage());
+			System.out.println("FAILED " + action + " ON DATABASE " + database.getLabel() + " BECAUSE OF " + ex.getLocalizedMessage());
 			actionQueue.quarantineDatabase(new SQLException(ex));
 		}
 	}
 
-	public void waitOnThreadDeath(long milliseconds) {
+	public boolean waitOnThreadDeath(long milliseconds) {
+		if (!runner.isAlive()) {
+			return true;
+		}
 		synchronized (THREAD_DEATH) {
 			try {
 				THREAD_DEATH.wait(milliseconds);
-				System.out.println("Successfully waited for QueueReader thread death");
+				if (!runner.isAlive()) {
+					System.out.println("Successfully waited for QueueReader thread death");
+					return true;
+				}
 			} catch (InterruptedException ex) {
 				LOG.log(Level.SEVERE, null, ex);
 			}
-		}
+		}return false;
 	}
 
 	private void notifyThreadDeath() {
 		synchronized (THREAD_DEATH) {
-			System.out.println("QueueReader thread stopped");
+			System.out.println("QueueReader thread stopping");
 			THREAD_DEATH.notifyAll();
+			System.out.println("QueueReader thread stopped");
 		}
 	}
 
-	private void waitUntilActionsAvailable(int milliseconds) {
-		actionQueue.waitUntilActionsAvailable(milliseconds);
+	private boolean waitUntilActionsAvailable(int milliseconds) {
+		return actionQueue.waitUntilActionsAvailable(milliseconds);
 	}
 
 	private String getLabel() {
@@ -191,6 +195,7 @@ public class QueueReader {
 		private final Thread readerThread;
 
 		private boolean proceed = true;
+		private boolean paused = true;
 
 		private Runner(QueueReader reader) {
 			this.queueReader = reader;
@@ -208,7 +213,7 @@ public class QueueReader {
 		}
 
 		public void dequeue() {
-			if (proceed) {
+			if (!paused) {
 				queueReader.attemptAction();
 			}
 			queueReader.waitUntilActionsAvailable(10);
@@ -227,11 +232,23 @@ public class QueueReader {
 		}
 
 		private boolean hasStopped() {
-			return !proceed && !readerThread.isAlive();
+			return !readerThread.isAlive();
+		}
+
+		private void pause() {
+			paused = true;
+		}
+
+		private void pause(boolean shouldPause) {
+			paused = shouldPause;
 		}
 
 		private boolean isPaused() {
-			return !hasStarted();
+			return paused;
+		}
+
+		private boolean isAlive() {
+			return readerThread.isAlive();
 		}
 
 	}

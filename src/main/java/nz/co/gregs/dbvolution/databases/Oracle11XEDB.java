@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.MSSQLServerSettingsBuilder;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.Oracle11XESettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.ExceptionDuringDatabaseFeatureSetup;
 import nz.co.gregs.dbvolution.internal.oracle.xe.*;
@@ -189,6 +190,11 @@ public class Oracle11XEDB extends OracleDB {
 	@Override
 	public Oracle11XESettingsBuilder getURLInterpreter() {
 		return new Oracle11XESettingsBuilder();
+	}
+
+	@Override
+	public Oracle11XESettingsBuilder getSettingsBuilder() {
+		return new Oracle11XESettingsBuilder().fromSettings(this.getSettings());
 	}
 
 }

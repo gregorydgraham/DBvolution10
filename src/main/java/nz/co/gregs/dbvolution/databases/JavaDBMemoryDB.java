@@ -125,4 +125,11 @@ public class JavaDBMemoryDB extends DBDatabaseImplementation {
 	public JavaDBMemorySettingsBuilder getURLInterpreter() {
 		return new JavaDBMemorySettingsBuilder();
 	}
+
+	@Override
+	public JavaDBMemorySettingsBuilder getSettingsBuilder() {
+		var builder = new JavaDBMemorySettingsBuilder();
+		builder.fromSettings(this.getSettings());
+		return builder;
+	}
 }

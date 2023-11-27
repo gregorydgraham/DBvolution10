@@ -192,4 +192,9 @@ public class MySQLDB extends DBDatabaseImplementation implements SupportsPolygon
 	public boolean supportsGeometryTypesFullyInSchema() {
 		return true;
 	}
+
+	@Override
+	public MySQLSettingsBuilder getSettingsBuilder() {
+		return new MySQLSettingsBuilder().fromSettings(this.getSettings());
+	}
 }

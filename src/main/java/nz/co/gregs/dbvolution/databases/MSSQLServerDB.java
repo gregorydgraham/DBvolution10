@@ -370,4 +370,9 @@ public class MSSQLServerDB extends DBDatabaseImplementation implements SupportsP
 	public AbstractMSSQLServerSettingsBuilder<?, ?> getURLInterpreter() {
 		return new MSSQLServerSettingsBuilder();
 	}
+
+	@Override
+	public MSSQLServerSettingsBuilder getSettingsBuilder() {
+		return new MSSQLServerSettingsBuilder().fromSettings(this.getSettings());
+	}
 }

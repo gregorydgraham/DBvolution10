@@ -145,4 +145,9 @@ public class OracleAWS11DB extends OracleAWSDB {
 		return new OracleAWS11SettingsBuilder();
 	}
 
+	@Override
+	public OracleAWS11SettingsBuilder getSettingsBuilder() {
+		return new OracleAWS11SettingsBuilder().fromSettings(this.getSettings());
+	}
+
 }

@@ -129,4 +129,11 @@ public class JavaDB extends DBDatabaseImplementation {
 	public AbstractJavaDBSettingsBuilder<?,?> getURLInterpreter() {
 		return new JavaDBSettingsBuilder();
 	}
+
+	@Override
+	public JavaDBSettingsBuilder getSettingsBuilder() {
+		var builder = new JavaDBSettingsBuilder();
+		builder.fromSettings(this.getSettings());
+		return builder;
+	}
 }

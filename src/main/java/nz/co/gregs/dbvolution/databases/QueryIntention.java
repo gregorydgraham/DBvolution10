@@ -77,6 +77,7 @@ public enum QueryIntention {
 	MIGRATION,
 	INSERT_QUERY, 
 	SYNCHRONISE_WITH_CLUSTER,
+	TESTING,
 	NO_OP;
 	
 	private boolean isDDL;

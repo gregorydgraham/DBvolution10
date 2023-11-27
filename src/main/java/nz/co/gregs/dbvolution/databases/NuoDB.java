@@ -132,4 +132,9 @@ public class NuoDB extends DBDatabaseImplementation {
 	public NuoDBSettingsBuilder getURLInterpreter() {
 		return new NuoDBSettingsBuilder();
 	}
+
+	@Override
+	public NuoDBSettingsBuilder getSettingsBuilder() {
+		return new NuoDBSettingsBuilder().fromSettings(this.getSettings());
+	}
 }

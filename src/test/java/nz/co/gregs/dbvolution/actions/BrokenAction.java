@@ -28,94 +28,68 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.utility;
+package nz.co.gregs.dbvolution.actions;
 
-import java.time.Instant;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.QueryIntention;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 
 /**
  *
  * @author gregorygraham
  */
-public class StopWatch {
+public class BrokenAction extends DBAction {
 
-	private Instant startTime = Instant.now();
-	private Instant endTime;
+	private static final long serialVersionUID = 1L;
 
-	private StopWatch() {
+	public BrokenAction() {
+		super(null, QueryIntention.TESTING);
 	}
 
-	public static StopWatch start() {
-		return new StopWatch();
+	@Override
+	public boolean hasRun() {
+		return false;
 	}
 
-	public static StopWatch stopwatch() {
-		return start();
+	@Override
+	public boolean hasSucceeded() {
+		return false;
 	}
 
-	public void end() {
-		if (endTime == null) {
-			endTime = Instant.now();
-		}
+	@Override
+	protected DBActionList prepareActionList(DBDatabase db) throws SQLException, DBRuntimeException {
+		DBActionList list = new DBActionList();
+		list.add(new BrokenAction());
+		return list;
 	}
 
-	public void stop() {
-		end();
+	@Override
+	protected DBActionList getRevertDBActionList() {
+		return new DBActionList();
 	}
 
-	public long splitTime() {
-		return Instant.now().toEpochMilli() - startTime.toEpochMilli();
+	@Override
+	protected void prepareRollbackData(DBDatabase db, DBActionList actions) throws SQLException, DBRuntimeException {
+		
 	}
 
-	public long lapTime() {
-		return splitTime();
+	@Override
+	public List<String> getSQLStatements(DBDatabase db) {
+		final ArrayList<String> arrayList = new ArrayList<>(1);
+		arrayList.add("create a table on this database please;");
+		return arrayList;
 	}
 
-	public long duration() {
-		end();
-		long dur = endTime.toEpochMilli() - startTime.toEpochMilli();
-		return dur;
+	@Override
+	protected DBActionList execute(DBDatabase db) throws SQLException {
+		return execute2(db);
 	}
 
-	public void reset() {
-		restart();
+	@Override
+	public String toString() {
+		return getIntent().toString();
 	}
-
-	public void restart() {
-		endTime = null;
-		startTime = Instant.now();
-	}
-
-	public void report() {
-		stop();
-		System.out.println("DURATION: " + duration());
-	}
-
-	public void reportSplitTime() {
-		System.out.println("SPLIT TIME: " + splitTime());
-	}
-
-	public static void sleepFor(long millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException ex) {
-			Logger.getLogger(StopWatch.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	public <RESULT> RESULT time(Supplier<RESULT> supplier) {
-		restart();
-		RESULT result = supplier.get();
-		stop();
-		return result;
-	}
-
-	public void time(Runnable supplier) {
-		restart();
-		supplier.run();
-		stop();
-	}
-
 }
