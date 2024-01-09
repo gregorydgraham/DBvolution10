@@ -54,7 +54,6 @@ import nz.co.gregs.dbvolution.databases.metadata.DBDatabaseMetaData;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.SettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.databases.metadata.Options;
-import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.internal.query.StatementDetails;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
@@ -62,7 +61,7 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
  *
  * @author gregorygraham
  */
-public interface DBDatabase extends Serializable {
+public interface DBDatabase extends Serializable, AutoCloseable{
 
 	public DBDefinition getDefinition() throws NoAvailableDatabaseException;
 
@@ -90,6 +89,9 @@ public interface DBDatabase extends Serializable {
 	 *
 	 */
 	DBDatabase clone() throws CloneNotSupportedException;
+
+	@Override
+	public void close();
 
 	/**
 	 * Used to add features in a just-in-time manner.

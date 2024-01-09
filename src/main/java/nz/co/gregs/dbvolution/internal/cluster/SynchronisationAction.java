@@ -43,6 +43,7 @@ import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.OnlyOneDatabaseInClusterException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 import nz.co.gregs.dbvolution.internal.database.ClusterMemberList;
+import nz.co.gregs.looper.LoopVariable;
 
 /**
  *
@@ -52,15 +53,15 @@ public class SynchronisationAction extends DBAction {
 
 	private static final long serialVersionUID = 1L;
 	private final DBDatabase target;
-	private final ClusterDetails cluster;
+	private final ClusterDetails details;
 	private static final Logger LOG = Logger.getLogger(SynchronisationAction.class.getName());
 	private final ClusterMemberList members;
 
 	public <R extends DBRow> SynchronisationAction(ClusterDetails details, DBDatabase target) {
 		super(null, QueryIntention.SYNCHRONISE_WITH_CLUSTER);
-		this.cluster = details;
+		this.details = details;
 		this.target = target;
-		this.members = cluster.getMembers();
+		this.members = details.getMembers();
 	}
 
 	@Override
@@ -75,11 +76,12 @@ public class SynchronisationAction extends DBAction {
 
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
-		DBActionList actions = new DBActionList();
+		DBActionList creates = new DBActionList();
+		DBActionList inserts = new DBActionList();
 
 		DBDatabase template = null;
 		final String secondaryLabel = target.getLabel();
-		final String clusterLabel = cluster.getClusterLabel();
+		final String clusterLabel = details.getClusterLabel();
 		LOG.log(Level.FINEST, "{0} SYNCHRONISING: {1}", new Object[]{clusterLabel, secondaryLabel});
 		// we need to unpause the template no matter what happens so use a finally clause
 		try {
@@ -89,75 +91,105 @@ public class SynchronisationAction extends DBAction {
 				if (!template.getSettings().equals(target.getSettings())) {
 					LOG.log(Level.FINEST, "{0} CAN SYNCHRONISE: {1}", new Object[]{clusterLabel, secondaryLabel});
 					// TODO change to use a queue of tables so we can re-try tables that require another table to exist
-					for (DBRow table : cluster.getRequiredAndTrackedTables()) {
+					for (DBRow table : details.getRequiredAndTrackedTables()) {
 						final String tableName = table.getTableName();
-							LOG.log(Level.FINEST, "{0} CHECKING TABLE: {1}", new Object[]{clusterLabel, tableName});
-							// make sure the table exists in the cluster already
-							if (template.tableExists(table)) {
-								LOG.log(Level.FINEST, "{0} INCLUDES TABLE: {1}", new Object[]{clusterLabel, tableName});
-								// Make sure it exists in the new database
-								if (target.tableExists(table) == true) {
-									LOG.log(Level.FINEST, "{0} REMOVING DATA FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
-									actions.add(new DBDropTableIfExists(table));
-									LOG.log(Level.FINEST, "{0} REMOVED DATA FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
-								}
-								LOG.log(Level.FINEST, "{0} CREATING ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
-								actions.add(new DBCreateTable(table, true));
-								LOG.log(Level.FINEST, "{0} CREATED ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
-								// Check that the table has data
-								final DBTable<DBRow> primaryTable = template.getDBTable(table);
+						LOG.log(Level.FINEST, "{0} CHECKING TABLE: {1}", new Object[]{clusterLabel, tableName});
+						// make sure the table exists in the cluster already
+						if (template.tableExists(table)) {
+							LOG.log(Level.FINEST, "{0} INCLUDES TABLE: {1}", new Object[]{clusterLabel, tableName});
+							// Make sure it exists in the new database
+							if (target.tableExists(table) == true) {
+								LOG.log(Level.FINEST, "{0} REMOVING DATA FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+								creates.add(new DBDropTableIfExists(table));
+								LOG.log(Level.FINEST, "{0} REMOVED DATA FROM {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+							}
+							LOG.log(Level.FINEST, "{0} CREATING ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+							creates.add(new DBCreateTable(table, true));
+							LOG.log(Level.FINEST, "{0} CREATED ON {1}: {2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+							// Check that the table has data
+							final DBTable<DBRow> primaryTable = template.getDBTable(table);
+							try {
+								final Long primaryTableCount = primaryTable.count();
 								try {
-									final Long primaryTableCount = primaryTable.count();
-									try {
-										if (primaryTableCount > 0) {
-											final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
-											// Check that the new database has data
-											LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, tableName});
-											List<DBRow> allRows = primaryData.getAllRows();
-											LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2} with {3} rows", new Object[]{clusterLabel, secondaryLabel, tableName, allRows.size()});
-											actions.add(new DBBulkInsert(allRows));
-											LOG.log(Level.FINEST, "{0} FILLED TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, tableName});
-										}
-									} catch (SQLException exceptionGettingData) {
-										LOG.log(Level.WARNING, "FAIL TO RETREIVE TABLE DATA: {0} - {1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
-										LOG.log(Level.WARNING, "SKIPPING TABLE: {0} - {1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
-										// lets just skip this table since it seems to be broken
+									if (primaryTableCount > 0) {
+										final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
+										// Check that the new database has data
+										LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, tableName});
+										List<DBRow> allRows = primaryData.getAllRows();
+										LOG.log(Level.FINEST, "{0} CLUSTER FILLING TABLE ON {1}:{2} with {3} rows", new Object[]{clusterLabel, secondaryLabel, tableName, allRows.size()});
+										inserts.add(new DBBulkInsert(allRows));
+										LOG.log(Level.FINEST, "{0} FILLED TABLE ON {1}:{2}", new Object[]{clusterLabel, secondaryLabel, tableName});
 									}
-								} catch (SQLException exceptionCountingPrimaryTable) {
-									LOG.log(Level.WARNING, "FAILED TO COUNT TABLE: {0} - {1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
-									LOG.log(Level.WARNING, "SKIPPING TABLE: {0} - {1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
+								} catch (SQLException exceptionGettingData) {
+									LOG.log(Level.WARNING, "FAIL TO RETREIVE TABLE DATA: {0} - {1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
+									LOG.log(Level.WARNING, "SKIPPING TABLE: {0} - {1}", new Object[]{tableName, exceptionGettingData.getLocalizedMessage()});
 									// lets just skip this table since it seems to be broken
 								}
+							} catch (SQLException exceptionCountingPrimaryTable) {
+								LOG.log(Level.WARNING, "FAILED TO COUNT TABLE: {0} - {1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
+								LOG.log(Level.WARNING, "SKIPPING TABLE: {0} - {1}", new Object[]{tableName, exceptionCountingPrimaryTable.getLocalizedMessage()});
+								// lets just skip this table since it seems to be broken
 							}
+						}
 						LOG.log(Level.FINEST, "{0} FINISHED WITH TABLE: {1}", new Object[]{clusterLabel, tableName});
 					}
-					cluster.queueAction(target, actions);
+
+					if (executeActionsWithRetries(creates, 10)) {
+						if (executeActionsWithRetries(inserts, 10)) {
+							// congratulations we succeeded to synchronise
+						} else {
+							throw new SQLException("FAILED TO SYNCHRONISE WITH CLUSTER: " + target.getLabel());
+						}
+					} else {
+						throw new SQLException("FAILED TO SYNCHRONISE WITH CLUSTER: " + target.getLabel());
+					}
 					// the structure is done so copy the buffered actions 
-					cluster.addTemplateActionQueueToSecondary(template, target);
+					details.addTemplateActionQueueToSecondary(template, target);
 					// Successfully synchronised the new database :)
 				}
 			}
 		} catch (OnlyOneDatabaseInClusterException except) {
-			System.out.println("SYNCH COMPLETE: "+secondaryLabel+" is the only database in this cluster");
+			System.out.println("SYNCH COMPLETE: " + secondaryLabel + " is the only database in this cluster");
 //			 must be the first database
 //			 let it proceed without doing anything
 		} finally {
 			releaseTemplateDatabase(template);
 		}
 		System.out.println("Completed synchronisation action");
-		return actions;
+		return inserts;
+	}
+
+	private boolean executeActionsWithRetries(DBActionList creates, int maxRetries) {
+		DBActionList errored = new DBActionList();
+		LoopVariable loop = LoopVariable.factory(maxRetries);
+		while (loop.attempt()) {
+			for (DBAction create : creates) {
+				try {
+					target.executeDBAction(create);
+				} catch (Exception e) {
+					errored.add(create);
+					e.printStackTrace();
+
+				}
+			}
+			loop.done(errored.size() == 0);
+			creates.clear();
+			creates.addAll(errored);
+			errored.clear();
+		}
+		return errored.isEmpty();
 	}
 
 	@Override
 	public String toString() {
-		return getIntent() + " " + cluster.getClusterLabel();
+		return getIntent() + " " + details.getClusterLabel();
 	}
 
 	public synchronized void releaseTemplateDatabase(DBDatabase primary) throws NoAvailableDatabaseException {
 		if (primary != null) {
-				System.out.println("RELEASING TEMPLATE: " + primary.getLabel());
-				members.setProcessing(primary);
-				System.out.println("RELEASED TEMPLATE: " + primary.getLabel());
+			System.out.println("RELEASING TEMPLATE: " + primary.getLabel());
+			members.setProcessing(primary);
+			System.out.println("RELEASED TEMPLATE: " + primary.getLabel());
 		}
 	}
 }

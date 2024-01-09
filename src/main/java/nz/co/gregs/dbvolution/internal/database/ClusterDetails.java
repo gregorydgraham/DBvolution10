@@ -73,7 +73,6 @@ public class ClusterDetails implements Serializable {
 	private transient final PreferencesImproved prefs = PreferencesImproved.userNodeForPackage(this.getClass());
 	private String clusterLabel = "NotDefined";
 	private boolean supportsDifferenceBetweenNullAndEmptyString = true;
-	private final ArrayList<String> allAddedDatabases = new ArrayList<String>();
 	private boolean quietExceptions = false;
 	private DBDatabaseCluster.Configuration configuration = DBDatabaseCluster.Configuration.fullyManual();
 
@@ -85,8 +84,8 @@ public class ClusterDetails implements Serializable {
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	public ClusterDetails(String label) {
-		this.members = new ClusterMemberList(this);
 		this.clusterLabel = label;
+		members = new ClusterMemberList(this);
 		propertyChangeSupport = new PropertyChangeSupport(this);
 	}
 
@@ -136,7 +135,7 @@ public class ClusterDetails implements Serializable {
 		// make sure that we synchronise the first database before moving on
 		if (members.size() == 0) {
 			members.add(database);
-			members.waitUntilSynchronised();
+			members.waitUntilDatabaseHasSynchonized(database);
 		} else {
 			members.add(database);
 		}
@@ -217,9 +216,6 @@ public class ClusterDetails implements Serializable {
 		return members.countReadyDatabases() < 2;
 	}
 
-//	public synchronized DBDatabase[] getUnsynchronizedDatabases() {
-//		return members.getDatabasesByStatus(DBDatabaseCluster.Status.UNSYNCHRONISED);
-//	}
 	public synchronized DBRow[] getRequiredAndTrackedTables() {
 		var tables = new TableSet();
 
@@ -531,12 +527,6 @@ public class ClusterDetails implements Serializable {
 		setSupportsDifferenceBetweenNullAndEmptyString(supportsDifference);
 	}
 
-	public void printAllFormerDatabases() {
-		allAddedDatabases.forEach(db -> {
-			System.out.println("DB: " + db);
-		});
-	}
-
 	public void setQuietExceptionsPreference(boolean bln) {
 		this.quietExceptions = bln;
 	}
@@ -711,6 +701,10 @@ public class ClusterDetails implements Serializable {
 		return configuration;
 	}
 
+	public boolean isSynchronised(DBDatabase database) {
+		return members.isSynchronised(database);
+	}
+
 	public static class StatusSnapshot {
 
 		private final Instant snapshotTime;
@@ -757,14 +751,14 @@ public class ClusterDetails implements Serializable {
 	public static class MemberSnapshot {
 
 		public final DBDatabase database;
-		public final ActionQueue queue;
+//		public final ActionQueue queue;
 		public final DBDatabaseCluster.Status status;
 		public final Integer quarantineCount;
 		public final String memberId;
 
 		public MemberSnapshot(ClusterMember memb) {
 			this.database = memb.getDatabase();
-			this.queue = memb.getQueue();
+//			this.queue = memb.getQueue();
 			this.status = memb.getStatus();
 			this.quarantineCount = memb.getQuarantineCount();
 			this.memberId = memb.getMemberId();

@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.databases.settingsbuilders;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -45,8 +46,32 @@ import nz.co.gregs.separatedstring.SeparatedStringBuilder;
  */
 public interface ClusterCapableSettingsBuilder<SELF extends ClusterCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
 
-	SELF setClusterHosts(List<DatabaseConnectionSettings> hosts);
 	List<DatabaseConnectionSettings> getClusterHosts();
+
+	@SuppressWarnings("unchecked")
+	default SELF setClusterHosts(DatabaseConnectionSettings... hosts) {
+		setClusterHosts(Arrays.asList(hosts));
+		return (SELF) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	default SELF addClusterHosts(DatabaseConnectionSettings... hosts) {
+		addClusterHosts(Arrays.asList(hosts));
+		return (SELF) this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	default SELF setClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		this.getClusterHosts().clear();
+		this.getClusterHosts().addAll(hosts);
+		return (SELF) this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	default SELF addClusterHosts(List<DatabaseConnectionSettings> hosts) {
+		this.getClusterHosts().addAll(hosts);
+		return (SELF) this;
+	}
 	
 	public default String encodeClusterHosts(List<DatabaseConnectionSettings> hosts) {
 		SeparatedString sep = SeparatedStringBuilder.forSeparator(",");

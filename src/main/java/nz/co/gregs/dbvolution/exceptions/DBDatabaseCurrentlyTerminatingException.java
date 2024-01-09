@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gregory Graham.
+ * Copyright 2024 Gregory Graham.
  *
  * Commercial licenses are available, please contact info@gregs.co.nz for details.
  * 
@@ -28,49 +28,14 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.utility;
+package nz.co.gregs.dbvolution.exceptions;
 
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
-import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 
-/**
- *
- * @author gregorygraham
- */
-public class ReconnectionProcess extends RegularProcess {
+public class DBDatabaseCurrentlyTerminatingException extends DBRuntimeException {
 
-	public static final long serialVersionUID = 1l;
-	
-	public ReconnectionProcess() {
-		super();
+	private static final long serialVersionUID = 1L;
+
+	public DBDatabaseCurrentlyTerminatingException() {
 	}
-
-	@Override
-	public synchronized String process() {
-		String str = "No Databases To Reconnect";
-		final DBDatabase database = getDatabase();
-		if (database instanceof DBDatabaseCluster) {
-			DBDatabaseCluster cluster = (DBDatabaseCluster) database;
-			if (cluster.getAutoReconnect()) {
-				String msg = database.getLabel()+ ": PREPARING TO RECONNECT DATABASES... \n";
-				LOGGER.info(msg);
-				str = msg;
-				try {
-					str += cluster.reconnectQuarantinedDatabases();
-				} catch (UnableToRemoveLastDatabaseFromClusterException | SQLException ex) {
-					Logger.getLogger(ReconnectionProcess.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				msg = database.getLabel() + ": FINISHED RECONNECTING DATABASES...";
-				LOGGER.info(msg);
-				str += "\n" + msg;
-			}
-		}
-		return str;
-	}
-	protected static final Logger LOGGER = Logger.getLogger(ReconnectionProcess.class.getName());
 	
 }

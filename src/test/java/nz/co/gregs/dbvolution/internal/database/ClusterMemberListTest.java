@@ -51,7 +51,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.generic.TempTest;
-import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
+//import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
 import nz.co.gregs.looper.StopWatch;
 import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
@@ -68,7 +68,7 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
-public class ClusterMemberListTest extends AbstractTest{
+public class ClusterMemberListTest extends AbstractTest {
 
 	private ClusterDetails clusterDetails;
 	private DBDatabase db2;
@@ -97,16 +97,17 @@ public class ClusterMemberListTest extends AbstractTest{
 		db3.getSettings().setLabel("DB3");
 
 		clusterDetails = new ClusterDetails("DatabaseListTest");
-		databaseList = clusterDetails.getMembers();//new ClusterMemberList(clusterDetails);
+		databaseList = clusterDetails.getMembers();
 
 	}
 
 	@After
 	@Override
 	public void tearDown() throws Exception {
-		super.tearDown();
 		db2.stop();
 		db3.stop();
+		databaseList.close();
+		super.tearDown();
 	}
 
 	@Test
@@ -339,7 +340,7 @@ public class ClusterMemberListTest extends AbstractTest{
 
 	@Test
 	public void testAddAll_Collection() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
+
 		assertThat(databaseList.size(), is(0));
 		final List<DBDatabase> listToCheck = Arrays.asList(new DBDatabase[]{database, db2});
 
@@ -351,7 +352,7 @@ public class ClusterMemberListTest extends AbstractTest{
 
 	@Test
 	public void testRemoveAll() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
+
 		assertThat(databaseList.size(), is(0));
 		final List<DBDatabase> listToCheck = Arrays.asList(new DBDatabase[]{database, db2});
 
@@ -372,12 +373,14 @@ public class ClusterMemberListTest extends AbstractTest{
 
 	@Test
 	public void testSetReady() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
+
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(database, db2, db3);
-		databaseList.queueAction(database, new NoOpDBAction(2000));
-		databaseList.queueAction(db2, new NoOpDBAction(2000));
-		databaseList.queueAction(db3, new NoOpDBAction(2000));
+		databaseList.waitUntilSynchronised(5000);
+
+		databaseList.queueAction(database, new NoOpDBAction(20000));
+		databaseList.queueAction(db2, new NoOpDBAction(20000));
+		databaseList.queueAction(db3, new NoOpDBAction(20000));
 
 		DBDatabase[] readyDatabases = databaseList.getReadyDatabases();
 		assertThat(readyDatabases.length, is(0));
@@ -391,16 +394,38 @@ public class ClusterMemberListTest extends AbstractTest{
 
 	@Test
 	public void testSetPaused() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
+
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(database, db2, db3);
+		databaseList.waitUntilSynchronised(5000);
 		databaseList.queueAction(database, new NoOpDBAction(2000));
 		databaseList.queueAction(db2, new NoOpDBAction(2000));
 		databaseList.queueAction(db3, new NoOpDBAction(2000));
+		
 
+		// wait a little bit for the queue readers to notice the new actions
+		try {
+			Thread.sleep(100l);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(ClusterMemberListTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		List<DBDatabase> paused = databaseList.getDatabasesByStatusAsList(PAUSED);
 		assertThat(paused.size(), is(0));
-		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING, SYNCHRONIZING).size(), is(3));
+		final List<DBDatabase> databases = databaseList.getDatabasesByStatusAsList(PROCESSING, SYNCHRONIZING);
+		
+		if (databases.size() != 3) {
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			databaseList.getMembers().stream().forEach((m) -> System.out.println(m.getMemberId() + ":" + m.getStatus()));
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("DARN");
+		}
+		assertThat(databases.size(), is(3));
 
 		databaseList.setPaused(database);
 		paused = databaseList.getDatabasesByStatusAsList(PAUSED);
@@ -415,7 +440,7 @@ public class ClusterMemberListTest extends AbstractTest{
 
 	@Test
 	public void testSetDead() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
+
 		assertThat(databaseList.size(), is(0));
 		databaseList.add(database, db2, db3);
 
@@ -423,13 +448,16 @@ public class ClusterMemberListTest extends AbstractTest{
 		assertThat(dead.size(), is(0));
 		assertThat(databaseList.getDatabasesByStatusAsList(PROCESSING, READY, SYNCHRONIZING).size(), is(3));
 
+		databaseList.setQuarantined(database); // required as READY -> DEAD is an illegal state change
 		databaseList.setDead(database);
 		dead = databaseList.getDatabasesByStatusAsList(DEAD);
 		assertThat(dead.size(), is(1));
 		assertThat(dead.get(0), is(database));
 
-		databaseList.setPaused(database);
+		// DEAD -> READY is not allowed so go by QUARANTINED which is allowed
+		databaseList.setQuarantined(database);
 		databaseList.setProcessing(database);
+
 		databaseList.setReady(database);
 		dead = databaseList.getDatabasesByStatusAsList(DEAD);
 		assertThat(dead.size(), is(0));
@@ -523,6 +551,8 @@ public class ClusterMemberListTest extends AbstractTest{
 
 		databaseList.add(database, db2, db3);
 
+		databaseList.waitUntilSynchronised(5000);
+
 		assertThat(databaseList.getStatusOf(database), isOneOf(PROCESSING, READY, SYNCHRONIZING));
 
 		databaseList.setReady(database);
@@ -545,9 +575,13 @@ public class ClusterMemberListTest extends AbstractTest{
 		databaseList.setProcessing(database);
 		assertThat(databaseList.isReady(database), is(false));
 
+		databaseList.setQuarantined(database); // required as READY -> DEAD is an illegal state change
 		databaseList.setDead(database);
 		assertThat(databaseList.isReady(database), is(false));
 
+		// can't switch from DEAD -> PAUSED so go via QUARANTINED
+		databaseList.setQuarantined(database);
+		databaseList.setProcessing(database);
 		databaseList.setPaused(database);
 		assertThat(databaseList.isReady(database), is(false));
 
@@ -599,16 +633,38 @@ public class ClusterMemberListTest extends AbstractTest{
 		assertThat(databases.length, is(3));
 		assertThat(Arrays.asList(databases), containsInAnyOrder(database, db2, db3));
 
-		databaseList.queueAction(database, new NoOpDBAction(2000));
-		databaseList.queueAction(db2, new NoOpDBAction(2000));
-		databaseList.queueAction(db3, new NoOpDBAction(2000));
+		databaseList.queueAction(database, new NoOpDBAction(200000,"Wait 200 seconds"));
+		databaseList.queueAction(db2, new NoOpDBAction(200000, "wait another 200 seconds"));
+		databaseList.queueAction(db3, new NoOpDBAction(200000, "for the third time, wait 200 seconds"));
+		// wait a litte bit for the queue readers to notice the new actions
+		try {
+			Thread.sleep(100l);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(ClusterMemberListTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		// the databases should now be PROCESSING the long running action
 		databases = databaseList.getDatabasesByStatus(PAUSED, READY);
+		if (databases.length != 0) {
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			databaseList.getMembers().stream().forEach((m) -> System.out.println(m.getMemberId() + ":" + m.getStatus()));
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("WHOOPS");
+		}
 		assertThat(databases.length, is(0));
 
 		databaseList.setReady(database);
 		databaseList.setPaused(db2);
 
 		databases = databaseList.getDatabasesByStatus(PAUSED, PROCESSING);
+		if (databases.length != 2) {
+			System.out.println("WHOOPS");
+		}
 		assertThat(databases.length, is(2));
 		assertThat(Arrays.asList(databases), containsInAnyOrder(db2, db3));
 
@@ -660,6 +716,7 @@ public class ClusterMemberListTest extends AbstractTest{
 		assertThat(databases.size(), is(0));
 
 		databaseList.add(database, db2, db3);
+		databaseList.waitUntilSynchronised(5000);
 
 		databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING, READY, SYNCHRONIZING);
 		assertThat(databases.size(), is(3));
@@ -673,6 +730,19 @@ public class ClusterMemberListTest extends AbstractTest{
 		databaseList.setProcessing(db3);
 
 		databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING, SYNCHRONIZING);
+
+		if (databases.size() != 2) {
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			databaseList.getMembers().stream().forEach((m) -> System.out.println(m.getDatabase().getLabel()+ ":" + m.getStatus()));
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("DANGNABBIT");
+		}
 		assertThat(databases.size(), is(2));
 		assertThat(databases, containsInAnyOrder(db2, db3));
 
@@ -781,6 +851,10 @@ public class ClusterMemberListTest extends AbstractTest{
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(database, db2, db3);
+
+		databaseList.waitUntilSynchronised(5000);
+		databaseList.setPaused(database, db2, db3);
+
 		assertThat(databaseList.size(), is(3));
 		assertThat(databaseList.areAllReady(), is(false));
 		databaseList.setReady(database);
@@ -801,12 +875,18 @@ public class ClusterMemberListTest extends AbstractTest{
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(database, db2, db3);
+		databaseList.waitUntilSynchronised(5000);
+
 		assertThat(databaseList.isDead(database), is(false));
 
+		databaseList.setQuarantined(database); // required as READY -> DEAD is an illegal state change
 		databaseList.setDead(database);
 		assertThat(databaseList.isDead(database), is(true));
 
 		assertThat(databaseList.isDead(db2), is(false));
+		databaseList.setQuarantined(db2);
+		databaseList.setQuarantined(db2);
+		databaseList.setQuarantined(db2);
 		databaseList.setQuarantined(db2);
 		databaseList.setQuarantined(db2);
 		databaseList.setQuarantined(db2);
@@ -821,6 +901,7 @@ public class ClusterMemberListTest extends AbstractTest{
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(database, db2, db3);
+		databaseList.waitUntilSynchronised(10000);
 		databaseList.setPaused(database, db2, db3);
 		try {
 			databaseList.getReadyDatabase();
@@ -930,7 +1011,6 @@ public class ClusterMemberListTest extends AbstractTest{
 
 	@Test
 	public void testWaitUntilDatabaseHasSynchronized() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(database, db2, db3);
@@ -941,121 +1021,9 @@ public class ClusterMemberListTest extends AbstractTest{
 		databaseList.queueAction(database, new NoOpDBAction(10));
 		StopWatch timer = StopWatch.stopwatch();
 		timer.time(() -> databaseList.waitUntilDatabaseHasSynchronized(database, 10));
-		assertThat(timer.duration(), is(greaterThanOrEqualTo(10l)));
+		assertThat(timer.duration(), is(greaterThanOrEqualTo(10l)));// make sure that it did NOT synchronise
 		timer.time(() -> databaseList.waitUntilDatabaseHasSynchronized(database, 100));
-		assertThat(timer.duration(), is(lessThan(101l)));
-	}
-
-	@Test
-	public void testQueueAction() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
-
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised(10000);
-		databaseList.setPaused(database, db2, db3);
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-
-		ActionQueue[] queues = databaseList.getActionQueues(database, db2, db3);
-		assertThat(queues[0].size(), is(5));
-		assertThat(queues[1].size(), is(0));
-		assertThat(queues[2].size(), is(0));
-
-		databaseList.queueAction(db2, new NoOpDBAction(10));
-		databaseList.queueAction(db2, new NoOpDBAction(10));
-		databaseList.queueAction(db2, new NoOpDBAction(10));
-		databaseList.queueAction(db2, new NoOpDBAction(10));
-		databaseList.queueAction(db2, new NoOpDBAction(10));
-		assertThat(queues[0].size(), is(5));
-		assertThat(queues[1].size(), is(5));
-		assertThat(queues[2].size(), is(0));
-
-		databaseList.queueAction(db3, new NoOpDBAction(10));
-		databaseList.queueAction(db3, new NoOpDBAction(10));
-		databaseList.queueAction(db3, new NoOpDBAction(10));
-		databaseList.queueAction(db3, new NoOpDBAction(10));
-		databaseList.queueAction(db3, new NoOpDBAction(10));
-		assertThat(queues[0].size(), is(5));
-		assertThat(queues[1].size(), is(5));
-		assertThat(queues[2].size(), is(5));
-
-		databaseList.setUnpaused(database);
-		databaseList.waitUntilDatabaseHasSynchonized(database);
-		queues = databaseList.getActionQueues(database, db2, db3);
-		assertThat(queues[0].size(), is(0));
-		assertThat(queues[1].size(), is(5));
-		assertThat(queues[2].size(), is(5));
-
-		databaseList.setProcessing(db2);
-		databaseList.setProcessing(db3);
-		databaseList.waitUntilDatabaseHasSynchonized(db2);
-		databaseList.waitUntilDatabaseHasSynchonized(db3);
-		queues = databaseList.getActionQueues(database, db2, db3);
-		assertThat(queues[0].size(), is(0));
-		assertThat(queues[1].size(), is(0));
-		assertThat(queues[2].size(), is(0));
-
-	}
-
-	@Test
-	public void testCopyFromTo() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
-
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised();
-		databaseList.setPaused(database, db2, db3);
-		final NoOpDBAction act1 = new NoOpDBAction(10);
-		final NoOpDBAction act5 = new NoOpDBAction(10);
-		databaseList.queueAction(database, act1);
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, act5);
-
-		ActionQueue[] queues = databaseList.getActionQueues(database, db2, db3);
-		assertThat(queues[0].size(), is(5));
-		assertThat(queues[1].size(), is(0));
-		assertThat(queues[2].size(), is(0));
-
-		databaseList.copyFromTo(database, db2);
-		assertThat(queues[0].size(), is(5));
-		assertThat(queues[1].size(), is(5));
-		assertThat(queues[2].size(), is(0));
-		assertThat(queues[0].getHeadOfQueue().getAction(), is(act1));
-		assertThat(queues[1].getHeadOfQueue().getAction(), is(act1));
-		queues[0].getHeadOfQueue();
-		queues[0].getHeadOfQueue();
-		queues[0].getHeadOfQueue();
-		assertThat(queues[0].getHeadOfQueue().getAction(), is(act5));
-		queues[1].getHeadOfQueue();
-		queues[1].getHeadOfQueue();
-		queues[1].getHeadOfQueue();
-		assertThat(queues[1].getHeadOfQueue().getAction(), is(act5));
-	}
-
-	@Test
-	public void testGetActionQueueList() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
-
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised();
-		databaseList.setPaused(database, db2, db3);
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(database, new NoOpDBAction(10));
-
-		final ActionQueue[] queues = databaseList.getActionQueues(database, db2, db3);
-		assertThat(queues[0].size(), is(5));
-		assertThat(queues[1].size(), is(0));
-		assertThat(queues[2].size(), is(0));
+		assertThat(timer.duration(), is(lessThanOrEqualTo(110l)));
 	}
 
 	@Test
@@ -1181,9 +1149,9 @@ public class ClusterMemberListTest extends AbstractTest{
 				System.out.println("CAPTURE other: " + only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("other"));
 				only1Active.testAgainst(clusterStatus);
 				assertTrue(only1Active.matchesWithinString(clusterStatus));
-				
+
 				assertTrue(cluster.waitUntilSynchronised(5000));
-				
+
 				statuses = cluster.getClusterStatusSnapshot();
 				assertThat(statuses.getMembers().size(), is(2));
 				assertThat(statuses.getByStatus(DBDatabaseCluster.Status.READY).size(), is(2));

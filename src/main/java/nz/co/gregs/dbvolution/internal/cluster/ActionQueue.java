@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.internal.database.ClusterMember;
 
 /**
@@ -86,11 +87,9 @@ public class ActionQueue implements AutoCloseable {
 	public synchronized void add(DBAction action) {
 		ActionMessage value = new ActionMessage(action);
 		try {
-			System.out.println("ENQUEUING:" + action.toString() + " ON " + database.getLabel());
 			actionQueue.put(value);
 			notifyACTION_IS_AVAILABLE();
 		} catch (InterruptedException e) {
-			System.out.println("ENQUEUE FAILED: " + e.getMessage());
 		}
 	}
 
@@ -190,11 +189,11 @@ public class ActionQueue implements AutoCloseable {
 		}
 	}
 
-	public synchronized void clear() {
+	public void clear() {
 		actionQueue.clear();
 	}
 
-	public synchronized void addAll(ActionQueue templateQ) {
+	public void addAll(ActionQueue templateQ) {
 		actionQueue.addAll(templateQ.actionQueue);
 	}
 
@@ -209,6 +208,7 @@ public class ActionQueue implements AutoCloseable {
 
 	public void pause() {
 		reader.pause();
+		waitUntilPaused(10000);
 	}
 
 	public void notifyPAUSED() {
@@ -234,8 +234,11 @@ public class ActionQueue implements AutoCloseable {
 	}
 
 	private void notifyQUEUE_IS_EMPTY() {
-		if (member != null) {
-			member.notifyAQueueHasFinished();
+		if(member!=null){
+			try{
+			member.setStatus(DBDatabaseCluster.Status.READY);}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 		synchronized (QUEUE_IS_EMPTY) {
 			QUEUE_IS_EMPTY.notifyAll();

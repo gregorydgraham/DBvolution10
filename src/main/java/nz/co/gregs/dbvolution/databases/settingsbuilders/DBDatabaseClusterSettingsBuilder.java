@@ -43,8 +43,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * @author gregorygraham
  */
 public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster>
-		implements ClusterCapableSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster> 
-{
+		implements ClusterCapableSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster>,
+		UniqueDatabaseCapableSettingsBuilder<DBDatabaseClusterSettingsBuilder, DBDatabaseCluster> {
 
 	private final static HashMap<String, String> DEFAULT_EXTRAS_MAP = new HashMap<>();
 	private static final long serialVersionUID = 1L;
@@ -114,7 +114,7 @@ public class DBDatabaseClusterSettingsBuilder extends AbstractSettingsBuilder<DB
 		return new DBDatabaseCluster(this);
 	}
 
-	public DBDatabaseClusterSettingsBuilder setConfiguration(DBDatabaseCluster.Configuration  config) {
+	public DBDatabaseClusterSettingsBuilder setConfiguration(DBDatabaseCluster.Configuration config) {
 		this.useAutoRebuild = config.isUseAutoRebuild();
 		this.useAutoConnect = config.isUseAutoConnect();
 		this.useAutoReconnect = config.isUseAutoReconnect();

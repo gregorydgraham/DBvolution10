@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.internal.database;
 
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status;
 import static nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status.*;
@@ -44,91 +45,124 @@ import nz.co.gregs.dbvolution.internal.cluster.SynchronisationAction;
  */
 public class ClusterMember implements AutoCloseable {
 
+	public static final int MAX_QUARANTINES_ALLOWED = 5;
+	private static final int MAX_ACTIONQUEUE_SIZE = 10000;
+
 	private final ClusterDetails details;
 	private final ClusterMemberList list;
 	private final DBDatabase database;
-	private final ActionQueue queue;
+	private ActionQueue queue = null;
 	private Status status = Status.CREATED;
 	private Integer quarantineCount = 0;
 	private String memberId = null;
+	private final String clusterLabel;
 
-	public ClusterMember(ClusterDetails details, ClusterMemberList list, DBDatabase database) {
+	public ClusterMember(ClusterDetails details, String clusterLabel, ClusterMemberList list, DBDatabase database) {
 		this.details = details;
+		this.clusterLabel =clusterLabel;
 		this.list = list;
 		this.database = database;
-		this.queue = new ActionQueue(database, 10000, this);
 	}
 
-	public synchronized Status getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public synchronized final void setStatus(Status status) {
+	private void changeToReady() {
+		resetQuarantineCount();
+		switch (this.status) {
+			case PAUSED:
+			case TEMPLATE:
+				break;
+			case SYNCHRONIZING:
+			case PROCESSING:
+			case READY:
+				list.notifyADatabaseIsReady();
+				break;
+			default:
+				throwIllegalStateChangeException(READY);
+		}
+	}
+
+	private void changeToPaused() {
+		switch (this.status) {
+			case CREATED:
+			case SYNCHRONIZING:
+			case PROCESSING:
+			case READY:
+			case PAUSED:
+			case TEMPLATE:
+				pause();
+				break;
+			default:
+				throwIllegalStateChangeException(PAUSED);
+		}
+	}
+
+	private void throwIllegalStateChangeException(Status newStatus) throws DBRuntimeException {
+		throw new DBRuntimeException("ILLEGAL STATUS CHANGE: " + status + " => " + newStatus.toString()+" on "+this.database);
+	}
+
+	private void changeToDead() {
+		if (QUARANTINED.equals(status)) {
+			stop();
+		} else {
+			throwIllegalStateChangeException(DEAD);
+		}
+	}
+
+	private void changeToQuarantined() {
+		stop();
+	}
+
+	public synchronized final void setStatus(Status newStatus) {
 		Status oldStatus = this.status;
-		if (!oldStatus.equals(status)) {
-			switch (status) {
+		if (!status.equals(newStatus)) {
+			switch (newStatus) {
+				case CREATED:
+					changeToCreated();
+					break;
 				case DEAD:
-					stop();
+					changeToDead();
 					break;
 				case PAUSED:
-					pause();
+					changeToPaused();
 					break;
 				case SYNCHRONIZING:
+					changeToSynchronising();
+					break;
 				case PROCESSING:
-					switch (oldStatus) {
-						case PAUSED:
-							unpause();
-							break;
-						case CREATED:
-							start();
-							break;
-						case SYNCHRONIZING:
-						case PROCESSING:
-							break;
-						case QUARANTINED:
-							start();
-							break;
-						case READY:
-							break;
-						case TEMPLATE:
-							unpause();
-							break;
-						case UNKNOWN:
-							start();
-							break;
-						default:
-							throw new DBRuntimeException("ILLEGAL STATUS CHANGE: " + oldStatus + " => " + status);
-					}
-					if (oldStatus.equals(CREATED)) {
-					}
-					if (queue.hasStopped()) {
-						unpause();
-					}
+					changeToProcessing();
 					break;
 				case QUARANTINED:
-					incrementQuarantineCount();
-					stop();
+					changeToQuarantined();
 					break;
 				case READY:
-					switch (oldStatus) {
-						case PROCESSING:
-						case READY:
-							resetQuarantineCount();
-							break;
-						default:
-							throw new DBRuntimeException("ILLEGAL STATUS CHANGE: " + oldStatus + " => " + status);
-					}
+					changeToReady();
 					break;
 				case TEMPLATE:
-					pause();
+					changeToTemplate();
 					break;
 				case UNKNOWN:
-					stop();
+					changeToUnknown();
 					break;
+				default:
+					throwIllegalStateChangeException(newStatus);
 			}
-			this.status = status;
-			System.out.println("MEMBER: " + database.getLabel() + " was " + oldStatus + " => " + status);
-			this.list.notifyAStatusHasChanged();
+			this.status = newStatus;
+			list.notifyAStatusHasChanged();
+		}
+		if (QUARANTINED.equals(newStatus)) {
+			incrementQuarantineCount();
+			checkForDeadDatabase();
+		}
+	}
+
+	private void checkForDeadDatabase() {
+		if (QUARANTINED.equals(status)) {
+			if (quarantineCount >= MAX_QUARANTINES_ALLOWED) {
+				setStatus(DEAD);
+			}
 		}
 	}
 
@@ -144,18 +178,17 @@ public class ClusterMember implements AutoCloseable {
 		return database;
 	}
 
-	public ActionQueue getQueue() {
-		return queue;
-	}
-
-	void stop() {
-		queue.stop();
+	public void stop() {
+		if (queue != null) {
+			queue.stop();
+		}
 	}
 
 	@Override
 	public void close() {
-		queue.stop();
-
+		if (queue != null) {
+			queue.stop();
+		}
 	}
 
 	public synchronized void resetQuarantineCount() {
@@ -163,43 +196,144 @@ public class ClusterMember implements AutoCloseable {
 	}
 
 	public synchronized final void start() {
-		setStatus(PAUSED);
-		System.out.println(getMemberId() + ": STARTING NEW CLUSTER MEMBER ");
+		status = PAUSED;
+		checkQueue();
 		queue.pause();
 		queue.clear();
 		queue.add(new SynchronisationAction(details, database));
-		setStatus(SYNCHRONIZING);
+		status = SYNCHRONIZING;
 		queue.unpause();
-		System.out.println(getMemberId() + ": STARTED NEW CLUSTER MEMBER ");
 	}
 
 	public synchronized final void unpause() {
+		checkQueue();
 		queue.unpause();
-	}
-
-	public void notifyAQueueHasFinished() {
-		if (status.equals(PROCESSING)) {
-			setStatus(READY);
-			list.notifyADatabaseIsReady();
-		}
-		if (status.equals(SYNCHRONIZING)) {
-			setStatus(PROCESSING);
-		}
 	}
 
 	public void quarantineDatabase(DBDatabase database, SQLException ex) {
 		setStatus(QUARANTINED);
-
 	}
 
-	private void pause() {
+	public void pause() {
+		checkQueue();
 		queue.pause();
 	}
 
 	public String getMemberId() {
 		if (memberId == null) {
-			this.memberId = details.getClusterLabel() + "(" + database.getLabel() + ")";
+			this.memberId = clusterLabel + "(" + database.getLabel() + ")";
 		}
 		return this.memberId;
+	}
+
+	private void changeToUnknown() {
+		stop();
+	}
+
+	private void changeToProcessing() {
+		switch (status) {
+			case SYNCHRONIZING:
+			case PROCESSING:
+			case READY:
+				//these are all processing statuses and should self-correct
+				break;
+			case PAUSED:
+			case TEMPLATE:
+				unpause();
+				break;
+			case CREATED:
+			case QUARANTINED:
+				start();
+				break;
+			case UNKNOWN:
+				break;
+			default:
+				throwIllegalStateChangeException(PROCESSING);
+		}
+		checkQueue();
+	}
+
+	private void changeToTemplate() {
+		if (READY.equals(status)) {
+			pause();
+		} else {
+			throwIllegalStateChangeException(TEMPLATE);
+		}
+	}
+
+	private void changeToSynchronising() {
+		switch (status) {
+			case PAUSED:
+				start();
+				break;
+			case CREATED:
+				start();
+				break;
+			case SYNCHRONIZING:
+			case PROCESSING:
+				break;
+			case QUARANTINED:
+				start();
+				break;
+			case READY:
+				break;
+			case TEMPLATE:
+				start();
+				break;
+			case UNKNOWN:
+				start();
+				break;
+			default:
+				throwIllegalStateChangeException(SYNCHRONIZING);
+		}
+	}
+
+	private void changeToCreated() {
+		start();
+	}
+
+	private void getNewQueue() {
+		queue = new ActionQueue(database, MAX_ACTIONQUEUE_SIZE, this);
+	}
+
+	private void checkQueue() {
+		if (queue == null) {
+			getNewQueue();
+		}
+		if (queue.hasStopped()) {
+			getNewQueue();
+			queue.start();
+		}
+	}
+
+	public void queue(DBAction action) {
+		checkQueue();
+		queue.add(action);
+		setStatus(PROCESSING);
+	}
+	
+	public synchronized void copyTo(ClusterMember secondary) {
+		if (secondary == null) {
+			return;
+		}
+		ActionQueue templateQ = this.queue;
+		ActionQueue secondaryQ = secondary.queue;
+		boolean templatePaused = templateQ.isPaused();
+		boolean secondaryPaused = secondaryQ.isPaused();
+		if (!templatePaused) {
+			templateQ.pause();
+		}
+		if (!secondaryPaused) {
+			secondaryQ.pause();
+		}
+		// DO THE JOB!!!
+		secondaryQ.addAll(templateQ);
+		// Now clean up
+		if (!secondaryPaused) {
+			secondaryQ.unpause();
+		}
+		if (!templatePaused) {
+			templateQ.unpause();
+		}
 	}
 }

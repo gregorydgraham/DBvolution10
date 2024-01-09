@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
  *
  * @author gregorygraham
  */
-public class QueueReader {
+public class QueueReader implements AutoCloseable{
 
 	private static final Logger LOG = Logger.getLogger(QueueReader.class.getName());
 
@@ -74,22 +74,16 @@ public class QueueReader {
 
 	public void pause() {
 		runner.pause();
-		if (runner.isPaused()) {
-			actionQueue.notifyPAUSED();
-		}
 	}
 
 	public void unpause() {
 		runner.pause(false);
-		if (!runner.isPaused()) {
-			actionQueue.notifyUNPAUSED();
-		}
+		actionQueue.notifyUNPAUSED();
 	}
 
 	public void stop() {
 		runner.stop();
 		waitOnThreadDeath(100);
-		actionQueue.notifySTOPPED();
 	}
 
 	public boolean isPaused() {
@@ -107,7 +101,9 @@ public class QueueReader {
 	private void attemptAction() {
 		ActionMessage message = actionQueue.getHeadOfQueue();
 		if (message == null) {
-			actionQueue.notifyQueueIsEmpty();
+			if (!isPaused()) {
+				actionQueue.notifyQueueIsEmpty();
+			}
 		} else {
 			final DBAction action = message.getAction();
 			doAction(action);
@@ -116,23 +112,16 @@ public class QueueReader {
 
 	private void doAction(DBAction action) {
 		try {
-			System.out.println("ENACTING " + action + " ON DATABASE " + database.getLabel());
 			database.executeDBAction(action);
-			System.out.println("COMPLETED " + action + " ON DATABASE " + database.getLabel());
 			actionQueue.notifyActionHasSucceeded();
 		} catch (SQLException ex) {
-			LOG.log(Level.SEVERE, null, ex);
-			System.out.println("FAILED " + action + " ON DATABASE " + database.getLabel());
-			System.out.println("QUARANTINING DATABASE " + database.getLabel());
+			LOG.log(Level.SEVERE, "FAILED " + action + " ON DATABASE " + database.getLabel()+" BECAUSE OF "+ex.getLocalizedMessage(), ex);
 			actionQueue.quarantineDatabase(ex);
 		} catch (NoAvailableDatabaseException ex) {
-			LOG.log(Level.SEVERE, null, ex);
-			System.out.println("FAILED " + action + " ON DATABASE " + database.getLabel() + " BECAUSE OF NoAvailableDatabaseException");
-			ex.printStackTrace();
+			LOG.log(Level.SEVERE, "FAILED " + action + " ON DATABASE " + database.getLabel() + " BECAUSE OF NoAvailableDatabaseException", ex);
 			actionQueue.quarantineDatabase(new SQLException(ex));
 		} catch (Exception ex) {
-			LOG.log(Level.SEVERE, null, ex);
-			System.out.println("FAILED " + action + " ON DATABASE " + database.getLabel() + " BECAUSE OF " + ex.getLocalizedMessage());
+			LOG.log(Level.SEVERE, "FAILED " + action + " ON DATABASE " + database.getLabel() + " BECAUSE OF " + ex.getLocalizedMessage(), ex);
 			actionQueue.quarantineDatabase(new SQLException(ex));
 		}
 	}
@@ -145,20 +134,18 @@ public class QueueReader {
 			try {
 				THREAD_DEATH.wait(milliseconds);
 				if (!runner.isAlive()) {
-					System.out.println("Successfully waited for QueueReader thread death");
 					return true;
 				}
 			} catch (InterruptedException ex) {
 				LOG.log(Level.SEVERE, null, ex);
 			}
-		}return false;
+		}
+		return false;
 	}
 
 	private void notifyThreadDeath() {
 		synchronized (THREAD_DEATH) {
-			System.out.println("QueueReader thread stopping");
 			THREAD_DEATH.notifyAll();
-			System.out.println("QueueReader thread stopped");
 		}
 	}
 
@@ -169,6 +156,16 @@ public class QueueReader {
 	private String getLabel() {
 		return database.getLabel();
 
+	}
+
+	private void notifyPaused() {
+		actionQueue.notifyPAUSED();
+	}
+
+	@Override
+	public void close() {
+		runner.stop();
+		waitOnThreadDeath(1000);
 	}
 
 	private static class StopReader extends Thread {
@@ -189,7 +186,7 @@ public class QueueReader {
 		}
 	}
 
-	private static class Runner implements Runnable {
+	private static class Runner implements Runnable, AutoCloseable {
 
 		private final QueueReader queueReader;
 		private final Thread readerThread;
@@ -206,16 +203,30 @@ public class QueueReader {
 		@Override
 		public void run() {
 			while (proceed) {
+				waitUntilActionAvailable();
 				dequeue();
 			}
 			LOG.log(Level.INFO, "Thread {0} for {1} stopped", new Object[]{readerThread.getName(), queueReader.getLabel()});
 			queueReader.notifyThreadDeath();
 		}
 
-		public void dequeue() {
+		private synchronized void dequeue() {
 			if (!paused) {
-				queueReader.attemptAction();
+				attemptAction();
+			} else {
+				notifyPaused();
 			}
+		}
+
+		private void notifyPaused() {
+			queueReader.notifyPaused();
+		}
+
+		private void attemptAction() {
+			queueReader.attemptAction();
+		}
+
+		private void waitUntilActionAvailable() {
 			queueReader.waitUntilActionsAvailable(10);
 		}
 
@@ -249,6 +260,11 @@ public class QueueReader {
 
 		private boolean isAlive() {
 			return readerThread.isAlive();
+		}
+
+		@Override
+		public void close() {
+			stop();
 		}
 
 	}

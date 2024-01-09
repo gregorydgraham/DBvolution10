@@ -78,7 +78,7 @@ public class ActionQueueTest {
 			exc.printStackTrace();
 		}
 		clusterDetails = new ClusterDetails("ActionQueueTest");
-		member = new ClusterMember(clusterDetails, new ClusterMemberList(clusterDetails), database);
+		member = new ClusterMember(clusterDetails, clusterDetails.getClusterLabel(), new ClusterMemberList(clusterDetails), database);
 	}
 
 	@After

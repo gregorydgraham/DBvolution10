@@ -86,7 +86,7 @@ import nz.co.gregs.dbvolution.utility.StringCheck;
  *
  * @author Gregory Graham
  */
-public abstract class DBDatabaseImplementation implements DBDatabase, Serializable, Cloneable, AutoCloseable {
+public abstract class DBDatabaseImplementation implements DBDatabase, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1l;
 	static final private Log LOG = LogFactory.getLog(DBDatabaseImplementation.class);
@@ -186,31 +186,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		} else {
 			return false;
 		}
-//		if (obj == null) {
-//			return false;
-//		}
-//		if (getClass() != obj.getClass()) {
-//			return false;
-//		}
-//		final DBDatabase other = (DBDatabase) obj;
-//		if ((this.getDriverName() == null) ? (other.getDriverName() != null) : !this.getDriverName().equals(other.getDriverName())) {
-//			return false;
-//		}
-//		if ((this.getJdbcURL() == null) ? (other.getJdbcURL() != null) : !this.getJdbcURL().equals(other.getJdbcURL())) {
-//			return false;
-//		}
-//		if ((this.getUsername() == null) ? (other.getUsername() != null) : !this.getUsername().equals(other.getUsername())) {
-//			return false;
-//		}
-//		if ((this.getPassword() == null) ? (other.getPassword() != null) : !this.getPassword().equals(other.getPassword())) {
-//			return false;
-//		}
-//		if ((this.getDataSource() == null) ? (other.getDataSource() != null) : !this.getDataSource().equals(other.getDataSource())) {
-//			return false;
-//		}
-//		final DatabaseConnectionSettings thisSettings = this.getSettings();
-//		final DatabaseConnectionSettings otherSettings = other.getSettings();
-//		return !(thisSettings != otherSettings && (thisSettings == null || !thisSettings.equals(otherSettings)));
 	}
 
 	/**
@@ -355,7 +330,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		return statement;
 	}
 
-	protected synchronized DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+	protected DBStatement getLowLevelStatement() throws DBDatabaseCurrentlyTerminatingException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (!terminated) {
 			DBConnection connection = getConnection();
 			try {
@@ -476,7 +451,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 						try {
 							addDatabaseSpecificFeatures(createStatement.getInternalStatement());
 						} catch (ExceptionDuringDatabaseFeatureSetup exceptionDuringDBCreation) {
-							System.out.println("AN EXCEPTION OCCURRED DURING DATABASE SETUP: " + exceptionDuringDBCreation.getMessage());
+							LOG.warn("AN EXCEPTION OCCURRED DURING DATABASE SETUP: " + exceptionDuringDBCreation.getMessage());
 						}
 						needToAddDatabaseSpecificFeatures = false;
 					}
@@ -527,9 +502,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 */
 	public DBActionList save(DBRow row) throws SQLException {
 		return insertOrUpdate(row);
-//		DBActionList changes = new DBActionList();
-//		changes.addAll(insertOrUpdate(row));
-//		return changes;
 	}
 
 	/**
@@ -542,8 +514,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 */
 	public DBActionList save(DBRow... rows) throws SQLException {
 		return insertOrUpdate(rows);
-//		final DBActionList save = save(Arrays.asList(rows));
-//		return save;
 	}
 
 	/**
@@ -556,11 +526,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 */
 	public DBActionList save(Collection<DBRow> rows) throws SQLException {
 		return insertOrUpdate(rows);
-//		DBActionList actions = new DBActionList();
-//		for (DBRow row : rows) {
-//			actions.addAll(save(row));
-//		}
-//		return actions;
 	}
 
 	/**
@@ -1460,7 +1425,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param newTableRow the table that needs foreign key constraints
 	 * @throws SQLException the database has had an issue.
 	 */
-	/*TODONE: convert to use DBAction to improve cluster implementation */
 	@Override
 	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		executeDBAction(new DBCreateForeignKeys(newTableRow));
@@ -1513,7 +1477,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * @param newTableRow the data model's version of the table that needs indexes
 	 * @throws SQLException database exceptions
 	 */
-	/*TODONE: convert to use DBAction to improve cluster implementation */
 	@Override
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 		DBCreateIndexesOnAllFields.createIndexes(this, newTableRow);
@@ -1600,7 +1563,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 * <p>
 	 * Your DBA will murder you.
 	 *
-	 * @param <TR> DBRow type
 	 * @param tableRow tableRow
 	 * @throws java.sql.SQLException database errors
 	 */
@@ -1849,13 +1811,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		return this.preventAccidentalDroppingDatabase;
 	}
 
-//	public synchronized void preventAccidentalDroppingOfDatabases(DBAction action) throws AccidentalDroppingOfDatabaseException {
-//		if (preventAccidentalDroppingDatabase && action.getIntent().isDropDatabase()) {
-//			throw new AccidentalDroppingOfDatabaseException();
-//		} else {
-//			preventAccidentalDroppingDatabase = true;
-//		}
-//	}
 	public synchronized void preventAccidentalDroppingOfDatabases() throws AccidentalDroppingOfDatabaseException {
 		if (preventAccidentalDroppingDatabase) {
 			throw new AccidentalDroppingOfDatabaseException();
@@ -2209,21 +2164,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-//	protected synchronized void preventAccidentalDroppingOfTables(DBAction action) throws AccidentalDroppingOfTableException {
-//		if (preventAccidentalDroppingOfTables && action.getIntent().isDropTable()) {
-//			throw new AccidentalDroppingOfTableException();
-//		} else {
-//			preventAccidentalDroppingOfTables = true;
-//		}
-//	}
-//
-//	protected synchronized void preventAccidentalDeletingAllRowsFromTable(DBAction action) throws AccidentalDroppingOfTableException {
-//		if (preventAccidentalDeletingAllRowFromTable && action.getIntent().isDeleteAllRows()) {
-//			throw new AccidentalDeletingAllRowsFromTableException();
-//		} else {
-//			preventAccidentalDeletingAllRowFromTable = true;
-//		}
-//	}
 	protected synchronized void preventAccidentalDroppingOfTables() throws AccidentalDroppingOfTableException {
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -2274,10 +2214,6 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 
 	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
-//		preventAccidentalDDLDuringTransaction(action);
-//		preventAccidentalDroppingOfDatabases(action);
-//		preventAccidentalDroppingOfTables(action);
-//		preventAccidentalDeletingAllRowsFromTable(action);
 		if (quietExceptionsPreference) {
 			try {
 				return action.action(this);
@@ -2370,13 +2306,8 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	}
 
 	private boolean checkTableExistsViaMetaData(DBRow table) throws SQLException {
-//		boolean tableExists = false;
 		ResultSet rset = getMetaDataForTable(table);
 		return checkMetaDataForTable(table, rset);
-//		if (rset.next()) {
-//			tableExists = true;
-//		}
-//		return tableExists;
 	}
 
 	protected boolean checkMetaDataForTable(DBRow table, ResultSet rset) throws SQLException {

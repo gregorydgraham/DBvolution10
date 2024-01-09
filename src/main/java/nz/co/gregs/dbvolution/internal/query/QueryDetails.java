@@ -400,8 +400,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 					}
 					break;// we have successfully run the count so stop
 				}catch(Exception exc){
-					System.out.println("EXCEPTION DURING COUNT: caught in "+this.getClass().getSimpleName());
-					exc.printStackTrace();
 					throw exc;
 				}
 			}

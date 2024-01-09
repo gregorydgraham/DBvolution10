@@ -248,9 +248,11 @@ public abstract class DBAction implements Serializable {
 
 	protected void executeOnStatement(DBDatabase db, DBActionList actions) throws SQLException {
 		try (final DBStatement statement = db.getDBStatement()) {
-			for (DBAction act : actions) {
-				for (String sql : act.getSQLStatements(db)) {
-					statement.execute(act.toString(), getIntent(), sql);
+			if (statement != null) { // this happens if the database is being shut down
+				for (DBAction act : actions) {
+					for (String sql : act.getSQLStatements(db)) {
+						statement.execute(act.toString(), getIntent(), sql);
+					}
 				}
 			}
 		}

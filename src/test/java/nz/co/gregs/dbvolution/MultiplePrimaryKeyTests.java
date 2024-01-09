@@ -82,7 +82,6 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 						)
 		);
 
-//		System.out.println("getColleaguesToList: \n" + dbQuery.getSQLForQuery());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		assertThat(allRows.size(), is(2));
 		Colleagues colleagueRow1 = allRows.get(0).get(new Colleagues());
@@ -113,7 +112,6 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 			}
 			accepted = colleagues.acceptanceDate.isNotNull();
 			declined = colleagues.denialDate.isNotNull();
-//			System.out.println("ColleagueListItem");
 		}
 
 		public Colleagues getColleaguesRow() {

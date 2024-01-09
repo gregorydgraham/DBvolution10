@@ -175,8 +175,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param examples a list of DBRow objects that defines required tables and
 	 * criteria
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery add(DBRow... examples) {
@@ -369,9 +367,6 @@ public class DBQuery implements Serializable {
 	 * Similarly conditions added to the DBQuery using
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
 	 * are added.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances. 1 Database exceptions may be thrown
@@ -1028,9 +1023,6 @@ public class DBQuery implements Serializable {
 	 *
 	 * <p>
 	 * N.B. Optional (outer) tables are only supported with ANSI syntax.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the useANSISyntax flag
 	 */
@@ -1838,7 +1830,7 @@ public class DBQuery implements Serializable {
 		setReturnEmptyStringForNullString(details.getReturnEmptyStringForNullString());
 	}
 
-	void setRawSQL(String rawQuery) {
+	public void setRawSQL(String rawQuery) {
 		if (rawQuery == null) {
 			details.setRawSQLClause("");
 		} else {
@@ -1867,12 +1859,6 @@ public class DBQuery implements Serializable {
 	 */
 	public DBQuery addExtraExamples(DBRow... extraExamples) {
 		details.addExtraExamples(extraExamples);
-//		final List<DBRow> extras = this.details.getExtraExamples();
-//		for (DBRow extraExample : extraExamples) {
-//			if (extraExample != null) {
-//				extras.add(extraExample);
-//			}
-//		}
 		blankResults();
 		return this;
 	}
@@ -1961,8 +1947,6 @@ public class DBQuery implements Serializable {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the conditions
 	 */
@@ -2055,9 +2039,6 @@ public class DBQuery implements Serializable {
 	/**
 	 * Return a list of all tables, required or optional, used in this query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return all DBRows used in this DBQuery
 	 */
 	public List<DBRow> getAllTables() {
@@ -2069,9 +2050,6 @@ public class DBQuery implements Serializable {
 	/**
 	 * Return a list of all the required tables used in this query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return all DBRows required by this DBQuery
 	 */
 	public List<DBRow> getRequiredTables() {
@@ -2082,9 +2060,6 @@ public class DBQuery implements Serializable {
 
 	/**
 	 * Return a list of all the optional tables used in this query.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return all DBRows optionally returned by this DBQuery
 	 */
@@ -2102,9 +2077,6 @@ public class DBQuery implements Serializable {
 	 * This method allows you to retrieve the database used when you execute this
 	 * query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return the database used during execution of this query.
 	 */
 	public DBDatabase getDatabase() {
@@ -2118,9 +2090,6 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * This method allows you to retrieve the database used when you execute this
 	 * query.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the database used during execution of this query.
 	 */
@@ -2540,14 +2509,14 @@ public class DBQuery implements Serializable {
 		return this.details.getOptions().getPrintSQLBeforeExecution();
 	}
 
-	void setQuietExceptions(boolean b) {
+	public void setQuietExceptions(boolean b) {
 		this.details.setQuietExceptions(b);
 	}
 
 	/**
 	 * @return the ignoreExceptions
 	 */
-	boolean isQuietExceptions() {
+	public boolean isQuietExceptions() {
 		return details.isQuietExceptions();
 	}
 }

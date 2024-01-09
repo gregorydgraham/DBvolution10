@@ -45,9 +45,9 @@ import nz.co.gregs.looper.StopWatch;
  */
 public class NoOpDBAction extends DBAction {
 
-	private static int counter = 0;
 	private static final long serialVersionUID = 1L;
 	private final long WAIT_TIME_IN_MILLIS;
+	private String label = "";
 
 	public NoOpDBAction() {
 		super(null, QueryIntention.NO_OP);
@@ -55,7 +55,12 @@ public class NoOpDBAction extends DBAction {
 	}
 
 	public NoOpDBAction(long waitTimeInMilliseconds) {
+		this(waitTimeInMilliseconds, "");
+	}
+
+	public NoOpDBAction(long waitTimeInMilliseconds, String label) {
 		super(null, QueryIntention.NO_OP);
+		this.label = label;
 		if (waitTimeInMilliseconds > 0) {
 			WAIT_TIME_IN_MILLIS = waitTimeInMilliseconds;
 		} else {
@@ -90,13 +95,14 @@ public class NoOpDBAction extends DBAction {
 			try {
 				timer = StopWatch.stopwatch();
 				Thread.sleep(WAIT_TIME_IN_MILLIS);
-//				System.out.println("STALLED "+this);
 				System.out.println("STALLED " + this + " FOR: " + timer.duration());
 			} catch (InterruptedException ex) {
 				timer.stop();
 				Logger.getLogger(NoOpDBAction.class.getName()).log(Level.SEVERE, null, ex);
 
-				System.out.println("INTERUPTED AFTER: " + timer.duration());
+				System.out.println("INTERRUPTED AFTER: " + timer.duration());
+			}finally{
+				timer.stop();
 			}
 		}
 		return new DBActionList();
@@ -104,6 +110,6 @@ public class NoOpDBAction extends DBAction {
 
 	@Override
 	public String toString() {
-		return getIntent().toString();
+		return getIntent().toString()+":"+label;
 	}
 }
