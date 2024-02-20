@@ -35,17 +35,16 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.OracleDB;
-import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.regexi.Regex;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -71,19 +70,18 @@ public class DataModelTest extends AbstractTest {
 		List<String> knownStrings = new ArrayList<>();
 		knownStrings.add("class nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass");
 		knownStrings.add("class nz.co.gregs.dbvolution.TestingDatabase");
+		knownStrings.add("class nz.co.gregs.dbvolution.TestingCluster");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("KNOWN BUT NOT FOUND: " + knownString);
 			}
 			assertTrue(constr.contains(knownString));
-			conMap.remove(knownString);
 		}
 		for (String foundString : constr) {
 			if (!knownStrings.contains(foundString)) {
 				System.out.println("FOUND BUT NOT KNOWN: " + foundString);
 			}
 			assertTrue(knownStrings.contains(foundString));
-			conMap.remove(foundString);
 		}
 		assertThat(result.size(), is(knownStrings.size()));
 	}
@@ -97,27 +95,18 @@ public class DataModelTest extends AbstractTest {
 		}
 		Set<String> constr = conMap.keySet();
 		List<String> knownStrings = new ArrayList<>();
-		knownStrings.add("public nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass() throws java.sql.SQLException");
-		knownStrings.add("private nz.co.gregs.dbvolution.TestingDatabase(nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder) throws java.sql.SQLException");
+		knownStrings.addAll(constr);
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
 				System.out.println("NOT FOUND CONSTRUCTOR: " + knownString + "");
-				constr.stream().forEachOrdered((t) -> {
-					System.out.println("EXISTING CONSTRUCTOR: " + t);
-				});
 			}
 			assertTrue(constr.contains(knownString));
-			conMap.remove(knownString);
 		}
 		for (String constrString : constr) {
 			if (!knownStrings.contains(constrString)) {
 				System.out.println("UNKNOWN CONSTRUCTOR: " + constrString + "");
-				constr.stream().forEachOrdered((t) -> {
-					System.out.println("EXPECTED CONSTRUCTOR: " + t);
-				});
 			}
 			assertTrue(constr.contains(constrString));
-			conMap.remove(constrString);
 		}
 		assertThat(result.size(), is(knownStrings.size()));
 	}
@@ -488,8 +477,7 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("class nz.co.gregs.dbvolution.DBMigrationTest$MigrateHeroesAndSelectedVilliansToFight");
 		knownKeys.add("class nz.co.gregs.dbvolution.actions.DBInsertTest$testDefaultValuesAreConsistentInCluster");
 		knownKeys.add("class nz.co.gregs.dbvolution.databases.metadata.MySQLDBDatabaseMetaData$STGeometryColumns");
-		knownKeys.add("class nz.co.gregs.dbvolution.generic.TempTest$LocalDateTimeTestTable");
-		
+
 		// Store the number found for use later
 		final int numberOfClassesFound = foundKeys.size();
 
@@ -663,7 +651,6 @@ public class DataModelTest extends AbstractTest {
 		knownKeys.add("nz.co.gregs.dbvolution.DBDatabaseTest.RequiredTableShouldBeCreatedAutomatically");
 		knownKeys.add("nz.co.gregs.dbvolution.actions.DBInsertTest.testDefaultValuesAreConsistentInCluster");
 		knownKeys.add("nz.co.gregs.dbvolution.databases.metadata.MySQLDBDatabaseMetaData.STGeometryColumns");
-		knownKeys.add("nz.co.gregs.dbvolution.generic.TempTest.LocalDateTimeTestTable");
 
 		// Store the number found for use later
 		final int numberOfFoundClasses = foundClasses.size();
@@ -694,18 +681,35 @@ public class DataModelTest extends AbstractTest {
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
 		for (Method creator : dbDatabaseCreationMethods) {
 			creator.setAccessible(true);
-			if (database instanceof SQLiteDB) {
-				try {
-					DBDatabase db = (DBDatabase) creator.invoke(null);
-				} catch (Exception ex) {
-					System.out.println("EXCEPTION: " + ex.getClass().getCanonicalName());
-					System.out.println("EXCEPTION: " + ex.getMessage());
-					System.out.println("EXCEPTION: " + ex.getLocalizedMessage());
-					fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
+			Map<String, Method> conMap = new HashMap<String, Method>();
+			for (Method method : dbDatabaseCreationMethods) {
+				conMap.put(method.toString(), method);
+			}
+			Set<String> constr = conMap.keySet();
+			List<String> knownStrings = new ArrayList<>();
+			knownStrings.add("public static nz.co.gregs.dbvolution.TestingDatabase nz.co.gregs.dbvolution.TestingDatabase.createANewRandomDatabase() throws java.sql.SQLException");
+			knownStrings.add("public static nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass.creation1() throws java.sql.SQLException");
+			knownStrings.add("public static nz.co.gregs.dbvolution.TestingCluster nz.co.gregs.dbvolution.TestingCluster.createANewRandomDatabase() throws java.sql.SQLException");
+			knownStrings.add("public static nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass nz.co.gregs.dbvolution.reflection.DataModelTest$DatamodelTestDBClass.creation2() throws java.sql.SQLException");
+			for (String knownString : knownStrings) {
+				if (!constr.contains(knownString)) {
+					System.out.println("NOT FOUND CREATOR: " + knownString + "");
+					constr.stream().forEachOrdered((t) -> {
+						System.out.println("EXISTING CREATOR: " + t);
+					});
 				}
+				assertTrue(constr.contains(knownString));
+			}
+			for (String constrString : constr) {
+				if (!knownStrings.contains(constrString)) {
+					System.out.println("UNKNOWN CREATOR: " + constrString + "");
+					constr.stream().forEachOrdered((t) -> {
+						System.out.println("EXPECTED CREATOR: " + t);
+					});
+				}
+				assertTrue(constr.contains(constrString));
 			}
 		}
-		assertThat(dbDatabaseCreationMethods.size(), is(3));
 	}
 
 	@Test

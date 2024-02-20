@@ -101,7 +101,7 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 	}
 
 	public synchronized final ClusterMember addWithoutStart(DBDatabase db) {
-		final ClusterMember clusterMember = new ClusterMember(details,details.getClusterLabel(), this, db);
+		final ClusterMember clusterMember = new ClusterMember(details, details.getClusterLabel(), this, db);
 		members.put(getKey(db), clusterMember);
 		return clusterMember;
 	}
@@ -120,12 +120,13 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 
 	public synchronized boolean remove(DBDatabase db) {
 		final String key = getKey(db);
-		final ClusterMember member = members.get(key);
+		ClusterMember member = members.remove(key);
 		if (member != null) {
-			members.remove(key);
 			member.stop();
+		} else {
+			System.out.println("CLUSTER ERROR - DATABASE NOT REMOVED BECAUSE KEY NOT FOUND: " + key);
 		}
-		return true;
+		return member != null;
 	}
 
 	public synchronized boolean containsAll(Collection<DBDatabase> c) {
@@ -244,13 +245,12 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 		List<DBDatabase> found = new ArrayList<>(0);
 		for (Map.Entry<String, ClusterMember> entry : members.entrySet()) {
 			String key = entry.getKey();
-			ClusterMember member = entry.getValue();
-			DBDatabaseCluster.Status val = member.getStatus();
-			for (DBDatabaseCluster.Status status : statuses) {
-				if (val.equals(status)) {
-					DBDatabase db = members.get(key).getDatabase();
-					found.add(db);
-					break;
+			if (key != null) {
+				ClusterMember member = entry.getValue();
+				DBDatabaseCluster.Status val = member.getStatus();
+				if(val.oneOf(statuses)){
+						DBDatabase db = members.get(key).getDatabase();
+						found.add(db);
 				}
 			}
 		}
@@ -423,12 +423,12 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 		return false;
 	}
 
-	boolean waitUntilDatabaseHasSynchronized(DBDatabase database, long timeoutInMilliseconds) {
+	public boolean waitUntilDatabaseHasSynchronized(DBDatabase database, long timeoutInMilliseconds) {
 		StopWatch timer = StopWatch.start();
 		if (isSynchronised(database)) {
 			return true;
 		} else {
-			while (!isSynchronised(database) && timer.splitTime() < timeoutInMilliseconds) {
+			while (timer.splitTime() < timeoutInMilliseconds && !isSynchronised(database)) {
 				waitUntilADatabaseIsReady(timeoutInMilliseconds);
 			}
 			timer.stop();
@@ -450,10 +450,10 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 		}
 		ClusterMember templateMember = getMember(template);
 		ClusterMember secondaryMember = getMember(secondary);
-		if (templateMember!=null){
+		if (templateMember != null) {
 			templateMember.copyTo(secondaryMember);
 		}
-		
+
 	}
 
 	private boolean waitUntilADatabaseIsReady() {

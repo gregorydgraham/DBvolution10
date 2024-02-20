@@ -95,12 +95,12 @@ public class NoOpDBAction extends DBAction {
 			try {
 				timer = StopWatch.stopwatch();
 				Thread.sleep(WAIT_TIME_IN_MILLIS);
-				System.out.println("STALLED " + this + " FOR: " + timer.duration());
+				//System.out.println("STALLED " + this + " FOR: " + timer.duration());
 			} catch (InterruptedException ex) {
 				timer.stop();
 				Logger.getLogger(NoOpDBAction.class.getName()).log(Level.SEVERE, null, ex);
 
-				System.out.println("INTERRUPTED AFTER: " + timer.duration());
+				//System.out.println("INTERRUPTED AFTER: " + timer.duration());
 			}finally{
 				timer.stop();
 			}

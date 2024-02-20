@@ -42,6 +42,7 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 
 			@Override
 			public DBActionList script(DBDatabase db) throws Exception {
+				db.preventDroppingOfTables(false);
 				db.dropTable(new Marque());
 				return new DBActionList();
 			}
@@ -87,7 +88,8 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 
 			@Override
 			public DBActionList script(DBDatabase db) throws Exception {
-				db.dropDatabase(false);
+				db.preventDroppingOfDatabases(false);
+				db.dropDatabase(true);
 				return new DBActionList();
 			}
 		};

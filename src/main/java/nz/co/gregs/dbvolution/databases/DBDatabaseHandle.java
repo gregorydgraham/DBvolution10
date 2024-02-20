@@ -723,4 +723,9 @@ public class DBDatabaseHandle implements DBDatabase {
 		this.wrappedDatabase.close();
 	}
 
+	@Override
+	public void setLabel(String label) {
+		wrappedDatabase.setLabel(label);
+	}
+
 }

@@ -1648,7 +1648,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 */
 	@Override
 	public synchronized void dropDatabase(boolean doIt) throws AccidentalDroppingOfDatabaseException, UnableToDropDatabaseException, SQLException, AutoCommitActionDuringTransactionException, ExceptionThrownDuringTransaction {
-		dropDatabase(getDatabaseName(), true);
+		dropDatabase(getDatabaseName(), doIt);
 	}
 
 	/**
@@ -1700,7 +1700,8 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 	 *
 	 * @param label a purely arbitrary value
 	 */
-	final public void setLabel(String label) {
+	@Override
+	public void setLabel(String label) {
 		getSettings().setLabel(label);
 	}
 
@@ -2214,6 +2215,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 
 	@Override
 	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
+		preventAccidentalDDLDuringTransaction(action);
 		if (quietExceptionsPreference) {
 			try {
 				return action.action(this);

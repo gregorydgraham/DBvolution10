@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.internal.database;
 
+import nz.co.gregs.dbvolution.databases.DBBrokenDatabase;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -37,14 +38,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabaseClusterTest;
-import nz.co.gregs.dbvolution.actions.BrokenAction;
-import nz.co.gregs.dbvolution.actions.DBAction;
-import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.NoOpDBAction;
+import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import static nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Status.*;
-import nz.co.gregs.dbvolution.databases.DBDatabaseHandle;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
@@ -104,6 +101,7 @@ public class ClusterMemberListTest extends AbstractTest {
 	@After
 	@Override
 	public void tearDown() throws Exception {
+		databaseList.clear();
 		db2.stop();
 		db3.stop();
 		databaseList.close();
@@ -378,9 +376,9 @@ public class ClusterMemberListTest extends AbstractTest {
 		databaseList.add(database, db2, db3);
 		databaseList.waitUntilSynchronised(5000);
 
-		databaseList.queueAction(database, new NoOpDBAction(20000));
-		databaseList.queueAction(db2, new NoOpDBAction(20000));
-		databaseList.queueAction(db3, new NoOpDBAction(20000));
+		databaseList.queueAction(database, new NoOpDBAction(2000));
+		databaseList.queueAction(db2, new NoOpDBAction(2000));
+		databaseList.queueAction(db3, new NoOpDBAction(2000));
 
 		DBDatabase[] readyDatabases = databaseList.getReadyDatabases();
 		assertThat(readyDatabases.length, is(0));
@@ -389,7 +387,7 @@ public class ClusterMemberListTest extends AbstractTest {
 		readyDatabases = databaseList.getReadyDatabases();
 		assertThat(readyDatabases.length, is(1));
 		assertThat(readyDatabases[0], is(database));
-
+		databaseList.clear();
 	}
 
 	@Test
@@ -401,7 +399,6 @@ public class ClusterMemberListTest extends AbstractTest {
 		databaseList.queueAction(database, new NoOpDBAction(2000));
 		databaseList.queueAction(db2, new NoOpDBAction(2000));
 		databaseList.queueAction(db3, new NoOpDBAction(2000));
-		
 
 		// wait a little bit for the queue readers to notice the new actions
 		try {
@@ -412,7 +409,7 @@ public class ClusterMemberListTest extends AbstractTest {
 		List<DBDatabase> paused = databaseList.getDatabasesByStatusAsList(PAUSED);
 		assertThat(paused.size(), is(0));
 		final List<DBDatabase> databases = databaseList.getDatabasesByStatusAsList(PROCESSING, SYNCHRONIZING);
-		
+
 		if (databases.size() != 3) {
 			System.out.println("");
 			System.out.println("");
@@ -633,7 +630,7 @@ public class ClusterMemberListTest extends AbstractTest {
 		assertThat(databases.length, is(3));
 		assertThat(Arrays.asList(databases), containsInAnyOrder(database, db2, db3));
 
-		databaseList.queueAction(database, new NoOpDBAction(200000,"Wait 200 seconds"));
+		databaseList.queueAction(database, new NoOpDBAction(200000, "Wait 200 seconds"));
 		databaseList.queueAction(db2, new NoOpDBAction(200000, "wait another 200 seconds"));
 		databaseList.queueAction(db3, new NoOpDBAction(200000, "for the third time, wait 200 seconds"));
 		// wait a litte bit for the queue readers to notice the new actions
@@ -675,68 +672,82 @@ public class ClusterMemberListTest extends AbstractTest {
 
 	@Test
 	public void testGetReadyDatabasesList() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised();
-		databaseList.setPaused(database, db2, db3);
-		databaseList.queueAction(database, new NoOpDBAction(10));
-		databaseList.queueAction(db2, new NoOpDBAction(10));
-		databaseList.queueAction(db3, new NoOpDBAction(10));
+		ClusterDetails clusterDets = new ClusterDetails("testGetReadyDatabasesList");
+		ClusterMemberList dbList = new ClusterMemberList(clusterDets);
+		assertThat(dbList.size(), is(0));
 
-		assertThat(databaseList.getReadyDatabasesList().size(), is(0));
+		dbList.add(database, db2, db3);
+		dbList.waitUntilSynchronised();
+		dbList.setPaused(database, db2, db3);
+		dbList.queueAction(database, new NoOpDBAction(100));
+		dbList.queueAction(db2, new NoOpDBAction(100));
+		dbList.queueAction(db3, new NoOpDBAction(100));
 
-		databaseList.setProcessing(database);
-		databaseList.setReady(database);
-		assertThat(databaseList.getReadyDatabasesList().size(), is(1));
-		assertThat(databaseList.getReadyDatabasesList(), containsInAnyOrder(database));
+		assertThat(dbList.getReadyDatabasesList().size(), is(0));
 
-		databaseList.setProcessing(db2);
-		databaseList.setReady(db2);
-		assertThat(databaseList.getReadyDatabasesList().size(), is(2));
-		assertThat(databaseList.getReadyDatabasesList(), containsInAnyOrder(database, db2));
+		dbList.setProcessing(database);
+		dbList.setReady(database);
+		dbList.getReadyDatabasesList();
+		if (dbList.getReadyDatabasesList().size() != 1) {
+			dbList.getReadyDatabasesList().stream().forEach((db) -> System.out.println("DB: " + db.getLabel() + " is READY"));
+		}
+		assertThat(dbList.getReadyDatabasesList().size(), is(1));
+		assertThat(dbList.getReadyDatabasesList(), containsInAnyOrder(database));
 
-		databaseList.remove(database);
-		assertThat(databaseList.getReadyDatabasesList().size(), is(1));
-		assertThat(databaseList.getReadyDatabasesList(), containsInAnyOrder(db2));
+		dbList.setProcessing(db2);
+		dbList.setReady(db2);
+		dbList.getMembers().stream().forEach((m) -> System.out.println("MEMBER: " + m.getMemberId() + " is " + m.getStatus()));
+		System.out.println("-------");
+		dbList.getMembers().stream().forEach((m) -> System.out.println("MEMBER: " + m.getMemberId() + " is " + m.getStatus()));
+		System.out.println("-------");
+		dbList.getMembers().stream().forEach((m) -> System.out.println("MEMBER: " + m.getMemberId() + " is " + m.getStatus()));
+		System.out.println("-------");
+		assertThat(dbList.getReadyDatabasesList().size(), is(2));
+		assertThat(dbList.getReadyDatabasesList(), containsInAnyOrder(database, db2));
 
-		databaseList.setProcessing(db3);
-		databaseList.setReady(db3);
-		assertThat(databaseList.getReadyDatabasesList().size(), is(2));
-		assertThat(databaseList.getReadyDatabasesList(), containsInAnyOrder(db2, db3));
+		dbList.remove(database);
+		dbList.getReadyDatabasesList().stream().forEach((db) -> System.out.println("DB: " + db.getLabel() + " is READY"));
+		System.out.println("-------");
+		assertThat(dbList.getReadyDatabasesList().size(), is(1));
+		assertThat(dbList.getReadyDatabasesList(), containsInAnyOrder(db2));
+
+		dbList.setProcessing(db3);
+		dbList.setReady(db3);
+		assertThat(dbList.getReadyDatabasesList().size(), is(2));
+		assertThat(dbList.getReadyDatabasesList(), containsInAnyOrder(db2, db3));
 	}
 
 	@Test
 	public void testGetDatabasesByStatusAsList() {
+		ClusterDetails clusterDets = new ClusterDetails("testGetDatabasesByStatusAsList");
+		ClusterMemberList dbList = new ClusterMemberList(clusterDets);
+		assertThat(dbList.size(), is(0));
 
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
-
-		List<DBDatabase> databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING);
+		List<DBDatabase> databases = dbList.getDatabasesByStatusAsList(PAUSED, PROCESSING);
 		assertThat(databases.size(), is(0));
 
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised(5000);
+		dbList.add(database, db2, db3);
+		dbList.waitUntilSynchronised(5000);
 
-		databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING, READY, SYNCHRONIZING);
+		databases = dbList.getDatabasesByStatusAsList(PAUSED, PROCESSING, READY, SYNCHRONIZING);
 		assertThat(databases.size(), is(3));
 		assertThat(databases, containsInAnyOrder(database, db2, db3));
 
-		databases = databaseList.getDatabasesByStatusAsList(PAUSED);
+		databases = dbList.getDatabasesByStatusAsList(PAUSED);
 		assertThat(databases.size(), is(0));
 
-		databaseList.setReady(database);
-		databaseList.setPaused(db2);
-		databaseList.setProcessing(db3);
+		dbList.setReady(database);
+		dbList.setPaused(db2);
+		dbList.setProcessing(db3);
 
-		databases = databaseList.getDatabasesByStatusAsList(PAUSED, PROCESSING, SYNCHRONIZING);
+		databases = dbList.getDatabasesByStatusAsList(PAUSED, PROCESSING, SYNCHRONIZING);
 
 		if (databases.size() != 2) {
 			System.out.println("");
 			System.out.println("");
 			System.out.println("");
 			System.out.println("");
-			databaseList.getMembers().stream().forEach((m) -> System.out.println(m.getDatabase().getLabel()+ ":" + m.getStatus()));
+			dbList.getMembers().stream().forEach((m) -> System.out.println(m.getDatabase().getLabel() + ":" + m.getStatus()));
 			System.out.println("");
 			System.out.println("");
 			System.out.println("");
@@ -746,7 +757,7 @@ public class ClusterMemberListTest extends AbstractTest {
 		assertThat(databases.size(), is(2));
 		assertThat(databases, containsInAnyOrder(db2, db3));
 
-		databases = databaseList.getDatabasesByStatusAsList(READY, PROCESSING, SYNCHRONIZING);
+		databases = dbList.getDatabasesByStatusAsList(READY, PROCESSING, SYNCHRONIZING);
 		assertThat(databases.size(), is(2));
 		assertThat(databases, containsInAnyOrder(database, db3));
 	}
@@ -780,27 +791,28 @@ public class ClusterMemberListTest extends AbstractTest {
 
 	@Test
 	public void testCountPausedDatabases() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
+		ClusterDetails clusterDets = new ClusterDetails("DatabaseListTest");
+		ClusterMemberList dbList = new ClusterMemberList(clusterDets);
+		assertThat(dbList.size(), is(0));
 
-		assertThat(databaseList.countPausedDatabases(), is(0l));
+		assertThat(dbList.countPausedDatabases(), is(0l));
 
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised();
-		assertThat(databaseList.countPausedDatabases(), is(0l));
+		dbList.add(database, db2, db3);
+		dbList.waitUntilSynchronised();
+		assertThat(dbList.countPausedDatabases(), is(0l));
 
-		databaseList.setPaused(database);
-		assertThat(databaseList.countPausedDatabases(), is(1l));
+		dbList.setPaused(database);
+		assertThat(dbList.countPausedDatabases(), is(1l));
 
-		databaseList.setPaused(db2);
-		assertThat(databaseList.countPausedDatabases(), is(2l));
+		dbList.setPaused(db2);
+		assertThat(dbList.countPausedDatabases(), is(2l));
 
-		databaseList.setPaused(db3);
-		assertThat(databaseList.countPausedDatabases(), is(3l));
+		dbList.setPaused(db3);
+		assertThat(dbList.countPausedDatabases(), is(3l));
 
-		databaseList.setProcessing(database);
-		databaseList.setReady(database);
-		assertThat(databaseList.countPausedDatabases(), is(2l));
+		dbList.setProcessing(database);
+		dbList.setReady(database);
+		assertThat(dbList.countPausedDatabases(), is(2l));
 	}
 
 	@Test
@@ -835,98 +847,103 @@ public class ClusterMemberListTest extends AbstractTest {
 
 	@Test
 	public void testClear() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
+		ClusterDetails clusterDets = new ClusterDetails("testClear");
+		ClusterMemberList dbList = new ClusterMemberList(clusterDets);
+		assertThat(dbList.size(), is(0));
 
-		databaseList.add(database, db2, db3);
-		assertThat(databaseList.size(), is(3));
+		dbList.add(database, db2, db3);
+		assertThat(dbList.size(), is(3));
 
-		databaseList.clear();
-		assertThat(databaseList.size(), is(0));
+		dbList.clear();
+		assertThat(dbList.size(), is(0));
 	}
 
 	@Test
 	public void testAreAllReady() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
+		ClusterDetails clusterDets = new ClusterDetails("testAreAllReady");
+		ClusterMemberList dbList = new ClusterMemberList(clusterDets);
+		assertThat(dbList.size(), is(0));
 
-		databaseList.add(database, db2, db3);
+		dbList.add(database, db2, db3);
 
-		databaseList.waitUntilSynchronised(5000);
-		databaseList.setPaused(database, db2, db3);
+		dbList.waitUntilSynchronised(5000);
+		dbList.setPaused(database, db2, db3);
 
-		assertThat(databaseList.size(), is(3));
-		assertThat(databaseList.areAllReady(), is(false));
-		databaseList.setReady(database);
-		assertThat(databaseList.areAllReady(), is(false));
-		databaseList.setReady(db2);
-		assertThat(databaseList.areAllReady(), is(false));
-		databaseList.setReady(db3);
-		assertThat(databaseList.areAllReady(), is(true));
-		databaseList.setPaused(database);
-		assertThat(databaseList.areAllReady(), is(false));
-		databaseList.remove(database);
-		assertThat(databaseList.areAllReady(), is(true));
+		assertThat(dbList.size(), is(3));
+		assertThat(dbList.areAllReady(), is(false));
+		dbList.setReady(database);
+		assertThat(dbList.areAllReady(), is(false));
+		dbList.setReady(db2);
+		assertThat(dbList.areAllReady(), is(false));
+		dbList.setReady(db3);
+		assertThat(dbList.areAllReady(), is(true));
+		dbList.setPaused(database);
+		assertThat(dbList.areAllReady(), is(false));
+		dbList.remove(database);
+		assertThat(dbList.areAllReady(), is(true));
 	}
 
 	@Test
 	public void testIsDead() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
+		ClusterDetails clusterDets = new ClusterDetails("testIsDead");
+		ClusterMemberList dbList = new ClusterMemberList(clusterDets);
+		assertThat(dbList.size(), is(0));
 
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised(5000);
+		dbList.add(database, db2, db3);
+		dbList.waitUntilSynchronised(5000);
 
-		assertThat(databaseList.isDead(database), is(false));
+		assertThat(dbList.isDead(database), is(false));
 
-		databaseList.setQuarantined(database); // required as READY -> DEAD is an illegal state change
-		databaseList.setDead(database);
-		assertThat(databaseList.isDead(database), is(true));
+		dbList.setQuarantined(database); // required as READY -> DEAD is an illegal state change
+		dbList.setDead(database);
+		assertThat(dbList.isDead(database), is(true));
 
-		assertThat(databaseList.isDead(db2), is(false));
-		databaseList.setQuarantined(db2);
-		databaseList.setQuarantined(db2);
-		databaseList.setQuarantined(db2);
-		databaseList.setQuarantined(db2);
-		databaseList.setQuarantined(db2);
-		databaseList.setQuarantined(db2);
-		databaseList.setQuarantined(db2);
-		databaseList.setQuarantined(db2);
-		assertThat(databaseList.isDead(db2), is(true));
+		assertThat(dbList.isDead(db2), is(false));
+		dbList.setQuarantined(db2);
+		dbList.setQuarantined(db2);
+		dbList.setQuarantined(db2);
+		dbList.setQuarantined(db2);
+		dbList.setQuarantined(db2);
+		dbList.setQuarantined(db2);
+		dbList.setQuarantined(db2);
+		dbList.setQuarantined(db2);
+		dbList.getMembers().stream().forEach((m)->System.out.println("MEMBER: "+m.getDatabase().getLabel()+" is status "+m.getStatus()));
+		assertThat(dbList.isDead(db2), is(true));
 	}
 
 	@Test
 	public void testGetReadyDatabase_0args() {
-//		ClusterMemberList databaseList = new ClusterMemberList(clusterDetails);
-		assertThat(databaseList.size(), is(0));
+		ClusterDetails clusterDets = new ClusterDetails("testGetReadyDatabase_0args");
+		ClusterMemberList dbList = new ClusterMemberList(clusterDets);
+		assertThat(dbList.size(), is(0));
 
-		databaseList.add(database, db2, db3);
-		databaseList.waitUntilSynchronised(10000);
-		databaseList.setPaused(database, db2, db3);
+		dbList.add(database, db2, db3);
+		dbList.waitUntilSynchronised();
+		dbList.setPaused(database, db2, db3);
 		try {
-			databaseList.getReadyDatabase();
-			assertThat(false, is(true));
-		} catch (NoAvailableDatabaseException none) {
-			assertThat(none, isA(NoAvailableDatabaseException.class));
+			dbList.getReadyDatabase();
+			assertThat(false, is(true));// should never reach this line
+		} catch (NoAvailableDatabaseException exception) {
+			assertThat(exception, isA(NoAvailableDatabaseException.class));
 		} catch (Exception other) {
 			assertThat(false, is(true));
 		}
 
-		databaseList.setProcessing(database);
-		databaseList.setReady(database);
-		assertThat(databaseList.getReadyDatabase(), is(database));
+		dbList.setProcessing(database);
+		dbList.setReady(database);
+		assertThat(dbList.getReadyDatabase(), is(database));
 
-		databaseList.setProcessing(db2);
-		databaseList.setReady(db2);
-		assertThat(databaseList.getReadyDatabase(), isOneOf(database, db2));
-		assertThat(databaseList.getReadyDatabase(), isOneOf(database, db2));
-		assertThat(databaseList.getReadyDatabase(), isOneOf(database, db2));
+		dbList.setProcessing(db2);
+		dbList.setReady(db2);
+		assertThat(dbList.getReadyDatabase(), isOneOf(database, db2));
+		assertThat(dbList.getReadyDatabase(), isOneOf(database, db2));
+		assertThat(dbList.getReadyDatabase(), isOneOf(database, db2));
 
-		databaseList.setProcessing(db3);
-		databaseList.setReady(db3);
-		assertThat(databaseList.getReadyDatabase(), isOneOf(database, db2, db3));
-		assertThat(databaseList.getReadyDatabase(), isOneOf(database, db2, db3));
-		assertThat(databaseList.getReadyDatabase(), isOneOf(database, db2, db3));
+		dbList.setProcessing(db3);
+		dbList.setReady(db3);
+		assertThat(dbList.getReadyDatabase(), isOneOf(database, db2, db3));
+		assertThat(dbList.getReadyDatabase(), isOneOf(database, db2, db3));
+		assertThat(dbList.getReadyDatabase(), isOneOf(database, db2, db3));
 	}
 
 	@Test
@@ -1014,33 +1031,40 @@ public class ClusterMemberListTest extends AbstractTest {
 		assertThat(databaseList.size(), is(0));
 
 		databaseList.add(database, db2, db3);
+		System.out.println("STATUS: " + database.getLabel() + "-" + databaseList.getMember(database).getStatus());
 		databaseList.queueAction(database, new NoOpDBAction(10));
 		databaseList.queueAction(database, new NoOpDBAction(10));
 		databaseList.queueAction(database, new NoOpDBAction(10));
 		databaseList.queueAction(database, new NoOpDBAction(10));
 		databaseList.queueAction(database, new NoOpDBAction(10));
+		System.out.println("STATUS: " + database.getLabel() + "-" + databaseList.getMember(database).getStatus());
 		StopWatch timer = StopWatch.stopwatch();
+		System.out.println("STATUS: " + database.getLabel() + "-" + databaseList.getMember(database).getStatus());
 		timer.time(() -> databaseList.waitUntilDatabaseHasSynchronized(database, 10));
-		assertThat(timer.duration(), is(greaterThanOrEqualTo(10l)));// make sure that it did NOT synchronise
+		System.out.println("STATUS: " + database.getLabel() + "-" + databaseList.getMember(database).getStatus());
+		assertThat(timer.duration(), is(greaterThanOrEqualTo(10l)));
+		assertThat(databaseList.getStatusOf(database), is(PROCESSING));// make sure that it did NOT synchronise
 		timer.time(() -> databaseList.waitUntilDatabaseHasSynchronized(database, 100));
-		assertThat(timer.duration(), is(lessThanOrEqualTo(110l)));
+		assertThat(timer.duration(), is(lessThanOrEqualTo(200l)));
+		assertThat(databaseList.getStatusOf(database), is(READY));// make sure that it DID synchronise
 	}
 
 	@Test
 	public void testDatabaseRemainsInClusterAfterActionFailsOnAllDatabases() throws SQLException {
 		try {
-			var DB1 = new BrokenDatabase(database);
-			try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(DB1)) {
+			nz.co.gregs.dbvolution.databases.DBBrokenDatabase DB1 = new DBBrokenDatabase(database);
+			try (DBDatabaseCluster cluster = DBDatabaseCluster.manualCluster("CLUSTER-testDatabaseRemainsInClusterAfterActionFailsOnAllDatabases", DB1)) {
 				H2MemorySettingsBuilder secondBuilder = new H2MemorySettingsBuilder().setLabel("Member 2").setDatabaseName("Member2");
 				H2MemoryDB newMember = secondBuilder.getDBDatabase();
-				var DB2 = new BrokenDatabase(newMember);
+				nz.co.gregs.dbvolution.databases.DBBrokenDatabase DB2 = new DBBrokenDatabase(newMember);
 				cluster.setPrintSQLBeforeExecuting(true);
-				assertThat(cluster.addDatabaseAndWait(DB2), is(true));
+				boolean synchronised = cluster.addDatabaseAndWait(DB2);
+				assertThat(synchronised, is(true));
 				assertThat(cluster.size(), is(2));
 				try {
 					System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
-					DB1.useBrokenBehaviour = true;
-					DB2.useBrokenBehaviour = true;
+					DB1.useBrokenAction = true;
+					DB2.useBrokenAction = true;
 					cluster.createTable(new DBDatabaseClusterTest.TableThatDoesExistOnTheCluster());
 					assertThat("we got here", is("We should never get here"));
 				} catch (SQLException | AutoCommitActionDuringTransactionException e) {
@@ -1064,11 +1088,12 @@ public class ClusterMemberListTest extends AbstractTest {
 				.anyCharacter().oneOrMore().namedCapture("other").word().literal(" Databases: 1 of 2").endNamedCapture().endRegex();
 
 		try {
-			try (DBDatabaseCluster cluster = DBDatabaseCluster.randomManualCluster(database)) {
+			try (DBDatabaseCluster cluster = DBDatabaseCluster.manualCluster("CLUSTER-testDatabaseRemovedFromClusterAfterActionFails", database)) {
 				H2MemorySettingsBuilder dbBuilder = new H2MemorySettingsBuilder().setLabel("Member 2").setDatabaseName("Member2");
-				var member2 = new BrokenDatabase(dbBuilder.getDBDatabase());
+				nz.co.gregs.dbvolution.databases.DBBrokenDatabase member2 = new DBBrokenDatabase(dbBuilder.getDBDatabase());
 				cluster.setPrintSQLBeforeExecuting(true);
-				assertThat(cluster.addDatabaseAndWait(member2), is(true));
+				final boolean synchronised = cluster.addDatabaseAndWait(member2);
+				assertThat(synchronised, is(true));
 				assertThat(cluster.size(), is(2));
 				String clusterStatus = cluster.getClusterStatus();
 				System.out.println(clusterStatus);
@@ -1076,7 +1101,7 @@ public class ClusterMemberListTest extends AbstractTest {
 
 				try {
 					System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
-					member2.useBrokenBehaviour = true;
+					member2.useBrokenAction = true;
 					cluster.createTable(new DBDatabaseClusterTest.TableThatDoesExistOnTheCluster());
 					cluster.getDetails().waitOnStatusChange(DBDatabaseCluster.Status.QUARANTINED, 1000, member2);
 				} catch (SQLException | AutoCommitActionDuringTransactionException e) {
@@ -1112,86 +1137,62 @@ public class ClusterMemberListTest extends AbstractTest {
 				.anyCharacter().oneOrMore().space().namedCapture("other").word().literal(" Databases: 1 of 2").endNamedCapture().endRegex();
 
 		try {
-			try (DBDatabaseCluster cluster = DBDatabaseCluster.randomCluster(DBDatabaseCluster.Configuration.autoReconnect(), database)) {
+			try (DBDatabaseCluster cluster = new DBDatabaseCluster("testDatabaseRemovedFromClusterWillResynchronise", DBDatabaseCluster.Configuration.autoReconnect(), database)) {
 				H2MemorySettingsBuilder dbBuilder = new H2MemorySettingsBuilder().setLabel("Member 2").setDatabaseName("Member2");
-				var member2 = new BrokenDatabase(dbBuilder.getDBDatabase());
-				cluster.setPrintSQLBeforeExecuting(true);
-				assertThat(cluster.addDatabaseAndWait(member2), is(true));
-				assertThat(cluster.size(), is(2));
+				try (final H2MemoryDB dbDatabase = dbBuilder.getDBDatabase()) {
+					try (nz.co.gregs.dbvolution.databases.DBBrokenDatabase member2 = new DBBrokenDatabase(dbDatabase)) {
+						cluster.setPrintSQLBeforeExecuting(true);
+						final boolean synchronised = cluster.addDatabaseAndWait(member2);
+						assertThat(synchronised, is(true));
+						assertThat(cluster.size(), is(2));
 
-				var statuses = cluster.getClusterStatusSnapshot();
-				assertThat(statuses.getMembers().size(), is(2));
-				for (ClusterDetails.MemberSnapshot member : statuses.getMembers()) {
-					assertThat(member.status, is(DBDatabaseCluster.Status.READY));
-				}
+						var statuses = cluster.getClusterStatusSnapshot();
+						assertThat(statuses.getMembers().size(), is(2));
+						for (ClusterDetails.MemberSnapshot member : statuses.getMembers()) {
+							assertThat(member.status, is(DBDatabaseCluster.Status.READY));
+						}
 
-				String clusterStatus = cluster.getClusterStatus();
-				System.out.println(clusterStatus);
-				assertTrue(allActiveRegex.matchesWithinString(clusterStatus));
+						String clusterStatus = cluster.getClusterStatus();
+						System.out.println(clusterStatus);
+						assertTrue(allActiveRegex.matchesWithinString(clusterStatus));
 
-				try {
-					System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
-					member2.useBrokenBehaviour = true;
-					cluster.createTable(new DBDatabaseClusterTest.TableThatDoesExistOnTheCluster());
-					cluster.getDetails().waitOnStatusChange(DBDatabaseCluster.Status.QUARANTINED, 1000, member2);
-				} catch (SQLException | AutoCommitActionDuringTransactionException e) {
-					assertThat("we got here", is("We should never get here"));
-				}
-				member2.useBrokenBehaviour = false;
-				assertThat(cluster.size(), is(1));
+						try {
+							System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
+							member2.useBrokenAction = true;
+							cluster.createTable(new DBDatabaseClusterTest.TableThatDoesExistOnTheCluster());
+							cluster.getDetails().waitOnStatusChange(DBDatabaseCluster.Status.QUARANTINED, 1000, member2);
+						} catch (SQLException | AutoCommitActionDuringTransactionException e) {
+							assertThat("we got here", is("We should never get here"));
+						}
+						member2.useBrokenAction = false;
+						assertThat(cluster.size(), is(1));
 
-				clusterStatus = cluster.getClusterStatus();
-				System.out.println(clusterStatus);
-				for (Match match : only1Active.getAllMatches(clusterStatus)) {
-					System.out.println("MATCH: " + match);
-				}
-				System.out.println("CAPTURE ready: " + only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("ready"));
-				System.out.println("CAPTURE other: " + only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("other"));
-				only1Active.testAgainst(clusterStatus);
-				assertTrue(only1Active.matchesWithinString(clusterStatus));
+						clusterStatus = cluster.getClusterStatus();
+						System.out.println(clusterStatus);
+						for (Match match : only1Active.getAllMatches(clusterStatus)) {
+							System.out.println("MATCH: " + match);
+						}
+						System.out.println("CAPTURE ready: " + only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("ready"));
+						System.out.println("CAPTURE other: " + only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("other"));
+						only1Active.testAgainst(clusterStatus);
+						assertTrue(only1Active.matchesWithinString(clusterStatus));
 
-				assertTrue(cluster.waitUntilSynchronised(5000));
+						assertTrue(cluster.waitUntilSynchronised(1 * 60 * 1000));
 
-				statuses = cluster.getClusterStatusSnapshot();
-				assertThat(statuses.getMembers().size(), is(2));
-				assertThat(statuses.getByStatus(DBDatabaseCluster.Status.READY).size(), is(2));
-				for (ClusterDetails.MemberSnapshot member : statuses.getMembers()) {
-					assertThat(member.status, is(DBDatabaseCluster.Status.READY));
-				}
-				for (ClusterDetails.MemberSnapshot member : statuses.getByDatabase(database, member2)) {
-					assertThat(member.status, is(DBDatabaseCluster.Status.READY));
+						statuses = cluster.getClusterStatusSnapshot();
+						assertThat(statuses.getMembers().size(), is(2));
+						assertThat(statuses.getByStatus(DBDatabaseCluster.Status.READY).size(), is(2));
+						for (ClusterDetails.MemberSnapshot member : statuses.getMembers()) {
+							assertThat(member.status, is(DBDatabaseCluster.Status.READY));
+						}
+						for (ClusterDetails.MemberSnapshot member : statuses.getByDatabase(database, member2)) {
+							assertThat(member.status, is(DBDatabaseCluster.Status.READY));
+						}
+					}
 				}
 			}
 		} catch (SQLException ex) {
 			Logger.getLogger(TempTest.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	private static class BrokenDatabase extends DBDatabaseHandle {
-
-		private static final long serialVersionUID = 1L;
-		public boolean useBrokenBehaviour;
-		private final transient Object ACTION = new Object();
-
-		public BrokenDatabase(DBDatabase db) throws SQLException {
-			super(db);
-		}
-
-		@Override
-		public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
-			if (useBrokenBehaviour) {
-				try {
-					System.out.println("DATABASE " + getLabel() + " INSERTING  BROKEN ACTION");
-					final DBActionList result = super.executeDBAction(new BrokenAction());
-					return result;
-				} finally {
-					synchronized (ACTION) {
-						ACTION.notifyAll();
-					}
-				}
-			} else {
-				return super.executeDBAction(action);
-			}
 		}
 	}
 

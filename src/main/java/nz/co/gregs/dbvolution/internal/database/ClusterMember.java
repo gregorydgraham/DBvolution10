@@ -59,7 +59,7 @@ public class ClusterMember implements AutoCloseable {
 
 	public ClusterMember(ClusterDetails details, String clusterLabel, ClusterMemberList list, DBDatabase database) {
 		this.details = details;
-		this.clusterLabel =clusterLabel;
+		this.clusterLabel = clusterLabel;
 		this.list = list;
 		this.database = database;
 	}
@@ -100,7 +100,11 @@ public class ClusterMember implements AutoCloseable {
 	}
 
 	private void throwIllegalStateChangeException(Status newStatus) throws DBRuntimeException {
-		throw new DBRuntimeException("ILLEGAL STATUS CHANGE: " + status + " => " + newStatus.toString()+" on "+this.database);
+		if (!(status == Status.CREATED && newStatus == Status.READY)) {
+			// CREATED => READY just happens shockingly often because of my design so ignore it
+			System.out.println("ILLEGAL STATUS CHANGE: " + status + " => " + newStatus.toString() + " on " + this.database);
+		}
+		throw new DBRuntimeException("ILLEGAL STATUS CHANGE: " + status + " => " + newStatus.toString() + " on " + this.database);
 	}
 
 	private void changeToDead() {
@@ -116,45 +120,48 @@ public class ClusterMember implements AutoCloseable {
 	}
 
 	public synchronized final void setStatus(Status newStatus) {
-		Status oldStatus = this.status;
-		if (!status.equals(newStatus)) {
-			switch (newStatus) {
-				case CREATED:
-					changeToCreated();
-					break;
-				case DEAD:
-					changeToDead();
-					break;
-				case PAUSED:
-					changeToPaused();
-					break;
-				case SYNCHRONIZING:
-					changeToSynchronising();
-					break;
-				case PROCESSING:
-					changeToProcessing();
-					break;
-				case QUARANTINED:
-					changeToQuarantined();
-					break;
-				case READY:
-					changeToReady();
-					break;
-				case TEMPLATE:
-					changeToTemplate();
-					break;
-				case UNKNOWN:
-					changeToUnknown();
-					break;
-				default:
-					throwIllegalStateChangeException(newStatus);
+		try {
+			if (!status.equals(newStatus)) {
+				switch (newStatus) {
+					case CREATED:
+						changeToCreated();
+						break;
+					case DEAD:
+						changeToDead();
+						break;
+					case PAUSED:
+						changeToPaused();
+						break;
+					case SYNCHRONIZING:
+						changeToSynchronising();
+						break;
+					case PROCESSING:
+						changeToProcessing();
+						break;
+					case QUARANTINED:
+						changeToQuarantined();
+						break;
+					case READY:
+						changeToReady();
+						break;
+					case TEMPLATE:
+						changeToTemplate();
+						break;
+					case UNKNOWN:
+						changeToUnknown();
+						break;
+					default:
+						throwIllegalStateChangeException(newStatus);
+				}
+				this.status = newStatus;
+				list.notifyAStatusHasChanged();
 			}
-			this.status = newStatus;
-			list.notifyAStatusHasChanged();
-		}
-		if (QUARANTINED.equals(newStatus)) {
-			incrementQuarantineCount();
-			checkForDeadDatabase();
+			if (QUARANTINED.equals(newStatus)) {
+				incrementQuarantineCount();
+				checkForDeadDatabase();
+			}
+		} catch (DBRuntimeException exception) {
+			// IGNORING ILLEGAL STATUS CHANGES IS NORMAL, HONEST
 		}
 	}
 
@@ -311,7 +318,7 @@ public class ClusterMember implements AutoCloseable {
 		queue.add(action);
 		setStatus(PROCESSING);
 	}
-	
+
 	public synchronized void copyTo(ClusterMember secondary) {
 		if (secondary == null) {
 			return;

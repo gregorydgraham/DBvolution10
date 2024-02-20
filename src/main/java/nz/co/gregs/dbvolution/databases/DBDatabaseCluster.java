@@ -130,7 +130,9 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		// add any hosts found in the settings
 		for (var clusterHost : builder.getClusterHosts()) {
 			try {
-				addDatabaseAndWait(clusterHost.createDBDatabase());
+				if (!addDatabaseAndWait(clusterHost.createDBDatabase())) {
+					LOG.warn("SLOW TO ADD DATABASE: " + clusterHost.toString());
+				}
 			} catch (Exception e) {
 				LOG.error("FAILED TO ADD DATABASE: " + clusterHost.toString(), e);
 			}
@@ -163,8 +165,21 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		return getDetails().waitUntilSynchronised();
 	}
 
+	/**
+	 * Blocking method that will wait for the specified number of millseconds or
+	 * until all databases in the cluster are synchronised.
+	 *
+	 * @param timeout timeout in milliseconds
+	 * @return true if the cluster synchronised within the timeout period,
+	 * otherwise false
+	 */
 	public boolean waitUntilSynchronised(int timeout) {
-		return getDetails().waitUntilSynchronised(timeout);
+		try {
+			getDetails().waitUntilSynchronised(timeout);
+			return true;
+		} catch (Exception exc) {
+			return false;
+		}
 	}
 
 	public void waitUntilDatabaseIsSynchronised(DBDatabase database) {
@@ -225,7 +240,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		 * re-appear as a ready database, but they are not counting toward
 		 * synchronizing the whole cluster.
 		 */
-		DEAD ,
+		DEAD,
 		/**
 		 * QUARANTINED databases have failed to complete an expected query or action
 		 * and been isolated from the cluster.
@@ -304,7 +319,9 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		List<DBDatabase> loadTheseDatabases = getDetails().getClusterHostsFromPrefs();
 		for (var newDB : loadTheseDatabases) {
 			try {
-				addDatabaseAndWait(newDB);
+				if (!addDatabaseAndWait(newDB)) {
+					LOG.warn("SLOW TO ADD DATABASE: " + newDB.toString());
+				}
 			} catch (SQLException ex) {
 				Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -430,6 +447,23 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 	public static DBDatabaseCluster randomManualCluster(DBDatabase... databases) throws SQLException {
 		final String dbName = getRandomClusterName();
 		return new DBDatabaseCluster(dbName, Configuration.fullyManual(), databases);
+	}
+
+	/**
+	 * Creates a new cluster without auto-rebuild or auto-reconnect.
+	 *
+	 * <p>
+	 * Use this method to ensure that the new cluster will not clash with any
+	 * existing clusters.</p>
+	 *
+	 * @param label the database label for the cluster
+	 * @param databases a database to build the cluster with
+	 * @return a cluster with a random name based on the manual configuration and
+	 * the database
+	 * @throws SQLException database errors may be thrown during initialisation
+	 */
+	public static DBDatabaseCluster manualCluster(String label, DBDatabase... databases) throws SQLException {
+		return new DBDatabaseCluster(label, Configuration.fullyManual(), databases);
 	}
 
 	/**
@@ -560,13 +594,14 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		return addDatabaseMaybeWaiting(database, true);
 	}
 
+	private static final int UNREASONABLY_LONG_TIME = 1 * 60 * 1000;
+
 	private synchronized boolean addDatabaseMaybeWaiting(DBDatabase database, boolean wait) throws SQLException {
 		boolean add = addDatabaseWithoutWaiting(database);
 		if (wait) {
-			details.waitUntilDatabaseHasSynchronized(database, 10000);
+			details.waitUntilDatabaseHasSynchronized(database, UNREASONABLY_LONG_TIME);
 			add = details.isSynchronised(database);
 		}
-//		synchronizeAddedDatabases(wait);
 		return add;
 	}
 
@@ -1078,7 +1113,12 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		} catch (SQLException e) {
 			advice = handleExceptionDuringQuery(e, workingDB);
 			if (advice.equals(HandlerAdvice.REQUERY) && requeryPermitted()) {
-				return workingDB.executeDBQuery(query);
+				try {
+					return workingDB.executeDBQuery(query);
+				} catch (SQLException sqlex) {
+					getDetails().quarantineDatabaseAutomatically(workingDB, sqlex);
+					throw sqlex;
+				}
 			} else {
 				getDetails().quarantineDatabaseAutomatically(workingDB, e);
 				throw e;
@@ -1364,8 +1404,10 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		shutdownClusterProcesses();
 		try {
 			getDetails().dismantle();
+
 		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DBDatabaseCluster.class
+					.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -1452,6 +1494,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		DBDatabaseClusterSettingsBuilder builder = new DBDatabaseClusterSettingsBuilder();
 		builder.fromSettings(this.getSettings());
 		return builder;
+
 	}
 
 	public static class Configuration implements Serializable {

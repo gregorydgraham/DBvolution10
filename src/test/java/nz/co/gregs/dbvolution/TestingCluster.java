@@ -211,6 +211,23 @@ public class TestingCluster extends DBDatabaseCluster {
 	 */
 	public static TestingCluster randomManualCluster(DBDatabase... databases) throws SQLException {
 		final String dbName = DBDatabaseCluster.getRandomClusterName();
+		return manualCluster(dbName, databases);
+	}
+
+	/**
+	 * Creates a new cluster without auto-start, auto-rebuild, auto-connect, nor
+	 * auto-reconnect.
+	 *
+	 * <p>
+	 * Use this method to ensure that the new cluster will not clash with any
+	 * existing clusters.</p>
+	 *
+	 * @param dbName the name for the cluster 
+	 * @param databases a database to build the cluster with
+	 * @return a cluster based on the manual configuration and the database
+	 * @throws SQLException database errors may be thrown during initialisation
+	 */
+	public static TestingCluster manualCluster(String dbName, DBDatabase... databases) throws SQLException {
 		DBDatabaseClusterSettingsBuilder config = new DBDatabaseClusterSettingsBuilder().setLabel(dbName).setConfiguration(Configuration.fullyManual());
 		List<DBDatabase> dbs = Arrays.asList(databases);
 		List<DatabaseConnectionSettings> hosts = dbs.stream().map(d -> d.getSettings()).collect(Collectors.toList());

@@ -1208,4 +1208,14 @@ public interface DBDatabase extends Serializable, AutoCloseable{
 
 	public SettingsBuilder<?,?> getSettingsBuilder();
 
+	/**
+	 * A label for the database for reference within an application.
+	 *
+	 * <p>
+	 * This label has no effect on the actual database connection.
+	 *
+	 * @param label a purely arbitrary value
+	 */
+	public void setLabel(String label);
+
 }

@@ -569,7 +569,8 @@ public class DBInsertTest extends AbstractTest {
 				Brake brake = slowDatabase2.getBrake();
 				brake.setTimeout(10000);
 				brake.release();
-				cluster.addDatabaseAndWait(slowDatabase2);
+				boolean synchronised = cluster.addDatabaseAndWait(slowDatabase2);
+			assertThat(synchronised, is(true));
 
 				cluster.getDetails().setPreferredDatabase(slowDatabase2);
 
@@ -578,7 +579,8 @@ public class DBInsertTest extends AbstractTest {
 				brake = slowDatabase3.getBrake();
 				brake.setTimeout(10000);
 				brake.release();
-				cluster.addDatabaseAndWait(slowDatabase3);
+				synchronised = cluster.addDatabaseAndWait(slowDatabase3);
+			assertThat(synchronised, is(true));
 				brake.apply();
 
 				testDefaultValuesAreConsistentInCluster row = new testDefaultValuesAreConsistentInCluster();

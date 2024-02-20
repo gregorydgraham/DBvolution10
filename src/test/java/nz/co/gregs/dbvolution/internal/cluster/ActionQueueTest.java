@@ -621,10 +621,10 @@ public class ActionQueueTest {
 	public void testNotifyUNPAUSED() {
 
 		ActionQueue actionQueue = new ActionQueue(database, 100, member);
-		assertThat(actionQueue.isEmpty(), is(true));
+		actionQueue.add(new NoOpDBAction(10000l));
+		assertThat(actionQueue.isEmpty(), is(false));
 		assertThat(actionQueue.isRunning(), is(false));
 		assertThat(actionQueue.isPaused(), is(true));
-		actionQueue.add(new NoOpDBAction(10000l));
 
 		Runnable notifyUnpauseRunner = () -> {
 			try {
@@ -639,7 +639,7 @@ public class ActionQueueTest {
 		emptyingThread.start();
 		actionQueue.waitUntilUnpaused(10000l);
 		timer.end();
-		assertThat(actionQueue.isPaused(), is(true)); // because we didn't actual pause it
+		assertThat(actionQueue.isPaused(), is(true)); // because we didn't actually pause it
 		assertThat(timer.duration(), greaterThan(100l));
 		assertThat(timer.duration(), lessThan(10000l));
 	}

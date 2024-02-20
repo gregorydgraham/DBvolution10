@@ -283,7 +283,8 @@ public class OracleCompatibilityTest extends AbstractTest {
 		try (DBDatabaseCluster cluster = new DBDatabaseCluster("CountIfClusterTest", DBDatabaseCluster.Configuration.autoStart(), getDatabaseThatDoesNotSupportDifferenceBetweenEmptyStringsAndNull())) {
 			cluster.createTable(new Marque());
 			cluster.insert(allMarques);
-			cluster.addDatabaseAndWait(database);
+			boolean synchronised = cluster.addDatabaseAndWait(database);
+			assertThat(synchronised, is(true));
 			cluster.setRequeryPermitted(false);
 			randRow = new CountIfRow();
 			dbQuery = cluster.getDBQuery(randRow)
