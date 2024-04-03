@@ -1429,7 +1429,7 @@ public class DBDatabaseCluster extends DBDatabaseImplementation {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] reconnectables = details.getDatabasesForReconnecting();
 		if (reconnectables.length == 0) {
-			LOG.trace(this.getLabel() + " HAS NO QUARANTINED/DEAD DATABASES");
+			LOG.info(this.getLabel() + " HAS NO QUARANTINED/DEAD DATABASES");
 		} else {
 			for (DBDatabase reconnectee : reconnectables) {
 				reconnectQuarantinedDatabase(str, reconnectee);

@@ -61,6 +61,9 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 
 	private final HashMap<String, ClusterMember> members = new HashMap<>(2);
 	private final ClusterDetails details;
+	private final transient List<Thread> waitingForReady = new ArrayList<Thread>();
+	private final transient List<Thread> waitingForSynchronise = new ArrayList<Thread>();
+	private final transient List<Thread> waitingForChange = new ArrayList<Thread>();
 
 	public ClusterMemberList(ClusterDetails clusterDetails) {
 		this.details = clusterDetails;
@@ -248,9 +251,9 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 			if (key != null) {
 				ClusterMember member = entry.getValue();
 				DBDatabaseCluster.Status val = member.getStatus();
-				if(val.oneOf(statuses)){
-						DBDatabase db = members.get(key).getDatabase();
-						found.add(db);
+				if (val.oneOf(statuses)) {
+					DBDatabase db = members.get(key).getDatabase();
+					found.add(db);
 				}
 			}
 		}
@@ -472,12 +475,16 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 
 	private boolean waitUntilADatabaseIsReady(long millisecondsToWait) {
 		synchronized (A_DATABASE_IS_READY) {
+			final Thread currentThread = Thread.currentThread();
 			try {
+				waitingForReady.add(currentThread);
 				A_DATABASE_IS_READY.wait(millisecondsToWait);
 				return getReadyDatabases().length > 0;
 			} catch (InterruptedException ex) {
 				Logger.getLogger(ClusterMemberList.class
 						.getName()).log(Level.SEVERE, null, ex);
+			} finally {
+				waitingForReady.remove(currentThread);
 			}
 		}
 		return false;
@@ -485,13 +492,17 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 
 	private boolean waitUntilAStatusHasChanged(long millisecondsToWait) {
 		synchronized (A_STATUS_HAS_CHANGED) {
+			final Thread currentThread = Thread.currentThread();
 			try {
+				waitingForChange.add(currentThread);
 				A_STATUS_HAS_CHANGED.wait(millisecondsToWait);
 				return true;
 
 			} catch (InterruptedException ex) {
 				Logger.getLogger(ClusterMemberList.class
 						.getName()).log(Level.SEVERE, null, ex);
+			} finally {
+				waitingForChange.remove(currentThread);
 			}
 		}
 		return false;
@@ -531,7 +542,13 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 				return;
 			} else {
 				synchronized (CLUSTER_HAS_SYNCHRONISED) {
-					CLUSTER_HAS_SYNCHRONISED.wait(100);
+					final Thread currentThread = Thread.currentThread();
+					waitingForSynchronise.add(currentThread);
+					try {
+						CLUSTER_HAS_SYNCHRONISED.wait(100);
+					} finally {
+						waitingForSynchronise.remove(currentThread);
+					}
 				}
 			}
 		}
@@ -542,7 +559,13 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 			return;
 		}
 		synchronized (CLUSTER_HAS_SYNCHRONISED) {
-			CLUSTER_HAS_SYNCHRONISED.wait(timeout);
+			final Thread currentThread = Thread.currentThread();
+			waitingForSynchronise.add(currentThread);
+			try {
+				CLUSTER_HAS_SYNCHRONISED.wait(timeout);
+			} finally {
+				waitingForSynchronise.remove(currentThread);
+			}
 		}
 	}
 
@@ -647,6 +670,22 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 	public void close() {
 		if (members.size() > 0) {
 			members.entrySet().stream().forEach((e) -> e.getValue().close());
+		}
+	}
+
+	void printStatuses(String preamble) {
+		getMembers().stream().forEachOrdered((m) -> System.out.println(preamble + " STATUS-" + m.getDatabase().getLabel() + ":" + m.getStatus()));
+	}
+
+	void interruptWaiters() {
+		for (Thread t : this.waitingForReady) {
+			t.interrupt();
+		}
+		for (Thread t : this.waitingForSynchronise) {
+			t.interrupt();
+		}
+		for (Thread t : this.waitingForChange) {
+			t.interrupt();
 		}
 	}
 }

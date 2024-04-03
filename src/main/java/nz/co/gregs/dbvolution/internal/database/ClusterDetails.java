@@ -47,7 +47,6 @@ import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster.Configuration;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.internal.cluster.ActionQueue;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.dbvolution.utility.PreferencesImproved;
@@ -705,13 +704,19 @@ public class ClusterDetails implements Serializable {
 		return members.isSynchronised(database);
 	}
 
+	public void printClusterStatuses() {
+		getClusterStatusSnapshot().getMembers().stream().forEachOrdered((m)->System.out.println("STATUS: "+m.database.getLabel()+"|"+m.status.name()));
+	}
+
 	public static class StatusSnapshot {
 
 		private final Instant snapshotTime;
 		private final List<MemberSnapshot> members;
+		private final String label;
 
 		public StatusSnapshot(ClusterDetails dets) {
 			snapshotTime = Instant.now();
+			label = dets.getClusterLabel();
 			ArrayList<MemberSnapshot> list = new ArrayList<>();
 			for (ClusterMember memb : dets.getMembers().getMembers()) {
 				list.add(new MemberSnapshot(memb));
@@ -745,6 +750,11 @@ public class ClusterDetails implements Serializable {
 		public List<MemberSnapshot> getByStatus(List<DBDatabaseCluster.Status> statuses) {
 			List<MemberSnapshot> collected = members.stream().filter(memb -> statuses.contains(memb.status)).collect(Collectors.toList());
 			return collected;
+		}
+		
+		public void print(){
+			System.out.println("-------"+label+"-------");
+			members.stream().forEachOrdered((m)->System.out.println("STATUS: "+m.database.getLabel()+"|"+m.status.name()));
 		}
 	}
 

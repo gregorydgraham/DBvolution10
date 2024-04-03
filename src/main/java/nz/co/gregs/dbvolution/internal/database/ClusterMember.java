@@ -110,6 +110,7 @@ public class ClusterMember implements AutoCloseable {
 	private void changeToDead() {
 		if (QUARANTINED.equals(status)) {
 			stop();
+			list.interruptWaiters();
 		} else {
 			throwIllegalStateChangeException(DEAD);
 		}
@@ -117,6 +118,7 @@ public class ClusterMember implements AutoCloseable {
 
 	private void changeToQuarantined() {
 		stop();
+		list.interruptWaiters();
 	}
 
 	public synchronized final void setStatus(Status newStatus) {

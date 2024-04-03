@@ -48,6 +48,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
 import nz.co.gregs.dbvolution.databases.*;
+import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -57,7 +58,9 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 import nz.co.gregs.looper.Looper;
+import nz.co.gregs.looper.StopWatch;
 import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.internal.PartialRegex;
@@ -65,6 +68,7 @@ import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -604,6 +608,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			var testingDB = TestingDatabase.createANewRandomDatabase();
 			boolean synchronised = cluster.addDatabaseAndWait(testingDB);
 			assertThat(synchronised, is(true));
+			cluster.getDetails().printClusterStatuses();
 			assertThat(cluster.size(), is(2));
 			final TableThatDoesExistOnTheCluster tab = new TableThatDoesExistOnTheCluster();
 			tab.pkid.setValue(1);
@@ -798,6 +803,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase("testDatabaseTableExists-", "-MEMBER2");
 			boolean synchronised = cluster.addDatabaseAndWait(soloDB2);
 			assertThat(synchronised, is(true));
+			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m)->System.out.println("testDatabaseTableExists-DB-STATUS: "+m.database.getLabel()+" is "+m.status.toString()));
 			assertThat(cluster.size(), is(2));
 			try {
 				cluster.createTable(new TableThatDoesExistOnTheCluster());
@@ -1171,7 +1177,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			soloDB2Settings = soloDB2.getSettings().toString();
 			boolean synchronised = cluster.addDatabaseAndWait(soloDB2);
 			assertThat(synchronised, is(true));
-			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m)->System.out.println("MEMBER: "+m.database.getLabel()+" is status "+m.status));
+			cluster.getClusterStatusSnapshot().print();
+			cluster.waitUntilSynchronised(100);
+			cluster.getClusterStatusSnapshot().print();
 			assertThat(cluster.size(), is(2));
 			cluster.stop();
 		}
@@ -1268,6 +1276,157 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			// and clean up after ourselves
 			cluster.dismantle();
 		}
+	}
+
+	@Test
+	public void testDatabaseRemainsInClusterAfterActionFailsOnAllDatabases() throws SQLException {
+		try {
+			nz.co.gregs.dbvolution.databases.DBBrokenDatabase DB1 = new DBBrokenDatabase(database);
+			try (DBDatabaseCluster cluster = DBDatabaseCluster.manualCluster("CLUSTER-testDatabaseRemainsInClusterAfterActionFailsOnAllDatabases", DB1)) {
+				H2MemorySettingsBuilder secondBuilder = new H2MemorySettingsBuilder().setLabel("Member 2").setDatabaseName("Member2");
+				H2MemoryDB newMember = secondBuilder.getDBDatabase();
+				nz.co.gregs.dbvolution.databases.DBBrokenDatabase DB2 = new DBBrokenDatabase(newMember);
+				cluster.setPrintSQLBeforeExecuting(true);
+				boolean synchronised = cluster.addDatabaseAndWait(DB2);
+				assertThat(synchronised, is(true));
+				cluster.getDetails().getClusterStatusSnapshot().getMembers().forEach((m)->System.out.println("testDatabaseRemainsInClusterAfterActionFailsOnAllDatabases-STATUS: "+m.database.getLabel()+" - "+m.status));
+				assertThat(cluster.size(), is(2));
+				try {
+					System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
+					DB1.useBrokenAction = true;
+					DB2.useBrokenAction = true;
+					cluster.createTable(new DBDatabaseClusterTest.TableThatDoesExistOnTheCluster());
+					assertThat("we got here", is("We should never get here"));
+				} catch (SQLException | AutoCommitActionDuringTransactionException e) {
+				}
+				assertThat(cluster.size(), is(2));
+			}
+		} catch (SQLException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	@Test
+	public void testDatabaseRemovedFromClusterAfterActionFails() throws SQLException {
+		Regex allActiveRegex = Regex
+				.multiline()
+				.literal("READY Databases: 2 of 2").newline()
+				.anyCharacter().oneOrMore().literal("QUARANTINED Databases: 0 of 2").endRegex();
+		Regex only1Active = Regex
+				.multiline()
+				.namedCapture("ready").literal("READY Databases: 1 of 2").endNamedCapture()
+				.anyCharacter().oneOrMore().namedCapture("other").word().literal(" Databases: 1 of 2").endNamedCapture().endRegex();
+
+		try {
+			try (DBDatabaseCluster cluster = DBDatabaseCluster.manualCluster("CLUSTER-testDatabaseRemovedFromClusterAfterActionFails", database)) {
+				H2MemorySettingsBuilder dbBuilder = new H2MemorySettingsBuilder().setLabel("Member 2").setDatabaseName("Member2");
+				nz.co.gregs.dbvolution.databases.DBBrokenDatabase member2 = new DBBrokenDatabase(dbBuilder.getDBDatabase());
+				cluster.setPrintSQLBeforeExecuting(true);
+				final boolean synchronised = cluster.addDatabaseAndWait(member2);
+				assertThat(synchronised, is(true));
+				assertThat(cluster.size(), is(2));
+				String clusterStatus = cluster.getClusterStatus();
+				System.out.println(clusterStatus);
+				assertTrue(allActiveRegex.matchesWithinString(clusterStatus));
+
+				try {
+					System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
+					member2.useBrokenAction = true;
+					cluster.createTable(new DBDatabaseClusterTest.TableThatDoesExistOnTheCluster());
+					cluster.getDetails().waitOnStatusChange(DBDatabaseCluster.Status.QUARANTINED, 1000, member2);
+				} catch (SQLException | AutoCommitActionDuringTransactionException e) {
+					assertThat("we got here", is("We should never get here"));
+				}
+				assertThat(cluster.size(), is(1));
+
+				clusterStatus = cluster.getClusterStatus();
+				System.out.println(clusterStatus);
+				for (Match match : only1Active.getAllMatches(clusterStatus)) {
+					System.out.println("MATCH: " + match.getEntireMatch());
+				}
+				System.out.println(only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("ready"));
+				System.out.println(only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("other"));
+				only1Active.testAgainst(clusterStatus);
+				assertTrue(only1Active.matchesWithinString(clusterStatus));
+				assertTrue(only1Active.matchesWithinString(clusterStatus));
+			}
+		} catch (SQLException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	@Test
+	public void testDatabaseRemovedFromClusterWillResynchronise() throws SQLException {
+		StopWatch stopWatch = StopWatch.start();
+		Regex allActiveRegex = Regex
+				.multiline()
+				.literal("READY Databases: 2 of 2").newline()
+				.anyCharacter().oneOrMore().literal("QUARANTINED Databases: 0 of 2").endRegex();
+		Regex only1Active = Regex
+				.multiline()
+				.namedCapture("ready").literal("READY Databases: 1 of 2").endNamedCapture()
+				.anyCharacter().oneOrMore().space().namedCapture("other").word().literal(" Databases: 1 of 2").endNamedCapture().endRegex();
+
+		try {
+			try (DBDatabaseCluster cluster = new DBDatabaseCluster("testDatabaseRemovedFromClusterWillResynchronise", DBDatabaseCluster.Configuration.autoReconnect(), database)) {
+				H2MemorySettingsBuilder dbBuilder = new H2MemorySettingsBuilder().setLabel("Member 2").setDatabaseName("Member2");
+				try (final H2MemoryDB dbDatabase = dbBuilder.getDBDatabase()) {
+					try (nz.co.gregs.dbvolution.databases.DBBrokenDatabase member2 = new DBBrokenDatabase(dbDatabase)) {
+						cluster.setPrintSQLBeforeExecuting(true);
+						final boolean synchronised = cluster.addDatabaseAndWait(member2);
+						assertThat(synchronised, is(true));
+						assertThat(cluster.size(), is(2));
+
+						var statuses = cluster.getClusterStatusSnapshot();
+						assertThat(statuses.getMembers().size(), is(2));
+						for (ClusterDetails.MemberSnapshot member : statuses.getMembers()) {
+							assertThat(member.status, is(DBDatabaseCluster.Status.READY));
+						}
+
+						String clusterStatus = cluster.getClusterStatus();
+						System.out.println(clusterStatus);
+						assertTrue(allActiveRegex.matchesWithinString(clusterStatus));
+
+						try {
+							System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
+							member2.useBrokenAction = true;
+							cluster.createTable(new DBDatabaseClusterTest.TableThatDoesExistOnTheCluster());
+							cluster.getDetails().waitOnStatusChange(DBDatabaseCluster.Status.QUARANTINED, 1000, member2);
+						} catch (SQLException | AutoCommitActionDuringTransactionException e) {
+							assertThat("we got here", is("We should never get here"));
+						}
+						member2.useBrokenAction = false;
+						assertThat(cluster.size(), is(1));
+
+						clusterStatus = cluster.getClusterStatus();
+						System.out.println(clusterStatus);
+						for (Match match : only1Active.getAllMatches(clusterStatus)) {
+							System.out.println("MATCH: " + match);
+						}
+						System.out.println("CAPTURE ready: " + only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("ready"));
+						System.out.println("CAPTURE other: " + only1Active.getAllNamedCapturesOfFirstMatchWithinString(clusterStatus).get("other"));
+						only1Active.testAgainst(clusterStatus);
+						assertTrue(only1Active.matchesWithinString(clusterStatus));
+
+						assertTrue(cluster.waitUntilSynchronised(1 * 60 * 1000));
+
+						statuses = cluster.getClusterStatusSnapshot();
+						assertThat(statuses.getMembers().size(), is(2));
+						cluster.getDetails().printClusterStatuses();
+						assertThat(statuses.getByStatus(DBDatabaseCluster.Status.READY).size(), is(2));
+						for (ClusterDetails.MemberSnapshot member : statuses.getMembers()) {
+							assertThat(member.status, is(DBDatabaseCluster.Status.READY));
+						}
+						for (ClusterDetails.MemberSnapshot member : statuses.getByDatabase(database, member2)) {
+							assertThat(member.status, is(DBDatabaseCluster.Status.READY));
+						}
+					}
+				}
+			}
+		} catch (SQLException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		stopWatch.report();
 	}
 
 	private List<DBDatabaseClusterTestTable> createData(Date firstDate, Date secondDate) {

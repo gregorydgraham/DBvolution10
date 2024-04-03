@@ -183,12 +183,21 @@ public class TempTest {
 		databaseList.queueAction(database, new NoOpDBAction(10));
 		databaseList.queueAction(database, new NoOpDBAction(10));
 		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
+		databaseList.queueAction(database, new NoOpDBAction(10));
 		System.out.println("STATUS: " + database.getLabel() + "-" + databaseList.getMember(database).getStatus());
 		StopWatch timer = StopWatch.stopwatch();
 		timer.time(() -> databaseList.waitUntilDatabaseHasSynchronized(database, 10));
 		System.out.println("STATUS: " + database.getLabel() + "-" + databaseList.getMember(database).getStatus());
 		assertThat(timer.duration(), is(greaterThanOrEqualTo(10l))); // make sure it took some time
 		assertThat(timer.duration(), is(lessThanOrEqualTo(100l))); // make sure it didn't take TOO MUCH time
+		databaseList.getMembers().stream().forEach((m)->System.out.println("STATUS: "+m.getDatabase().getLabel()+" - "+m.getStatus()));
 		assertThat(databaseList.getStatusOf(database), is(PROCESSING));// make sure that it DID NOT synchronise
 		
 		timer.time(() -> databaseList.waitUntilDatabaseHasSynchronized(database, 1000));
@@ -220,8 +229,9 @@ public class TempTest {
 			soloDB2Settings = soloDB2.getSettings().toString();
 			boolean synchronised = cluster.addDatabaseAndWait(soloDB2);
 			assertThat(synchronised, is(true));
-			cluster.getClusterStatusSnapshot().getMembers().forEach((m)->System.out.println("CLUSTER STATUS: "+m.database.getLabel()+" is "+m.status));
-			
+			cluster.getClusterStatusSnapshot().print();
+			cluster.waitUntilSynchronised(100);
+			cluster.getClusterStatusSnapshot().print();
 			assertThat(cluster.size(), is(2));
 			cluster.stop();
 		}
