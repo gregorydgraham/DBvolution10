@@ -316,6 +316,22 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		if (!database.isMemoryDatabase()) {
 			final String nameOfCluster = "testAutoRebuildRearrangesCluster";
 			{
+				DBDatabaseCluster cluster = new DBDatabaseCluster(
+						nameOfCluster, DBDatabaseCluster.Configuration.fullyManual()
+				);
+
+				try {
+					List<String> asList = Arrays.asList(cluster.getTrackedTables())
+							.stream()
+							.map(t -> t.getClass().getCanonicalName())
+							.collect(Collectors.toList());
+					final Marque newTrackedTable = new Marque();
+					assertThat(asList, hasItem(newTrackedTable.getClass().getCanonicalName()));
+				} finally {
+					cluster.dismantle();
+				}
+			}
+			{
 				DBDatabaseCluster cluster
 						= new DBDatabaseCluster(
 								nameOfCluster,
@@ -422,6 +438,21 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			final Marque newTrackedTable = new Marque();
 			final String nameOfCluster = "testAutoRebuildLoadsTrackedTables";
 			{
+				DBDatabaseCluster cluster = new DBDatabaseCluster(
+						nameOfCluster, DBDatabaseCluster.Configuration.fullyManual()
+				);
+
+				try {
+					List<String> asList = Arrays.asList(cluster.getTrackedTables())
+							.stream()
+							.map(t -> t.getClass().getCanonicalName())
+							.collect(Collectors.toList());
+					assertThat(asList, hasItem(newTrackedTable.getClass().getCanonicalName()));
+				} finally {
+					cluster.dismantle();
+				}
+			}
+			{
 				DBDatabaseCluster cluster
 						= new DBDatabaseCluster(
 								nameOfCluster,
@@ -472,6 +503,21 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		if (!database.isMemoryDatabase()) {
 			final DBDatabaseClusterTestTrackedTable newTrackedTable = new DBDatabaseClusterTestTrackedTable();
 			final String nameOfCluster = "testAutoRebuildLoadsStaticInnerTrackedTables";
+			{
+				DBDatabaseCluster cluster = new DBDatabaseCluster(
+						nameOfCluster, DBDatabaseCluster.Configuration.fullyManual()
+				);
+
+				try {
+					List<String> asList = Arrays.asList(cluster.getTrackedTables())
+							.stream()
+							.map(t -> t.getClass().getCanonicalName())
+							.collect(Collectors.toList());
+					assertThat(asList, hasItem(newTrackedTable.getClass().getCanonicalName()));
+				} finally {
+					cluster.dismantle();
+				}
+			}
 			{
 				DBDatabaseCluster cluster
 						= new DBDatabaseCluster(
@@ -584,7 +630,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase();
 			boolean synchronised = cluster.addDatabaseAndWait(soloDB2);
 			assertThat(synchronised, is(true));
-			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m)->System.out.println("MEMBER: "+ m.database.getLabel()+" is status "+m.status.toString()));
+			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m) -> System.out.println("MEMBER: " + m.database.getLabel() + " is status " + m.status.toString()));
 			assertThat(cluster.size(), is(2));
 
 			assertThat(cluster.removeDatabase(cluster.getReadyDatabase()), is(true));
@@ -732,8 +778,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			var testingDB = TestingDatabase.createANewRandomDatabase();
 			boolean synchronised = cluster.addDatabaseAndWait(testingDB);
 			assertThat(synchronised, is(true));
-			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m)->System.out.println("MEMBER: "+m.database.getLabel()+" is status "+m.status));
-		
+			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m) -> System.out.println("MEMBER: " + m.database.getLabel() + " is status " + m.status));
+
 			assertThat(cluster.size(), is(2));
 			try {
 				// avoid printing lots of exceptions
@@ -803,7 +849,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			H2MemoryDB soloDB2 = H2MemoryDB.createANewRandomDatabase("testDatabaseTableExists-", "-MEMBER2");
 			boolean synchronised = cluster.addDatabaseAndWait(soloDB2);
 			assertThat(synchronised, is(true));
-			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m)->System.out.println("testDatabaseTableExists-DB-STATUS: "+m.database.getLabel()+" is "+m.status.toString()));
+			cluster.getDetails().getClusterStatusSnapshot().getMembers().stream().forEach((m) -> System.out.println("testDatabaseTableExists-DB-STATUS: " + m.database.getLabel() + " is " + m.status.toString()));
 			assertThat(cluster.size(), is(2));
 			try {
 				cluster.createTable(new TableThatDoesExistOnTheCluster());
@@ -1289,7 +1335,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				cluster.setPrintSQLBeforeExecuting(true);
 				boolean synchronised = cluster.addDatabaseAndWait(DB2);
 				assertThat(synchronised, is(true));
-				cluster.getDetails().getClusterStatusSnapshot().getMembers().forEach((m)->System.out.println("testDatabaseRemainsInClusterAfterActionFailsOnAllDatabases-STATUS: "+m.database.getLabel()+" - "+m.status));
+				cluster.getDetails().getClusterStatusSnapshot().getMembers().forEach((m) -> System.out.println("testDatabaseRemainsInClusterAfterActionFailsOnAllDatabases-STATUS: " + m.database.getLabel() + " - " + m.status));
 				assertThat(cluster.size(), is(2));
 				try {
 					System.out.println("\nTESTING SQL EXCEPTION THROWING...\n");
