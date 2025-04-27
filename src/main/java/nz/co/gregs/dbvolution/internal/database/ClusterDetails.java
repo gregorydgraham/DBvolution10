@@ -70,8 +70,12 @@ public class ClusterDetails implements Serializable {
 	private transient final Set<DBRow> trackedTables = Collections.synchronizedSet(new HashSet<DBRow>());
 
 	private transient final PreferencesImproved prefs = PreferencesImproved.userNodeForPackage(this.getClass());
-	private String clusterLabel = "NotDefined";
-	private boolean supportsDifferenceBetweenNullAndEmptyString = true;
+	
+	private static final String DEFAULT_CLUSTER_LABEL = "Unlabeled Cluster";
+  
+  private String clusterLabel = DEFAULT_CLUSTER_LABEL;
+	
+  private boolean supportsDifferenceBetweenNullAndEmptyString = true;
 	private boolean quietExceptions = false;
 	private DBDatabaseCluster.Configuration configuration = DBDatabaseCluster.Configuration.fullyManual();
 
@@ -83,7 +87,7 @@ public class ClusterDetails implements Serializable {
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	public ClusterDetails(String label) {
-		this.clusterLabel = label;
+		this.clusterLabel = StringCheck.checkNotNullOrEmpty(label, DEFAULT_CLUSTER_LABEL, DEFAULT_CLUSTER_LABEL);
 		members = new ClusterMemberList(this);
 		propertyChangeSupport = new PropertyChangeSupport(this);
 	}
@@ -317,7 +321,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	protected synchronized DBDatabase getAuthoritativeDatabase() throws NoAvailableDatabaseException {
+	protected DBDatabase getAuthoritativeDatabase() throws NoAvailableDatabaseException {
 		final DatabaseConnectionSettings authoritativeDCS = getAuthoritativeDatabaseConnectionSettings();
 		if (authoritativeDCS != null) {
 			try {
@@ -424,7 +428,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized DatabaseConnectionSettings getAuthoritativeDatabaseConnectionSettings() {
+	public DatabaseConnectionSettings getAuthoritativeDatabaseConnectionSettings() {
 		if (configuration.isUseAutoRebuild()) {
 			String encodedSettings = "";
 			final String rawPrefsValue = prefs.get(getClusterLabel(), null);

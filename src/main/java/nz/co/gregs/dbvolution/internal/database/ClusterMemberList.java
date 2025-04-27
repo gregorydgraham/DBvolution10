@@ -463,7 +463,7 @@ public class ClusterMemberList implements Serializable, AutoCloseable {
 		while (getReadyDatabases().length == 0) {
 			synchronized (A_DATABASE_IS_READY) {
 				try {
-					A_DATABASE_IS_READY.wait(100);
+					A_DATABASE_IS_READY.wait(1000);
 				} catch (InterruptedException ex) {
 					Logger.getLogger(ClusterMemberList.class
 							.getName()).log(Level.SEVERE, null, ex);
