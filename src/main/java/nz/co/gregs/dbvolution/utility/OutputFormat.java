@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.utility;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
