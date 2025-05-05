@@ -61,7 +61,7 @@ public class DBStatement implements AutoCloseable {
 	final DBDatabase database;
 	private DBConnection connection;
 	private boolean isClosed = false;
-	private final List<String> localBatchList = new ArrayList<String>();
+	private final List<String> localBatchList = new ArrayList<>();
 	private final Long TIMEOUT_IN_MILLISECONDS = 10000L;
 
 	/**
@@ -100,10 +100,8 @@ public class DBStatement implements AutoCloseable {
 				var statementDetails = details.copy().withLabel("UNLABELLED QUERY").withException(exp);
 				statementDetails.setIgnoreExceptions(details.isIgnoreExceptions());
 				executeQuery = addFeatureAndAttemptQueryAgain(statementDetails);
-			} catch (LoopDetectedInRecursiveSQL loop) {
+			} catch (LoopDetectedInRecursiveSQL | SQLException loop) {
 				throw loop;
-			} catch (SQLException ex) {
-				throw ex;
 			} catch (Exception ex) {
 				throw new SQLException(ex);
 			}
@@ -538,7 +536,7 @@ public class DBStatement implements AutoCloseable {
 					= details.copy()
 							.withLabel("RETRY EXECUTE")
 							.withException(exp);
-			addFeatureAndAttemptExecuteAgain(statementDetails);
+			addFeatureAndAttemptExecuteAgain(statementDetails,new ArrayList<>(0));
 		}
 	}
 
@@ -565,7 +563,7 @@ public class DBStatement implements AutoCloseable {
 	static final Regex DROP_INTENTION_MATCHER = Regex.startingAnywhere().literal("DROP").toRegex();
 	static final Regex DROP_EXCEPTION_MATCHER = Regex.startingAnywhere().beginCaseInsensitiveSection().anyOf("does not exist", "doesn't exist").endCaseInsensitiveSection().toRegex();
 
-	private void addFeatureAndAttemptExecuteAgain(StatementDetails details) throws SQLException {
+	private void addFeatureAndAttemptExecuteAgain(StatementDetails details, List<String> previousExceptions) throws SQLException {
 		details.setDBStatement(this);
 		String sql = details.getSql();
 		Exception exp = details.getException();
@@ -588,8 +586,16 @@ public class DBStatement implements AutoCloseable {
 			try {
 				executeWithTimeout(details);
 			} catch (SQLException exp2) {
-				if (!exp.getMessage().equals(exp2.getMessage())) {
-					addFeatureAndAttemptExecuteAgain(details);
+        final String exp2GetMessage = exp2.getMessage();
+        final String exp2GetLocalizedMessage = exp2.getLocalizedMessage();
+				if (!previousExceptions.contains(exp2GetMessage)||!previousExceptions.contains(exp2GetLocalizedMessage)) {
+          previousExceptions.add(exp2GetMessage);
+          previousExceptions.add(exp2GetLocalizedMessage);
+          StatementDetails newDetails
+					= details.copy()
+							.withLabel("RETRY EXECUTE")
+							.withException(exp2);
+					addFeatureAndAttemptExecuteAgain(newDetails,previousExceptions);
 				} else {
 					throw new SQLException(exp);
 				}
