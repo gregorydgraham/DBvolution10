@@ -20,8 +20,8 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  * Contains all the instances of DBRow that are associated with one line of a
@@ -319,12 +319,13 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 
 	@Override
 	public String toString() {
-		SeparatedString sepString = SeparatedStringBuilder
-				.forSeparator(", ")
-				.withKeyValueSeparator("=")
-				.withPrefix("{")
-				.withSuffix("}")
-				.useWhenEmpty("{}");
+		Encoder encoder = Builder
+            .forSeparator(", ")
+            .withKeyValueSeparator("=")
+            .withPrefix("{")
+            .withSuffix("}")
+            .useWhenEmpty("{}")
+            .encoder();
 
 		var entrySet = entrySet();
 		ArrayList<Entry<Class<? extends DBRow>, DBRow>> entryList = new ArrayList<>(entrySet);
@@ -332,7 +333,7 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 			return original.getKey().getCanonicalName().compareTo(other.getKey().getCanonicalName());
 		});
 		for (Entry<Class<? extends DBRow>, DBRow> entry : entryList) {
-			sepString.add(entry.getKey().toString(),entry.getValue().toString());
+			encoder.add(entry.getKey().toString(),entry.getValue().toString());
 		}
 
 		var entrySet2 = expressionColumnValues.entrySet();
@@ -341,12 +342,12 @@ public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 			return original.getKey().toString().compareTo(other.getKey().toString());
 		});
 		for (Entry<Object, QueryableDatatype<?>> entry2 : entryList2) {
-			sepString.add(entry2.getKey().toString(),entry2.getValue().toString());
+			encoder.add(entry2.getKey().toString(),entry2.getValue().toString());
 		}
 
 
 
-		final String toString = sepString.toString();
+		final String toString = encoder.toString();
 		return toString;
 	}
 }

@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  *
@@ -49,12 +49,12 @@ public interface ClusterCapableSettingsBuilder<SELF extends ClusterCapableSettin
 	List<DatabaseConnectionSettings> getClusterHosts();
 	
 	public default String encodeClusterHosts(List<DatabaseConnectionSettings> hosts) {
-		SeparatedString sep = SeparatedStringBuilder.forSeparator(",");
+		Encoder sep = Builder.forSeparator(",").encoder();
 		sep.addAll(
 				hosts.stream()
 						.map(this::encodeHost)
 						.collect(Collectors.toList())
 		);
-		return sep.toString();
+		return sep.encode();
 	}
 }

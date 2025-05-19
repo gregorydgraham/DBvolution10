@@ -32,8 +32,8 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.internal.oracle.xe.Line2DFunctions;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  * A subclass of OracleDB that contains definitions of standard Spatial
@@ -167,17 +167,18 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
-		SeparatedString sepStr;
-		sepStr = SeparatedStringBuilder
+		Encoder encoder;
+		encoder = Builder
 				.byCommas()
 				.withPrefix("MDSYS.SDO_GEOMETRY(2003, NULL, NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),MDSYS.SDO_ORDINATE_ARRAY(")
 				.withSuffix("))")
 				.withClosedLoop()
+        .encoder()
 				.addAll(
 						(t)->{return doPoint2DGetXTransform(t) + ", " + doPoint2DGetYTransform(t);}, 
 						pointSQL
 				);
-		return sepStr.toString();
+		return encoder.encode();
 	}
 
 	@Override

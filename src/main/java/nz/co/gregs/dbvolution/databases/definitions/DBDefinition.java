@@ -76,8 +76,8 @@ import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.dbvolution.utility.TemporalStringParser;
 import nz.co.gregs.regexi.Match;
 import nz.co.gregs.regexi.Regex;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  *
@@ -1754,11 +1754,11 @@ public abstract class DBDefinition implements Serializable {
 	 * @see StringExpression#append(nz.co.gregs.dbvolution.results.NumberResult)
 	 */
 	public String doConcatTransform(String firstString, String secondString, String... rest) {
-		SeparatedString sep = SeparatedStringBuilder.startsWith("CONCAT(").separatedBy(", ").endsWith(")")
+		Encoder sep = Builder.forSeparator(", ").startsWith("CONCAT(").withSuffix(")").encoder()
 				.add(firstString)
 				.add(secondString)
 				.addAll(rest);
-		return sep.toString();
+		return sep.encode();
 	}
 
 	/**
@@ -6670,11 +6670,11 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public Collection<? extends String> getInsertPreparation(DBRow table) {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	public Collection<? extends String> getInsertCleanUp(DBRow table) {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper<?, ?, ?> columnPropertyWrapper) {
@@ -6822,11 +6822,13 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doLeftPadTransform(String toPad, String padWith, String length) {
-		return SeparatedStringBuilder
+		return Builder
+				.forSeparator(", ")
 				.startsWith("LPAD(")
-				.separatedBy(", ")
+				.withSuffix(")")
+            .encoder()
 				.addAll(toPad, length, padWith)
-				.endsWith(")").toString();
+            .encode();
 	}
 
 	public boolean supportsLeftPadTransform() {
@@ -6834,11 +6836,13 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doRightPadTransform(String toPad, String padWith, String length) {
-		return SeparatedStringBuilder
-				.startsWith("RPAD(")
-				.separatedBy(", ")
-				.addAll(toPad, length, padWith)
-				.endsWith(")").toString();
+    final Encoder encoder = Builder
+            .forSeparator(", ")
+            .withPrefix("RPAD(")
+            .withSuffix(")")
+            .encoder()
+            .addAll(toPad, length, padWith);
+		return encoder.encode();
 	}
 
 	public boolean supportsRightPadTransform() {
@@ -6942,7 +6946,7 @@ public abstract class DBDefinition implements Serializable {
 		Long seconds = 0L;
 		Long nanos = 0L;
 		var singleUnitValues = getSingleUnitIntervalStringRegex().getAllMatches(intervalStr);
-		if (singleUnitValues.size() > 0) {
+		if (!singleUnitValues.isEmpty()) {
 			// only one time type specified i.e. days, seconds, months, ...
 			// 2 days, 5.03 seconds, -2 months,...
 			var match = singleUnitValues.get(0);

@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -87,23 +87,23 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getLocalDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return SeparatedStringBuilder.startsWith("make_timestamp(").separatedBy(", ").endsWith(")")
+		return Builder.forSeparator(", ").startsWith("make_timestamp(").endsWith(")").encoder()
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
-				.toString();
+				.encode();
 	}
 
 	@Override
 	public String getInstantPartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return SeparatedStringBuilder.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
+		return Builder.forSeparator(", ").startsWith("make_timestamptz(").endsWith(")").encoder()
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
-				.toString();
+				.encode();
 	}
 
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return SeparatedStringBuilder.startsWith("make_timestamptz(").separatedBy(", ").endsWith(")")
+		return Builder.forSeparator(", ").startsWith("make_timestamptz(").endsWith(")").encoder()
 				.addAll(years, months, days)
 				.addAll(hours, minutes, "(" + seconds + "+" + subsecond + ")")
 				.add(
@@ -111,7 +111,7 @@ public class PostgresDBDefinition extends DBDefinition {
 								"'" + timeZoneSign + "'", doLeftPadTransform("'" + timeZoneHourOffset + "'", "'0'", "'2'"), doRightPadTransform("'" + timeZoneMinuteOffSet + "'", "'0'", "2")
 						)
 				)
-				.toString();
+				.encode();
 	}
 
 	@Override
