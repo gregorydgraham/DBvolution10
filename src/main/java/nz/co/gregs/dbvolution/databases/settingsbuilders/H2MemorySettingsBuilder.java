@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2MemoryDBDefinition;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 
 public class H2MemorySettingsBuilder
@@ -51,7 +51,7 @@ public class H2MemorySettingsBuilder
 
 	@Override
 	public DBDefinition getDefaultDefinition() {
-		return new H2DBDefinition();
+		return new H2MemoryDBDefinition();
 	}
 
 	@Override

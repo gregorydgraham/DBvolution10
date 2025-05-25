@@ -61,6 +61,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "DROP DATABASE IF EXISTS '" + databaseName + "';";
 	}
 
+  /* TODO Implement CREATE DATABASE for all databases */
 	@Override
 	public String getCreateDatabase(String databaseName) throws UnsupportedOperationException {
 		return "CREATE DATABASE '" + databaseName + "';";
