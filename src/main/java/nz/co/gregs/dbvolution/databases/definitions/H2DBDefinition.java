@@ -27,8 +27,8 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.internal.h2.*;
 import nz.co.gregs.regexi.Regex;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -268,11 +268,11 @@ public class H2DBDefinition extends DBDefinition implements SupportsPolygonDatat
 
 	@Override
 	public String doBooleanArrayTransform(Boolean[] bools) {
-		SeparatedString result = SeparatedStringBuilder.byCommaSpace().withPrefix("ARRAY[").withSuffix("]");
+		Encoder result = Builder.byCommaSpace().withPrefix("ARRAY[").withSuffix("]").encoder();
 		for (Boolean c : bools) {
 			result.add(c.toString().toUpperCase());
 		}
-		return result.toString();
+		return result.encode();
 	}
 
 	@Override

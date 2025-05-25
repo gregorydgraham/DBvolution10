@@ -40,8 +40,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.utility.StringCheck;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Decoder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  * A standardized collection of the database connection settings.
@@ -122,10 +123,10 @@ public class DatabaseConnectionSettings implements Serializable {
 	private String password = "";
 	private String schema = "";
 	private final HashMap<String, String> extras = new HashMap<>();
-	private final ArrayList<String> clusterHosts = new ArrayList<String>();
+	private final ArrayList<String> clusterHosts = new ArrayList<>();
 	private String dbdatabase = "";
 	private String label = "";
-	private DataSource dataSource = null;
+	private transient DataSource dataSource = null;
 	private String protocol;
 
 	private static final String FIELD_SEPARATOR = "<DCS FIELD>";
@@ -148,7 +149,7 @@ public class DatabaseConnectionSettings implements Serializable {
 
 	@Override
 	public String toString() {
-		SeparatedString toStringer = getToStringer();
+		Encoder toStringer = getToStringer();
 		toStringer.addAll(
 				StringCheck.check(getDbdatabaseClass()),
 				StringCheck.check(getHost()),
@@ -184,7 +185,7 @@ public class DatabaseConnectionSettings implements Serializable {
 			Map<String, String> gotExtras = getExtras();
 			String encodedExtras = encodeExtras(gotExtras);
 
-			SeparatedString encoder = getEncoder();
+			Encoder encoder = getEncoder();
 			encoder.add(StringCheck.check(getDbdatabaseClass()));
 			encoder.add(StringCheck.check(getHost()));
 			encoder.add(StringCheck.check(getPort()));
@@ -204,21 +205,21 @@ public class DatabaseConnectionSettings implements Serializable {
 		return encoded;
 	}
 
-	private static SeparatedString getEncoder() {
-		return SeparatedStringBuilder
+	private static Encoder getEncoder() {
+		return Builder
 				.forSeparator(FIELD_SEPARATOR)
 				.withEscapeChar("\\")
-				.withPrefix("DATABASECONNECTIONSETTINGS: ");
+				.withPrefix("DATABASECONNECTIONSETTINGS: ").encoder();
 	}
 
-	private static SeparatedString getToStringer() {
-		return SeparatedStringBuilder.forSeparator(TOSTRING_SEPARATOR).withEscapeChar("\\").withPrefix("DATABASECONNECTIONSETTINGS: ");
+	private static Encoder getToStringer() {
+		return Builder.forSeparator(TOSTRING_SEPARATOR).withEscapeChar("\\").withPrefix("DATABASECONNECTIONSETTINGS: ").encoder();
 	}
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
-		SeparatedString encoder = getEncoder();
-		List<String> decoded = encoder.decode(encodedSettings);
+    final Decoder decoder = getEncoder().decoder();
+		List<String> decoded = decoder.decode(encodedSettings);
 		String[] data = decoded.toArray(new String[0]);
 
 		if (data.length > 0) {
@@ -888,46 +889,49 @@ public class DatabaseConnectionSettings implements Serializable {
 	}
 
 	public final String formatExtras(String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
-		return SeparatedStringBuilder
+		return Builder
 				.forSeparator(nameValuePairSeparator)
 				.withKeyValueSeparator(nameValueSeparator)
 				.withPrefix(prefix)
 				.withSuffix(suffix)
+            .encoder()
 				.addAll(extras)
 				.toString();
 	}
 
 	public static Map<String, String> decodeExtras(String extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
-		return SeparatedStringBuilder
+		return Builder
 				.forSeparator(nameValuePairSeparator)
 				.withKeyValueSeparator(nameValueSeparator)
 				.withPrefix(prefix)
 				.withSuffix(suffix)
-				.parseToMap(extras);
+        .decoder()
+				.decodeToMap(extras);
 	}
 
-	private static SeparatedString clusterHostEncoder() {
-		return SeparatedStringBuilder
+	private static Encoder clusterHostEncoder() {
+		return Builder
 				.forSeparator("|")
 				.withPrefix("<")
 				.withSuffix(">")
-				.withEscapeChar("!");
+				.withEscapeChar("!")
+            .encoder();
 	}
 
 	public static String encodeClusterHosts(List<DatabaseConnectionSettings> clusterHosts) {
-		SeparatedString csv = clusterHostEncoder();
+		Encoder csv = clusterHostEncoder();
 		for (DatabaseConnectionSettings clusterHost : clusterHosts) {
 			String encoded = clusterHost.encode();
 			csv.add(encoded);
 		}
-		String result = csv.toString();
+		String result = csv.encode();
 		return result;
 	}
 
 	public static List<DatabaseConnectionSettings> decodeClusterHosts(String clusterHosts) {
 		final ArrayList<DatabaseConnectionSettings> results = new ArrayList<>(0);
-		final SeparatedString clusterHostEncoder = clusterHostEncoder();
-		List<String> hosts = clusterHostEncoder.parseToList(clusterHosts);
+		final Decoder decoder = clusterHostEncoder().decoder();
+		List<String> hosts = decoder.decodeToList(clusterHosts);
 		for (String host : hosts) {
 			try {
 				DatabaseConnectionSettings decodedHost = decode(host);
@@ -1057,22 +1061,22 @@ public class DatabaseConnectionSettings implements Serializable {
 	}
 
 	public static String encodeExtras(Map<String, String> extras) {
-		SeparatedString encoder = extrasEncoder();
-		SeparatedString added = encoder.addAll(extras);
-		String encoded = added.encode();
+		Encoder encoder = extrasEncoder().addAll(extras);
+		String encoded = encoder.encode();
 		return encoded;
 	}
 
 	public static Map<String, String> decodeExtras(String extras) {
-		return extrasEncoder()
-				.parseToMap(extras);
+		return extrasEncoder().decoder()
+				.decodeToMap(extras);
 	}
 
-	private static SeparatedString extrasEncoder() {
-		return SeparatedStringBuilder
-				.forSeparator(";")
-				.withKeyValueSeparator("=")
-				.withEscapeChar("!");
+	private static Encoder extrasEncoder() {
+		return Builder
+            .forSeparator(";")
+            .withKeyValueSeparator("=")
+            .withEscapeChar("!")
+            .encoder();
 	}
 
 	public boolean removeClusterHost(DatabaseConnectionSettings settings) {

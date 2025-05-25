@@ -36,8 +36,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  *
@@ -93,12 +93,14 @@ public abstract class AbstractSettingsBuilder<SELF extends AbstractSettingsBuild
 
 	protected final String encodeExtras(DatabaseConnectionSettings settings, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
 		Map<String, String> extras = settings.getExtras();
-		SeparatedString sep = SeparatedStringBuilder
-				.of(extras, nameValueSeparator)
+		Encoder sep = Builder
+				.forSeparator(nameValuePairSeparator)
+        .withKeyValueSeparator(nameValueSeparator)
 				.withPrefix(prefix)
-				.withSuffix(suffix)
-				.separatedBy(nameValuePairSeparator);
-		return sep.toString();
+				.withSuffix(suffix).encoder()
+        .addAll(extras);
+    String encoded = sep.encode();
+		return encoded;
 	}
 
 	private DatabaseConnectionSettings getDefaultSettings() {

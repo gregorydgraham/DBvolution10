@@ -54,8 +54,9 @@ import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.dbvolution.utility.PreferencesImproved;
 import nz.co.gregs.dbvolution.utility.encryption.Encryption_Internal;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Decoder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  *
@@ -425,7 +426,7 @@ public class ClusterDetails implements Serializable {
 	private synchronized void saveTrackedTables() {
 		if (configuration.isUseAutoRebuild()) {
 			Set<Class<?>> previousClasses = new HashSet<>(0);
-			SeparatedString rowClasses = getTrackedTablesSeparatedStringTemplate();
+			Encoder rowClasses = getTrackedTablesSeparatedStringTemplate();
 			for (DBRow trackedTable : trackedTables) {
 				if (!previousClasses.contains(trackedTable.getClass())) {
 					previousClasses.add(trackedTable.getClass());
@@ -454,7 +455,7 @@ public class ClusterDetails implements Serializable {
 				LOG.log(Level.SEVERE, null, ex);
 			}
 		}
-		var seps = getTrackedTablesSeparatedStringTemplate();
+		Decoder seps = getTrackedTablesSeparatedStringTemplate().decoder();
 		List<String> decodedRowClasses = seps.decode(encodedSettings);
 		return decodedRowClasses;
 	}
@@ -487,8 +488,8 @@ public class ClusterDetails implements Serializable {
 		return getClusterLabel() + "_trackedtables";
 	}
 
-	private SeparatedString getTrackedTablesSeparatedStringTemplate() {
-		return SeparatedStringBuilder.commaSeparated();
+	private Encoder getTrackedTablesSeparatedStringTemplate() {
+		return Builder.commaSeparated().encoder();
 	}
 
 	private synchronized void removeAuthoritativeDatabaseFromPrefs() {

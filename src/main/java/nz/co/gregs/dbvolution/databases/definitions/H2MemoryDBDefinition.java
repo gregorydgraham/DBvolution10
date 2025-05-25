@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gregory Graham.
+ * Copyright 2025 Gregory Graham.
  *
  * Commercial licenses are available, please contact info@gregs.co.nz for details.
  * 
@@ -28,33 +28,19 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.settingsbuilders;
+package nz.co.gregs.dbvolution.databases.definitions;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.separatedstring.Builder;
-import nz.co.gregs.separatedstring.Encoder;
 
-/**
- *
- * @author gregorygraham
- * @param <SELF> the class of the object returned by most methods, this should be the Class of "this"
- * @param <DATABASE> the class returned by {@link #getDBDatabase}
- */
-public interface ClusterCapableSettingsBuilder<SELF extends ClusterCapableSettingsBuilder<SELF, DATABASE>, DATABASE extends DBDatabase> extends SettingsBuilder<SELF, DATABASE> {
+public class H2MemoryDBDefinition extends H2DBDefinition {
 
-	SELF setClusterHosts(List<DatabaseConnectionSettings> hosts);
-	List<DatabaseConnectionSettings> getClusterHosts();
-	
-	public default String encodeClusterHosts(List<DatabaseConnectionSettings> hosts) {
-		Encoder sep = Builder.forSeparator(",").encoder();
-		sep.addAll(
-				hosts.stream()
-						.map(this::encodeHost)
-						.collect(Collectors.toList())
-		);
-		return sep.encode();
+  private static final long serialVersionUID = 1L;
+  
+
+	@Override
+	public boolean persistentConnectionRequired() {
+		return true;
 	}
+
+  
+  
 }

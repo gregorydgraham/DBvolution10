@@ -32,7 +32,8 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
 import org.joda.time.Period;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderBy;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  * LocalDateTimeExpression implements standard functions that produce a
@@ -4991,15 +4992,17 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return SeparatedStringBuilder
-					.forSeparator(getSeparator(db))
-					.withPrefix(beforeValue(db))
-					.containing(
-							first.toSQLString(db),
-							second.toSQLString(db),
-							third.toSQLString(db)
-					).withSuffix(afterValue(db))
-					.toString();
+      Encoder encoder = Builder
+              .forSeparator(getSeparator(db))
+              .withPrefix(beforeValue(db))
+              .withSuffix(afterValue(db))
+              .encoder()
+              .containing(
+                      first.toSQLString(db),
+                      second.toSQLString(db),
+                      third.toSQLString(db)
+              );
+			return encoder.encode();
 //			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
 		}
 

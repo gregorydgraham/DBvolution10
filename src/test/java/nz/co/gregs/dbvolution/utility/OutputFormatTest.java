@@ -3,10 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.utility;
 
+import nz.co.gregs.dbvolution.utility.OutputFormat;
 import java.sql.SQLException;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -16,8 +20,6 @@ import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -154,6 +156,13 @@ public class OutputFormatTest extends AbstractTest {
 		assertThat(formatDBQueryRows.replaceAll(".00000*", ""), is("<tr class=\"headerrow\"><th class=\"headercell\">Marque:numericCode</th><th class=\"headercell\">Marque:uidMarque</th><th class=\"headercell\">Marque:isUsedForTAFROs</th><th class=\"headercell\">Marque:statusClassID</th><th class=\"headercell\">Marque:individualAllocationsAllowed</th><th class=\"headercell\">Marque:updateCount</th><th class=\"headercell\">Marque:auto_created</th><th class=\"headercell\">Marque:name</th><th class=\"headercell\">Marque:pricingCodePrefix</th><th class=\"headercell\">Marque:reservationsAllowed</th><th class=\"headercell\">Marque:creationDate</th><th class=\"headercell\">Marque:enabled</th><th class=\"headercell\">Marque:carCompany</th><th class=\"headercell\">CarCompany:name</th><th class=\"headercell\">CarCompany:uidCarCompany</th></tr>" + newline
 				+ "<tr class=\"rowstyle\"><td class=\"rowstyle\"></td><td class=\"rowstyle\">1</td><td class=\"rowstyle\">False</td><td class=\"rowstyle\">1246974</td><td class=\"rowstyle\"></td><td class=\"rowstyle\">0</td><td class=\"rowstyle\"></td><td class=\"rowstyle\">TOYOTA</td><td class=\"rowstyle\"></td><td class=\"rowstyle\">Y</td><td class=\"rowstyle\">23/Mar/2013 12:34:56</td><td class=\"rowstyle\">true</td><td class=\"rowstyle\">1</td><td class=\"rowstyle\">TOYOTA</td><td class=\"rowstyle\">1</td></tr>" + newline
 				+ "<tr class=\"rowstyle\"><td class=\"rowstyle\"></td><td class=\"rowstyle\">4896300</td><td class=\"rowstyle\">False</td><td class=\"rowstyle\">1246974</td><td class=\"rowstyle\"></td><td class=\"rowstyle\">2</td><td class=\"rowstyle\">UV</td><td class=\"rowstyle\">HYUNDAI</td><td class=\"rowstyle\"></td><td class=\"rowstyle\">Y</td><td class=\"rowstyle\">23/Mar/2013 12:34:56</td><td class=\"rowstyle\"></td><td class=\"rowstyle\">1</td><td class=\"rowstyle\">TOYOTA</td><td class=\"rowstyle\">1</td></tr>" + newline));
+	
+
+		formatDBQueryRows = OutputFormat.HTMLTABLE.formatDBQueryRows(DATETIME_FORMAT, allRows);
+
+		assertThat(formatDBQueryRows.replaceAll(".00000*", ""), is("<tr class=\"\"><th class=\"\">Marque:numericCode</th><th class=\"\">Marque:uidMarque</th><th class=\"\">Marque:isUsedForTAFROs</th><th class=\"\">Marque:statusClassID</th><th class=\"\">Marque:individualAllocationsAllowed</th><th class=\"\">Marque:updateCount</th><th class=\"\">Marque:auto_created</th><th class=\"\">Marque:name</th><th class=\"\">Marque:pricingCodePrefix</th><th class=\"\">Marque:reservationsAllowed</th><th class=\"\">Marque:creationDate</th><th class=\"\">Marque:enabled</th><th class=\"\">Marque:carCompany</th><th class=\"\">CarCompany:name</th><th class=\"\">CarCompany:uidCarCompany</th></tr>" + newline
+				+ "<tr class=\"\"><td class=\"\"></td><td class=\"\">1</td><td class=\"\">False</td><td class=\"\">1246974</td><td class=\"\"></td><td class=\"\">0</td><td class=\"\"></td><td class=\"\">TOYOTA</td><td class=\"\"></td><td class=\"\">Y</td><td class=\"\">23/Mar/2013 12:34:56</td><td class=\"\">true</td><td class=\"\">1</td><td class=\"\">TOYOTA</td><td class=\"\">1</td></tr>" + newline
+				+ "<tr class=\"\"><td class=\"\"></td><td class=\"\">4896300</td><td class=\"\">False</td><td class=\"\">1246974</td><td class=\"\"></td><td class=\"\">2</td><td class=\"\">UV</td><td class=\"\">HYUNDAI</td><td class=\"\"></td><td class=\"\">Y</td><td class=\"\">23/Mar/2013 12:34:56</td><td class=\"\"></td><td class=\"\">1</td><td class=\"\">TOYOTA</td><td class=\"\">1</td></tr>" + newline));
 	}
 
 }

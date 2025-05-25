@@ -60,8 +60,7 @@ import nz.co.gregs.dbvolution.results.LocalDateResult;
 import nz.co.gregs.dbvolution.results.LocalDateTimeResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
 
 /**
  *
@@ -168,13 +167,14 @@ public class CaseExpression {
 
 		@Override
 		public String toSQLString(DBDefinition defn) {
-			return SeparatedStringBuilder
+			return Builder.forSeparator(" ")
 					.startsWith(" CASE ")
 					.endsWith(" ELSE " + defaultValue.toSQLString(defn) + " END")
+          .encoder()
 					.addAll(
 							this.clauses.stream().map((t) -> t.toSQLString(defn)).collect(Collectors.toList())
 					)
-					.toString();
+					.encode();
 
 		}
 

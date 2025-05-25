@@ -53,8 +53,8 @@ import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
 import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.regexi.RegexReplacement;
-import nz.co.gregs.separatedstring.SeparatedString;
-import nz.co.gregs.separatedstring.SeparatedStringBuilder;
+import nz.co.gregs.separatedstring.Builder;
+import nz.co.gregs.separatedstring.Encoder;
 
 /**
  *
@@ -437,18 +437,22 @@ public class QueryDetails implements DBQueryable, Serializable {
 			StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
 			int columnIndex = 1;
 			boolean groupByIsRequired = false;
-			var groupByColumnAlias = SeparatedStringBuilder
-					.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
-					.withPrefix(defn.beginGroupByClause());
-			var groupByColumnIndex = SeparatedStringBuilder
-					.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
-					.withPrefix(defn.beginGroupByClause());
-			var groupByColumnSelectExpression = SeparatedStringBuilder
-					.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
-					.withPrefix(defn.beginGroupByClause());
-			var groupByClause = SeparatedStringBuilder
-					.forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
-					.withPrefix(defn.beginGroupByClause());
+			var groupByColumnAlias = Builder
+              .forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
+              .withPrefix(defn.beginGroupByClause())
+              .encoder();
+      var groupByColumnIndex = Builder
+              .forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
+              .withPrefix(defn.beginGroupByClause())
+              .encoder();
+      var groupByColumnSelectExpression = Builder
+              .forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
+              .withPrefix(defn.beginGroupByClause())
+              .encoder();
+      var groupByClause = Builder
+              .forSeparator(defn.getSubsequentGroupBySubClauseSeparator())
+              .withPrefix(defn.beginGroupByClause())
+              .encoder();
 			HashMap<PropertyWrapperDefinition<?, ?>, Integer> indexesOfSelectedColumns = new HashMap<>();
 			HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
 			StringBuilder fromClause = new StringBuilder();
@@ -725,9 +729,10 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	protected String assembleSQLQuery(DBDefinition defn, StringBuilder selectClause, StringBuilder fromClause, StringBuilder whereClause, String rawSQLClauseFinal, String groupByClauseSQL, String havingClause, String orderByClauseFinal, QueryOptions options1, QueryState queryState) {
 		return defn.doWrapQueryForPaging(
-				SeparatedStringBuilder
+				Builder
 						.lineSeparated()
-						.trimBlanks()
+						.withBlanksTrimmed()
+            .encoder()
 						.add(selectClause.toString())
 						.add(fromClause.toString())
 						.add(whereClause.toString())
@@ -736,7 +741,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 						.add(havingClause)
 						.add(orderByClauseFinal)
 						.add(options1.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(queryState, options1) : "")
-						.add(defn.endSQLStatement()).toString(),
+						.add(defn.endSQLStatement()).encode(),
 				options1);
 	}
 
@@ -907,7 +912,12 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			state.setHasBeenOrdered(true);
-			SeparatedString orderByClause = SeparatedStringBuilder.byCommas();
+			Encoder orderByClause = Builder
+              .byCommas()
+              .withPrefix(defn.beginOrderByClause())
+              .withSuffix(defn.endOrderByClause())
+              .useWhenEmpty("")
+              .encoder();
 			for (SortProvider sorter : sortOrderColumns) {
 				if (!sorter.isWindowingFunction() || defn.supportsWindowingFunctionsInTheOrderByClause()) {
 					clause.addGroupByClauses(sorter.getGroupByClauses(defn));
@@ -943,10 +953,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 					}
 				}
 			}
-			orderByClause
-					.withPrefix(defn.beginOrderByClause())
-					.withSuffix(defn.endOrderByClause())
-					.useWhenEmpty("");
 			clause.setOrderByClause(orderByClause);
 		}
 
@@ -1227,9 +1233,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	protected synchronized void fillResultSetFromSQL(QueryOptions options, final DBDefinition defn, List<String> sqlOptions) throws AccidentalCartesianJoinException, AccidentalBlankQueryException, LoopDetectedInRecursiveSQL, SQLTimeoutException, SQLException {
-		ArrayList<DBQueryRow> foundRows = new ArrayList<DBQueryRow>();
+		ArrayList<DBQueryRow> foundRows = new ArrayList<>();
 		SQLException firstException = null;
-		SeparatedString errorMessages = SeparatedStringBuilder.byLines();
+		Encoder errorMessages = Builder.byLines().encoder();
 		boolean successfulQuery = false;
 		for (String sql : sqlOptions) {
 			final DBDatabase queryDatabase = options.getQueryDatabase();
@@ -1279,7 +1285,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 			setResults(foundRows);
 		} else {
-			System.err.println("" + errorMessages);
+			System.err.println("" + errorMessages.encode());
 			throw firstException;
 		}
 	}
@@ -1729,8 +1735,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 			groupByClauses.addAll(clauses);
 		}
 
-		void setOrderByClause(SeparatedString clause) {
-			orderByClause = clause.toString();
+		void setOrderByClause(Encoder clause) {
+			orderByClause = clause.encode();
 		}
 	}
 

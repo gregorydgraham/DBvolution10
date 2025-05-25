@@ -16,9 +16,8 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.connections.DBConnection;
 import nz.co.gregs.dbvolution.databases.settingsbuilders.H2MemorySettingsBuilder;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -57,7 +56,6 @@ public class H2MemoryDB extends H2DB {
 	 */
 	public H2MemoryDB(H2MemorySettingsBuilder dataSource) throws SQLException {
 		super(dataSource);
-		jamDatabaseConnectionOpen();
 	}
 
 	/**
@@ -91,7 +89,6 @@ public class H2MemoryDB extends H2DB {
 	 */
 	public H2MemoryDB(DataSource dataSource) throws SQLException {
 		super(dataSource);
-		jamDatabaseConnectionOpen();
 	}
 
 	/**
@@ -188,15 +185,11 @@ public class H2MemoryDB extends H2DB {
 	public H2MemoryDB clone() throws CloneNotSupportedException {
 		return (H2MemoryDB) super.clone();
 	}
-
-	private void jamDatabaseConnectionOpen() {
-		try {
-			this.storedConnection = getConnection();
-			this.storedConnection.createDBStatement();
-		} catch (UnableToCreateDatabaseConnectionException | UnableToFindJDBCDriver | SQLException ex) {
-			Logger.getLogger(H2DB.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+  
+  @Override
+  final public DBConnection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException{
+    return super.getConnection();
+  }
 
 	@Override
 	public H2MemorySettingsBuilder getURLInterpreter() {

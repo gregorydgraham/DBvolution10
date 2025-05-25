@@ -3,38 +3,73 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.utility;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
+ * Convenient formatting options for DBv output.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public abstract class OutputFormat {
 
-	public static final TabSeparated TSV = new TabSeparated();
-	public static final CSV CSV = new CSV();
-	public static final HTMLTable HTMLTABLE = new HTMLTable();
+  /**
+   * Tab Separated Formatting
+   */
+  public static final TabSeparated TSV = new TabSeparated();
 
-	public OutputFormat() {
+  /**
+   * Comma Separated Formatting
+   */
+  public static final CSV CSV = new CSV();
+
+  /**
+   * HTML Table Formatting
+   */
+  public static final HTMLTable HTMLTABLE = new HTMLTable();
+
+	private OutputFormat() {
 		super();
 	}
-
-	public String formatDBQueryRows(SimpleDateFormat DATETIME_FORMAT, List<DBQueryRow> rows) {
+  
+  /**
+   * Format a list of DBQueryRows
+   *
+   * @param DATETIME_FORMAT formatting for dates
+   * @param rows the rows to format
+   * @return formatted rows
+   */
+  public String formatDBQueryRows(SimpleDateFormat DATETIME_FORMAT, List<DBQueryRow> rows) {
 		return formatDBQueryRows("", "", "", DATETIME_FORMAT, rows);
 	}
 
+  
+  /**
+   * Format a list of RowDefinitions
+   *
+   * @param DATETIME_FORMAT formatting for dates
+   * @param rows the rows to format
+   * @return formatted rows
+   */
 	public String formatDBRows(SimpleDateFormat DATETIME_FORMAT, RowDefinition... rows) {
 		return OutputFormat.this.formatDBRows("", "", "", DATETIME_FORMAT, rows);
 	}
 
+  /**
+   * Format a list of RowDefinitions with styles
+   *
+   * @param headerRowStyle CSS style class name for the header row 
+   * @param headerCellStyle CSS style class name for the header cell
+   * @param rowStyle CSS style class name for the row cell
+   * @param dateFormat formatting for dates
+   * @param rows the rows to format
+   * @return formatted rows
+   */
 	public String formatDBRows(String headerRowStyle, String headerCellStyle, String rowStyle, SimpleDateFormat dateFormat, RowDefinition... rows) {
 		StringBuilder result = new StringBuilder(formatHeader(rows[0], headerRowStyle, headerCellStyle));
 		for (RowDefinition row : rows) {
@@ -43,7 +78,17 @@ public abstract class OutputFormat {
 		return result.toString();
 	}
 
-	public String formatDBQueryRows(String headerRowStyle, String headerCellStyle, String rowStyle, SimpleDateFormat dateFormat, List<DBQueryRow> queryRows) {
+  /**
+   * Format a list of DBQueryRow with styles
+   *
+   * @param headerRowStyle CSS style class name for the header row 
+   * @param headerCellStyle CSS style class name for the header cell
+   * @param rowStyle CSS style class name for the row cell
+   * @param dateFormat formatting for dates
+   * @param queryRows the rows to format
+   * @return formatted rows
+   */
+  public String formatDBQueryRows(String headerRowStyle, String headerCellStyle, String rowStyle, SimpleDateFormat dateFormat, List<DBQueryRow> queryRows) {
 		StringBuilder result = new StringBuilder(formatHeader(queryRows.get(0), headerRowStyle, headerCellStyle));
 		for (DBQueryRow row : queryRows) {
 			result.append(formatRow(row, rowStyle, dateFormat));
@@ -51,7 +96,7 @@ public abstract class OutputFormat {
 		return result.toString();
 	}
 
-	String formatRow(RowDefinition row, String tableRowCSSClass, SimpleDateFormat dateFormat) {
+	private String formatRow(RowDefinition row, String tableRowCSSClass, SimpleDateFormat dateFormat) {
 		int fieldCount = 0;
 		StringBuilder string = new StringBuilder();
 		Collection<String> fieldValues = row.getFieldValues(dateFormat);
@@ -72,7 +117,7 @@ public abstract class OutputFormat {
 		return string.toString();
 	}
 
-	String formatHeader(RowDefinition row, String headerRowCSSClass, String headerCellCSSClass) {
+	private String formatHeader(RowDefinition row, String headerRowCSSClass, String headerCellCSSClass) {
 		int fieldCount = 0;
 		StringBuilder string = new StringBuilder();
 		List<String> fields = row.getFieldNames();
@@ -91,11 +136,10 @@ public abstract class OutputFormat {
 		return string.toString();
 	}
 
-	String formatRow(DBQueryRow row, String tableRowCSSClass, SimpleDateFormat dateFormat) {
+	private String formatRow(DBQueryRow row, String tableRowCSSClass, SimpleDateFormat dateFormat) {
 		int fieldCount = 0;
 		StringBuilder string = new StringBuilder();
 		Collection<String> fieldValues = row.getFieldValues(dateFormat);
-//		List<PropertyWrapper> fields = row.getWrapper().getColumnPropertyWrappers();
 
 		string.append(getRowStart(tableRowCSSClass));
 		for (String value : fieldValues) {
@@ -112,7 +156,7 @@ public abstract class OutputFormat {
 		return string.toString();
 	}
 
-	String formatHeader(DBQueryRow row, String headerRowCSSClass, String headerCellCSSClass) {
+	private String formatHeader(DBQueryRow row, String headerRowCSSClass, String headerCellCSSClass) {
 		int fieldCount = 0;
 		StringBuilder string = new StringBuilder();
 		List<String> fields = row.getFieldNames();
@@ -151,7 +195,7 @@ public abstract class OutputFormat {
 
 	abstract String getRowEnd(String tableRowCSSClass);
 
-	protected static class TabSeparated extends OutputFormat {
+	public static class TabSeparated extends OutputFormat {
 
 		private TabSeparated() {
 		}

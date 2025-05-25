@@ -410,6 +410,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 					Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
 				}
 				if (connectionUsedForPersistentConnection(conn)) {
+          usedConnection(conn);
 					conn = null;
 				}
 			}
@@ -503,6 +504,7 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			if (storedConnection == null) {
 				this.storedConnection = connection;
 				this.storedConnection.createDBStatement();
+        usedConnection(connection);
 			}
 			if (storedConnection.equals(connection)) {
 				return true;
@@ -981,7 +983,9 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			transactionConnection.commit();
 		} finally {
 			isInATransaction = false;
-			transactionStatement.transactionFinished();
+      if(transactionStatement!=null){
+        transactionStatement.transactionFinished();
+      }
 			discardConnection(transactionConnection);
 			transactionConnection = null;
 			transactionStatement = null;
