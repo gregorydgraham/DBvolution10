@@ -981,7 +981,9 @@ public abstract class DBDatabaseImplementation implements DBDatabase, Serializab
 			transactionConnection.commit();
 		} finally {
 			isInATransaction = false;
-			transactionStatement.transactionFinished();
+      if(transactionStatement!=null){
+        transactionStatement.transactionFinished();
+      }
 			discardConnection(transactionConnection);
 			transactionConnection = null;
 			transactionStatement = null;
