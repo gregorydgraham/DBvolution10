@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
@@ -50,6 +52,29 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(Parameterized.class)
 public abstract class AbstractTest {
+
+  private static void findWellSpecifiedDatabases(List<Object[]> databases) {
+    Set<Map.Entry<Object, Object>> entrySet = System.getProperties().entrySet();
+    for (Map.Entry<Object, Object> entry : entrySet) {
+      if (entry != null) {
+        Object key = entry.getKey();
+        if (key != null) {
+          String keyString = key.toString();
+          final Object value = entry.getValue();
+          if (keyString.endsWith("Test") && value != null && value.toString().equals("true")) {
+            String testName = keyString.replaceAll("Test$", "").toLowerCase();
+            try {
+              final DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(testName);
+              databases.add(new Object[]{testName, settings.createDBDatabase()});
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+              System.getLogger(AbstractTest.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+          }
+        }
+      }
+    }
+
+  }
 
 	public DBDatabase database;
 	static List<Object[]> databases = new ArrayList<>(0);
@@ -219,6 +244,7 @@ public abstract class AbstractTest {
 		if (System.getProperty("testH2MemoryDB") != null) {
 			databases.add(new Object[]{"H2MemoryDB", H2MemoryTestDB.getFromSettings("h2memory")});
 		}
+    findWellSpecifiedDatabases(databases);
 		if (databases.isEmpty() || System.getProperty("testH2BlankDB") != null) {
 			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
 		}
