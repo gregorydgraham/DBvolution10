@@ -24,9 +24,6 @@ import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 /**
  * Performs transactions for arbitrary SQL strings.
  *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
  * @author Gregory Graham
  */
 public class DBRawSQLTransaction implements DBTransaction<Boolean> {
@@ -46,8 +43,7 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 	 * Perform the SQL on the database within a transaction.
 	 *
 	 * @param dbDatabase dbDatabase
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+   * 
 	 * @return TRUE if the transaction succeeded, FALSE otherwise.
 	 *
 	 */
