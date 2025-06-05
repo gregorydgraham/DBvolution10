@@ -585,7 +585,7 @@ public class DBStatement implements AutoCloseable {
 			}
 			try {
 				executeWithTimeout(details);
-			} catch (SQLException exp2) {
+      } catch (SQLException exp2) {
         final String exp2GetMessage = exp2.getMessage();
         final String exp2GetLocalizedMessage = exp2.getLocalizedMessage();
 				if (!previousExceptions.contains(exp2GetMessage)||!previousExceptions.contains(exp2GetLocalizedMessage)) {
