@@ -6,8 +6,8 @@
 docker pull microsoft/mssql-server-linux
 
 -- Start the container
--- -name sqlserver_container is the name of the container for docker control purposes
--- OPTIONAL -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer is the volume where we'll store the data 
+-- -name sqlserver_mcr is the name of the container for docker control purposes
+-- OPTIONAL -v /Users/gregorygraham/Projects/MSSQLServer-MCR:/MSSQLServer-MCR is the volume where we'll store the data 
 -- OPTIONAL -i is interactive (keep stdin open), 
 -- OPTIONAL --cap-add=SYS_TIME adds linux capabilities for sys_time
 -- -e ACCEPT_EULA=Y accepts the agreement with MS and allows the database instance to start
@@ -15,7 +15,7 @@ docker pull microsoft/mssql-server-linux
 -- -e 'TZ=Pacific/Auckland' sets the container timezone to the where I do my test (needs improving)
 -- -p 1433:1433 is the port of the host and container
 -- -d is detach "Run container in background and print container ID"
-docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d mcr.microsoft.com/mssql/server
+docker run --name sqlserver_mcr -v /Users/gregorygraham/Projects/MSSQLServer-MCR:/MSSQLServer-MCR -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=Pacific/Auckland' -p 1433:1433 -d mcr.microsoft.com/mssql/server
 
 -- Apple silicon (while SQLServer isn't available for ARM chips)
 docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=Password23' -p 1433:1433 --name sqlserver_container -d mcr.microsoft.com/azure-sql-edge
