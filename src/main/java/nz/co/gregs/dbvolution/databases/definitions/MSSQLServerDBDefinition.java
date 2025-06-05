@@ -172,6 +172,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
    * @param tableRow the DBRow of the table to be dropped
    * @return "DROP TABLE IF EXISTS tablename;" or equivalent for the database.
    */
+  @Override
   public String getDropTableSQL(DBRow tableRow) {
     StringBuilder sqlScript = new StringBuilder(0);
     final String dropTableStart = getDropTableStart();
