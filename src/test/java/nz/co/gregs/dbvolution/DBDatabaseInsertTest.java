@@ -28,9 +28,7 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ * a test for the DBDatabase.insert(DBRow...) method.
  *
  * @author Gregory Graham
  */
@@ -42,7 +40,8 @@ public class DBDatabaseInsertTest extends AbstractTest {
 
 	@Test
 	public void testInsertRows() throws SQLException {
-		int originalNumberOfMarques = marquesTable.setBlankQueryAllowed(true).getAllRows().size();
+    final DBTable<Marque> marques = database.getDBTable(new Marque());
+		int originalNumberOfMarques = marques.setBlankQueryAllowed(true).getAllRows().size();
 		final DBTable<CarCompany> allCarCompanies = database.getDBTable(new CarCompany()).setBlankQueryAllowed(true);
 		int originalNumberOfCarCos = allCarCompanies.getAllRows().size();
 
@@ -59,11 +58,11 @@ public class DBDatabaseInsertTest extends AbstractTest {
 		CarCompany carCompany = new CarCompany("TATA", 569);
 		DBActionList changes = database.insert(myTableRows);
 		changes.addAll(database.insert(carCompany));
-		marquesTable.getAllRows();
+    marques.getAllRows();
 
 		final int updatedNumberOfCarCompanies = allCarCompanies.getAllRows().size();
 		assertThat(changes.size(), is(3));
-		assertThat(marquesTable.getAllRows().size(), is(originalNumberOfMarques + 2));
+		assertThat(marques.getAllRows().size(), is(originalNumberOfMarques + 2));
 		assertThat(
 				updatedNumberOfCarCompanies,
 				is(originalNumberOfCarCos + 1));
