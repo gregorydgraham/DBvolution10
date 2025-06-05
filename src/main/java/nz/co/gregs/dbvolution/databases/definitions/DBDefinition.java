@@ -626,19 +626,39 @@ public abstract class DBDefinition implements Serializable {
 		return " OR ";
 	}
 
-	/**
-	 * Provides the start of the DROP TABLE expression for this database.
-	 *
-	 *
-	 *
-	 *
-	 * @return "DROP TABLE " or equivalent for the database.
-	 */
-	public String getDropTableStart() {
-		return "DROP TABLE IF EXISTS ";
-	}
+  /**
+   * Provides the start of the DROP TABLE expression for this database.
+   *
+   * <p>
+   * See the {@link #getDropTableSQL(nz.co.gregs.dbvolution.DBRow) } method as it is probably what you're looking for.
+   * </p>
+   *
+   * @return "DROP TABLE IF EXISTS " or equivalent for the database.
+   */
+  public String getDropTableStart() {
+    return "DROP TABLE IF EXISTS ";
+  }
 
-	/**
+  /**
+   * Provides the SQL of the DROP TABLE expression for this database.
+   *
+   *
+   *
+   *
+   * @param tableRow the DBRow of the table to be dropped
+   * @return "DROP TABLE IF EXISTS tablename;" or equivalent for the database.
+   */
+  public String getDropTableSQL(DBRow tableRow) {
+    StringBuilder sqlScript = new StringBuilder(0);
+    final String dropTableStart = getDropTableStart();
+    final String formatTableName = formatTableName(tableRow);
+    final String endSQLStatement = endSQLStatement();
+    sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
+    String sqlString = sqlScript.toString();
+    return sqlString;
+  }
+
+  /**
 	 * Returns the start of the PRIMARY KEY clause of the CREATE TABLE statement.
 	 *
 	 * <p>
