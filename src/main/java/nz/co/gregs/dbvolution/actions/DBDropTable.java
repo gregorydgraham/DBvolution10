@@ -84,12 +84,7 @@ public class DBDropTable extends DBAction {
 
 	protected String createDropTableSQL(DBDatabase db, DBRow tableRow) {
 		DBDefinition definition = db.getDefinition();
-		StringBuilder sqlScript = new StringBuilder(0);
-		final String dropTableStart = definition.getDropTableStart();
-		final String formatTableName = definition.formatTableName(tableRow);
-		final String endSQLStatement = definition.endSQLStatement();
-		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
-		String sqlString = sqlScript.toString();
+    String sqlString = definition.getDropTableSQL(tableRow);
 		return sqlString;
 	}
 
