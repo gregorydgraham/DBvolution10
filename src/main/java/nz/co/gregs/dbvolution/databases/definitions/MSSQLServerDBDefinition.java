@@ -30,11 +30,13 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Spatial2DExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
+import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
+import nz.co.gregs.dbvolution.utility.StringCheck;
 import nz.co.gregs.regexi.Regex;
 import nz.co.gregs.separatedstring.Builder;
 import nz.co.gregs.separatedstring.Encoder;
@@ -140,12 +142,55 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String formatTableName(DBRow table) {
-		final String schemaName = table.getSchemaName();
-		if (table.getSchemaName() == null || "".equals(schemaName)) {
+		String schemaName = StringCheck.check(table.getSchemaName(),"dbo");
+		if (schemaName == null || "".equals(schemaName)) {
 			return "[" + table.getTableName() + "]";
 		} else {
-			return "[" + table.getSchemaName() + "].[" + table.getTableName() + "]";
+			return "[" + schemaName+ "].[" + table.getTableName() + "]";
 		}
+	}
+
+	/**
+	 * Provides the start of the DROP TABLE expression for this database.
+	 *
+	 *
+	 *
+	 *
+	 * @return "DROP TABLE " or equivalent for the database.
+	 */
+  @Override
+	public String getDropTableStart() {
+		return "DROP TABLE IF EXISTS ";
+	}
+
+  /**
+   * Provides the SQL of the DROP TABLE expression for this database.
+   *
+   *
+   *
+   *
+   * @param tableRow the DBRow of the table to be dropped
+   * @return "DROP TABLE IF EXISTS tablename;" or equivalent for the database.
+   */
+  public String getDropTableSQL(DBRow tableRow) {
+    StringBuilder sqlScript = new StringBuilder(0);
+    final String dropTableStart = getDropTableStart();
+    final String formatTableName = formatTableName(tableRow);
+    final String endSQLStatement = endSQLStatement();
+    sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement).append("");
+    String sqlString = sqlScript.toString();
+    return sqlString;
+  }
+
+  @Override
+	public String getTableExistsSQL(DBRow tableRow) {
+		final QueryOptions queryOptions = new QueryOptions();
+		queryOptions.setRowLimit(1);
+		return beginSelectStatement() + getLimitRowsSubClauseDuringSelectClause(queryOptions)
+				+ getCountFunctionName() + "(*) c"
+				+ beginFromClause()
+				+ formatTableName(tableRow)
+				+ endSQLStatement();
 	}
 
 	@Override
@@ -158,7 +203,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String endSQLStatement() {
-		return "";
+		return ";";
 	}
 
 	@Override
