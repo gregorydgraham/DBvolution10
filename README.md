@@ -1,4 +1,9 @@
 # DBvolution10
+
+## Development has moved to the DBvolution project and no further work is planned here.
+
+### If you require support please contact me directly.
+
 DBvolution10 is a java library that reduces SQL access to simple java calls optimized for Java10.
 
 Advanced Library to Remove Object Relational Impedance. 
